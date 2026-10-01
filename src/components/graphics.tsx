@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Figure } from "@/components/Figure";
+import type { AssetKey } from "@/lib/brand";
 
 /**
  * Illustrative graphics, drawn here rather than sourced.
@@ -104,16 +106,33 @@ interface Node {
   label: string;
   who: string;
   kind: "person" | "tool" | "gate";
+  /* Portraits, supplied 2026-10-01. A stage that names a person now shows that
+     person: on the page whose whole claim is that a human is accountable at
+     each step, a generic head-and-shoulders glyph was arguing the opposite. */
+  faces?: AssetKey[];
 }
 
 const FLOW: Node[] = [
-  { label: "Concept and story", who: "Conor and Al", kind: "person" },
-  { label: "Script and direction", who: "Al", kind: "person" },
+  { label: "Concept and story", who: "Conor and Alan", kind: "person", faces: ["person.conor", "person.alan"] },
+  { label: "Script and direction", who: "Alan", kind: "person", faces: ["person.alan"] },
   { label: "Visual and voice production", who: "Runway · ElevenLabs", kind: "tool" },
-  { label: "Educational review", who: "Dr Paula Walshe", kind: "person" },
-  { label: "Parent and early years review", who: "Lydia and Kirstie", kind: "person" },
+  { label: "Educational review", who: "Paula Walshe PhD", kind: "person", faces: ["person.paula"] },
+  { label: "Parent and early years review", who: "Lydia and Kirstie", kind: "person", faces: ["person.lydia", "person.kirstie"] },
   { label: "Final approval", who: "The team", kind: "gate" },
 ];
+
+/** Up to two portraits, overlapped, at the size the glyph they replace used. */
+function Faces({ assets }: { assets: AssetKey[] }) {
+  return (
+    <span className="flex shrink-0 items-center -space-x-2.5">
+      {assets.slice(0, 2).map((a) => (
+        <span key={a} className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-[var(--color-raised)]">
+          <Figure asset={a} rounded="rounded-full" className="aspect-square" sizes="40px" />
+        </span>
+      ))}
+    </span>
+  );
+}
 
 /**
  * The shape of the argument, drawn: people at both ends, the tool in the
@@ -145,13 +164,17 @@ export function HumanLedDiagram() {
               style={{ animation: `node-in 620ms var(--ease-house) both ${i * 90}ms` }}
             >
               <div className="flex items-start gap-3">
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] ${
-                    n.kind === "tool" ? "bg-white/70 text-[#2C6E8F]" : "bg-red/10 text-red-deep"
-                  }`}
-                >
-                  {n.kind === "tool" ? <ToolGlyph /> : <PersonGlyph size={22} />}
-                </span>
+                {n.faces ? (
+                  <Faces assets={n.faces} />
+                ) : (
+                  <span
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] ${
+                      n.kind === "tool" ? "bg-white/70 text-[#2C6E8F]" : "bg-red/10 text-red-deep"
+                    }`}
+                  >
+                    {n.kind === "tool" ? <ToolGlyph /> : <PersonGlyph size={22} />}
+                  </span>
+                )}
                 <div className="min-w-0">
                   <p className="font-body text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
                     {n.kind === "tool" ? "Tool assists" : n.kind === "gate" ? "Gate" : "Person decides"}

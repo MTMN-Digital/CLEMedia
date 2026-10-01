@@ -12,6 +12,7 @@ import {
 } from "@/components/ui";
 import { IconArrow, IconExternal, IconMail } from "@/components/icons";
 import { SITE } from "@/lib/site";
+import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
    THE RULE THIS PAGE WAS REBUILT ON.
@@ -56,16 +57,25 @@ const EPISODES: Episode[] = [
     line: "Finn and Fia go on a new adventure and meet a cuckoo who has travelled a very long way to get back to the garden." },
 ];
 
-/* No portraits. Four empty portrait frames were four more blank rectangles on a
-   page that had too many already. Names, roles and what each person actually
-   checks carry the section until real photography exists. */
-const PEOPLE = [
-  { name: "Conor Sexton", role: "Founder", line: "Sets each episode's concept and story alongside Al, and leads strategy and partnerships." },
-  { name: "Dr Paula Walshe", role: "Education Director", line: "Lecturer at SETU and author of Síolta in Practice. Reviews learning intent against early years practice." },
-  { name: "Al Compton", role: "Creative Director", line: "Develops the script and directs production. The look, the performances and the pace are his call." },
-  { name: "Lydia Sexton", role: "Executive Producer", line: "Reads script and production from a parent's point of view before anything is released." },
-  { name: "Kirstie Harding", role: "Early Learning Advisor", line: "An experienced Special Needs Assistant. Reads every script from the point of view of the children who will watch it." },
-  { name: "Mansi", role: "Production Coordination", line: "Holds the schedule together so a note from one review reaches the people who act on it." },
+/* Portraits arrived 2026-10-01 with the client's bios, so the names finally
+   have faces against them, which on a page whose whole argument is "made by
+   named people" is the single most useful image on it.
+
+   Names and titles follow that handoff: Alan rather than Al, Lydia Harding
+   rather than Lydia Sexton, Kirstie without the surname the earlier draft gave
+   her. Paula's book is Full STEAM Ahead; an earlier draft credited her with
+   Síolta in Practice, which the client's own biography does not.
+
+   Six here, not the whole company: Mansi's handoff carried no photograph or
+   biography, so she is on /team in full rather than as the one blank tile in a
+   row of faces. The link under this grid is what carries the reader to her. */
+const PEOPLE: { name: string; role: string; line: string; asset?: AssetKey }[] = [
+  { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor", line: "Sets each episode's concept and story alongside Alan, and leads strategy and partnerships." },
+  { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula", line: "Lectures in early childhood education at SETU Carlow and wrote Full STEAM Ahead. Reviews learning intent against early years practice." },
+  { name: "Alan Compton", role: "Creative Director", asset: "person.alan", line: "Writes and directs. The look, the performances and the pace of an episode are his call." },
+  { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia", line: "Reads script and production from a parent's point of view, and from a child's, before anything is released." },
+  { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education, and a qualified SNA. Checks that what is made is age-appropriate." },
+  { name: "David Toth", role: "Strategic Advisor", asset: "person.david", line: "Two decades advising Nickelodeon, LEGO and BBC Kids on content quality and platform safety. Shapes platform strategy here." },
 ];
 
 function NotifyForm() {
@@ -286,8 +296,15 @@ export default function Home() {
           </Settle>
           <Settle className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PEOPLE.map((p) => (
-              <Card key={p.name} className="p-6">
-                <h3 className="t-h3">{p.name}</h3>
+              <Card key={p.name} className="flex h-full flex-col p-6">
+                {/* Width on the wrapper: Figure's own w-full beats a w-* passed
+                    into className, which is a Tailwind ordering trap. */}
+                {p.asset && (
+                  <div className="w-[84px]">
+                    <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="84px" />
+                  </div>
+                )}
+                <h3 className="t-h3 mt-5">{p.name}</h3>
                 <p className="eyebrow mt-2 !text-[11px]">{p.role}</p>
                 <p className="t-body mt-3 text-body">{p.line}</p>
               </Card>

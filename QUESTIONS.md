@@ -356,3 +356,33 @@ contact routing and autoresponse recipients.
 
 The team portraits are the critical path. `story.lead` and every team photograph
 stay as placeholders until real, cleared photography exists.
+
+### 32. Names and titles in the bio handoff (2026-10-01)
+The "Team Bio & Photos" document names people differently from the handoff this
+site was built on, and the document now wins everywhere: Alan Compton (was Al),
+Lydia Harding (was Lydia Sexton), Conor as Founder and CEO (was Founder),
+Kirstie as Child Development Consultant (was Early Learning Advisor), and Paula
+Walshe PhD (was Dr Paula Walshe). Paula's book is Full STEAM Ahead; an earlier
+draft of the home page credited her with Síolta in Practice, which her own
+biography does not claim. That has been corrected.
+
+Three things the document does not settle:
+
+1. **Kirstie's surname.** The document gives none. She is listed as "Kirstie"
+   on the team page and the home page. The earlier handoff said Harding.
+2. **Job titles for Alan, Lydia and Paula.** The document gives a title for
+   Conor, Kirstie and David only. Creative Director, Executive Producer and
+   Education Director are carried over from the earlier handoff and need each
+   person's confirmation.
+3. **Mansi.** No photograph and no biography arrived for her. She appears on the
+   team page with the single line the earlier handoff supports, and is left off
+   the home page's six-face grid rather than shown as the one blank tile.
+
+### 33. The family photographs in the bio handoff
+Four of the ten images are family snapshots, three of which show a baby's face:
+a Christmas photograph, two phone screenshots of the same couple, and a
+Halloween photograph outside a house. None is used. Two reasons, in order:
+they are personal photographs rather than editorial ones and would not raise the
+page they sat on, and publishing a child's face needs that child's parents to
+have agreed to it in writing on a site whose whole argument is child wellbeing.
+Held, not deleted. Say the word if any is wanted and the consent exists.

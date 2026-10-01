@@ -29,9 +29,9 @@ interface Gate {
 }
 
 const GATES: Gate[] = [
-  { n: "01", stage: "Concept and story", who: "Conor and Al", checks: "The episode concept, the story and the learning goal, set by people before any production begins." },
-  { n: "02", stage: "Script and direction", who: "Al Compton", checks: "The script is written and production directed. Assets are specified and selected by the team, not accepted as they arrive." },
-  { n: "03", stage: "Educational review", who: "Dr Paula Walshe", checks: "Learning intent and the offline activities that follow the episode, reviewed against early years practice." },
+  { n: "01", stage: "Concept and story", who: "Conor and Alan", checks: "The episode concept, the story and the learning goal, set by people before any production begins." },
+  { n: "02", stage: "Script and direction", who: "Alan Compton", checks: "The script is written and production directed. Assets are specified and selected by the team, not accepted as they arrive." },
+  { n: "03", stage: "Educational review", who: "Paula Walshe PhD", checks: "Learning intent and the offline activities that follow the episode, reviewed against early years practice." },
   { n: "04", stage: "Parent and early years review", who: "Lydia and Kirstie", checks: "Script and production read again from a parent's point of view, and from a child's." },
   { n: "05", stage: "Quality and suitability", who: "The production team", checks: "Voices and visuals checked for quality, consistency and suitability for the children watching." },
   { n: "06", stage: "Final review and approval", who: "The team", checks: "The finished episode is inspected and changes requested where needed. A release can be delayed here." },

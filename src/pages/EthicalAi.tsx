@@ -57,11 +57,11 @@ const FAQ = [
   },
   {
     q: "Who writes and approves the stories?",
-    a: "Conor and Al set the concept and the story. Al writes the script and directs production. The finished episode is reviewed by the team before release, and any of them can ask for changes.",
+    a: "Conor and Alan set the concept and the story. Alan writes the script and directs production. The finished episode is reviewed by the team before release, and any of them can ask for changes.",
   },
   {
     q: "How are educational decisions made?",
-    a: "Dr Paula Walshe reviews the learning intent of each episode and the activities that follow it. Lydia and Kirstie bring parent and early years perspectives to script and production review. Those judgements are made by people, and we do not automate them.",
+    a: "Paula Walshe PhD reviews the learning intent of each episode and the activities that follow it. Lydia and Kirstie bring parent and early years perspectives to script and production review. Those judgements are made by people, and we do not automate them.",
   },
   {
     q: "What happens when a review identifies a problem?",

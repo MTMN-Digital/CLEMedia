@@ -180,6 +180,15 @@ body > * { position: relative; z-index: 1; }
   .t-sm      { font-size: 0.875rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
 
+  /* Aliases for the pages still on the pre-reskin markup (Story, App, Journal
+     post, Shop product, Download, Legal, 404). Those files ask for
+     `display-page` and `display-section`, which this stylesheet never defined,
+     so every heading on seven pages was rendering at body size. Kept as
+     aliases rather than renamed in place: the rename is a seven-file sweep for
+     no visual difference, and these cost two lines. */
+  .display-page    { font-size: clamp(2rem, 1.5rem + 2.2vw, 3rem); }
+  .display-section { font-size: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); }
+
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain
      functional language, at most one per two sections. */

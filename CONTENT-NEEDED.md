@@ -211,3 +211,25 @@ An earlier build of that component invented all of it (an "Episode 004" sent
 back "nine days" with a quoted reviewer note). That has been removed. On the one
 section whose purpose is to show this company is honest, invented specifics were
 indefensible, and QUESTIONS.md #29 already said so.
+
+## Portraits, supplied 2026-10-01
+
+Five of the six core team plus the strategic adviser arrived in the client's
+"Team Bio & Photos" document and are live: Conor, Alan, Lydia, Kirstie, Paula
+and David Toth. They are cropped square on the face and carry one warm grade,
+which is what lets a studio headshot, a dark editorial portrait and a phone
+selfie sit in the same row.
+
+Still wanted, in order of what it would change:
+
+| What | Where it lands | Why it matters |
+|---|---|---|
+| A photograph of Mansi | `person.mansi`, team page | The one person in the review sequence with no face |
+| Higher-resolution Paula | `person.paula` | The supplied file is 438x394, so the 2x is an upscale |
+| The team together | `team.group` | No group photograph exists |
+| Workspace and review session | `process.workspace`, `process.review` | Responsible AI still illustrates its argument with drawings |
+| The real garden | `garden.real`, `garden.detail` | Would replace the generated hero |
+| The felting being made | `craft.felting` | The best possible answer to the AI question |
+
+`story.lead` is now closed rather than pending: the Story page opens on a byline
+with Conor's portrait instead of a 1680x720 band that never existed.

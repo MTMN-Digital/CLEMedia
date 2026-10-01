@@ -152,12 +152,25 @@ const assets = {
      Real photography only on every slot below. The kit's PEOPLE folder is
      AI-generated and unusable here.
   --------------------------------------------------------------------- */
-  "person.conor": { base: null, alt: "Conor Sexton, founder of CLÉ Family Media", width: 900, height: 900, label: "Conor Sexton, portrait" },
-  "person.al": { base: null, alt: "Al Compton, creative director", width: 900, height: 900, label: "Al Compton, portrait" },
-  "person.paula": { base: null, alt: "Dr Paula Walshe, education director", width: 900, height: 900, label: "Dr Paula Walshe, portrait" },
-  "person.lydia": { base: null, alt: "Lydia Sexton", width: 900, height: 900, label: "Lydia Sexton, portrait" },
-  "person.kirstie": { base: null, alt: "Kirstie Harding, early learning advisor", width: 900, height: 900, label: "Kirstie Harding, portrait" },
-  "person.mansi": { base: null, alt: "Mansi, production coordination", width: 900, height: 900, label: "Mansi, portrait" },
+  /* FILLED 2026-10-01 from the client's "Team Bio & Photos" handoff. Six
+     photographs taken by six different people, so each is cropped square on the
+     face and carries one warm grade, which is what lets a studio headshot and a
+     phone selfie sit in the same row. Sources and crop boxes are recorded in
+     BRAND TOOL KIT/web-exports/ASSET-LOG.md.
+
+     Conor's was supplied as a cutout on pure white. The white is flood filled
+     from the corners, never thresholded, so his white SHIRT survives, and it is
+     composited onto --color-sunken so the portrait sits in its well rather than
+     glowing out of it. */
+  "person.conor": { base: "/brand/people/conor", alt: "Conor Sexton, founder of CLÉ Family Media", width: 440, height: 440, label: "Conor Sexton, portrait" },
+  "person.alan": { base: "/brand/people/alan", alt: "Alan Compton, creative director", width: 440, height: 440, label: "Alan Compton, portrait" },
+  "person.paula": { base: "/brand/people/paula", alt: "Paula Walshe PhD, education director", width: 440, height: 440, label: "Paula Walshe PhD, portrait" },
+  "person.lydia": { base: "/brand/people/lydia", alt: "Lydia Harding", width: 440, height: 440, label: "Lydia Harding, portrait" },
+  "person.kirstie": { base: "/brand/people/kirstie", alt: "Kirstie, child development consultant", width: 440, height: 440, label: "Kirstie, portrait" },
+  "person.david": { base: "/brand/people/david", alt: "David Toth, strategic advisor", width: 440, height: 440, label: "David Toth, portrait" },
+  /* Mansi is the one person in the review sequence the handoff sent no photo
+     or biography for. Listed, unillustrated, logged in CONTENT-NEEDED.md. */
+  "person.mansi": { base: null, alt: "Mansi, production coordination", width: 440, height: 440, label: "Mansi, portrait" },
 
   "team.group": { base: null, alt: "The CLÉ Family Media team", width: 1680, height: 945, label: "The team together, on location or in the workspace" },
 

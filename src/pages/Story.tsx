@@ -8,6 +8,7 @@ import { SITE } from "@/lib/site";
 const SECTIONS = [
   { id: "what-i-saw", label: "What I saw" },
   { id: "becoming-a-parent", label: "Becoming a parent" },
+  { id: "how-i-got-here", label: "How I got here" },
   { id: "building-it", label: "Building an alternative" },
   { id: "how-it-reaches-you", label: "How it reaches you" },
 ];
@@ -36,8 +37,20 @@ export default function Story() {
         </Container>
       </Section>
 
-      <Container>
-        <Figure asset="story.lead" priority sizes="100vw" />
+      {/* A byline, not a lead band. The 1680x720 photograph of Conor and Lydia
+          that used to sit here does not exist, so the page opened on an empty
+          labelled frame. His portrait arrived with the bios 2026-10-01, and a
+          first-person piece is better served by a byline than by a band. */}
+      <Container width="wide">
+        <div className="flex items-center gap-5">
+          <div className="w-[76px] shrink-0">
+            <Figure asset="person.conor" priority rounded="rounded-full" className="aspect-square" sizes="76px" />
+          </div>
+          <div>
+            <p className="font-body text-[15px] font-semibold text-ink">Conor Sexton</p>
+            <p className="eyebrow mt-1.5 !text-[11px]">Founder and CEO</p>
+          </div>
+        </div>
       </Container>
 
       <Section className="!pt-14">
@@ -104,12 +117,40 @@ export default function Story() {
                 </figure>
               </Settle>
 
+              {/* Added 2026-10-01 from the client's own biography. Until it
+                  arrived the page argued for the company without saying a word
+                  about where its founder came from, which on a first-person
+                  piece is the part a reader is actually looking for. Every fact
+                  here is the client's: the accident, the qualifications, the
+                  thirteen years in the trade. */}
+              <Settle as="section" className="scroll-mt-28 space-y-5">
+                <div id="how-i-got-here" className="scroll-mt-28" />
+                <h2 className="display-section font-display">How I got here</h2>
+                <p>
+                  I spent thirteen years in food retail, starting as an apprentice and finishing as
+                  head butcher. It is not the background anyone expects behind a children's media
+                  company, and I would not trade it: you learn quickly what people actually want
+                  when they are standing in front of you, and you learn to run a counter that does
+                  not fall apart on a Saturday.
+                </p>
+                <p>
+                  A life-changing accident in 2020 ended that direction. I went back to education as
+                  a mature student instead, took a QQI Level 6 in Marketing with distinction, and I
+                  am finishing a Bachelor of Business in Marketing at Munster Technological
+                  University, where I also went through the Student Inc. programme.
+                </p>
+                <p>
+                  So the company is not a pivot from somewhere adjacent. It is the thing I built
+                  once I had to choose again from the beginning.
+                </p>
+              </Settle>
+
               <Settle as="section" className="scroll-mt-28 space-y-5">
                 <div id="building-it" className="scroll-mt-28" />
                 <h2 className="display-section font-display">Building an alternative</h2>
                 <p>
                   I could not have made this on my own, and I did not try. The company came
-                  together around people who knew far more than I did: Al on the creative side,
+                  together around people who knew far more than I did: Alan on the creative side,
                   who writes and directs and sets the pace of an episode; Paula on the educational
                   side, who reviews the learning intent before a script exists; Lydia and Kirstie
                   bringing the parent and early years perspectives that catch what a production read
