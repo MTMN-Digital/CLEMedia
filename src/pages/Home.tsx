@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
+import { Drift } from "@/components/Drift";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
@@ -128,54 +129,58 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* ═══ 1. HERO. The mark carries it, but placed rather than centred:
-          it sits in the left column at real size against the headline, with
-          the garden as a framed object beside them, not a full-bleed band.
-          The previous version stacked a centred logo, a headline, two buttons
-          and then a big picture, which is the most conventional shape there
-          is. ═══ */}
-      {/* pt-0: the mark hangs on strings that run off its top edge, so they have
-          to meet the header rather than start in mid air. */}
-      <Section className="!pt-0">
+      {/* ═══ 1. HERO. The mark is the hero, centre stage, hanging on strings
+          that run up off the top of the frame so the header is what it hangs
+          from. It drifts against the scroll, because an object on a string is
+          the one thing a reader expects to move when the ground under it does.
+
+          Under it, the garden runs edge to edge. The earlier version boxed the
+          garden in a card in a 1248px column, which on a wide screen left a
+          third of the viewport empty on each side. ═══ */}
+      <Section className="!pt-0 !pb-0">
         <Container width="wide">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-            <Settle>
-              {/* The width lives on the wrapper, not on the Figure. Figure puts
-                  `w-full` on its own <img>, and Tailwind resolves a conflict
-                  between two width utilities by stylesheet order, not by the
-                  order they appear in the class attribute, so a `w-[clamp(...)]`
-                  passed in as className loses and the mark renders full column. */}
-              <div className="w-[clamp(190px,24vw,280px)]">
-                <Figure
-                  asset="brand.cle"
-                  priority
-                  rounded="rounded-none"
-                  className="drop-shadow-[0_18px_28px_rgba(74,53,42,0.18)]"
-                  sizes="280px"
-                />
-              </div>
-              <h1 className="t-display mt-10 max-w-[13ch]">Children's media made by people</h1>
-              <Lead className="mt-7">
+          <div className="flex flex-col items-center text-center">
+            <Drift rate={0.07} max={44} className="w-[clamp(230px,30vw,420px)]">
+              <Figure
+                asset="brand.cle"
+                priority
+                rounded="rounded-none"
+                className="drop-shadow-[0_26px_38px_rgba(74,53,42,0.2)]"
+                sizes="(min-width: 1280px) 420px, 32vw"
+              />
+            </Drift>
+
+            <Settle className="flex flex-col items-center">
+              <h1 className="t-display mt-14 max-w-[15ch]">Children's media made by people</h1>
+              <Lead className="mt-6 max-w-[44ch] text-center">
                 Calm stories for young children, and the activities that take them off the screen
-                afterwards. Every episode is reviewed by a named person before it is released.
+                afterwards.
               </Lead>
-              <div className="mt-9 flex flex-wrap items-center gap-4">
+              <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
                 <Button to="/ethical-ai">How we make it<IconArrow size={16} /></Button>
                 <Button href={SITE.showUrl} variant="quiet">Visit the show<IconExternal size={15} /></Button>
               </div>
             </Settle>
-
-            <Settle className="lg:pl-6">
-              <Card className="tilt-b overflow-hidden p-2.5">
-                <Figure
-                  asset="home.hero"
-                  rounded="rounded-[var(--radius-md)]"
-                  sizes="(min-width: 1024px) 44vw, 92vw"
-                />
-              </Card>
-            </Settle>
           </div>
         </Container>
+
+        {/* Edge to edge, and taller than it is framed: the band is the horizon
+            the rest of the page sits under. The image drifts the other way to
+            the mark, which is what stops a full-bleed photograph reading as a
+            flat sheet pasted across the page. */}
+        <div className="mt-16 h-[clamp(260px,44vw,620px)] overflow-hidden sm:mt-20">
+          <Drift rate={-0.09} max={90} className="h-full">
+            <Figure
+              asset="home.hero"
+              fill
+              rounded="rounded-none"
+              position="center 46%"
+              priority
+              sizes="100vw"
+              className="scale-[1.08]"
+            />
+          </Drift>
+        </div>
       </Section>
 
       {/* ═══ 2. THESIS ═══ */}
@@ -227,12 +232,19 @@ export default function Home() {
               </Card>
             </Settle>
 
-            <Settle className="grid gap-5 sm:grid-cols-3 lg:self-start">
+            {/* Three across on tablet, stacked again on desktop. Three short cards
+                side by side next to a tall photograph left the bottom right of a
+                wide screen empty; stacked, the column runs the height of the
+                image beside it. */}
+            <Settle className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:gap-6 lg:self-center">
               {STAGES.map((st) => (
-                <Card key={st.n} className="flex h-full flex-col p-7">
+                <Card
+                  key={st.n}
+                  className="flex h-full flex-col p-7 lg:grid lg:grid-cols-[4rem_minmax(0,14ch)_minmax(0,1fr)] lg:items-baseline lg:gap-8 lg:p-8"
+                >
                   <span className="tnum font-mono text-[13px] tracking-[0.16em] text-red-deep">{st.n}</span>
-                  <h3 className="t-h3 mt-4 font-display">{st.title}</h3>
-                  <p className="t-body mt-3 text-slate">{st.body}</p>
+                  <h3 className="t-h3 mt-4 font-display lg:mt-0">{st.title}</h3>
+                  <p className="t-body mt-3 text-slate lg:mt-0">{st.body}</p>
                 </Card>
               ))}
             </Settle>
@@ -271,7 +283,10 @@ export default function Home() {
           </Wipe>
         </Container>
 
-        <div className="rail-bleed mt-14">
+        {/* No Container: the band is the full width of the page and sets its
+            own gutter, so the rail lines up with the heading above it while the
+            stock runs to both edges. */}
+        <div className="mt-14">
           <FilmStrip episodes={EPISODES} />
         </div>
       </Section>

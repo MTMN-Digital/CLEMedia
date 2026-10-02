@@ -85,11 +85,13 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
   };
 
   return (
-    <div className="relative">
+    /* --gutter lives on the root, not on the band: the count and the arrows sit
+       above the stock and need the same inset as the slates inside it. */
+    <div className="filmstrip-root relative">
       {/* Controls sit with the count, not floating over the art. The right
           gutter is theirs alone: the strip below bleeds off the page edge, and
           a button hard against that edge reads as clipped. */}
-      <div className="mb-6 flex items-center gap-4 pr-5 sm:pr-8">
+      <div className="filmstrip-head mb-6 flex items-center gap-4">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-deep">
           {episodes.length} episodes
         </p>
@@ -116,8 +118,24 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
         </div>
       </div>
 
-      <div className="filmstrip relative">
+      <div className="filmstrip-band relative overflow-hidden">
+        {/* Top margin of the stock: sprocket holes, then the edge print and the
+            frame ticks that make it read as a length of film rather than a dark
+            rectangle with holes punched in it. */}
         <span className="sprockets sprockets-top" aria-hidden="true" />
+        <div className="filmstrip-head flex items-center gap-5 pb-1 pt-2" aria-hidden="true">
+          {/* The full edge print is 56 characters at 0.34em tracking, which is
+              wider than a phone. Hidden rather than wrapped: film margin print
+              runs on one line or it is not film margin print. */}
+          <span className="edge-print hidden whitespace-nowrap font-mono uppercase sm:inline">
+            CLÉ FAMILY MEDIA · THE PAWSITIVE PUGS &amp; PALS · SERIES 01
+          </span>
+          <span className="edge-print whitespace-nowrap font-mono uppercase sm:hidden">
+            CLÉ FAMILY MEDIA
+          </span>
+          <span className="frame-ticks h-3 flex-1" />
+          <span className="edge-print whitespace-nowrap font-mono">001 / 004</span>
+        </div>
 
         <ul
           ref={rail}
@@ -141,6 +159,10 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
           ))}
         </ul>
 
+        <div className="filmstrip-head flex items-center gap-5 pb-2 pt-1" aria-hidden="true">
+          <span className="frame-ticks h-3 flex-1" />
+          <span className="edge-print whitespace-nowrap font-mono uppercase">Drag or scroll sideways</span>
+        </div>
         <span className="sprockets sprockets-bottom" aria-hidden="true" />
       </div>
     </div>

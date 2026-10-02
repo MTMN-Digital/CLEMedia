@@ -17,7 +17,11 @@ const WIDTHS: Record<Width, string> = {
   measure: "mx-auto w-full max-w-[64ch]",
   text: "mx-auto w-full max-w-3xl",
   default: "mx-auto w-full max-w-5xl",
-  wide: "mx-auto w-full max-w-[78rem]",
+  /* 1560px, the house content cap. Raised from 1248 on 2026-10-02: on a 1905px
+     screen the old cap left a third of the viewport empty on each side and the
+     page read as a column floating in the middle of a monitor. Text measures
+     are set per block and did not move, so nothing got harder to read. */
+  wide: "mx-auto w-full max-w-[97.5rem]",
 };
 
 export function Container({

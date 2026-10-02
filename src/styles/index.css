@@ -474,17 +474,39 @@ body > * { position: relative; z-index: 1; }
 
 
 /* ---------------------------------------------------------------------------
-   The strip runs off the right edge of the page, because film does not stop at
-   a container. Its left edge stays on the wide container's gutter so the first
-   slate lines up with the heading above it.
+   The strip is a band, edge to edge.
+
+   It used to be boxed in the container and bleed off the right only, which is
+   what made the page read as lopsided. Now the dark stock spans the viewport
+   and only the RAIL is inset, to the same gutter the headings use, so the first
+   slate still lines up with the type above it and the last one runs off the
+   right the way film does.
 --------------------------------------------------------------------------- */
-.rail-bleed { padding-left: calc((100% - min(100%, 78rem)) / 2 + 1.25rem); }
+.filmstrip-root { --gutter: calc((100% - min(100%, 97.5rem)) / 2 + 1.25rem); }
 @media (min-width: 640px) {
-  .rail-bleed { padding-left: calc((100% - min(100%, 78rem)) / 2 + 2rem); }
+  .filmstrip-root { --gutter: calc((100% - min(100%, 97.5rem)) / 2 + 2rem); }
 }
-.rail-bleed .filmstrip,
-.rail-bleed .sprockets-top,
-.rail-bleed .sprockets-bottom {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+.filmstrip-band {
+  background: #15110f;
+  position: relative;
+}
+.filmstrip-band .filmstrip-rail { padding-left: var(--gutter); }
+/* The head sits on the band, so it keeps the gutter on both sides. */
+.filmstrip-head { padding-inline: var(--gutter); }
+
+/* Edge print. Real stock carries the stock name and a frame count down the
+   margin; this carries the company's. Repeating-linear so the count adapts to
+   the width for free, exactly as the sprockets do. */
+.edge-print {
+  font-size: 9.5px;
+  letter-spacing: 0.34em;
+  color: rgba(246, 240, 226, 0.42);
+}
+.frame-ticks {
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(246, 240, 226, 0.26) 0 1px,
+    transparent 1px 52px
+  );
 }
