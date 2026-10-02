@@ -29,11 +29,17 @@ export function Drift({
      crossed into the headline by 400px of scroll. The cap is the clearance
      below the element, so the effect can never close the gap. */
   max = Infinity,
+  /* Scale added across the same travel. A hanging object that only slides is
+     a sticker on a page; one that also grows very slightly as it lags reads as
+     a thing with depth in front of the ground behind it. Keep it small: 0.06
+     is already visible, 0.12 is a zoom effect. */
+  zoom = 0,
   className = "",
 }: {
   children: ReactNode;
   rate?: number;
   max?: number;
+  zoom?: number;
   className?: string;
 }) {
   const host = useRef<HTMLDivElement>(null);
@@ -59,7 +65,12 @@ export function Drift({
       const enters = Math.max(0, docTop - window.innerHeight);
       const past = Math.max(0, window.scrollY - enters);
       const shift = Math.max(-max, Math.min(max, past * rate));
-      el.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0)`;
+      /* Progress is normalised against one viewport height, so the zoom
+         finishes at roughly the point the element leaves the screen whatever
+         the screen is. */
+      const p = Math.min(1, past / window.innerHeight);
+      const scale = (1 + p * zoom).toFixed(4);
+      el.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0) scale(${scale})`;
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(apply);
@@ -73,7 +84,7 @@ export function Drift({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [rate, max]);
+  }, [rate, max, zoom]);
 
   return (
     <div ref={host} className={className}>

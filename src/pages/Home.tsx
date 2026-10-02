@@ -140,18 +140,43 @@ export default function Home() {
       <Section className="!pt-0 !pb-0">
         <Container width="wide">
           <div className="flex flex-col items-center text-center">
-            <Drift rate={0.07} max={44} className="w-[clamp(230px,30vw,420px)]">
+            {/* The mark is the whole hero, so it is sized like a thing in a
+                room rather than like a logo in a header: up to 620px, which on
+                a 1890px screen is a third of the width.
+
+                Three things together are what make it read as physically
+                present rather than pasted on. It lags the scroll. It grows a
+                couple of percent as it lags, which is what an object nearer
+                the eye than the ground behind it does. And it carries two
+                shadows at different distances: a tight one for the wool's own
+                relief, and a wide soft one for the gap between it and the
+                clay. A single mid-distance drop shadow is the tell that an
+                element is floating on a page instead of hanging in a space. */}
+            <Drift
+              rate={0.07}
+              max={48}
+              zoom={0.06}
+              className="relative w-[clamp(250px,34vw,540px)]"
+            >
+              {/* The cast shadow, behind and below. Separate from the filter
+                  because a drop-shadow follows the alpha of the object exactly,
+                  and a real one falling on a wall three feet back does not. */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-[8%] bottom-[6%] -z-10 h-[34%] rounded-[50%] blur-2xl"
+                style={{ background: "radial-gradient(60% 50% at 50% 50%, rgba(74,53,42,0.3), rgba(74,53,42,0) 72%)" }}
+              />
               <Figure
                 asset="brand.cle"
                 priority
                 rounded="rounded-none"
-                className="drop-shadow-[0_26px_38px_rgba(74,53,42,0.2)]"
-                sizes="(min-width: 1280px) 420px, 32vw"
+                className="[filter:drop-shadow(0_3px_2px_rgba(74,53,42,0.22))_drop-shadow(0_26px_34px_rgba(74,53,42,0.26))]"
+                sizes="(min-width: 1280px) 540px, 36vw"
               />
             </Drift>
 
             <Settle className="flex flex-col items-center">
-              <h1 className="t-display mt-14 max-w-[15ch]">Children's media made by people</h1>
+              <h1 className="t-display mt-9 max-w-[15ch]">Children's media made by people</h1>
               <Lead className="mt-6 max-w-[44ch] text-center">
                 Calm stories for young children, and the activities that take them off the screen
                 afterwards.
@@ -164,22 +189,19 @@ export default function Home() {
           </div>
         </Container>
 
-        {/* Edge to edge, and taller than it is framed: the band is the horizon
-            the rest of the page sits under. The image drifts the other way to
-            the mark, which is what stops a full-bleed photograph reading as a
-            flat sheet pasted across the page. */}
+        {/* Edge to edge: the band is the horizon the rest of the page sits
+            under. It does NOT drift. Two things moving against each other in
+            one viewport is a scroll effect; one thing moving against a fixed
+            ground is an object. The mark is the object. */}
         <div className="mt-16 h-[clamp(260px,44vw,620px)] overflow-hidden sm:mt-20">
-          <Drift rate={-0.09} max={90} className="h-full">
-            <Figure
-              asset="home.hero"
-              fill
-              rounded="rounded-none"
-              position="center 46%"
-              priority
-              sizes="100vw"
-              className="scale-[1.08]"
-            />
-          </Drift>
+          <Figure
+            asset="home.hero"
+            fill
+            rounded="rounded-none"
+            position="center 46%"
+            priority
+            sizes="100vw"
+          />
         </div>
       </Section>
 
