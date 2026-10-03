@@ -22,9 +22,16 @@ import { LOGOS, type AssetKey } from "@/lib/brand";
 
    The three stages are a real tablist. Choosing one changes the screen, so a
    reader walks the Watch, Play, Learn model through the product rather than
-   reading it as three paragraphs. Every size inside the device is in em off a
-   root set in container-query units, so the render scales as one object from
-   a 320px phone to a 1560px desktop and nothing inside it reflows on its own.
+   reading it as three paragraphs.
+
+   SIZING. Chrome (padding, radii, gaps, dots, the bezel) is in em off a root
+   set in container-query units, so the render scales as one object from a
+   320px phone to a 1560px desktop. TEXT is different: the titles, runtimes
+   and lines on these screens are real content, and an em that lands at 5px
+   on a phone is content nobody can read. So every readable string carries a
+   `max(11px, Nem)` floor: it scales down with the device until 11px and no
+   further. The portrait device is 7:10 rather than 3:4 to give the floored
+   type the height it needs.
    ========================================================================== */
 
 export type Stage = "watch" | "play" | "learn";
@@ -54,6 +61,18 @@ export const STAGES: { id: Stage; title: string; line: string }[] = [
     line: "A printable or educator-designed activity afterwards, taking the learning off the screen entirely.",
   },
 ];
+
+/* Readable sizes. One place, so the floor is one number. */
+const T = {
+  body: "text-[length:max(11px,0.85em)] leading-[1.45]",
+  small: "text-[length:max(11px,0.72em)] leading-[1.45]",
+  label: "text-[length:max(11px,0.68em)]",
+  mono: "text-[length:max(11px,0.66em)]",
+  tile: "text-[length:max(11px,0.82em)]",
+  name: "text-[length:max(12px,1.05em)]",
+  heading: "text-[length:max(16px,1.5em)] @md:text-[length:max(16px,1.9em)]",
+  button: "text-[length:max(11px,0.78em)]",
+};
 
 /* The PupsPlayer mark is a flat single-colour SVG filled with currentColor, so
    it is applied as a mask over the current text colour rather than loaded as
@@ -85,9 +104,11 @@ function PupsMark({ className = "" }: { className?: string }) {
 function TopBar() {
   return (
     <div className="flex items-center gap-[0.7em]">
-      <PupsMark className="h-[1.9em] w-[1.9em] text-navy" />
-      <span className="text-[1.05em] font-bold leading-none text-ink">PupsPlayer</span>
-      <span className="ml-auto inline-flex items-center gap-[0.45em] rounded-full border border-rule px-[0.9em] py-[0.45em] font-mono text-[0.68em] uppercase leading-none tracking-[0.12em] text-body">
+      <PupsMark className="h-[max(16px,1.9em)] w-[max(16px,1.9em)] text-navy" />
+      <span className={`${T.name} font-bold leading-none text-ink`}>PupsPlayer</span>
+      <span
+        className={`${T.label} ml-auto inline-flex items-center gap-[0.45em] rounded-full border border-rule px-[0.9em] py-[0.45em] font-mono uppercase leading-none tracking-[0.12em] text-body`}
+      >
         <IconLock className="h-[1.1em] w-[1.1em]" />
         Grown-ups
       </span>
@@ -105,7 +126,7 @@ function StageNav({ active }: { active: Stage }) {
         return (
           <span
             key={s.id}
-            className={`inline-flex items-center gap-[0.5em] font-mono text-[0.68em] uppercase tracking-[0.14em] ${
+            className={`${T.label} inline-flex items-center gap-[0.5em] font-mono uppercase tracking-[0.14em] ${
               on ? "text-red-deep" : "text-muted"
             }`}
           >
@@ -124,11 +145,16 @@ function StageNav({ active }: { active: Stage }) {
 function ScreenHeading({ title, line }: { title: string; line: string }) {
   return (
     <div>
-      <p className="text-[1.5em] font-bold leading-[1.15] text-ink @md:text-[1.9em]">{title}</p>
-      <p className="mt-[0.4em] max-w-[30ch] text-[0.85em] leading-[1.45] text-body">{line}</p>
+      <p className={`${T.heading} font-bold leading-[1.15] text-ink`}>{title}</p>
+      <p className={`${T.body} mt-[0.4em] max-w-[30ch] text-body`}>{line}</p>
     </div>
   );
 }
+
+/* The body of a screen: fills the space between the header and the stage nav
+   and centres its content in it, one column in portrait, two in landscape. */
+const BODY =
+  "my-[1.4em] grid flex-1 content-center gap-[1.1em] @md:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)] @md:gap-[1.8em]";
 
 /* ---------------------------------------------------------------------------
    Screen 1, Watch. The library. Four plates, four real titles, four real
@@ -138,16 +164,21 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
   return (
     <>
       <TopBar />
-      <div className="my-[1.4em] grid flex-1 content-center gap-[1.1em] @md:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)] @md:gap-[1.8em]">
+      <div className={BODY}>
         <ScreenHeading title="Choose an episode" line="Nothing plays until someone picks it." />
         <ul className="grid grid-cols-2 gap-[0.85em]">
           {episodes.map((ep) => (
             <li key={ep.n} className="overflow-hidden rounded-[0.9em] border border-rule bg-raised">
               <Figure asset={ep.asset} rounded="rounded-none" sizes="(min-width: 1024px) 20vw, 42vw" />
-              <div className="flex items-baseline gap-[0.55em] px-[0.8em] py-[0.6em]">
-                <span className="tnum font-mono text-[0.66em] tracking-[0.14em] text-red-deep">{ep.n}</span>
-                <span className="truncate text-[0.82em] font-semibold text-ink">{ep.title}</span>
-                <span className="tnum ml-auto shrink-0 font-mono text-[0.66em] text-muted">{ep.runtime}</span>
+              {/* Below a 384px container the caption stacks and drops the
+                  episode number, so the title keeps the width it needs at
+                  its 11px floor. The number is still in the list on the page. */}
+              <div className="flex flex-col gap-[0.25em] px-[0.8em] py-[0.6em] @sm:flex-row @sm:items-baseline @sm:gap-[0.55em]">
+                <span className={`${T.mono} tnum hidden font-mono tracking-[0.14em] text-red-deep @sm:inline`}>
+                  {ep.n}
+                </span>
+                <span className={`${T.tile} truncate font-semibold text-ink`}>{ep.title}</span>
+                <span className={`${T.mono} tnum shrink-0 font-mono text-muted @sm:ml-auto`}>{ep.runtime}</span>
               </div>
             </li>
           ))}
@@ -167,19 +198,21 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
   return (
     <>
       <TopBar />
-      <div className="my-[1.4em] grid flex-1 content-center gap-[1.1em] @md:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)] @md:gap-[1.8em]">
+      <div className={BODY}>
         <div>
           <ScreenHeading
             title="Time to move"
             line="A short movement or breathing prompt, before anything else plays."
           />
           <div className="mt-[1.2em] flex items-center gap-[0.8em] rounded-[0.9em] border border-rule bg-raised p-[0.6em]">
-            <div className="w-[5.2em] shrink-0 overflow-hidden rounded-[0.5em]">
+            <div className="w-[max(56px,5.2em)] shrink-0 overflow-hidden rounded-[0.5em]">
               <Figure asset={episode.asset} rounded="rounded-none" sizes="120px" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[0.8em] font-semibold text-ink">{episode.title}</p>
-              <p className="mt-[0.2em] inline-flex items-center gap-[0.35em] font-mono text-[0.64em] uppercase tracking-[0.12em] text-body">
+              <p className={`${T.tile} truncate font-semibold text-ink`}>{episode.title}</p>
+              <p
+                className={`${T.mono} mt-[0.2em] inline-flex items-center gap-[0.35em] font-mono uppercase tracking-[0.12em] text-body`}
+              >
                 <IconCheck className="h-[1.2em] w-[1.2em] text-red-deep" />
                 Finished
               </p>
@@ -189,9 +222,11 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
         <div className="flex items-center justify-center py-[0.5em]">
           {/* The prompt's stage: a calm disc, and one large target, because
               the plan says large targets and simple navigation. */}
-          <div className="flex aspect-square w-[min(100%,11em)] items-center justify-center rounded-full bg-sage/35">
+          <div className="flex aspect-square w-[min(100%,max(8.5rem,11em))] items-center justify-center rounded-full bg-sage/35">
             <div className="flex aspect-square w-[68%] items-center justify-center rounded-full bg-sage">
-              <span className="rounded-full bg-red px-[1.3em] py-[0.65em] font-mono text-[0.78em] uppercase tracking-[0.14em] text-raised">
+              <span
+                className={`${T.button} rounded-full bg-red px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
+              >
                 Start
               </span>
             </div>
@@ -235,7 +270,7 @@ function Sheet({ kind, label }: { kind: "colour" | "activity" | "puzzle"; label:
           </span>
         )}
       </div>
-      <p className="mt-[0.5em] text-center text-[0.72em] font-semibold text-ink">{label}</p>
+      <p className={`${T.small} mt-[0.5em] text-center font-semibold text-ink`}>{label}</p>
     </li>
   );
 }
@@ -244,16 +279,18 @@ function LearnScreen({ episode }: { episode: AppEpisode }) {
   return (
     <>
       <TopBar />
-      <div className="my-[1.4em] grid flex-1 content-center gap-[1.1em] @md:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)] @md:gap-[1.8em]">
+      <div className={BODY}>
         <div>
           <ScreenHeading
             title="Off the screen now"
             line={`A printable from ${episode.title}, to take to the table.`}
           />
-          <span className="mt-[1.2em] inline-block rounded-full bg-red px-[1.3em] py-[0.65em] font-mono text-[0.78em] uppercase tracking-[0.14em] text-raised">
+          <span
+            className={`${T.button} mt-[1.2em] inline-block rounded-full bg-red px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
+          >
             Print
           </span>
-          <p className="mt-[1em] max-w-[28ch] text-[0.72em] leading-[1.45] text-body">
+          <p className={`${T.small} mt-[1em] max-w-[28ch] text-body`}>
             Educator designed, and reviewed against early years practice before it is included.
           </p>
         </div>
@@ -344,7 +381,7 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
             id={`${base}-panel`}
             role="tabpanel"
             aria-labelledby={`${base}-tab-${stage}`}
-            className="mx-auto w-full text-[clamp(7px,2.6cqw,16px)] @md:text-[clamp(7px,2.1cqw,16px)]"
+            className="mx-auto w-full text-[length:clamp(7px,2.6cqw,16px)] @md:text-[length:clamp(7px,2.1cqw,16px)]"
           >
             {/* The frame: a dark bezel on the tablet, a drawn camera, and the
                 screen as the lightest paper stop so it reads as lit. */}
@@ -353,7 +390,7 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
                 aria-hidden="true"
                 className="absolute left-1/2 top-[0.35em] hidden h-[0.28em] w-[0.28em] -translate-x-1/2 rounded-full bg-raised/35 @md:block"
               />
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[1.6em] bg-paper-1 @md:aspect-[4/3]">
+              <div className="relative aspect-[7/10] overflow-hidden rounded-[1.6em] bg-paper-1 @md:aspect-[4/3]">
                 {STAGES.map((s) => {
                   const on = s.id === stage;
                   return (

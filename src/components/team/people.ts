@@ -40,9 +40,11 @@ export interface Stage {
   stage: string;
   who: string;
   checks: string;
-  /* Portraits of the people named at this stage. The two team stages carry
-     the five core portraits that exist; Mansi has none yet, and is listed in
-     full in the rows below the track. */
+  /* Portraits of the people the company's account NAMES at this stage. The
+     two team stages carry none: the account says "the production team" and
+     "the team" without naming anyone, and drawing five faces there would
+     assert who does that check. The track shows a team mark instead, and the
+     per-person marks carry the whole-team state. */
   faces: AssetKey[];
   /* The two stages the company's account gives to the team as a whole. */
   shared?: boolean;
@@ -140,54 +142,54 @@ export const ADVISORS: Member[] = [
   },
 ];
 
-/* The five core portraits that exist, in the order the rows list them. */
-const CORE_FACES: AssetKey[] = TEAM.flatMap((m) => (m.asset ? [m.asset] : []));
-
-/* The six stages are the company's own account, worded as the home page words
-   them so the two pages never disagree about who stands where. */
+/* The six stages are the company's own account. The full sentences for each
+   stage live on the Responsible AI page, which owns that account; here each
+   stage carries one clause, enough to label it on the track, so a reader
+   going Home to Team to Responsible AI does not read the same six sentences
+   three times. */
 export const STAGES: Stage[] = [
   {
     n: "01",
     stage: "Concept and story",
     who: "Conor and Alan",
-    checks: "The episode concept, the story and the learning goal, set by people before any production begins.",
+    checks: "Concept, story and learning goal, set before production begins.",
     faces: ["person.conor", "person.alan"],
   },
   {
     n: "02",
     stage: "Script and direction",
     who: "Alan Compton",
-    checks: "The script is written and production directed. Assets are specified and selected by the team, not accepted as they arrive.",
+    checks: "Script written, production directed, assets specified by the team.",
     faces: ["person.alan"],
   },
   {
     n: "03",
     stage: "Educational review",
     who: "Paula Walshe PhD",
-    checks: "Learning intent and the offline activities that follow the episode, reviewed against early years practice.",
+    checks: "Learning intent and the offline activities, against early years practice.",
     faces: ["person.paula"],
   },
   {
     n: "04",
     stage: "Parent and early years review",
     who: "Lydia and Kirstie",
-    checks: "Script and production read again from a parent's point of view, and from a child's.",
+    checks: "Script and production read from a parent's point of view, and a child's.",
     faces: ["person.lydia", "person.kirstie"],
   },
   {
     n: "05",
     stage: "Quality and suitability",
     who: "The production team",
-    checks: "Voices and visuals checked for quality, consistency and suitability for the children watching.",
-    faces: CORE_FACES,
+    checks: "Voices and visuals checked for quality and suitability.",
+    faces: [],
     shared: true,
   },
   {
     n: "06",
     stage: "Final review and approval",
     who: "The team",
-    checks: "The finished episode is inspected and changes requested where needed.",
-    faces: CORE_FACES,
+    checks: "The finished episode inspected, changes requested where needed.",
+    faces: [],
     shared: true,
     hold: true,
   },

@@ -66,9 +66,9 @@ function Header() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          aria-controls="mobile-nav"
+          aria-controls={open ? "mobile-nav" : undefined}
           className="ml-auto flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border text-ink lg:hidden"
-          style={{ borderColor: "var(--tone-rule)" }}
+          style={{ borderColor: "var(--color-rule)" }}
         >
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">

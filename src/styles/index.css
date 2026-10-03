@@ -90,6 +90,28 @@
   --color-rule:      rgba(74, 53, 42, 0.13);
   --color-rule-soft: rgba(74, 53, 42, 0.08);
 
+  /* ─── Aliases for the pre-reskin class names ────────────────────────────
+     Added 2026-10-03 after a review pass found `text-slate`, `text-deep`,
+     `bg-clay`, `bg-cream`, `text-clay` and `border-hairline` still live in
+     eleven files while emitting NOTHING, because the tokens behind them were
+     renamed and the classes never were.
+
+     Mostly that fell back to inherited colour and nobody noticed. One place it
+     did not: AssetPlaceholder picks `bg-clay` or `bg-cream` for its fill, so
+     every missing-asset placeholder on this site has been rendering with no
+     background at all, against a CLAUDE.md rule that calls for "a flat
+     brand-colour block, required dimensions, visible label".
+
+     Aliases rather than a sweep: one edit here fixes the placeholder and the
+     other ten files at once, and a rename across eleven files buys nothing a
+     reader can see. The aliases are the deprecated spellings. Nothing new
+     should use them. */
+  --color-slate:    #4a352a; /* = body */
+  --color-deep:     #6b4e3a; /* = muted */
+  --color-clay:     #e0cfb0; /* = paper-3 */
+  --color-cream:    #fdf8ed; /* = raised */
+  --color-hairline: rgba(74, 53, 42, 0.13); /* = rule */
+
   --font-display: "Calistoga", Georgia, serif;
   --font-sans:    "Hanken Grotesk", system-ui, sans-serif;
   --font-mono:    "Spline Sans Mono Variable", ui-monospace, Menlo, monospace;
@@ -278,6 +300,15 @@ body > * { position: relative; z-index: 1; }
     color: var(--color-ink);
   }
   .btn-quiet:hover { border-color: rgba(74, 53, 42, 0.32); }
+
+  /* The same button inside the navy band. Without this it is ink on navy with
+     an ink hairline, which is close to invisible, and three separate pages
+     reached for the same inline override to escape it. One rule here instead. */
+  .deep .btn-quiet {
+    border-color: rgba(253, 248, 237, 0.35);
+    color: var(--color-raised);
+  }
+  .deep .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.6); }
 
   /* The house link: a rule that draws from the left. The only hover motion. */
   .link-draw {

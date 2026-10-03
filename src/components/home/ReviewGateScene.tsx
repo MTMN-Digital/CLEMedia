@@ -21,20 +21,30 @@ import { IconArrow } from "@/components/icons";
    becomes the strongest thing on the site. Until then the section is true.
    ========================================================================== */
 
+/* The six stages, titles and attributions only.
+
+   The full sentence for each stage used to live here as well, and it was also
+   printed in full on /team and on /ethical-ai. A reader going home, then team,
+   then Responsible AI met the identical six paragraphs three times in three
+   layouts, which is the single clearest reason the site read as several sites
+   rather than one.
+
+   So ownership is now settled: /ethical-ai owns the full account, because the
+   sequence IS that page's argument. The home page states that the sequence
+   exists and who stands where, and sends the reader on. */
 interface Gate {
   n: string;
   stage: string;
   who: string;
-  checks: string;
 }
 
 const GATES: Gate[] = [
-  { n: "01", stage: "Concept and story", who: "Conor and Alan", checks: "The episode concept, the story and the learning goal, set by people before any production begins." },
-  { n: "02", stage: "Script and direction", who: "Alan Compton", checks: "The script is written and production directed. Assets are specified and selected by the team, not accepted as they arrive." },
-  { n: "03", stage: "Educational review", who: "Paula Walshe PhD", checks: "Learning intent and the offline activities that follow the episode, reviewed against early years practice." },
-  { n: "04", stage: "Parent and early years review", who: "Lydia and Kirstie", checks: "Script and production read again from a parent's point of view, and from a child's." },
-  { n: "05", stage: "Quality and suitability", who: "The production team", checks: "Voices and visuals checked for quality, consistency and suitability for the children watching." },
-  { n: "06", stage: "Final review and approval", who: "The team", checks: "The finished episode is inspected and changes requested where needed. A release can be delayed here." },
+  { n: "01", stage: "Concept and story", who: "Conor and Alan" },
+  { n: "02", stage: "Script and direction", who: "Alan Compton" },
+  { n: "03", stage: "Educational review", who: "Paula Walshe PhD" },
+  { n: "04", stage: "Parent and early years review", who: "Lydia and Kirstie" },
+  { n: "05", stage: "Quality and suitability", who: "The production team" },
+  { n: "06", stage: "Final review and approval", who: "The team" },
 ];
 
 export function ReviewGateScene() {
@@ -54,14 +64,11 @@ export function ReviewGateScene() {
             {GATES.map((g) => (
               <li
                 key={g.n}
-                className="hairline grid grid-cols-1 items-start gap-x-8 gap-y-2 py-7 md:grid-cols-[3rem_minmax(0,0.85fr)_minmax(0,1.15fr)]"
+                className="hairline grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-x-6 gap-y-1 py-5 sm:grid-cols-[3rem_minmax(0,0.9fr)_minmax(0,1.1fr)] sm:py-6"
               >
                 <span className="tnum font-mono text-[13px] text-muted" aria-hidden="true">{g.n}</span>
-                <div>
-                  <h3 className="t-h3">{g.stage}</h3>
-                  <p className="eyebrow mt-2 !text-[11px]">{g.who}</p>
-                </div>
-                <p className="t-body text-body">{g.checks}</p>
+                <h3 className="t-h3">{g.stage}</h3>
+                <p className="eyebrow col-start-2 !text-[11px] sm:col-start-3 sm:mt-0">{g.who}</p>
               </li>
             ))}
           </ol>

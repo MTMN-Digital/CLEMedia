@@ -63,8 +63,9 @@ export default function Team() {
                 Six stages, and who stands at each
               </h2>
               <p className="t-body mt-4 max-w-[46ch] text-body lg:mt-0 lg:text-right">
-                The faces at a stage are the people answerable for it. The same people are
-                listed below, each with the stages they hold marked against their name.
+                The faces at a stage are the people named as answerable for it; the two stages
+                the whole team takes carry a team mark instead. The same people are listed
+                below, each with the stages they hold marked against their name.
               </p>
             </Settle>
             <div className="mt-12 lg:mt-16" role="group" aria-labelledby="track-h">
@@ -89,13 +90,14 @@ export default function Team() {
             />
             <StageMarksLegend />
           </Settle>
-          <ul className="mt-6 max-w-[76rem]">
+          {/* Settle IS the list. A div between ul and li drops the list
+              semantics, so six people stop being announced as a list of six;
+              as the ul itself, Settle staggers the rows directly. */}
+          <Settle as="ul" className="mt-6 max-w-[76rem]">
             {TEAM.map((m) => (
-              <Settle key={m.name} as="div">
-                <MemberRow m={m} stages={STAGES} />
-              </Settle>
+              <MemberRow key={m.name} m={m} stages={STAGES} />
             ))}
-          </ul>
+          </Settle>
         </Container>
       </Section>
 

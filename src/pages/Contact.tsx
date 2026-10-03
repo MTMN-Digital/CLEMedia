@@ -37,17 +37,17 @@ const ROUTES: { id: RouteId; label: string; blurb: string }[] = [
   {
     id: "partnership",
     label: "Partnerships and distribution",
-    blurb: "Studios, broadcasters, distributors, licensing and investment. The route we watch most closely.",
+    blurb: "Studios, broadcasters, distributors, licensing and investment.",
   },
   {
     id: "educator",
     label: "Educators and case studies",
-    blurb: "Early years settings, schools and anyone interested in taking part in a case study.",
+    blurb: "Early years settings, schools and anyone using the activities with children.",
   },
   {
     id: "press",
     label: "Press",
-    blurb: "Interviews, podcast bookings, media requests and the press pack.",
+    blurb: "Interviews, podcast bookings and media requests.",
   },
   {
     id: "general",
@@ -58,17 +58,38 @@ const ROUTES: { id: RouteId; label: string; blurb: string }[] = [
 
 /* Names, roles and portraits as the client supplied them 2026-10-01. No route
    is assigned to a person here because nothing supplied says who reads what;
-   this is the company the message is addressed to, no more. Mansi has no
-   portrait, so she gets an initial on a well, the same treatment /team uses,
-   and never an empty frame. */
-const PEOPLE: { name: string; role: string; asset?: AssetKey }[] = [
+   this is the company the message is addressed to, no more.
+
+   Two groups, because the lead over the first one has to be true of everyone
+   under it. The five faces are the people named on the review stages of every
+   episode. Mansi and David sit in their own rows beneath with their remit
+   stated in /team's words: she coordinates production and is named on no
+   stage, he is an advisor and /team deliberately places him outside the six
+   stages.
+
+   Mansi has no portrait and gets no disc, no initial and no frame, which is
+   the /team rule: an empty circle on a page about named people reads as a
+   missing person. Her row is simply a different shape. */
+const FACES: { name: string; role: string; asset: AssetKey }[] = [
   { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor" },
   { name: "Alan Compton", role: "Creative Director", asset: "person.alan" },
   { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
   { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia" },
   { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie" },
-  { name: "Mansi", role: "Production Coordination" },
-  { name: "David Toth", role: "Strategic Advisor", asset: "person.david" },
+];
+
+const ALSO: { name: string; role: string; remit: string; asset?: AssetKey }[] = [
+  {
+    name: "Mansi",
+    role: "Production Coordination",
+    remit: "Holds the schedule together, so that a note raised at one review stage reaches the people who have to act on it.",
+  },
+  {
+    name: "David Toth",
+    role: "Strategic Advisor",
+    asset: "person.david",
+    remit: "Shapes platform strategy and the low-stimulation media framework that connects screen time to real-world creativity, nature and offline play.",
+  },
 ];
 
 /* What is true about the handling, read off api/contact.ts. Each line maps to
@@ -77,7 +98,7 @@ const HANDLING = [
   "The type you choose becomes the subject line, so a partnership enquiry is marked as one before anyone opens it.",
   "Your address is set as the reply-to on the notification, so a reply comes back to you directly.",
   "A hidden field catches automated submissions. There is no captcha to solve.",
-  "We use what you send here to reply to you, and nothing else.",
+  "We store what you send so we can reply to it, and use it for nothing else.",
 ];
 
 const EMPTY: Draft = { name: "", email: "", organisation: "", message: "" };
@@ -144,7 +165,7 @@ export default function Contact() {
         <Container width="wide">
           <Settle>
             <Kicker>Contact</Kicker>
-            <h1 className="t-h1 mt-5 max-w-[16ch]">Write to the people who make it</h1>
+            <h1 className="t-display mt-5 max-w-[14ch]">Write to the people who make it</h1>
             <Lead className="mt-6 max-w-[52ch]">
               Studios, distributors, investors, educators and press. Choose what this is about,
               and the message arrives marked as that, with the company that makes the series.
@@ -303,39 +324,57 @@ export default function Contact() {
       </Section>
 
       {/* ═══ 3. THE OTHER SIDE OF THE FORM.
-          Seven people in one row, portraits where they exist. The whole site
-          argues "made by named people", so the page where a stranger writes
-          to the company should show them. ═══ */}
+          The five people named on every episode's review stages in one row of
+          faces, then the two who are on the team in a different capacity, each
+          in a hairline row with their remit. The whole site argues "made by
+          named people", so the page where a stranger writes to the company
+          should show them, and the lead over each group has to be true of
+          everyone under it. ═══ */}
       <Section className="!pt-0" labelledBy="people-h">
         <Container width="wide">
           <div className="hairline pt-14 sm:pt-16">
             <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
               <h2 id="people-h" className="t-h2 max-w-[18ch]">Who is on the other side</h2>
               <Lead className="lg:pb-1">
-                The people whose names go on every episode, and whose company you are writing to.
+                The company you are writing to. First, the five people named on the review stages
+                of every episode.
               </Lead>
             </Settle>
 
             <Settle
               as="ul"
-              className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-4 lg:grid-cols-7"
+              className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-5"
             >
-              {PEOPLE.map((p) => (
+              {FACES.map((p) => (
                 <li key={p.name}>
                   <div className="w-[clamp(72px,100%,124px)]">
-                    {p.asset ? (
-                      <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="124px" />
-                    ) : (
-                      <div
-                        aria-hidden="true"
-                        className="well flex aspect-square items-center justify-center rounded-full font-display text-[40px] text-body"
-                      >
-                        {p.name.charAt(0)}
-                      </div>
-                    )}
+                    <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="124px" />
                   </div>
                   <h3 className="mt-4 text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
-                  <p className="eyebrow mt-1.5 !text-[10.5px] leading-snug">{p.role}</p>
+                  <p className="eyebrow mt-1.5 !text-[11px] leading-snug">{p.role}</p>
+                </li>
+              ))}
+            </Settle>
+
+            <Settle as="ul" className="mt-12">
+              {ALSO.map((p) => (
+                <li
+                  key={p.name}
+                  className="hairline grid gap-y-3 py-7 sm:grid-cols-[72px_minmax(0,16rem)_minmax(0,1fr)] sm:items-start sm:gap-x-8"
+                >
+                  {/* No portrait, no disc: the identity moves into the
+                      portrait's place and the remit stays on its own axis,
+                      the /team rule. */}
+                  {p.asset && (
+                    <div className="w-[72px]">
+                      <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="72px" />
+                    </div>
+                  )}
+                  <div className={p.asset ? "" : "sm:col-span-2"}>
+                    <h3 className="text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
+                    <p className="eyebrow mt-1.5 !text-[11px] leading-snug">{p.role}</p>
+                  </div>
+                  <p className="t-body max-w-[58ch] text-body">{p.remit}</p>
                 </li>
               ))}
             </Settle>
@@ -357,8 +396,8 @@ export default function Contact() {
             <div>
               <h2 id="show-h" className="t-h2 max-w-[16ch]">Looking for the show itself?</h2>
               <p className="t-lead mt-6 max-w-[46ch] opacity-85">
-                Episodes, characters and activities for children live on the show's own site. This
-                site is the company behind it.
+                Episodes, characters and activities from <em>The Pawsitive Pugs &amp; Pals</em>®
+                live on the show's own site. This site is the company behind it.
               </p>
               <div className="mt-9">
                 <Button href={SITE.showUrl} variant="quiet" className="!border-raised/35 !text-raised hover:!border-raised/70">

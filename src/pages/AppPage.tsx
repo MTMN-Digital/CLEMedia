@@ -78,7 +78,7 @@ const OFF_SCREEN = [
   },
   {
     title: "Grounded in the learning",
-    body: "Every activity maps back to the early years objective behind its episode, reviewed by the same advisors who shape the series.",
+    body: "Every activity maps back to the early years objective behind its episode, reviewed by the same people who review the episodes.",
   },
 ];
 
@@ -158,7 +158,7 @@ function Commitments({ heading, items }: { heading: string; items: { title: stri
       <ul>
         {items.map((it) => (
           <li key={it.title} className="hairline py-6">
-            <p className="t-h3 font-bold text-ink">{it.title}</p>
+            <h3 className="t-h3">{it.title}</h3>
             <p className="t-body mt-2.5 text-body">{it.body}</p>
           </li>
         ))}
@@ -295,8 +295,8 @@ export default function AppPage() {
               <ul className="mt-7 grid gap-5 sm:grid-cols-3">
                 {REVIEWERS.map((p) => (
                   <li key={p.name}>
-                    <p className="t-sm font-bold text-ink">{p.name}</p>
-                    <p className="eyebrow mt-1 !text-[10px]">{p.role}</p>
+                    <h3 className="t-sm">{p.name}</h3>
+                    <p className="eyebrow mt-1 !text-[11px]">{p.role}</p>
                     <p className="t-sm mt-2 leading-relaxed text-body">{p.line}</p>
                   </li>
                 ))}

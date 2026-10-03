@@ -233,3 +233,28 @@ Still wanted, in order of what it would change:
 
 `story.lead` is now closed rather than pending: the Story page opens on a byline
 with Conor's portrait instead of a 1680x720 band that never existed.
+
+## From the sub-page rebuild, 2026-10-03
+
+Five pages (Story, Team, Responsible AI, App, Contact) were rebuilt and each
+one met the same wall: the design is finished, the fact behind it is not. None
+of these gaps is guessed at on the live site. Every one of them is a place
+where a section changed shape rather than show an empty frame.
+
+| What | Where it lands | Why it matters |
+|---|---|---|
+| **Mansi: a photograph and two lines of biography** | `/team`, `/contact`, `person.mansi` | She is the only person in the review sequence with no face. Both pages now give her a text row rather than an empty circle, which works, but she reads as less present than the people beside her |
+| **Who reads each enquiry route** | `/contact` | The page shows the whole named team and assigns nobody to a route. Partnership, educator, press and general all land in the same place as far as a sender can tell |
+| **A public contact address** | `/contact`, footer | No email, phone, postal address or office hours exist anywhere on the site. The form is the only way in, which is unusual for a company asking distributors to take it seriously |
+| **Whether a response time may be stated** | `/contact` | The page deliberately promises nothing. If the company is willing to commit to one, it is the single strongest thing that page could add |
+| **App store links** | `/app` | `STORE_LINKS` are null, and the page says "not yet listed" rather than showing a dead badge |
+| **Confirmation of the PupsPlayer plan** | `/app` | The six commitments were carried over from the earlier draft and drawn into the coded product render. Conor to confirm they are still the plan, in particular "no advertising to children" and "no surprise purchases" |
+| **Launch wording** | `/app` | The page says "In development" with no date. Confirm whether a target window may be published |
+| **Where in the sequence the AI tools run** | `/ethical-ai` | The production line draws them between script and direction (02) and educational review (03), which matches the previous diagram and "in final production". Worth one sentence from Conor to be certain, because the drawing makes the claim precisely |
+| **A real sent-back episode** | `/`, `/ethical-ai` | Still the single most valuable thing this client could supply. The dashed return path on the production line is drawn and waiting for it: which episode, what was caught, by whom, what changed, how long the release moved |
+| **A press pack** | `/contact` | The old page offered one to journalists. None exists, so the offer has been removed rather than left standing |
+
+Closed since the last pass: the PupsPlayer screenshots (`app.screen1-3`) are no
+longer blocking, because the product is now drawn in code and captioned as the
+plan rather than a screenshot. Real screens replace the render whenever a build
+exists.

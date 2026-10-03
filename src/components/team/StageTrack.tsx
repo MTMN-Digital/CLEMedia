@@ -1,5 +1,6 @@
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
+import { IconHands } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
 import type { Stage } from "./people";
 
@@ -14,6 +15,12 @@ import type { Stage } from "./people";
    wears a ring in the band's own colour so it breaks the rule rather than
    sitting in front of it.
 
+   Faces appear only where the company's account names a person. The two
+   stages it gives to "the production team" and "the team" carry one generic
+   team mark in the same slot, because drawing five portraits there would
+   assert who does that check, which the account does not say. The
+   per-person marks in the ledger carry the whole-team state instead.
+
    Below 1024px the track turns vertical and each stage becomes a row: faces
    on the left, the stage on the right, a rule between stages.
 
@@ -22,11 +29,25 @@ import type { Stage } from "./people";
    which clears AA on this fill.
    ========================================================================== */
 
+/** The slot's content for a stage the whole team takes: no faces, one mark. */
+function TeamMark() {
+  return (
+    <div className="flex h-[72px] items-center">
+      <span
+        aria-hidden="true"
+        className="flex h-[72px] w-[72px] items-center justify-center rounded-full border border-body text-body ring-4 ring-sunken"
+      >
+        <IconHands size={30} />
+      </span>
+    </div>
+  );
+}
+
 function Faces({ keys }: { keys: AssetKey[] }) {
+  if (keys.length === 0) return <TeamMark />;
   const single = keys.length === 1;
-  const pair = keys.length === 2;
-  const size = single ? "w-[72px]" : pair ? "w-16" : "w-11";
-  const overlap = pair ? "-ml-4" : "-ml-3.5";
+  const size = single ? "w-[72px]" : "w-16";
+  const overlap = "-ml-4";
   return (
     <div className="flex h-[72px] items-center">
       {keys.map((k, i) => (
@@ -58,16 +79,7 @@ export function StageTrack({ stages }: { stages: Stage[] }) {
             className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-1 border-t border-rule py-6 first:border-t-0 lg:block lg:border-t-0 lg:py-0"
           >
             <Faces keys={s.faces} />
-            {/* A single face or a pair sits beside its text at every width. The
-                five-face cluster of the team stages is too wide for a phone to
-                share a row with, so below 640px the text drops under it. */}
-            <div
-              className={
-                s.shared
-                  ? "col-span-2 sm:col-span-1 sm:col-start-2 sm:row-start-1 lg:mt-6"
-                  : "lg:mt-6"
-              }
-            >
+            <div className="lg:mt-6">
               <span className="tnum font-mono text-[12px] tracking-[0.12em] text-body" aria-hidden="true">
                 {s.n}
               </span>

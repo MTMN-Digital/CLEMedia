@@ -3,10 +3,14 @@ import type { Stage } from "./people";
 /* ============================================================================
    Six marks against a name: the review sequence seen from the person's side.
 
-   Solid: the company's account names this person at that stage. Outlined: a
-   stage the whole team takes. Plain: not at this stage. The adviser renders
-   none of these, which is the visible difference between a core member and an
-   adviser before any heading is read.
+   Filled: the company's account names this person at that stage. Solid
+   border: a stage the whole team takes. Dashed border: not at this stage. The
+   adviser renders none of these, which is the visible difference between a
+   core member and an adviser before any heading is read.
+
+   The state lives on the border, never on the digit's opacity: the digit is
+   the only visual label for which stage a mark refers to, so it stays at AA
+   (muted ink on the paper ground is 5.9:1) in every state.
 
    Numbers are aria-hidden and the state is spoken instead, so a screen reader
    hears "Stage 3, Educational review, named here" rather than six digits.
@@ -16,8 +20,8 @@ type State = "named" | "team" | "none";
 
 const LOOK: Record<State, string> = {
   named: "bg-red-deep text-raised",
-  team: "border border-rule text-body",
-  none: "text-body opacity-35",
+  team: "border border-body text-body",
+  none: "border border-dashed border-rule text-muted",
 };
 
 const SPOKEN: Record<State, string> = {
@@ -74,6 +78,10 @@ export function StageMarksLegend() {
       <div className="flex items-center gap-2.5">
         <dt><Mark n={5} state="team" /></dt>
         <dd>A stage the whole team takes</dd>
+      </div>
+      <div className="flex items-center gap-2.5">
+        <dt><Mark n={2} state="none" /></dt>
+        <dd>Not at this stage</dd>
       </div>
     </dl>
   );

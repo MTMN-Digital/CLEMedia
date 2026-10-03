@@ -45,7 +45,7 @@ const LEDGER: { tag: string; line: string }[] = [
   { tag: "Mature student", line: "Back to education, choosing again from the beginning." },
   { tag: "QQI Level 6", line: "Marketing, with distinction." },
   { tag: "MTU", line: "A Bachelor of Business in Marketing at Munster Technological University, now being finished." },
-  { tag: "Student Inc.", line: "The programme at MTU the company went through." },
+  { tag: "Student Inc.", line: "The programme at MTU I went through." },
   { tag: "A father", line: "The question stops being interesting and becomes urgent." },
   { tag: "CLÉ Family Media", line: "Founder and CEO." },
 ];
@@ -83,7 +83,7 @@ function Spread({
 }) {
   return (
     <Settle className={`grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-16 xl:grid-cols-[17rem_minmax(0,1fr)] xl:gap-24 ${className}`}>
-      <aside className="lg:sticky lg:top-28 lg:self-start">{margin}</aside>
+      <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
       <div className="max-w-[62ch] space-y-6 text-[17px] leading-[1.72] text-body">{children}</div>
     </Settle>
   );
@@ -375,7 +375,7 @@ export default function Story() {
               episode is the beginning of the thing, not the whole of it.
             </p>
             <p>
-              In practice, most families find us free on YouTube, which is simply where
+              In practice, families find us free on YouTube, which is simply where
               discovery happens for a series like ours. The show's own site is where the
               episodes and the family activities properly live, and we are building a product
               experience to support ad-free viewing and the offline activities together. That
