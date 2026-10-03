@@ -200,11 +200,22 @@ function Lines({ g }: { g: Geometry }) {
     ? `M${tool.cx} ${tool.top - 1} l-5 -8 h10 z`
     : `M${tool.left - 1} ${tool.cy} l-8 -5 v10 z`;
 
-  /* Hidden only while Settle has ARMED the block, released when it is IN. No
+  /* The return is dashed and STAYS dashed once drawn: the dash is what tells
+     it apart from the solid rail, and the caption promises it. So the draw-on
+     is not a dashoffset trick (that spends the dash array on the animation and
+     leaves a solid line) and not a mask (Chrome clips a tall mask raster at
+     narrow widths). It is a clip-path wipe travelling from the gate towards
+     the tools: right to left across the row, bottom to top down the column.
+     The 4px outset keeps the stroke's own width inside the clip box.
+
+     Hidden only while Settle has ARMED the block, released when it is IN. No
      JS, reduced motion and crawlers never see .is-armed, so they get the
      finished drawing with no transition to wait for. */
-  const draw =
-    "transition-[stroke-dashoffset] delay-[450ms] duration-[1400ms] ease-[var(--ease-out)] [.is-armed_&]:[stroke-dashoffset:1] [.is-armed.is-in_&]:[stroke-dashoffset:0]";
+  const draw = `transition-[clip-path] delay-[450ms] duration-[1400ms] ease-[var(--ease-out)] [.is-armed.is-in_&]:[clip-path:inset(-4px)] ${
+    g.horizontal
+      ? "[.is-armed_&]:[clip-path:inset(-4px_-4px_-4px_100%)]"
+      : "[.is-armed_&]:[clip-path:inset(100%_-4px_-4px_-4px)]"
+  }`;
   const fade =
     "transition-opacity delay-[1750ms] duration-500 [.is-armed_&]:opacity-0 [.is-armed.is-in_&]:opacity-100";
 
@@ -216,8 +227,8 @@ function Lines({ g }: { g: Geometry }) {
       {/* Frame ticks under the rail: a 1 by 7 dash every 12px. */}
       <line {...rail} stroke="var(--color-body)" strokeOpacity="0.22" strokeWidth="7" strokeDasharray="1 11" />
       <line {...rail} stroke="var(--color-body)" strokeOpacity="0.55" strokeWidth="1.5" />
-      <path d={back} pathLength={1} fill="none" stroke="var(--color-red)" strokeWidth="1.75"
-        strokeLinecap="round" strokeDasharray="1" className={draw} />
+      <path d={back} fill="none" stroke="var(--color-red)" strokeWidth="1.75"
+        strokeLinecap="round" strokeDasharray="6 5" className={draw} />
       <path d={head} fill="var(--color-red)" className={fade} />
     </svg>
   );
