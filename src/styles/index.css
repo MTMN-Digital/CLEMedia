@@ -151,12 +151,18 @@ body {
    A single axis of fractal noise, which is paper tooth. NOT the crossed warp
    and weft that reads as cloth: wool on this brand is an object, not a
    surface treatment. */
+/* MOUNTED 2026-10-03. This class was written when the system was ported and
+   then never put on an element: no component rendered it and index.html has
+   only the root div, so the site shipped with no texture at all. That is a
+   large part of why it read as flat. It now sits in Layout, above the content
+   rather than under it, so the tooth falls across photographs and cards too,
+   which is what makes a page feel printed rather than drawn. */
 .grain {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 40;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.22;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.42'/%3E%3C/svg%3E");
 }
@@ -540,4 +546,189 @@ body > * { position: relative; z-index: 1; }
     rgba(246, 240, 226, 0.26) 0 1px,
     transparent 1px 52px
   );
+}
+
+/* ---------------------------------------------------------------------------
+   The held hero.
+
+   The whole mechanism is four custom properties written by HeroStage once a
+   frame: --p for the overall timeline, --turn for the object's move, --rise
+   for the garden behind it. Every transform below is a calc off those, so the
+   resting state is what renders when JS never runs, and the reduced-motion
+   block at the bottom throws the hold away entirely.
+--------------------------------------------------------------------------- */
+.hero-pin { --p: 0; --turn: 0; --rise: 0; position: relative; }
+
+.hero-stage {
+  position: sticky;
+  top: 0;
+  /* svh, not vh: on a phone the browser chrome makes vh taller than what the
+     reader can actually see. The header height comes off the top because the
+     header is sticky but still occupies flow. HeroStage measures it. */
+  height: calc(100svh - var(--header-h, 0px));
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  /* The depth of the room. Lower numbers exaggerate the turn; this is about
+     two and a half object widths back, which is a lens that does not distort. */
+  perspective: 1500px;
+  perspective-origin: 50% 46%;
+}
+
+/* A soft key light from the upper left, warming as the object turns into it. */
+.hero-key {
+  position: absolute;
+  inset: -20% -10% auto -30%;
+  height: 120%;
+  pointer-events: none;
+  background: radial-gradient(
+    46% 54% at 22% 18%,
+    rgba(255, 249, 232, calc(0.5 + var(--turn) * 0.26)),
+    rgba(255, 249, 232, 0) 70%
+  );
+}
+
+/* The floor the object stands over. */
+.hero-floor {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(154, 126, 92, 0), rgba(154, 126, 92, 0.16));
+}
+
+.hero-inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100% - 2.5rem, 97.5rem);
+  transform-style: preserve-3d;
+}
+
+/* The object and its shadow travel together. */
+.hero-object {
+  position: relative;
+  grid-area: 1 / 1;
+  width: clamp(230px, 40vw, 680px);
+  transform-style: preserve-3d;
+  /* Sits high enough that the strings run off the top of the frame rather
+     than beginning in mid air, then walks left and toward the reader. */
+  transform:
+    translate3d(calc(var(--turn) * -24%), calc(-28% + var(--turn) * -1%), calc(var(--turn) * 40px));
+  z-index: 2;
+}
+
+.hero-mark {
+  position: relative;
+  transform-style: preserve-3d;
+  /* The turn itself: the right edge goes back, the left comes forward. */
+  transform:
+    rotateY(calc(var(--turn) * -26deg))
+    rotateZ(calc(var(--turn) * -3.2deg))
+    scale(calc(1 + var(--turn) * 0.06));
+  filter:
+    drop-shadow(0 3px 2px rgba(74, 53, 42, 0.2))
+    drop-shadow(0 calc(18px + var(--turn) * 16px) calc(26px + var(--turn) * 18px) rgba(74, 53, 42, 0.26));
+}
+
+/* The light crossing the face.
+
+   Masked with the mark's own PNG, because without that this is a rectangle of
+   light sitting over a cut-out object, and a rectangle is exactly what the
+   first build of it looked like: a pale panel hanging behind the strings. The
+   alpha of the file is the shape of the thing, so it is also the shape of the
+   light on it. */
+.hero-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: url("/brand/cle-mark.png");
+  mask-image: url("/brand/cle-mark.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: calc(var(--turn) * 0.45);
+  background: linear-gradient(
+    102deg,
+    rgba(255, 252, 240, 0) 32%,
+    rgba(255, 252, 240, 0.5) 50%,
+    rgba(255, 252, 240, 0) 68%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* The cast shadow on the wall behind: swings right and lengthens as the object
+   turns away from the key. */
+.hero-cast {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 4%;
+  height: 30%;
+  pointer-events: none;
+  transform:
+    translate3d(calc(var(--turn) * 16%), calc(var(--turn) * 6%), -60px)
+    scaleX(calc(1 + var(--turn) * 0.22));
+  filter: blur(calc(26px + var(--turn) * 14px));
+  opacity: calc(0.34 - var(--turn) * 0.1);
+  background: radial-gradient(58% 50% at 50% 50%, rgba(74, 53, 42, 0.55), rgba(74, 53, 42, 0) 72%);
+}
+
+/* The words arrive in the space the object leaves. */
+.hero-words {
+  grid-area: 1 / 1;
+  justify-self: end;
+  width: min(46ch, 100%);
+  text-align: left;
+  opacity: var(--turn);
+  transform: translate3d(calc((1 - var(--turn)) * 2.5rem), 0, 0);
+  pointer-events: none;
+}
+.hero-words :where(a) { pointer-events: auto; }
+
+.hero-cue {
+  position: absolute;
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  opacity: calc(1 - var(--p) * 3);
+}
+.hero-cue-rule { display: block; width: 2.5rem; height: 1px; background: var(--color-rule); }
+
+/* Below the lg breakpoint the object and the words cannot share a row, so the
+   stage stops being a stage: no hold, no turn, a plain stacked hero. */
+@media (max-width: 1023px) {
+  .hero-pin { height: auto !important; }
+  .hero-stage { position: static; height: auto; padding: 1rem 0 3rem; perspective: none; }
+  .hero-inner { display: block; }
+  .hero-object { width: clamp(230px, 54vw, 420px); margin: 0 auto; transform: none; }
+  .hero-mark { transform: none; }
+  .hero-words {
+    width: auto;
+    margin-top: 2.5rem;
+    text-align: center;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-words :where(.t-lead) { margin-inline: auto; }
+  .hero-words :where(div) { justify-content: center; }
+  .hero-cast, .hero-sheen, .hero-cue, .hero-key { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-pin { height: auto !important; }
+  .hero-stage { position: static; height: auto; padding: 1rem 0 3rem; }
+  .hero-object { transform: none; }
+  .hero-mark { transform: none; }
+  .hero-words { opacity: 1; transform: none; }
+  .hero-sheen, .hero-cue { display: none; }
 }

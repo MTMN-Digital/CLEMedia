@@ -191,6 +191,8 @@ export function Layout() {
 
   return (
     <SmoothScroll>
+    {/* The paper tooth. Fixed, multiply, above everything and inert. */}
+    <div className="grain" aria-hidden="true" />
     <div className="flex min-h-screen flex-col">
       <a
         href="#main"

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
-import { Drift } from "@/components/Drift";
+import { HeroStage } from "@/components/home/HeroStage";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
@@ -11,8 +11,7 @@ import {
   Button, Card, Container, Kicker, Lead, Section,
   SectionHeading, TextLink,
 } from "@/components/ui";
-import { IconArrow, IconExternal, IconMail } from "@/components/icons";
-import { SITE } from "@/lib/site";
+import { IconArrow, IconMail } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
@@ -129,81 +128,23 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* ═══ 1. HERO. The mark is the hero, centre stage, hanging on strings
-          that run up off the top of the frame so the header is what it hangs
-          from. It drifts against the scroll, because an object on a string is
-          the one thing a reader expects to move when the ground under it does.
+      {/* ═══ 1. HERO. See HeroStage: the mark is held, turned and lit as a
+          physical object while the page waits, then the garden takes over. ═══ */}
+      <HeroStage />
 
-          Under it, the garden runs edge to edge. The earlier version boxed the
-          garden in a card in a 1248px column, which on a wide screen left a
-          third of the viewport empty on each side. ═══ */}
-      <Section className="!pt-0 !pb-0">
-        <Container width="wide">
-          <div className="flex flex-col items-center text-center">
-            {/* The mark is the whole hero, so it is sized like a thing in a
-                room rather than like a logo in a header: up to 620px, which on
-                a 1890px screen is a third of the width.
-
-                Three things together are what make it read as physically
-                present rather than pasted on. It lags the scroll. It grows a
-                couple of percent as it lags, which is what an object nearer
-                the eye than the ground behind it does. And it carries two
-                shadows at different distances: a tight one for the wool's own
-                relief, and a wide soft one for the gap between it and the
-                clay. A single mid-distance drop shadow is the tell that an
-                element is floating on a page instead of hanging in a space. */}
-            <Drift
-              rate={0.07}
-              max={48}
-              zoom={0.06}
-              className="relative w-[clamp(250px,34vw,540px)]"
-            >
-              {/* The cast shadow, behind and below. Separate from the filter
-                  because a drop-shadow follows the alpha of the object exactly,
-                  and a real one falling on a wall three feet back does not. */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-[8%] bottom-[6%] -z-10 h-[34%] rounded-[50%] blur-2xl"
-                style={{ background: "radial-gradient(60% 50% at 50% 50%, rgba(74,53,42,0.3), rgba(74,53,42,0) 72%)" }}
-              />
-              <Figure
-                asset="brand.cle"
-                priority
-                rounded="rounded-none"
-                className="[filter:drop-shadow(0_3px_2px_rgba(74,53,42,0.22))_drop-shadow(0_26px_34px_rgba(74,53,42,0.26))]"
-                sizes="(min-width: 1280px) 540px, 36vw"
-              />
-            </Drift>
-
-            <Settle className="flex flex-col items-center">
-              <h1 className="t-display mt-9 max-w-[15ch]">Children's media made by people</h1>
-              <Lead className="mt-6 max-w-[44ch] text-center">
-                Calm stories for young children, and the activities that take them off the screen
-                afterwards.
-              </Lead>
-              <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-                <Button to="/ethical-ai">How we make it<IconArrow size={16} /></Button>
-                <Button href={SITE.showUrl} variant="quiet">Visit the show<IconExternal size={15} /></Button>
-              </div>
-            </Settle>
-          </div>
-        </Container>
-
-        {/* Edge to edge: the band is the horizon the rest of the page sits
-            under. It does NOT drift. Two things moving against each other in
-            one viewport is a scroll effect; one thing moving against a fixed
-            ground is an object. The mark is the object. */}
-        <div className="mt-16 h-[clamp(260px,44vw,620px)] overflow-hidden sm:mt-20">
-          <Figure
-            asset="home.hero"
-            fill
-            rounded="rounded-none"
-            position="center 46%"
-            priority
-            sizes="100vw"
-          />
-        </div>
-      </Section>
+      {/* The garden, edge to edge, as the horizon the rest of the page sits
+          under. It does not drift: one thing moving against a fixed ground is
+          an object, two things moving against each other is a scroll effect. */}
+      <div className="h-[clamp(260px,44vw,620px)] overflow-hidden">
+        <Figure
+          asset="home.hero"
+          fill
+          rounded="rounded-none"
+          position="center 46%"
+          priority
+          sizes="100vw"
+        />
+      </div>
 
       {/* ═══ 2. THESIS ═══ */}
       <Section labelledBy="thesis-h">
