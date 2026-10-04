@@ -631,6 +631,10 @@ body > * { position: relative; z-index: 1; }
 
 .hero-mark {
   position: relative;
+  /* A `filter` on this element forces its used transform-style to flat, which
+     silently collapsed every layer's translateZ and is why the CSS hero showed
+     no depth at all in Chrome. The shadow each layer needs is already on the
+     layer itself, so the parent carries none. */
   transform-style: preserve-3d;
   /* The turn: the RIGHT edge goes away from the reader, the left comes
      forward. That is a POSITIVE rotateY. The first build had it negative, so
@@ -643,9 +647,6 @@ body > * { position: relative; z-index: 1; }
     rotateY(calc(var(--turn) * 14deg))
     rotateZ(calc(var(--turn) * -1.6deg))
     scale(calc(1 + var(--turn) * 0.04));
-  filter:
-    drop-shadow(0 3px 2px rgba(74, 53, 42, 0.2))
-    drop-shadow(0 calc(18px + var(--turn) * 16px) calc(26px + var(--turn) * 18px) rgba(74, 53, 42, 0.26));
 }
 
 /* The five objects the mark is cut into. They share one square box and are
@@ -761,6 +762,31 @@ body > * { position: relative; z-index: 1; }
   opacity: calc(1 - var(--p) * 3);
 }
 .hero-cue-rule { display: block; width: 2.5rem; height: 1px; background: var(--color-rule); }
+
+/* The WebGL mark. HeroMark3D mounts a canvas over the four CSS layers, in
+   the same square, bleeding 15% past it so the turned object is never
+   clipped. Once a frame is drawn HeroStage marks the stage .is-3d: the canvas
+   fades in, the flat layers fade out (opacity, not display, so the image that
+   carries the accessible name stays in the tree), and the rotation moves off
+   the CSS and into the scene. Context loss reverses it. */
+.hero-3d { position: relative; }
+.hero-3d-canvas {
+  position: absolute;
+  top: -15%;
+  left: -15%;
+  width: 130%;
+  height: 130%;
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+.hero-layers { transition: opacity 0.5s var(--ease-out); }
+.hero-stage.is-3d .hero-3d-canvas { opacity: 1; }
+.hero-stage.is-3d .hero-layers { opacity: 0; }
+.hero-stage.is-3d .hero-layer { filter: none; }
+.hero-stage.is-3d .hero-mark { transform: scale(calc(1 + var(--turn) * 0.04)); }
+.hero-stage.is-3d .hero-sheen { display: none; }
 
 /* Below the lg breakpoint the object and the words cannot share a row, so the
    stage stops being a stage: no hold, no turn, a plain stacked hero. */

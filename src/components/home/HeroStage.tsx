@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { HeroMark } from "@/components/home/HeroMark";
+import { useCallback, useEffect, useRef } from "react";
+import { HeroMark3D } from "@/components/home/HeroMark3D";
 import { Button } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
@@ -34,6 +34,15 @@ import { SITE } from "@/lib/site";
    bar is one screen of travel, the content under it is not hidden behind the
    animation, and `prefers-reduced-motion` drops the whole mechanism and renders
    a plain, finished hero with no hold at all.
+
+   THE WEBGL PATH. On a wide screen with WebGL and no reduced-motion
+   preference, HeroMark3D fades a canvas in over the layered mark in which
+   the same four objects are relief surfaces under a real lamp, so the turn
+   relights them (see hero3d/). It takes the same eased --turn through
+   `subscribe`, and reports `onLive` so this stage can hand the rotation over
+   to the canvas: the `.is-3d` class on the stage drops the CSS rotateY, the
+   fake sheen and the flat layers' shadows. Everything else, the walk left,
+   the words, the garden, the cue, is untouched by which path is drawing.
    ========================================================================== */
 
 /** Length of the hold, in viewport heights, on top of the sticky screen. */
@@ -52,6 +61,21 @@ function beat(p: number, from: number, to: number) {
 export function HeroStage() {
   const section = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
+
+  /* The eased turn, for the WebGL mark. One listener, no state: the value
+     changes every scrolled frame and must never re-render the hero. */
+  const turnListener = useRef<((turn: number) => void) | null>(null);
+  const lastTurn = useRef(0);
+  const subscribe = useCallback((fn: (turn: number) => void) => {
+    turnListener.current = fn;
+    fn(lastTurn.current);
+    return () => {
+      if (turnListener.current === fn) turnListener.current = null;
+    };
+  }, []);
+  const onLive = useCallback((live: boolean) => {
+    stage.current?.classList.toggle("is-3d", live);
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -84,6 +108,9 @@ export function HeroStage() {
       el.style.setProperty("--p", p.toFixed(4));
       el.style.setProperty("--turn", turn.toFixed(4));
       el.style.setProperty("--rise", rise.toFixed(4));
+
+      lastTurn.current = turn;
+      turnListener.current?.(turn);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(apply);
@@ -118,8 +145,9 @@ export function HeroStage() {
                 onto a wall several feet behind it does not keep its shape. */}
             <span aria-hidden="true" className="hero-cast" />
             <div className="hero-mark">
-              <HeroMark />
-              {/* The light moving across the face as it turns. */}
+              <HeroMark3D subscribe={subscribe} onLive={onLive} />
+              {/* The light moving across the face as it turns, for the CSS
+                  path only; the canvas lights the wool itself. */}
               <span aria-hidden="true" className="hero-sheen" />
             </div>
           </div>

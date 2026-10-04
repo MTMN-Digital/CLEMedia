@@ -12,3 +12,6 @@ dist-preview
 .playwright-mcp/
 *.tsbuildinfo
 .env*
+
+# Scratch output from the depth-map checker and other local proofs.
+_scratch/
