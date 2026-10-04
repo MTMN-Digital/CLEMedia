@@ -24,6 +24,23 @@
    the single strongest link between the two sites. One weight, no italic, so it
    is used BIG only: hierarchy below 40px comes from Hanken, never from a
    heavier Calistoga, because there is not one. */
+/* Fraunces, the hero face, chosen 2026-10-04 from a specimen of seven.
+
+   Variable, with a real optical-size axis, which is why it is here: it is
+   drawn to get sharper as it gets bigger, and the hero sets it at 150px. It
+   does NOT replace Calistoga, which stays the display face for every heading
+   below the hero. Self-hosted from the studio's own copy: the Google CDN sends
+   a visitor's IP to Google on first paint, which is not a thing to do on a
+   site about children. */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces-latin.woff2") format("woff2");
+  font-weight: 100 900; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @font-face {
   font-family: "Calistoga";
   src: url("/fonts/calistoga-latin.woff2") format("woff2");
@@ -113,6 +130,7 @@
   --color-hairline: rgba(74, 53, 42, 0.13); /* = rule */
 
   --font-display: "Calistoga", Georgia, serif;
+  --font-hero:    "Fraunces", "Calistoga", Georgia, serif;
   --font-sans:    "Hanken Grotesk", system-ui, sans-serif;
   --font-mono:    "Spline Sans Mono Variable", ui-monospace, Menlo, monospace;
 
@@ -620,12 +638,19 @@ body > * { position: relative; z-index: 1; }
      turn brings both to the middle, one going left and one going right. */
   align-self: start;
   margin-top: clamp(0.25rem, 2vh, 1.5rem);
-  width: clamp(200px, 26vw, 400px);
+  /* Large enough to be the subject of the page rather than a logo on it. At
+     1440 this is 740px, more than half the width of the frame. */
+  width: clamp(230px, 52vw, 780px);
+  z-index: 2;
+  /* The mark is scenery and it sits on top of the words, so it must not take
+     the pointer: without this the canvas covers the buttons underneath it and
+     the hero's only two links stop working at full turn. */
+  pointer-events: none;
   transform-style: preserve-3d;
   /* Sits high enough that the strings run off the top of the frame rather
      than beginning in mid air, then walks left and toward the reader. */
   transform:
-    translate3d(calc(var(--turn) * -26%), calc(var(--turn) * 15vh), calc(var(--turn) * 40px));
+    translate3d(calc(var(--turn) * -22%), calc(-7vh + var(--turn) * -6vh), calc(var(--turn) * 40px));
   z-index: 2;
 }
 
@@ -731,19 +756,40 @@ body > * { position: relative; z-index: 1; }
    which is what takes it from centred to hard right in this container. */
 .hero-words {
   grid-area: 1 / 1;
-  justify-self: end;
+  justify-self: stretch;
   align-self: end;
-  margin-bottom: clamp(1.25rem, 4vh, 2.75rem);
-  width: min(44ch, 100%);
+  margin-bottom: clamp(1.25rem, 5vh, 3.5rem);
+  width: 100%;
   text-align: left;
-  opacity: calc(0.82 + var(--turn) * 0.18);
-  transform: translate3d(
-    calc((1 - var(--turn)) * -106%),
-    calc(var(--turn) * -13vh),
-    0
-  );
+  /* Behind the object. The mark's own alpha does the masking. */
+  z-index: 1;
+  transform: translate3d(0, calc(var(--turn) * -4vh), 0);
   pointer-events: none;
 }
+.hero-words :where(a) { pointer-events: auto; }
+
+/* The headline. Fraunces at poster scale: one line across the full frame, with
+   the mark standing over the middle of it. Optical sizing is on, which is the
+   whole reason this face was chosen over the display face used elsewhere. */
+.hero-head {
+  /* Lifted so the line crosses the LETTERS, not the felted wordmark. Crossing
+     the wordmark buried two words in another two words; crossing the letters
+     means the type passes through the gaps between three hanging objects,
+     which is the effect, and it stays readable. */
+  transform: translateY(-13vh);
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 144, "SOFT" 20, "WONK" 1;
+  font-size: clamp(2.6rem, 8.4vw, 8.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--color-ink);
+  max-width: 20ch;
+}
+/* The word the mark stands on at rest, so it reads as deliberate when the
+   lion uncovers it. */
+.hero-head-2 { color: var(--color-red-deep); }
 .hero-words :where(a) { pointer-events: auto; }
 
 .hero-cue {

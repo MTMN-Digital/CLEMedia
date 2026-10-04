@@ -152,9 +152,19 @@ export function HeroStage() {
             </div>
           </div>
 
+          {/* The headline sits BEHIND the mark, not beside it.
+
+              The canvas has an alpha channel, so the wool occludes the words
+              per pixel: at rest the lion stands over "Play." and as the group
+              turns and walks left it uncovers it. That is the hero being one
+              object rather than a picture next to a paragraph, and it costs
+              nothing, because the occlusion is just the alpha that was always
+              there. The reading order in the DOM is still headline first. */}
           <div className="hero-words">
-            <h1 className="t-display max-w-[14ch]">Children's media made by people</h1>
-            <p className="t-lead mt-6 max-w-[42ch] text-body">
+            <h1 className="hero-head">
+              Watch. <span className="hero-head-2">Play.</span> Learn.
+            </h1>
+            <p className="t-lead mt-7 max-w-[32ch] text-body">
               Calm stories for young children, and the activities that take them off the screen
               afterwards.
             </p>
