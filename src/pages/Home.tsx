@@ -5,7 +5,8 @@ import { Settle } from "@/components/Settle";
 import { HeroStage } from "@/components/home/HeroStage";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
-import { FilmStrip } from "@/components/home/FilmStrip";
+import { StudioWall } from "@/components/render/StudioWall";
+import { Stage } from "@/components/render/Stage";
 import { ReviewGateScene } from "@/components/home/ReviewGateScene";
 import {
   Button, Card, Container, Kicker, Lead, Section,
@@ -228,14 +229,13 @@ export default function Home() {
         <Container width="wide">
           <Wipe className="grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-end lg:gap-16">
             <div>
-              <div className="w-[clamp(220px,26vw,330px)]">
-                <Card className="tilt-b overflow-hidden p-2">
-                  <Figure
-                    asset="brand.show"
-                    rounded="rounded-[var(--radius-md)]"
-                    sizes="330px"
-                  />
-                </Card>
+              {/* The felted wordmark is a photograph of a real object, so it
+                  is staged rather than framed: leaned back on the ledge under
+                  the same lamp as the plates below it. */}
+              <div className="w-[clamp(240px,30vw,400px)]">
+                <Stage backdrop rake ground="ledge" tilt={5} depth={0.6} light={-28}>
+                  <Figure asset="brand.show" rounded="rounded-[var(--radius-sm)]" sizes="400px" />
+                </Stage>
               </div>
               <h2 id="series-h" className="t-h2 mt-9 max-w-[16ch]">Our first original series</h2>
             </div>
@@ -246,12 +246,17 @@ export default function Home() {
           </Wipe>
         </Container>
 
-        {/* No Container: the band is the full width of the page and sets its
-            own gutter, so the rail lines up with the heading above it while the
-            stock runs to both edges. */}
-        <div className="mt-14">
-          <FilmStrip episodes={EPISODES} />
-        </div>
+        {/* The studio wall takes the place the filmstrip held. Both are good;
+            they cannot both carry the same four plates on one page, and this
+            one answers the brief better: the plates stop being pictures of
+            objects and become the objects, standing on a ledge under one lamp,
+            each with a shadow that belongs to where it is in the room.
+
+            Swapping back is one line: <FilmStrip episodes={EPISODES} />, and
+            the component is still here. */}
+        <Container width="wide" className="mt-14">
+          <StudioWall episodes={EPISODES} />
+        </Container>
       </Section>
 
       {/* ═══ 5. WHO CHECKS IT ═══ */}

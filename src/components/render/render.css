@@ -1,0 +1,490 @@
+/* ============================================================================
+   The render kit.
+
+   Pure CSS: no WebGL, no library. Everything here is lighting and geometry
+   for objects that already exist as real assets, so the only colour in this
+   file comes from the tokens in src/styles/index.css. Shade is always the
+   body ink mixed to an alpha, never a literal, which keeps every shadow on
+   the same warm hue as the ink the page is set in.
+
+   Two things live here. `.rk-stage` is a lit space one object stands in: a
+   perspective camera, an optional wall and ledge, a cast shadow whose offset
+   and softness are computed from the light and the object's depth, and a
+   contact pool where the object meets the surface it stands on. `.rk-studio`
+   is the studio wall: four stages in a row on one bench under one light.
+
+   MOTION. Nothing moves on its own. The lift on hover and focus is driven by
+   one variable, --lift, which any ancestor may set to 1; the entry is a single
+   settle that only JS arms, so no JS, a crawler and reduced motion all get the
+   finished, still render. The still render is the one that has to look good,
+   because that is the one a screenshot sees.
+   ========================================================================== */
+
+/* ─── Stage ────────────────────────────────────────────────────────────── */
+
+.rk-stage {
+  /* Set inline by the component from `light` and `depth`. Defaults here are
+     the no-JS fallback and the values a plain <div class="rk-stage"> gets. */
+  --az: -32deg;
+  --tilt: 6deg;
+  --turn: 0deg;
+  --roll: 0deg;
+  --sx: 9px;
+  --sy: 8px;
+  --blur: 26px;
+  --cast: 26%;
+  --lx: 22%;
+  --rk-radius: var(--radius-md);
+  --shade: var(--color-body);
+  position: relative;
+  display: grid;
+}
+
+/* The wall. A panel one stop deeper than the page ground, so an object in
+   front of it has something to be in front of. */
+.rk-stage[data-backdrop] {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  /* The wall is a full stop deeper than the deepest page ground, not equal to
+     it. At paper-3 the render sat at the same value as the section around it
+     and the whole thing read as a pale wash: a room has to be a different
+     brightness from the page it is printed on before any amount of lighting
+     reads as lighting. */
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-sunken) 72%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 58%, var(--color-ink))
+    );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-paper-1) 24%, transparent);
+  padding: clamp(1.25rem, 6cqw, 3rem);
+}
+.rk-stage[data-backdrop][data-ground="ledge"] {
+  padding-bottom: 0;
+}
+
+/* Raking light. One source, at --lx along the top edge, falling across the
+   wall toward the far corner, which is the direction the shadows run. The
+   radial is the light; the linear is the room getting darker away from it. */
+.rk-rake {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 85% at var(--lx) -18%,
+      var(--color-paper-1) 0%,
+      color-mix(in srgb, var(--color-paper-1) 55%, transparent) 32%,
+      transparent 66%
+    ),
+    linear-gradient(
+      calc(var(--az) + 180deg),
+      transparent 42%,
+      color-mix(in srgb, var(--shade) 13%, transparent) 100%
+    );
+}
+
+/* The camera. Perspective on the scene, not the object, so a lift along Z
+   actually comes toward the viewer. The origin sits above centre: the eye is
+   a little higher than the middle of a board on a bench. */
+.rk-scene {
+  position: relative;
+  z-index: 2;
+  perspective: 1100px;
+  perspective-origin: 50% 28%;
+}
+
+/* The object. Rotation about its foot, so a leaning board keeps its foot on
+   the ledge. --lift raises it, brings it toward the camera and eases the lean,
+   which is what a hand does when it picks a board up to look at it. */
+.rk-object {
+  position: relative;
+  border-radius: var(--rk-radius);
+  transform-origin: 50% 100%;
+  transform:
+    translateY(calc(var(--lift, 0) * -10px))
+    translateZ(calc(var(--lift, 0) * 36px))
+    rotateX(calc(var(--tilt) * (1 - var(--lift, 0) * 0.45)))
+    rotateY(calc(var(--turn) * var(--turn-k, 1)))
+    rotateZ(var(--roll));
+  transition: transform 0.55s var(--ease-out);
+}
+
+/* The cast shadow. Offset and blur come from the light and the depth; on lift
+   the offset grows and the edge softens, because the object has moved further
+   from the surface it is shadowing. It lives inside the object so it shares
+   the object's lean, which is what a shadow on a parallel wall does. */
+.rk-cast {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    /* The tight layer: the dark the wall holds right beside the board. */
+    calc(var(--sx) * 0.45 * (1 + var(--lift, 0) * 0.9))
+    calc(var(--sy) * 0.45 * (1 + var(--lift, 0) * 1.1))
+    calc(var(--blur) * 0.3)
+    0
+    color-mix(in srgb, var(--shade) calc(var(--cast) * 0.8), transparent),
+    /* The wide layer: the same shadow by the time it has spread. */
+    calc(var(--sx) * (1 + var(--lift, 0) * 0.9))
+    calc(var(--sy) * (1 + var(--lift, 0) * 1.1))
+    calc(var(--blur) * (1 + var(--lift, 0) * 0.5))
+    calc(var(--blur) * -0.22)
+    color-mix(in srgb, var(--shade) var(--cast), transparent);
+  transition: box-shadow 0.55s var(--ease-out);
+}
+/* A seated object stands on something, so its shadow stops at its foot. */
+.rk-stage[data-seated] .rk-cast {
+  clip-path: inset(-120% -120% 0 -120%);
+}
+
+.rk-body {
+  position: relative;
+  border-radius: inherit;
+}
+
+/* The contact pool: the dark where the foot meets the surface. Tight and
+   dark at rest, and it fades and spreads as the object lifts. It sits in the
+   scene, not in the object, because it belongs to the surface. */
+.rk-contact {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: -5px;
+  height: 11px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    color-mix(in srgb, var(--shade) 46%, transparent),
+    transparent 72%
+  );
+  filter: blur(3px);
+  transform:
+    translateX(calc(var(--sx) * 0.55))
+    scaleX(calc(1 + var(--lift, 0) * 0.08));
+  opacity: calc(1 - var(--lift, 0) * 0.72);
+  transition:
+    opacity 0.55s var(--ease-out),
+    transform 0.55s var(--ease-out);
+}
+
+/* The ledge. A top face catching the light, a front face a stop deeper, and
+   the shelf's own shadow onto the wall under it. Shared with the studio bench
+   so the two draw the same piece of furniture. */
+.rk-ledge,
+.rk-item::after {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: var(--ledge, 14px);
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-raised) 14%, transparent),
+      transparent 38%,
+      color-mix(in srgb, var(--shade) 7%, transparent)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--color-paper-1) 0,
+      var(--color-raised) 30%,
+      color-mix(in srgb, var(--color-sunken) 84%, var(--shade)) 30%,
+      var(--color-sunken) 46%,
+      color-mix(in srgb, var(--color-sunken) 80%, var(--shade)) 100%
+    );
+  box-shadow:
+    0 calc(var(--ledge, 14px) * 0.5)
+      calc(var(--ledge, 14px) * 0.6)
+      calc(var(--ledge, 14px) * -0.3)
+      color-mix(in srgb, var(--shade) 34%, transparent),
+    0 calc(var(--ledge, 14px) * 1.2)
+      calc(var(--ledge, 14px) * 1.9)
+      calc(var(--ledge, 14px) * -0.7)
+      color-mix(in srgb, var(--shade) 46%, transparent);
+}
+.rk-stage[data-backdrop] > .rk-ledge {
+  margin-inline: calc(-1 * clamp(1.25rem, 6cqw, 3rem));
+}
+
+/* The object's own lift, for a stage used on its own. The studio drives
+   --lift from the link instead, so a hover on the label lifts the plate. */
+.rk-stage[data-lift]:hover,
+.rk-stage[data-lift]:focus-within {
+  --lift: 1;
+}
+
+/* ─── Studio wall ──────────────────────────────────────────────────────── */
+
+.rk-studio {
+  --az: -32deg;
+  --lx: 16%;
+  --shade: var(--color-body);
+  --pad: clamp(0.875rem, 4cqw, 3.25rem);
+  position: relative;
+  container-type: inline-size;
+  container-name: studio;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  /* The wall is a full stop deeper than the deepest page ground, not equal to
+     it. At paper-3 the render sat at the same value as the section around it
+     and the whole thing read as a pale wash: a room has to be a different
+     brightness from the page it is printed on before any amount of lighting
+     reads as lighting. */
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-sunken) 72%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 58%, var(--color-ink))
+    );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-paper-1) 24%, transparent);
+  padding: var(--pad);
+  padding-top: clamp(1rem, 3.5cqw, 2.5rem);
+  padding-bottom: calc(var(--pad) * 0.8);
+}
+.rk-studio[data-flush] {
+  border-radius: 0;
+}
+.rk-studio > .rk-rake {
+  z-index: 0;
+}
+.rk-studio > :not(.rk-rake) {
+  position: relative;
+  z-index: 1;
+}
+
+/* The picture rail across the top of the wall, with the room's label on it.
+   Functional print, in the voice of a label on a shelf, never a strapline. */
+.rk-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.7rem;
+  margin-bottom: clamp(1.75rem, 6cqw, 3.5rem);
+  border-bottom: 1px solid var(--color-rule);
+  box-shadow: 0 3px 4px -3px color-mix(in srgb, var(--shade) 30%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.rk-head-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-rule);
+}
+.rk-head > span:not(.rk-head-rule) {
+  white-space: nowrap;
+}
+/* On a narrow shelf only the label fits on the rail. */
+@container studio (max-width: 26rem) {
+  .rk-head-meta { display: none; }
+}
+
+/* The bench. One column on a phone, which makes it a shelving unit: four
+   shelves, one plate each. Two by two on a tablet. Four across on a desktop,
+   where the ledge segments meet and read as one long bench. */
+.rk-bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 7cqw, 3.5rem) clamp(1rem, 3cqw, 2.25rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/* Container queries measure the CONTENT box, so these are the bench's width
+   inside the panel's padding: 32rem is a 640px viewport, 58rem is roughly a
+   1090px one. A 1024px screen stays two by two, where each plate is still
+   wide enough for the felted lettering and the label card to read. */
+@container studio (min-width: 32rem) {
+  .rk-bench { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container studio (min-width: 58rem) {
+  .rk-bench { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Each plate is its own container so its chrome scales with its own width,
+   the way the PupsPlayer render does. The ledge is the item's ::after: full
+   bench width, clipped by the panel, and drawn once per row. */
+.rk-item {
+  position: relative;
+  container-type: inline-size;
+}
+.rk-item::after {
+  content: "";
+  position: absolute;
+  left: -100vw;
+  right: -100vw;
+  bottom: 0;
+  --ledge: clamp(10px, 3.6cqw, 15px);
+}
+@container studio (min-width: 32rem) and (max-width: 57.98rem) {
+  .rk-item:nth-child(2n)::after { display: none; }
+}
+@container studio (min-width: 58rem) {
+  .rk-item:not(:nth-child(4n + 1))::after { display: none; }
+}
+/* In one column the plates are stacked, so the camera is in front of each
+   of them and the slight turn toward the centre of the bench comes off. */
+@container studio (max-width: 31.98rem) {
+  .rk-item { --turn-k: 0; }
+}
+
+/* The plate is the link. Its margin is the ledge's height, so the foot of
+   the object lands exactly on the top face of the shelf. */
+.rk-plate {
+  --ledge: clamp(10px, 3.6cqw, 15px);
+  position: relative;
+  display: block;
+  margin-bottom: var(--ledge);
+  border-radius: var(--rk-radius, var(--radius-md));
+  text-decoration: none;
+  color: inherit;
+  outline-offset: 6px;
+}
+.rk-plate:hover,
+.rk-plate:focus-visible {
+  --lift: 1;
+}
+/* The ring is stated here as well as in the base layer, so a plate keeps a
+   visible focus whatever a page around it does with outlines. */
+.rk-plate:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 6px;
+}
+.rk-plate .rk-stage {
+  --rk-radius: max(6px, 1.9cqw);
+}
+
+/* The mount. A raised card a shade lighter than the slate's own paper, with
+   the ink hairline every card on this site carries. */
+.rk-mat {
+  padding: max(4px, 1.7cqw);
+  border-radius: inherit;
+  background: var(--color-raised);
+  border: 1px solid var(--color-rule);
+}
+.rk-pic {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--rk-radius, var(--radius-md)) - max(4px, 1.7cqw));
+  background: var(--color-sunken);
+}
+.rk-pic img {
+  display: block;
+}
+
+/* Light across the plate. Brighter toward the source, a touch darker on the
+   far corner, and --dim is how far this plate sits from the lamp: the plate
+   nearest the light carries none, each one further along carries a little
+   more. Set per plate by the studio. */
+.rk-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      var(--az),
+      color-mix(in srgb, var(--shade) 9%, transparent) 0%,
+      transparent 52%,
+      color-mix(in srgb, var(--color-raised) 26%, transparent) 100%
+    ),
+    linear-gradient(
+      color-mix(in srgb, var(--shade) var(--dim, 0%), transparent),
+      color-mix(in srgb, var(--shade) var(--dim, 0%), transparent)
+    );
+}
+
+/* The label card on the ledge, in front of the plate's foot. A real object:
+   a card standing against a board, so it stays put when the board lifts.
+   The type carries a floor the way the PupsPlayer render does: it scales
+   with the plate down to 11px and no further. */
+.rk-tag {
+  position: absolute;
+  z-index: 3;
+  left: 5.5%;
+  bottom: calc(var(--ledge) * -0.32);
+  max-width: 89%;
+  display: inline-flex;
+  align-items: baseline;
+  gap: max(6px, 1.9cqw);
+  padding: max(4px, 1.4cqw) max(8px, 2.6cqw);
+  border-radius: max(4px, 1.2cqw);
+  background: var(--color-raised);
+  border: 1px solid var(--color-rule);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--shade) 10%, transparent),
+    2px 5px 9px -4px color-mix(in srgb, var(--shade) 36%, transparent);
+  transform: rotate(-0.4deg);
+  line-height: 1;
+  white-space: nowrap;
+}
+.rk-tag-no,
+.rk-tag-rt {
+  font-family: var(--font-mono);
+  font-size: max(11px, 3.3cqw);
+  letter-spacing: 0.12em;
+}
+.rk-tag-no { color: var(--color-red-deep); }
+.rk-tag-rt { color: var(--color-muted); }
+.rk-tag-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-sans);
+  font-size: max(12px, 3.9cqw);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+/* On a plate under 256px the card keeps the number and the whole title and
+   lets the runtime go; it is still in the link's name, and on the filmstrip. */
+@container (max-width: 16rem) {
+  .rk-tag-rt { display: none; }
+}
+
+/* ─── Entry ────────────────────────────────────────────────────────────────
+   One settle, armed only by JS. The room's light comes up and the plates
+   settle onto the bench from the lit end, 90ms apart. */
+.rk-studio.is-armed .rk-rake {
+  opacity: 0;
+}
+.rk-studio.is-armed .rk-item {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.rk-studio.is-armed.is-in .rk-rake {
+  opacity: 1;
+  transition: opacity 1.6s var(--ease-out);
+}
+.rk-studio.is-armed.is-in .rk-item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.8s var(--ease-out) calc(var(--i, 0) * 90ms),
+    transform 0.8s var(--ease-out) calc(var(--i, 0) * 90ms);
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────
+   Still. No lift, no settle, no light coming up. The lean, the shadows and
+   the light itself all stay, because they are a pose, not a movement. */
+@media (prefers-reduced-motion: reduce) {
+  .rk-stage,
+  .rk-plate,
+  .rk-plate:hover,
+  .rk-plate:focus-visible {
+    --lift: 0 !important;
+  }
+  .rk-object,
+  .rk-cast,
+  .rk-contact,
+  .rk-rake,
+  .rk-item {
+    transition: none !important;
+  }
+  .rk-studio.is-armed .rk-rake,
+  .rk-studio.is-armed .rk-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
