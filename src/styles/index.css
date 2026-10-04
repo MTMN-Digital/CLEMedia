@@ -732,3 +732,78 @@ body > * { position: relative; z-index: 1; }
   .hero-words { opacity: 1; transform: none; }
   .hero-sheen, .hero-cue { display: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   The room, applied to the page.
+
+   Everything above this point was a flat clay page with hairline cards on it.
+   These three surfaces give the page the tonal range a lit room has: a wall
+   that is deeper than the paper, a card that reads as a piece of card rather
+   than a rectangle of fill, and a tab that reads as something stuck on.
+--------------------------------------------------------------------------- */
+
+/* A full-bleed wall, a stop deeper than the deepest ground, with one lamp up
+   and to the left. Used where a section should feel like a different room
+   rather than more of the same page. */
+.wall {
+  position: relative;
+  isolation: isolate;
+  /* The darkest point of this wall is --color-sunken and it never goes below
+     it, because that is the floor at which the type on it still passes AA.
+     Measured on the first build of this surface, which ran a stop darker:
+     body copy came out at 3.2:1 and the red eyebrow at 2.4:1, both failures.
+     On sunken they are 6.7 and 5.1. A deeper room would mean cream text, and
+     this page already spends its one dark band on the navy close. */
+  background:
+    radial-gradient(
+      96% 76% at 14% -14%,
+      color-mix(in srgb, var(--color-paper-1) 62%, transparent),
+      transparent 64%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-sunken) 82%, var(--color-paper-1)),
+      var(--color-sunken)
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-paper-1) 22%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--color-ink) 10%, transparent);
+}
+/* Text on the wall. The wall is dark enough that body copy needs the ink end
+   of the ramp, and muted is no longer safe on it. */
+/* Zero specificity on BOTH halves of the selector, so these are defaults the
+   wall sets rather than rules it imposes: a utility class on the element still
+   wins. The first version of this used `.wall :where(p)`, which outranked
+   `text-ink` on the pull line and silently repainted it, and outranked the
+   eyebrow's red as well.
+   --color-muted is 4.44:1 on this surface, a fail, so it is lifted to body. */
+:where(.wall) :where(p, li) { color: var(--color-body); }
+:where(.wall) :where(.text-muted, .t-sm) { color: var(--color-body); }
+
+/* A piece of card: a lit top edge, a shadow that has a direction, and a hair
+   of lean. Not a rounded rectangle with a drop shadow on every side. */
+.card-stock {
+  position: relative;
+  background: var(--color-raised);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent),
+    0 1px 0 color-mix(in srgb, var(--color-body) 14%, transparent),
+    0 14px 22px -16px color-mix(in srgb, var(--color-body) 52%, transparent),
+    0 34px 48px -34px color-mix(in srgb, var(--color-body) 40%, transparent);
+}
+
+/* The tab on an index card, carrying its number. */
+.card-tab {
+  position: absolute;
+  top: -0.6rem;
+  left: 1.75rem;
+  padding: 0.18rem 0.6rem 0.22rem;
+  border-radius: 3px 3px 0 0;
+  background: var(--color-sunken);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-body) 18%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--color-body);
+}

@@ -5,11 +5,11 @@ import { Settle } from "@/components/Settle";
 import { HeroStage } from "@/components/home/HeroStage";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
-import { StudioWall } from "@/components/render/StudioWall";
+import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { ReviewGateScene } from "@/components/home/ReviewGateScene";
 import {
-  Button, Card, Container, Kicker, Lead, Section,
+  Button, Container, Kicker, Lead, Section,
   SectionHeading, TextLink,
 } from "@/components/ui";
 import { IconArrow, IconMail } from "@/components/icons";
@@ -147,15 +147,21 @@ export default function Home() {
         />
       </div>
 
-      {/* ═══ 2. THESIS ═══ */}
-      <Section labelledBy="thesis-h">
-        <Container width="text">
-          <Settle>
-            <Kicker>What we believe</Kicker>
-            <h2 id="thesis-h" className="t-h1 mt-6">
-              We are not going to tell anyone their child watches too much television.
-            </h2>
-            <div className="t-lead mt-8 space-y-6 text-body">
+      {/* ═══ 2. THESIS. The first change of room. The page has been one flat
+          clay surface up to here; the argument that the company is different
+          from the market is the right place to put the reader somewhere
+          physically different, so it runs edge to edge on a wall a stop deeper
+          than the paper, under the same lamp as the rest of the room. ═══ */}
+      <Section labelledBy="thesis-h" className="wall">
+        <Container width="wide">
+          <Settle className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+            <div>
+              <Kicker>What we believe</Kicker>
+              <h2 id="thesis-h" className="t-h1 mt-6 max-w-[16ch]">
+                We are not going to tell anyone their child watches too much television.
+              </h2>
+            </div>
+            <div className="t-lead space-y-6 lg:pt-16">
               <p>
                 The gap we saw is narrower than that. Not enough content made at a child's pace,
                 with genuine educational intent, and with a clear account of who made it and who
@@ -166,7 +172,7 @@ export default function Home() {
                 watching rather than what they take away from it. Attention is what gets measured,
                 so attention is what gets designed for.
               </p>
-              <p className="text-ink">
+              <p className="border-l-2 border-[var(--color-red)] pl-5 font-display text-[clamp(1.125rem,0.95rem+0.6vw,1.4rem)] leading-snug text-ink">
                 We would rather make the episode the beginning of the thing than the whole of it.
               </p>
             </div>
@@ -187,13 +193,18 @@ export default function Home() {
                 title="One episode, three stages"
                 lead="Designed to move a child from the screen into play and conversation, rather than to hold them in front of it."
               />
-              <Card className="tilt-a mt-10 overflow-hidden p-2.5">
-                <Figure
-                  asset="story.garden"
-                  rounded="rounded-[var(--radius-md)]"
-                  sizes="(min-width: 1024px) 34vw, 92vw"
-                />
-              </Card>
+              {/* The garden is a print standing on the bench, not a picture in
+                  a frame: same lamp, same ledge, same room as the show wordmark
+                  further down the page. */}
+              <div className="mt-10">
+                <Stage backdrop rake ground="ledge" tilt={5} depth={0.55} light={-30}>
+                  <Figure
+                    asset="story.garden"
+                    rounded="rounded-[var(--radius-sm)]"
+                    sizes="(min-width: 1024px) 34vw, 92vw"
+                  />
+                </Stage>
+              </div>
             </Settle>
 
             {/* Three across on tablet, stacked again on desktop. Three short cards
@@ -202,14 +213,16 @@ export default function Home() {
                 image beside it. */}
             <Settle className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:gap-6 lg:self-center">
               {STAGES.map((st) => (
-                <Card
+                /* An index card with its number on the tab, rather than a
+                   rounded rectangle with the number printed inside it. */
+                <div
                   key={st.n}
-                  className="flex h-full flex-col p-7 lg:grid lg:grid-cols-[4rem_minmax(0,14ch)_minmax(0,1fr)] lg:items-baseline lg:gap-8 lg:p-8"
+                  className="card-stock flex h-full flex-col p-7 pt-8 lg:grid lg:grid-cols-[minmax(0,14ch)_minmax(0,1fr)] lg:items-baseline lg:gap-10 lg:p-8 lg:pt-9"
                 >
-                  <span className="tnum font-mono text-[13px] tracking-[0.16em] text-red-deep">{st.n}</span>
-                  <h3 className="t-h3 mt-4 font-display lg:mt-0">{st.title}</h3>
-                  <p className="t-body mt-3 text-slate lg:mt-0">{st.body}</p>
-                </Card>
+                  <span className="card-tab tnum" aria-hidden="true">{st.n}</span>
+                  <h3 className="t-h3 font-display">{st.title}</h3>
+                  <p className="t-body mt-3 text-body lg:mt-0">{st.body}</p>
+                </div>
               ))}
             </Settle>
           </div>
@@ -246,17 +259,15 @@ export default function Home() {
           </Wipe>
         </Container>
 
-        {/* The studio wall takes the place the filmstrip held. Both are good;
-            they cannot both carry the same four plates on one page, and this
-            one answers the brief better: the plates stop being pictures of
-            objects and become the objects, standing on a ledge under one lamp,
-            each with a shadow that belongs to where it is in the room.
-
-            Swapping back is one line: <FilmStrip episodes={EPISODES} />, and
-            the component is still here. */}
-        <Container width="wide" className="mt-14">
-          <StudioWall episodes={EPISODES} />
-        </Container>
+        {/* The filmstrip stays: perforated stock IS the trade, and the rail
+            running off both edges is the one piece of this page that already
+            read as authored. The studio wall render built alongside it is kept
+            in src/components/render for a page that needs a still, lit set of
+            objects; it is not mounted here, because the same four plates
+            cannot stand twice on one page. */}
+        <div className="mt-14">
+          <FilmStrip episodes={EPISODES} />
+        </div>
       </Section>
 
       {/* ═══ 5. WHO CHECKS IT ═══ */}
@@ -277,20 +288,33 @@ export default function Home() {
               lead="Every person here appears in the production and review sequence, not only on an about page."
             />
           </Settle>
-          <Settle className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PEOPLE.map((p) => (
-              <Card key={p.name} className="flex h-full flex-col p-6">
-                {/* Width on the wrapper: Figure's own w-full beats a w-* passed
-                    into className, which is a Tailwind ordering trap. */}
+          {/* The casting wall. Six prints standing on the bench under the same
+              lamp, each one leaning a little differently because a hand put it
+              there. Square, not circular: a circular crop is an avatar, and an
+              avatar is a user interface. These are photographs of people who
+              are answerable for something. */}
+          <Settle className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {PEOPLE.map((p, i) => (
+              <article key={p.name} className="flex h-full flex-col">
                 {p.asset && (
-                  <div className="w-[84px]">
-                    <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="84px" />
-                  </div>
+                  <Stage
+                    seated
+                    lift
+                    tilt={4 + (i % 3)}
+                    turn={i % 2 ? -2.5 : 2}
+                    roll={i % 2 ? 0.5 : -0.6}
+                    depth={0.4 + (i % 3) * 0.08}
+                    light={-30}
+                    radius="var(--radius-sm)"
+                    className="w-[clamp(140px,22vw,176px)]"
+                  >
+                    <Figure asset={p.asset} rounded="rounded-[var(--radius-sm)]" className="aspect-square" sizes="176px" />
+                  </Stage>
                 )}
-                <h3 className="t-h3 mt-5">{p.name}</h3>
+                <h3 className="t-h3 mt-7">{p.name}</h3>
                 <p className="eyebrow mt-2 !text-[11px]">{p.role}</p>
-                <p className="t-body mt-3 text-body">{p.line}</p>
-              </Card>
+                <p className="t-body mt-3 max-w-[38ch] text-body">{p.line}</p>
+              </article>
             ))}
           </Settle>
           <Settle className="mt-9">
@@ -308,7 +332,8 @@ export default function Home() {
               kicker="Responsible AI"
               title="AI is a production tool. People remain responsible for the work."
             />
-            <Card className="p-8 sm:p-10">
+            <div className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
+              <span className="card-tab" aria-hidden="true">POSITION</span>
               <div className="t-body space-y-5 text-body">
                 <p>
                   Our creative and educational decisions are made by people. In final production we
@@ -324,7 +349,7 @@ export default function Home() {
               <div className="mt-7">
                 <TextLink to="/ethical-ai">Read the full position<IconArrow size={15} /></TextLink>
               </div>
-            </Card>
+            </div>
           </Settle>
         </Container>
       </Section>

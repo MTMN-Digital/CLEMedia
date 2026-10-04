@@ -1,5 +1,5 @@
 import { Settle } from "@/components/Settle";
-import { Card, Kicker, SectionHeading, TextLink } from "@/components/ui";
+import { Kicker, SectionHeading, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -59,7 +59,10 @@ export function ReviewGateScene() {
       </Settle>
 
       <Settle className="mt-12">
-        <Card className="px-6 py-2 sm:px-10">
+        {/* The sequence sits on card stock with its own tab, like the
+            running order pinned up in a production office. */}
+        <div className="card-stock px-6 pb-2 pt-7 sm:px-10 sm:pt-8">
+          <span className="card-tab" aria-hidden="true">RUNNING ORDER</span>
           <ol>
             {GATES.map((g) => (
               <li
@@ -72,7 +75,7 @@ export function ReviewGateScene() {
               </li>
             ))}
           </ol>
-        </Card>
+        </div>
       </Settle>
 
       {/* ---------------------------------------------------------------------
