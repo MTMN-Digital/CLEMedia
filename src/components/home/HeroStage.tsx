@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { HeroMark3D } from "@/components/home/HeroMark3D";
+import { HeroMark } from "@/components/home/HeroMark";
 import { Button } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
@@ -156,11 +157,17 @@ export function HeroStage() {
         </div>
 
         <div className="hero-inner">
+          {/* What the objects throw onto the set. Built from the mark's own
+              alpha, flattened to black, blurred and laid down the sweep away
+              from the lamp, so it is the shape of the thing rather than a soft
+              oval under it. It swings as the objects turn, which is the single
+              clearest signal that there is a light in this room and the objects
+              are standing in it. */}
+          <div aria-hidden="true" className="hero-shadow">
+            <HeroMark shadow />
+          </div>
+
           <div className="hero-object">
-            {/* The cast shadow is a separate element because a drop-shadow
-                filter follows the object's alpha exactly, and a shadow thrown
-                onto a wall several feet behind it does not keep its shape. */}
-            <span aria-hidden="true" className="hero-cast" />
             <div className="hero-mark">
               <HeroMark3D subscribe={subscribe} onLive={onLive} />
               {/* The light moving across the face as it turns, for the CSS

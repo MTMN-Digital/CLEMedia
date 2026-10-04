@@ -603,6 +603,19 @@ body > * { position: relative; z-index: 1; }
    the depth: a backdrop that panned with the objects would be a sticker behind
    them, and one that did not pan at all would be a wall the camera is bolted
    to. --------------------------------------------------------------------- */
+/* The corners fall away. Without this the sweep is an even wash and the eye
+   reads a background colour rather than a lit surface. */
+.hero-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    78% 72% at 38% 34%,
+    transparent 42%,
+    color-mix(in srgb, var(--color-body) 16%, transparent) 100%
+  );
+}
 .hero-sweep {
   position: absolute;
   /* Wider than the frame so the pan never exposes an edge. */
@@ -632,9 +645,9 @@ body > * { position: relative; z-index: 1; }
   background:
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-paper-2) 94%, var(--color-body)) 0%,
-      color-mix(in srgb, var(--color-paper-3) 86%, var(--color-body)) 50%,
-      color-mix(in srgb, var(--color-sunken) 84%, var(--color-body)) 100%
+      color-mix(in srgb, var(--color-paper-2) 92%, var(--color-body)) 0%,
+      color-mix(in srgb, var(--color-paper-3) 80%, var(--color-body)) 44%,
+      color-mix(in srgb, var(--color-sunken) 72%, var(--color-body)) 100%
     );
   /* The seam fades out rather than ending. A sweep has no edge where the wall
      becomes the floor; leaving one drew a visible line across the frame. */
@@ -659,7 +672,7 @@ body > * { position: relative; z-index: 1; }
 .hero-sweep-leaves {
   position: absolute;
   inset: -10% -10% 0 -10%;
-  opacity: 0.5;
+  opacity: 0.78;
   mix-blend-mode: multiply;
   background-image:
     radial-gradient(34% 17% at 18% 12%, color-mix(in srgb, var(--color-body) 20%, transparent), transparent 70%),
@@ -797,19 +810,40 @@ body > * { position: relative; z-index: 1; }
 
 /* The cast shadow on the wall behind: swings right and lengthens as the object
    turns away from the key. */
-.hero-cast {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 4%;
-  height: 30%;
+/* What the objects throw onto the sweep.
+
+   The old version of this was a soft brown oval. An oval is not a shadow of
+   anything: it is the thing people draw when they have given up. This is the
+   mark's own alpha, flattened to black, laid down and away from the lamp, and
+   blurred by distance. The lamp is upper left, so the shadow runs down and to
+   the right, and it swings and lengthens as the objects turn. */
+.hero-shadow {
+  grid-area: 1 / 1;
+  align-self: start;
+  justify-self: center;
+  margin-top: clamp(0.25rem, 1vh, 1rem);
+  width: clamp(230px, 38vw, 560px);
   pointer-events: none;
+  z-index: 0;
+  transform-origin: 50% 94%;
+  /* Down the wall, then flattened as it reaches the floor, which is what a
+     shadow does on a sweep. */
   transform:
-    translate3d(calc(var(--turn) * 16%), calc(var(--turn) * 6%), -60px)
-    scaleX(calc(1 + var(--turn) * 0.22));
-  filter: blur(calc(26px + var(--turn) * 14px));
-  opacity: calc(0.34 - var(--turn) * 0.1);
-  background: radial-gradient(58% 50% at 50% 50%, rgba(74, 53, 42, 0.55), rgba(74, 53, 42, 0) 72%);
+    translate3d(calc(6% + var(--turn) * 10%), calc(21% + var(--turn) * 3%), 0)
+    skewX(calc(-15deg - var(--turn) * 6deg))
+    scaleY(calc(0.66 + var(--turn) * 0.05));
+}
+.hero-shadow-art { display: block; }
+.hero-shadow-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Flatten to the shade colour, then soften. Two different jobs, two filters:
+     brightness(0) throws away the artwork and keeps only its silhouette. */
+  filter:
+    brightness(0) saturate(100%) invert(16%) sepia(18%) saturate(900%) hue-rotate(338deg)
+    blur(calc(18px + var(--turn) * 12px));
+  opacity: calc(0.22 - var(--turn) * 0.03);
 }
 
 /* The words arrive in the space the object leaves. */
@@ -917,7 +951,7 @@ body > * { position: relative; z-index: 1; }
   }
   .hero-words :where(.t-lead) { margin-inline: auto; }
   .hero-words :where(div) { justify-content: center; }
-  .hero-cast, .hero-sheen, .hero-cue { display: none; }
+  .hero-shadow, .hero-sheen, .hero-cue { display: none; }
   /* The sweep is wider than the frame so a desktop pan never shows its edge.
      On a phone there is no pan and no overflow clip around it, so that extra
      width became 31px of horizontal page scroll. */

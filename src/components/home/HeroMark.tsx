@@ -46,7 +46,23 @@ const LAYERS: Layer[] = [
   { name: "mark-word", z: 48, alt: "CLÉ Family Media, the letters formed from needle-felted animals" },
 ];
 
-export function HeroMark({ sizes = "(min-width: 1280px) 680px, 46vw" }: { sizes?: string }) {
+export function HeroMark({
+  sizes = "(min-width: 1280px) 560px, 38vw",
+  /** Render as a flat silhouette, for the shadow this object throws. */
+  shadow = false,
+}: { sizes?: string; shadow?: boolean }) {
+  if (shadow) {
+    /* The shadow is cast by the whole object, so it uses the uncut mark: one
+       image, no layers, no depth. Everything that makes it a shadow rather than
+       a picture (flattening to black, the blur, the lay-down onto the sweep)
+       is CSS. */
+    return (
+      <picture className="hero-shadow-art">
+        <source type="image/webp" srcSet="/brand/cle-mark.webp 1x, /brand/cle-mark@2x.webp 2x" sizes={sizes} />
+        <img src="/brand/cle-mark.png" alt="" width={591} height={592} decoding="async" />
+      </picture>
+    );
+  }
   return (
     <div className="hero-layers">
       {LAYERS.map((l) => (
