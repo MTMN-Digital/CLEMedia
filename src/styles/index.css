@@ -587,13 +587,25 @@ body > * { position: relative; z-index: 1; }
 
 .hero-stage {
   /* The tones of the set, lit to dark. */
-  --set-lit:   color-mix(in srgb, var(--color-paper-1) 70%, var(--color-raised));
+  /* Every shade is mixed toward --color-red rather than --color-body.
+
+     The first version of this set mixed the darks toward body, which is the
+     ink ramp: a desaturated cool brown. It gave a correct tonal range and a
+     grey room, and the page lost the warm clay the rest of the site is built
+     on. Mixing the same amounts toward the show's red keeps the identical
+     range and puts the warmth back, because a warm lamp on warm paper throws
+     warm shadows. Darkest stop here is still well above the floor the text
+     needs. */
+  /* 22% red, not 38%: enough to warm the shadows, little enough that the
+     upper wall does not go pink. */
+  --set-shade: color-mix(in srgb, var(--color-body) 78%, var(--color-red));
+  --set-lit:   color-mix(in srgb, var(--color-paper-1) 62%, var(--color-raised));
   --set-paper: var(--color-paper-2);
-  --set-wall:  color-mix(in srgb, var(--color-sunken) 74%, var(--color-body));
-  --set-deep:  color-mix(in srgb, var(--color-sunken) 44%, var(--color-body));
-  --set-pool:  var(--color-paper-3);
-  --set-floor: color-mix(in srgb, var(--color-sunken) 66%, var(--color-body));
-  --set-near:  color-mix(in srgb, var(--color-sunken) 30%, var(--color-body));
+  --set-wall:  color-mix(in srgb, var(--color-sunken) 78%, var(--set-shade));
+  --set-deep:  color-mix(in srgb, var(--color-sunken) 50%, var(--set-shade));
+  --set-pool:  color-mix(in srgb, var(--color-paper-3) 76%, var(--color-paper-1));
+  --set-floor: color-mix(in srgb, var(--color-sunken) 70%, var(--set-shade));
+  --set-near:  color-mix(in srgb, var(--color-sunken) 36%, var(--set-shade));
   /* How far the right of the paper falls off from the lamp. Eased on a phone,
      where the frame is so narrow the falloff was reaching the lead copy. */
   --set-fall: 70%;
@@ -705,10 +717,12 @@ body > * { position: relative; z-index: 1; }
    it is a shadow in a still room. */
 .hero-set-gobo {
   inset: -4% -2% auto -2%;
-  height: 72%;
-  fill: var(--color-body);
-  opacity: 0.26;
-  filter: blur(10px);
+  height: 52%;
+  fill: var(--set-shade);
+  opacity: 0.2;
+  /* Half the blur of the first pass. These leaves are now small enough that
+     10px dissolved them into one wash. */
+  filter: blur(5px);
   mix-blend-mode: multiply;
 }
 /* The light in the air. One beam from the lamp down across the objects, just
@@ -975,10 +989,20 @@ body > * { position: relative; z-index: 1; }
   /* Olive, not grey: the garden's sage pulled toward the body colour, laid on
      with multiply so it darkens the lit floor the way a real leaf in front of
      the lens does, rather than painting a grey shape over it. */
-  fill: color-mix(in srgb, var(--color-sage) 56%, var(--color-body));
-  opacity: 0.58;
-  filter: blur(10px);
+  fill: color-mix(in srgb, var(--color-sage) 60%, var(--set-shade));
   mix-blend-mode: multiply;
+}
+/* The nearer spray: bigger, softer, fainter. Out of focus because it is close
+   to the lens, not because it is unimportant. */
+.hero-near-close {
+  opacity: 0.34;
+  filter: blur(16px);
+}
+/* The one behind it: smaller, sharper, darker. Two distances is what makes a
+   corner read as a plant rather than a shape. */
+.hero-near-mid {
+  opacity: 0.3;
+  filter: blur(7px);
 }
 
 .hero-cue {
@@ -1045,7 +1069,8 @@ body > * { position: relative; z-index: 1; }
   .hero-stage { --set-fall: 28%; }
   .hero-set-floor { height: 54%; bottom: -10%; }
   .hero-set-gobo { height: 60%; filter: blur(9px); }
-  .hero-near-leaves { filter: blur(11px); opacity: 0.5; }
+  .hero-near-close { filter: blur(10px); opacity: 0.42; }
+  .hero-near-mid { filter: blur(5px); opacity: 0.36; }
   .hero-inner { display: block; width: min(100% - 2rem, 97.5rem); margin-inline: auto; height: auto; }
   .hero-figure { width: clamp(220px, 56vw, 400px); margin: 0 auto; transform: none; }
   .hero-mark { transform: none; }

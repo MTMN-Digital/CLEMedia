@@ -103,30 +103,45 @@ function Leaves({
    of the sweep, soft, as dappled light does. Kept out of the pool the objects
    hang in, so the lit paper behind them stays clean. */
 const GOBO: [number, number, number, number][] = [
-  [-30, 30, 22, 2.4],
-  [90, 110, -16, 2.1],
-  [170, -20, 48, 2.3],
-  [60, 230, 8, 1.8],
-  [300, 60, 70, 1.7],
-  [250, 190, -30, 1.6],
-  [640, -30, 24, 2.2],
-  [760, 70, -20, 2.0],
-  [880, 160, 36, 2.3],
-  [960, 10, 62, 2.0],
-  [1000, 290, -8, 2.1],
-  [820, 300, 14, 1.6],
+  /* Twenty-six small leaves, not twelve large ones. The first version used a
+     handful at scale 2 under a 10px blur, and a leaf that big seen that soft
+     is a smudge: dappled light is made of many small shapes with gaps between
+     them, and the gaps are what the eye reads as foliage. */
+  [-20, 24, 22, 1.25], [52, 96, -16, 1.1], [120, 10, 48, 1.2],
+  [36, 178, 8, 0.95], [168, 128, 70, 0.9], [214, 46, -30, 1.05],
+  [96, 262, 34, 0.85], [262, 196, -52, 0.8], [300, 92, 16, 1.0],
+  [8, 330, -24, 0.9], [196, 318, 58, 0.75], [352, 24, -40, 0.85],
+  [372, 250, 28, 0.8], [600, 18, 24, 1.15], [676, 104, -20, 1.0],
+  [742, 22, 36, 1.1], [820, 150, 62, 0.95], [900, 56, -8, 1.2],
+  [952, 212, 14, 0.9], [868, 300, -34, 0.85], [1010, 120, 44, 1.0],
+  [700, 272, 52, 0.8], [1040, 300, -18, 0.9], [612, 330, 10, 0.75],
+  [466, 150, -62, 0.7], [508, 300, 30, 0.72],
 ];
 /* The foliage between the camera and the objects: a few leaves in the two
    lower corners, nearest the lens and out of focus, fanning in from off
    frame. In a box 1000 by 300 that sits across the bottom of the frame, so
    the centre is clear and nothing ever crosses the objects or the words. */
-const NEAR: [number, number, number, number][] = [
-  [-30, 320, -30, 3.0],
-  [40, 370, -54, 2.6],
-  [-70, 260, -12, 2.2],
-  [1030, 330, 210, 2.8],
-  [980, 380, 236, 2.4],
-  [1070, 260, 194, 2.0],
+/* Two sprays at two distances. One set of leaves at one blur is a flat shape
+   stuck to the lens; a near spray and a slightly further one, blurred
+   differently, is a plant the camera is looking past. */
+const NEAR_CLOSE: [number, number, number, number][] = [
+  /* Corners only. These fanned across the whole bottom of the frame in the
+     first pass and the hero went busy: foreground is a thing you look PAST,
+     so it belongs at the edges where the eye is not working. */
+  [-70, 352, -26, 3.0],
+  [10, 404, -52, 2.5],
+  [-110, 288, -8, 2.2],
+  [1070, 356, 206, 2.8],
+  [1000, 406, 234, 2.3],
+  [1110, 290, 190, 2.0],
+];
+const NEAR_MID: [number, number, number, number][] = [
+  [54, 310, -42, 1.5],
+  [120, 372, -20, 1.25],
+  [-30, 258, -64, 1.35],
+  [946, 314, 226, 1.45],
+  [886, 374, 198, 1.2],
+  [1040, 256, 246, 1.3],
 ];
 
 export function HeroStage() {
@@ -265,7 +280,8 @@ export function HeroStage() {
 
         {/* Nearest the camera, out of focus, and it pans the most. */}
         <div aria-hidden="true" className="hero-near">
-          <Leaves className="hero-near-leaves" places={NEAR} edge="bottom" depth={300} />
+          <Leaves className="hero-near-leaves hero-near-mid" places={NEAR_MID} edge="bottom" depth={420} />
+          <Leaves className="hero-near-leaves hero-near-close" places={NEAR_CLOSE} edge="bottom" depth={420} />
         </div>
 
         <span aria-hidden="true" className="hero-cue">
