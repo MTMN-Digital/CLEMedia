@@ -593,26 +593,82 @@ body > * { position: relative; z-index: 1; }
   perspective-origin: 50% 46%;
 }
 
-/* A soft key light from the upper left, warming as the object turns into it. */
-.hero-key {
+/* ─── The set ───────────────────────────────────────────────────────────────
+   A seamless paper sweep: one surface that is wall at the top, curves through
+   a soft horizon, and becomes floor at the bottom. No hard line anywhere,
+   because a photographic sweep has none; the curve is a wide elliptical
+   gradient sitting over the vertical one.
+
+   It pans with the camera at a third of the rate the objects do. That ratio IS
+   the depth: a backdrop that panned with the objects would be a sticker behind
+   them, and one that did not pan at all would be a wall the camera is bolted
+   to. --------------------------------------------------------------------- */
+.hero-sweep {
   position: absolute;
-  inset: -20% -10% auto -30%;
-  height: 120%;
+  /* Wider than the frame so the pan never exposes an edge. */
+  inset: 0 -8% 0 -8%;
   pointer-events: none;
+  overflow: hidden;
+  transform: translate3d(calc(var(--turn) * 2.5%), 0, 0);
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-paper-1) 94%, #fff) 0%,
+      var(--color-paper-1) 34%,
+      var(--color-paper-2) 62%,
+      color-mix(in srgb, var(--color-paper-3) 82%, var(--color-body)) 100%
+    );
+}
+/* The curve from wall into floor. A very wide ellipse, so near the middle it
+   reads as a horizon and at the sides it falls away like real paper. */
+.hero-sweep-floor {
+  position: absolute;
+  /* Very wide and very shallow. The first version used a 34% ellipse on a 74%
+     tall box and the horizon read as a sand dune: a real sweep's curve is
+     almost flat across the middle of frame and only falls away at the edges. */
+  inset: auto -40% -18% -40%;
+  height: 42%;
+  border-radius: 50% 50% 0 0 / 16% 16% 0 0;
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-paper-2) 94%, var(--color-body)) 0%,
+      color-mix(in srgb, var(--color-paper-3) 86%, var(--color-body)) 50%,
+      color-mix(in srgb, var(--color-sunken) 84%, var(--color-body)) 100%
+    );
+  /* The seam fades out rather than ending. A sweep has no edge where the wall
+     becomes the floor; leaving one drew a visible line across the frame. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+}
+/* The lamp. Up and to the left, and it warms as the objects turn into it. */
+.hero-sweep-key {
+  position: absolute;
+  inset: -30% 0 0 -24%;
+  height: 130%;
   background: radial-gradient(
-    46% 54% at 22% 18%,
-    rgba(255, 249, 232, calc(0.5 + var(--turn) * 0.26)),
-    rgba(255, 249, 232, 0) 70%
+    42% 52% at 24% 16%,
+    rgba(255, 249, 232, calc(0.62 + var(--turn) * 0.2)),
+    rgba(255, 249, 232, 0) 72%
   );
 }
-
-/* The floor the object stands over. */
-.hero-floor {
+/* Leaf shadow raking across the paper. This is the garden, and it is also a
+   real lighting technique: a gobo, light through foliage. Drawn as a handful of
+   soft ellipses rather than a photograph of leaves, because a photograph of
+   leaves would be stock. Static: it is a shadow in a still room. */
+.hero-sweep-leaves {
   position: absolute;
-  inset: auto 0 0 0;
-  height: 42%;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(154, 126, 92, 0), rgba(154, 126, 92, 0.16));
+  inset: -10% -10% 0 -10%;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(34% 17% at 18% 12%, color-mix(in srgb, var(--color-body) 20%, transparent), transparent 70%),
+    radial-gradient(22% 12% at 41% 4%, color-mix(in srgb, var(--color-body) 16%, transparent), transparent 72%),
+    radial-gradient(26% 14% at 8% 38%, color-mix(in srgb, var(--color-body) 14%, transparent), transparent 70%),
+    radial-gradient(18% 10% at 63% 15%, color-mix(in srgb, var(--color-body) 12%, transparent), transparent 74%),
+    radial-gradient(30% 15% at 88% 30%, color-mix(in srgb, var(--color-body) 15%, transparent), transparent 70%),
+    radial-gradient(16% 9% at 74% 50%, color-mix(in srgb, var(--color-body) 10%, transparent), transparent 76%);
+  transform: rotate(-7deg) scale(1.1);
 }
 
 .hero-inner {
@@ -637,10 +693,12 @@ body > * { position: relative; z-index: 1; }
      mark holds the top half at rest and the words hold the bottom, and the
      turn brings both to the middle, one going left and one going right. */
   align-self: start;
-  justify-self: end;
-  margin-top: clamp(0.25rem, 2vh, 1.5rem);
-  /* Large enough to be the subject of the page rather than a logo on it. */
-  width: clamp(230px, 47vw, 720px);
+  justify-self: center;
+  margin-top: clamp(0.25rem, 1vh, 1rem);
+  /* Large enough to be the subject of the page rather than a logo on it, and
+     small enough that the line standing on the sweep below it is never buried.
+     Centred over the type, it covered the headline completely at rest. */
+  width: clamp(230px, 38vw, 560px);
   /* BEHIND the words. The client's note was that the lettering should be in
      front and should not obstruct, at least not until it scrolls: so at rest
      the two occupy different halves of the frame and nothing is covered, and
@@ -655,11 +713,10 @@ body > * { position: relative; z-index: 1; }
   /* Sits high enough that the strings run off the top of the frame rather
      than beginning in mid air, then walks left and toward the reader. */
   transform:
-    /* -74% of the object's own width. Measured, not guessed: at rest the mark
-       starts at x 734 on a 1440 frame and the headline's glyphs end at 290, so
-       anything less than this never actually reaches the type and the crossing
-       the whole composition is built around never happens. */
-    translate3d(calc(var(--turn) * -74%), calc(-4vh + var(--turn) * -5vh), calc(var(--turn) * 46px));
+    /* The camera pan. The objects move 8 percent of the frame, the sweep
+       behind them moves 2.5: near things travel further than far things, which
+       is what a pan looks like and what a slide does not. */
+    translate3d(calc(var(--turn) * 8%), calc(-6vh + var(--turn) * -1vh), 0);
   z-index: 2;
 }
 
@@ -677,10 +734,12 @@ body > * { position: relative; z-index: 1; }
      14 degrees, not 26. With five layers moving past each other the depth is
      carried by the parallax between them, not by the angle, and a smaller
      angle keeps the mark legible as a logo the whole way through. */
+  /* No scale. A zoom on an object that is already turning in perspective adds
+     nothing a reader can read as depth, and it was the one part of this move
+     that said "web animation" rather than "object in a room". */
   transform:
     rotateY(calc(var(--turn) * 20deg))
-    rotateZ(calc(var(--turn) * -1.6deg))
-    scale(calc(1 + var(--turn) * 0.04));
+    rotateZ(calc(var(--turn) * -1.6deg));
 }
 
 /* The five objects the mark is cut into. They share one square box and are
@@ -763,17 +822,20 @@ body > * { position: relative; z-index: 1; }
    same element in the same grid cell, so nothing reflows, and the whole move
    is one transform. The X figure is a percentage of the block's own width,
    which is what takes it from centred to hard right in this container. */
+/* The words are painted on the sweep, so they live in the set rather than
+   beside it: the objects hang in front of them and the camera pans both, the
+   wall slowly and the objects faster. They are centred, and the mark starts
+   over them; as it turns and walks out of the way the line is left standing in
+   the middle of the set. */
 .hero-words {
   grid-area: 1 / 1;
-  justify-self: start;
+  justify-self: center;
   align-self: end;
-  margin-bottom: clamp(1.25rem, 5vh, 3.5rem);
-  width: min(100%, 52ch);
-  text-align: left;
-  /* In front of the mark, and still. The mark moves, the words do not: one
-     thing moving against a fixed thing reads as motion, two things moving
-     reads as a scroll effect. */
-  z-index: 2;
+  margin-bottom: clamp(1rem, 4vh, 3rem);
+  width: min(100%, 60ch);
+  text-align: center;
+  z-index: 1;
+  transform: translate3d(calc(var(--turn) * 2.5%), 0, 0);
   pointer-events: none;
 }
 .hero-words :where(a) { pointer-events: auto; }
@@ -782,16 +844,11 @@ body > * { position: relative; z-index: 1; }
    the mark standing over the middle of it. Optical sizing is on, which is the
    whole reason this face was chosen over the display face used elsewhere. */
 .hero-head {
-  /* Three words, three lines, stacked down the left. Set as a block rather
-     than a sentence: at this size the stack is the composition, and it leaves
-     the right half of the frame to the object. */
-  display: flex;
-  flex-direction: column;
   font-family: var(--font-hero);
   font-weight: 700;
   font-optical-sizing: auto;
   font-variation-settings: "opsz" 144, "SOFT" 20, "WONK" 1;
-  font-size: clamp(2.6rem, 7vw, 7.2rem);
+  font-size: clamp(2.4rem, 6.2vw, 6.4rem);
   line-height: 0.88;
   letter-spacing: -0.04em;
   color: var(--color-ink);
@@ -860,7 +917,11 @@ body > * { position: relative; z-index: 1; }
   }
   .hero-words :where(.t-lead) { margin-inline: auto; }
   .hero-words :where(div) { justify-content: center; }
-  .hero-cast, .hero-sheen, .hero-cue, .hero-key { display: none; }
+  .hero-cast, .hero-sheen, .hero-cue { display: none; }
+  /* The sweep is wider than the frame so a desktop pan never shows its edge.
+     On a phone there is no pan and no overflow clip around it, so that extra
+     width became 31px of horizontal page scroll. */
+  .hero-sweep { inset: 0; transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

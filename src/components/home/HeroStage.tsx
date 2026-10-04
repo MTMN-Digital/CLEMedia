@@ -141,10 +141,19 @@ export function HeroStage() {
   return (
     <div ref={section} className="hero-pin" style={{ height: `calc(100vh + ${TRAVEL * 100}vh)` }}>
       <div ref={stage} className="hero-stage">
-        {/* The room. A soft key from the upper left, and a floor the object can
-            throw a shadow onto, both drawn rather than photographed. */}
-        <span aria-hidden="true" className="hero-key" />
-        <span aria-hidden="true" className="hero-floor" />
+        {/* The set: a seamless paper sweep, which is how these felted objects
+            were photographed in the first place. Wall curving into floor, one
+            lamp up and to the left, and leaf shadow falling across it, because
+            the show's whole world is a garden. Everything here is drawn.
+
+            The sweep pans with the camera, and it pans LESS than the objects
+            hanging in front of it, which is the parallax that makes it a space
+            rather than a backdrop image. */}
+        <div aria-hidden="true" className="hero-sweep">
+          <span className="hero-sweep-floor" />
+          <span className="hero-sweep-key" />
+          <span className="hero-sweep-leaves" />
+        </div>
 
         <div className="hero-inner">
           <div className="hero-object">
@@ -170,15 +179,13 @@ export function HeroStage() {
               there. The reading order in the DOM is still headline first. */}
           <div className="hero-words">
             <h1 className="hero-head">
-              <span>Watch.</span>
-              <span className="hero-head-2">Play.</span>
-              <span>Learn.</span>
+              Watch. <span className="hero-head-2">Play.</span> Learn.
             </h1>
-            <p className="t-lead mt-7 max-w-[32ch] text-body">
+            <p className="t-lead mx-auto mt-7 max-w-[38ch] text-body">
               Calm stories for young children, and the activities that take them off the screen
               afterwards.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
               <Button to="/ethical-ai">
                 How we make it
                 <IconArrow size={16} />
