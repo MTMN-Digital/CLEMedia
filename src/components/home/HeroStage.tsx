@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Figure } from "@/components/Figure";
+import { HeroMark } from "@/components/home/HeroMark";
 import { Button } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
@@ -16,11 +16,12 @@ import { SITE } from "@/lib/site";
 
    THREE BEATS, across the pinned range:
 
-     0.00 - 0.34  the object, square on, centred, held at rest
-     0.34 - 0.72  it turns on its strings and walks left; its shadow lengthens
-                  and softens as it goes; the headline arrives in the space it
-                  vacates
-     0.72 - 1.00  the garden rises behind it and the scroll cue retires
+     0.00 - 0.30  the object, square on, centred, held at rest
+     0.30 - 0.70  it turns on its strings, right edge going away from the
+                  reader, and walks left; the five objects it is made of move
+                  past each other as it goes; the headline, which has been
+                  readable the whole time, lifts a little into its place
+     0.70 - 1.00  the garden rises behind it and the scroll cue retires
 
    WHY IT IS DONE IN JS AND NOT IN CSS. Scroll-driven animation timelines are
    not available everywhere this has to run, Lenis owns the scroll position
@@ -77,8 +78,8 @@ export function HeroStage() {
       const span = Math.max(1, host.offsetHeight - window.innerHeight);
       const p = clamp01(-r.top / span);
 
-      const turn = beat(p, 0.34, 0.72);
-      const rise = beat(p, 0.72, 1);
+      const turn = beat(p, 0.3, 0.7);
+      const rise = beat(p, 0.7, 1);
 
       el.style.setProperty("--p", p.toFixed(4));
       el.style.setProperty("--turn", turn.toFixed(4));
@@ -117,12 +118,7 @@ export function HeroStage() {
                 onto a wall several feet behind it does not keep its shape. */}
             <span aria-hidden="true" className="hero-cast" />
             <div className="hero-mark">
-              <Figure
-                asset="brand.cle"
-                priority
-                rounded="rounded-none"
-                sizes="(min-width: 1280px) 680px, 46vw"
-              />
+              <HeroMark />
               {/* The light moving across the face as it turns. */}
               <span aria-hidden="true" className="hero-sheen" />
             </div>

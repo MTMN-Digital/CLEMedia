@@ -602,6 +602,10 @@ body > * { position: relative; z-index: 1; }
   display: grid;
   place-items: center;
   width: min(100% - 2.5rem, 97.5rem);
+  /* Full height of the stage. Without this it sizes to its tallest child, and
+     then anchoring one child to the top and the other to the bottom separates
+     them by nothing at all. */
+  height: 100%;
   transform-style: preserve-3d;
 }
 
@@ -609,27 +613,65 @@ body > * { position: relative; z-index: 1; }
 .hero-object {
   position: relative;
   grid-area: 1 / 1;
-  width: clamp(230px, 40vw, 680px);
+  /* Anchored to the top of the stage, not the middle. A centred mark and a
+     readable text block do not both fit in one screen: at 980px tall the mark
+     wants 560 of it and the headline, lead and buttons want 380 more. So the
+     mark holds the top half at rest and the words hold the bottom, and the
+     turn brings both to the middle, one going left and one going right. */
+  align-self: start;
+  margin-top: clamp(0.25rem, 2vh, 1.5rem);
+  width: clamp(200px, 26vw, 400px);
   transform-style: preserve-3d;
   /* Sits high enough that the strings run off the top of the frame rather
      than beginning in mid air, then walks left and toward the reader. */
   transform:
-    translate3d(calc(var(--turn) * -24%), calc(-28% + var(--turn) * -1%), calc(var(--turn) * 40px));
+    translate3d(calc(var(--turn) * -26%), calc(var(--turn) * 15vh), calc(var(--turn) * 40px));
   z-index: 2;
 }
 
 .hero-mark {
   position: relative;
   transform-style: preserve-3d;
-  /* The turn itself: the right edge goes back, the left comes forward. */
+  /* The turn: the RIGHT edge goes away from the reader, the left comes
+     forward. That is a POSITIVE rotateY. The first build had it negative, so
+     the object turned the wrong way entirely.
+
+     14 degrees, not 26. With five layers moving past each other the depth is
+     carried by the parallax between them, not by the angle, and a smaller
+     angle keeps the mark legible as a logo the whole way through. */
   transform:
-    rotateY(calc(var(--turn) * -26deg))
-    rotateZ(calc(var(--turn) * -3.2deg))
-    scale(calc(1 + var(--turn) * 0.06));
+    rotateY(calc(var(--turn) * 14deg))
+    rotateZ(calc(var(--turn) * -1.6deg))
+    scale(calc(1 + var(--turn) * 0.04));
   filter:
     drop-shadow(0 3px 2px rgba(74, 53, 42, 0.2))
     drop-shadow(0 calc(18px + var(--turn) * 16px) calc(26px + var(--turn) * 18px) rgba(74, 53, 42, 0.26));
 }
+
+/* The five objects the mark is cut into. They share one square box and are
+   stacked in it, so they register exactly; the only thing that separates them
+   is where each one stands in Z. The group turns, they move past each other.
+
+   Each layer carries a shadow scaled to its own depth, which is what stops the
+   stack reading as five stickers on one pane of glass. */
+.hero-layers {
+  position: relative;
+  transform-style: preserve-3d;
+  /* Reserve the square the layers occupy: they are all absolute, so without
+     this the stage would collapse to nothing. */
+  aspect-ratio: 591 / 592;
+}
+.hero-layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: translate3d(0, 0, var(--z, 0px));
+  filter: drop-shadow(
+    calc(var(--turn) * (var(--z, 0px) / 6)) calc(6px + var(--z, 0px) / 10)
+    calc(10px + var(--z, 0px) / 5) rgba(74, 53, 42, 0.26)
+  );
+}
+.hero-layer img { display: block; width: 100%; height: auto; }
 
 /* The light crossing the face.
 
@@ -644,6 +686,7 @@ body > * { position: relative; z-index: 1; }
   pointer-events: none;
   -webkit-mask-image: url("/brand/cle-mark.png");
   mask-image: url("/brand/cle-mark.png");
+  z-index: 2;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
@@ -676,13 +719,28 @@ body > * { position: relative; z-index: 1; }
 }
 
 /* The words arrive in the space the object leaves. */
+/* The words are present and readable from the first frame. They were faded
+   from zero in the first build, which meant the hero opened with no sentence
+   on it at all: a reader who never scrolls never learns what the company does.
+
+   At rest they sit under the mark, which is centred; as the mark turns and
+   walks left they lift and travel to the right of it. Both positions are the
+   same element in the same grid cell, so nothing reflows, and the whole move
+   is one transform. The X figure is a percentage of the block's own width,
+   which is what takes it from centred to hard right in this container. */
 .hero-words {
   grid-area: 1 / 1;
   justify-self: end;
-  width: min(46ch, 100%);
+  align-self: end;
+  margin-bottom: clamp(1.25rem, 4vh, 2.75rem);
+  width: min(44ch, 100%);
   text-align: left;
-  opacity: var(--turn);
-  transform: translate3d(calc((1 - var(--turn)) * 2.5rem), 0, 0);
+  opacity: calc(0.82 + var(--turn) * 0.18);
+  transform: translate3d(
+    calc((1 - var(--turn)) * -106%),
+    calc(var(--turn) * -13vh),
+    0
+  );
   pointer-events: none;
 }
 .hero-words :where(a) { pointer-events: auto; }
