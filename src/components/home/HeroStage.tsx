@@ -16,12 +16,10 @@ import { SITE } from "@/lib/site";
 
    THREE BEATS, across the pinned range:
 
-     0.00 - 0.30  the object, square on, centred, held at rest
-     0.30 - 0.70  it turns on its strings, right edge going away from the
-                  reader, and walks left; the five objects it is made of move
-                  past each other as it goes; the headline, which has been
-                  readable the whole time, lifts a little into its place
-     0.70 - 1.00  the garden rises behind it and the scroll cue retires
+   ONE MOVE, across 0.8 of a screen: the object turns on its strings, right
+   edge going away from the reader, and travels left across the type. The words
+   do not move. They are in front of it the whole way, so the mark passing
+   behind them is the only thing that changes.
 
    WHY IT IS DONE IN JS AND NOT IN CSS. Scroll-driven animation timelines are
    not available everywhere this has to run, Lenis owns the scroll position
@@ -45,17 +43,27 @@ import { SITE } from "@/lib/site";
    the words, the garden, the cue, is untouched by which path is drawing.
    ========================================================================== */
 
-/** Length of the hold, in viewport heights, on top of the sticky screen. */
-const TRAVEL = 1.6;
+/** Length of the hold, in viewport heights, on top of the sticky screen.
+
+    0.8, down from 1.6. The hold was spending nearly two screens of the
+    reader's scroll on one move, which reads as the page refusing to go rather
+    than as an animation. */
+const TRAVEL = 0.8;
 
 function clamp01(n: number) {
   return n < 0 ? 0 : n > 1 ? 1 : n;
 }
-/** Progress within a sub-range of the overall timeline, eased. */
-function beat(p: number, from: number, to: number) {
-  const t = clamp01((p - from) / (to - from));
-  /* The house curve: fast out of the gate, settling, never overshooting. */
-  return 1 - Math.pow(1 - t, 3);
+/** One continuous ease across the whole hold.
+
+    The first build split the timeline into beats, so nothing moved at all for
+    the first third and then everything started at once. From a reader's seat
+    that is a dead zone followed by a lurch. There is one move now, it begins
+    on the first pixel of scroll, and it eases the whole way. */
+function ease(p: number) {
+  const t = clamp01(p);
+  /* Smootherstep: zero velocity at both ends, so it neither jumps off the mark
+     nor stops dead at the end of the hold. */
+  return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
 export function HeroStage() {
@@ -102,8 +110,8 @@ export function HeroStage() {
       const span = Math.max(1, host.offsetHeight - window.innerHeight);
       const p = clamp01(-r.top / span);
 
-      const turn = beat(p, 0.3, 0.7);
-      const rise = beat(p, 0.7, 1);
+      const turn = ease(p);
+      const rise = turn;
 
       el.style.setProperty("--p", p.toFixed(4));
       el.style.setProperty("--turn", turn.toFixed(4));
@@ -162,7 +170,9 @@ export function HeroStage() {
               there. The reading order in the DOM is still headline first. */}
           <div className="hero-words">
             <h1 className="hero-head">
-              Watch. <span className="hero-head-2">Play.</span> Learn.
+              <span>Watch.</span>
+              <span className="hero-head-2">Play.</span>
+              <span>Learn.</span>
             </h1>
             <p className="t-lead mt-7 max-w-[32ch] text-body">
               Calm stories for young children, and the activities that take them off the screen

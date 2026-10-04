@@ -14,11 +14,14 @@
    each layer be as deep as it likes: a raised part of the caterpillar can
    never poke through the elephant hanging in front of it.
 
-   SCALE. One unit is the width of the mark's square. A layer that hangs
-   nearer the reader is scaled down by exactly the amount the perspective
-   would enlarge it, so at rest all four project onto the same square and the
-   canvas coincides with the CSS fallback underneath it. The parallax comes
-   from the turn alone, which is where it belongs.
+   SCALE AND CAMERA. One unit is the width of the mark's square. The camera
+   is orthographic: with the relief standing off the plane, a perspective
+   camera would magnify the raised parts and show the sides of anything off
+   its axis even at rest, and at rest this canvas has to be the logo, pixel
+   for pixel. Under an orthographic camera depth is invisible until the
+   object turns, and then a point at depth z slides sideways by z sin(angle):
+   all of the parallax, none of the distortion. The layers' depths are the
+   CSS ones scaled up together, same order, same ratios.
    ========================================================================== */
 
 import {
@@ -30,7 +33,7 @@ import {
   Matrix3,
   Mesh,
   NoColorSpace,
-  PerspectiveCamera,
+  OrthographicCamera,
   PlaneGeometry,
   Scene,
   ShaderMaterial,
@@ -40,6 +43,7 @@ import {
   WebGLRenderer,
 } from "three";
 import { HERO_FRAGMENT, HERO_VERTEX } from "./shaders";
+import { buildLayerFields, type LayerFields } from "./fields";
 
 export interface HeroScene {
   /** 0 at rest, 1 at full turn. Eased already by HeroStage. */
@@ -57,29 +61,42 @@ export interface HeroSceneOptions {
 /** The same four layers, depths and order as HeroMark, back to front. Depth
     is in px of the CSS perspective space, over the 400px cap of the mark. */
 const LAYERS = [
-  { name: "mark-c", z: 0 },
-  { name: "mark-e", z: 10 },
-  { name: "mark-l", z: 26 },
-  { name: "mark-word", z: 48 },
+  { name: "mark-c", z: 0, relief: 1 },
+  { name: "mark-e", z: 10, relief: 1 },
+  { name: "mark-l", z: 26, relief: 1 },
+  /* The lettering is flatter felt than the animals, and its strokes are
+     narrow enough that the full relief folds their right sides at 20 degrees. */
+  { name: "mark-word", z: 48, relief: 0.6 },
 ] as const;
 
 /** The mark's box is 591 by 592. */
 const ASPECT = 592 / 591;
-/** The CSS stage has perspective 1500px on a mark capped at 400px wide. */
-const CAMERA_DISTANCE = 1500 / 400;
+/** The CSS depths are in px over the 400px cap of the mark; they are opened
+    up by this much so the objects visibly pass each other. */
+const DEPTH_SCALE = 1.6 / 400;
+const CAMERA_DISTANCE = 4;
 /** The canvas bleeds 15% past the mark's box on every side (see index.css). */
 const BLEED = 0.15;
-/** Full turn, in radians: 14 degrees, right edge going away from the reader
-    (a positive rotation about Y, the same sign as CSS rotateY). */
-const TURN_Y = (14 * Math.PI) / 180;
+/** Full turn, in radians: 20 degrees, right edge going away from the reader
+    (a positive rotation about Y, the same sign as CSS rotateY). Mirrors the
+    angle in .hero-mark's transform in index.css. */
+const TURN_Y = (20 * Math.PI) / 180;
 /** CSS rotateZ(-1.6deg) is anticlockwise on screen; three.js, with Y up,
     gets there with a positive angle. */
 const TURN_Z = (1.6 * Math.PI) / 180;
 
-/** How far the highest point of the wool stands off the wall, in mark widths. */
-const RELIEF = 0.11;
-/** The height that sits on the layer's own plane. */
-const RELIEF_MID = 0.45;
+/** How far the top of the wool stands off its layer, in mark widths. This
+    is the ceiling, found by looking: at 0.2 the plateau slid 16px sideways
+    across a 60px caterpillar segment at full turn and the shoulders smeared
+    into streaks; at 0.1 the shoulders stretch about 1.5x, which still reads
+    as a rounded limb. */
+const RELIEF = 0.1;
+/** The maps are a plateau between about 0.55 and 0.68 with a rounded
+    shoulder down to 0.3 at the edge; this band is what becomes the relief. */
+const HEIGHT_LOW = 0.45;
+const HEIGHT_HIGH = 0.75;
+/** Nothing in the maps is higher than this; the shadow walk stops here. */
+const HEIGHT_MAX = 0.78;
 /** Segments a side. One geometry is shared by the four layers; 360 squared
     is 130k vertices, about three texels a quad, fine enough that the walls
     at a silhouette do not facet. */
@@ -90,8 +107,13 @@ const SEGMENTS = 360;
 /** Up and to the left, a little in front, matching .hero-key. */
 const LIGHT_REST = new Vector3(-0.55, 0.78, 1.0).normalize();
 /** Where it has swung to at full turn: further left and lower, raking across
-    the wool so the fibres and the hollows show. */
-const LIGHT_TURN = new Vector3(-1.15, 0.62, 0.52).normalize();
+    the wool so the fibres and the hollows show. The object's face turns away
+    from it as the right edge recedes, so in the object's own frame this ends
+    up about 63 degrees off the normal, against 44 at rest. */
+const LIGHT_TURN = new Vector3(-0.7, 0.6, 0.85).normalize();
+/** The lamp brightens as the object turns into the key (the CSS key does the
+    same), so the lit slopes catch and the whole object does not just dim. */
+const KEY_GAIN_AT_TURN = 1.25;
 
 /* ---- Helpers ------------------------------------------------------------- */
 
@@ -127,6 +149,15 @@ function loadTexture(loader: TextureLoader, url: string, colour: boolean, anisot
   });
 }
 
+interface LayerMaps {
+  map: Texture;
+  height: Texture;
+  normal: Texture;
+  fields: LayerFields;
+  z: number;
+  relief: number;
+}
+
 /* ---- The scene ----------------------------------------------------------- */
 
 export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroSceneOptions): Promise<HeroScene> {
@@ -147,12 +178,17 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
      the logo is the one outcome this must never produce. Record it and
      refuse to go live. */
   let shaderFailed = false;
-  renderer.debug.onShaderError = () => {
+  renderer.debug.onShaderError = (gl, _program, vs, fs) => {
     shaderFailed = true;
+    console.warn(
+      "hero3d: shader failed, keeping the CSS mark",
+      gl.getShaderInfoLog(vs),
+      gl.getShaderInfoLog(fs),
+    );
   };
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(20, 1, 0.5, 10);
+  const camera = new OrthographicCamera(-1, 1, 1, -1, 0.5, 10);
   camera.position.set(0, 0, CAMERA_DISTANCE);
   camera.lookAt(0, 0, 0);
 
@@ -185,8 +221,10 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
   canvas.addEventListener("webglcontextlost", onLost);
 
   try {
-    await Promise.all(
-      LAYERS.map(async (layer, i) => {
+    /* Every map first, because each object's material also needs the colour
+       maps of the objects hanging in front of it, for their cast shadows. */
+    const layers: LayerMaps[] = await Promise.all(
+      LAYERS.map(async (layer) => {
         const colour = hiDpi ? `/brand/${layer.name}@2x.png` : `/brand/${layer.name}.png`;
         const [map, height, normal] = await Promise.all([
           loadTexture(loader, colour, true, anisotropy),
@@ -194,46 +232,63 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
           loadTexture(loader, `/brand/depth/${layer.name}-normal.png`, false, anisotropy),
         ]);
         textures.push(map, height, normal);
-
-        const material = new ShaderMaterial({
-          glslVersion: GLSL3,
-          vertexShader: HERO_VERTEX,
-          fragmentShader: HERO_FRAGMENT,
-          transparent: true,
-          depthTest: true,
-          depthWrite: true,
-          uniforms: {
-            uMap: { value: map },
-            uHeight: { value: height },
-            uNormal: { value: normal },
-            uRot: { value: rot },
-            uLight: { value: light },
-            uLightRest: { value: LIGHT_REST },
-            uLightTint: { value: lightTint },
-            uShadeTint: { value: shadeTint },
-            uAmbient: { value: 0.36 },
-            uWrap: { value: 0.3 },
-            uRelief: { value: RELIEF },
-            uMid: { value: RELIEF_MID },
-            uNormalScale: { value: 1.2 },
-            uShadowSoft: { value: 9.0 },
-          },
-        });
-        materials.push(material);
-
-        const mesh = new Mesh(geometry, material);
-        const z = layer.z / 400;
-        mesh.position.z = z;
-        /* Nearer, so smaller, so that at rest it projects onto the same
-           square as the layer behind it. */
-        mesh.scale.setScalar((CAMERA_DISTANCE - z) / CAMERA_DISTANCE);
-        mesh.frustumCulled = false;
-        mesh.visible = false;
-        mesh.renderOrder = i;
-        meshes[i] = mesh;
-        group.add(mesh);
+        const fields = buildLayerFields(map.image as HTMLImageElement, height.image as HTMLImageElement);
+        textures.push(fields.cover, fields.mask, fields.height);
+        return { map, height, normal, fields, z: layer.z * DEPTH_SCALE, relief: RELIEF * layer.relief };
       }),
     );
+
+    layers.forEach((layer, i) => {
+      const inFront = layers.slice(i + 1);
+      const occ = (k: number) => inFront[k] ?? null;
+      const material = new ShaderMaterial({
+        glslVersion: GLSL3,
+        vertexShader: HERO_VERTEX,
+        fragmentShader: HERO_FRAGMENT,
+        transparent: true,
+        depthTest: true,
+        depthWrite: true,
+        uniforms: {
+          uMap: { value: layer.map },
+          uHeight: { value: layer.height },
+          uNormal: { value: layer.normal },
+          uCover: { value: layer.fields.cover },
+          uHeightSmooth: { value: layer.fields.height },
+          uRot: { value: rot },
+          uLight: { value: light },
+          uLightRest: { value: LIGHT_REST },
+          uLightTint: { value: lightTint },
+          uShadeTint: { value: shadeTint },
+          uAmbient: { value: 0.28 },
+          uWrap: { value: 0.2 },
+          uRelief: { value: layer.relief },
+          uLow: { value: HEIGHT_LOW },
+          uHigh: { value: HEIGHT_HIGH },
+          uHMax: { value: HEIGHT_MAX },
+          uNormalScale: { value: 1.3 },
+          uShadowSoft: { value: 14.0 },
+          uKeyGain: { value: 1 },
+          uOccCount: { value: inFront.length },
+          uOcc0: { value: occ(0)?.fields.mask ?? layer.fields.mask },
+          uOcc1: { value: occ(1)?.fields.mask ?? layer.fields.mask },
+          uOcc2: { value: occ(2)?.fields.mask ?? layer.fields.mask },
+          uOccZ0: { value: occ(0)?.z ?? 0 },
+          uOccZ1: { value: occ(1)?.z ?? 0 },
+          uOccZ2: { value: occ(2)?.z ?? 0 },
+          uLayerZ: { value: layer.z },
+          uCast: { value: 0.5 },
+        },
+      });
+      materials.push(material);
+
+      const mesh = new Mesh(geometry, material);
+      mesh.position.z = layer.z;
+      mesh.frustumCulled = false;
+      mesh.visible = false;
+      mesh.renderOrder = i;
+      meshes[i] = mesh;
+      group.add(mesh);
+    });
   } catch (err) {
     canvas.removeEventListener("webglcontextlost", onLost);
     dispose();
@@ -248,10 +303,13 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
     renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    /* The visible height at the mark's plane is the box plus its bleed. */
-    const visible = ASPECT * (1 + 2 * BLEED);
-    camera.fov = (2 * Math.atan(visible / 2 / CAMERA_DISTANCE) * 180) / Math.PI;
+    /* The visible width is the mark's box plus its bleed on each side. */
+    const halfW = (1 + 2 * BLEED) / 2;
+    const halfH = halfW * (h / w);
+    camera.left = -halfW;
+    camera.right = halfW;
+    camera.top = halfH;
+    camera.bottom = -halfH;
     camera.updateProjectionMatrix();
   };
 
@@ -262,6 +320,8 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
     group.updateMatrixWorld(true);
     rot.setFromMatrix4(group.matrixWorld);
     light.copy(LIGHT_REST).lerp(LIGHT_TURN, turn).normalize();
+    const keyGain = 1 + (KEY_GAIN_AT_TURN - 1) * turn;
+    for (const m of materials) m.uniforms.uKeyGain.value = keyGain;
 
     renderer.clear(true, true, false);
     for (const mesh of meshes) {

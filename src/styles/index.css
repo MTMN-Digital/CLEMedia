@@ -637,11 +637,16 @@ body > * { position: relative; z-index: 1; }
      mark holds the top half at rest and the words hold the bottom, and the
      turn brings both to the middle, one going left and one going right. */
   align-self: start;
+  justify-self: end;
   margin-top: clamp(0.25rem, 2vh, 1.5rem);
-  /* Large enough to be the subject of the page rather than a logo on it. At
-     1440 this is 740px, more than half the width of the frame. */
-  width: clamp(230px, 52vw, 780px);
-  z-index: 2;
+  /* Large enough to be the subject of the page rather than a logo on it. */
+  width: clamp(230px, 47vw, 720px);
+  /* BEHIND the words. The client's note was that the lettering should be in
+     front and should not obstruct, at least not until it scrolls: so at rest
+     the two occupy different halves of the frame and nothing is covered, and
+     the overlap arrives only because the mark travels into the type. The type
+     is on top the whole way, so it never becomes unreadable. */
+  z-index: 1;
   /* The mark is scenery and it sits on top of the words, so it must not take
      the pointer: without this the canvas covers the buttons underneath it and
      the hero's only two links stop working at full turn. */
@@ -650,7 +655,11 @@ body > * { position: relative; z-index: 1; }
   /* Sits high enough that the strings run off the top of the frame rather
      than beginning in mid air, then walks left and toward the reader. */
   transform:
-    translate3d(calc(var(--turn) * -22%), calc(-7vh + var(--turn) * -6vh), calc(var(--turn) * 40px));
+    /* -74% of the object's own width. Measured, not guessed: at rest the mark
+       starts at x 734 on a 1440 frame and the headline's glyphs end at 290, so
+       anything less than this never actually reaches the type and the crossing
+       the whole composition is built around never happens. */
+    translate3d(calc(var(--turn) * -74%), calc(-4vh + var(--turn) * -5vh), calc(var(--turn) * 46px));
   z-index: 2;
 }
 
@@ -669,7 +678,7 @@ body > * { position: relative; z-index: 1; }
      carried by the parallax between them, not by the angle, and a smaller
      angle keeps the mark legible as a logo the whole way through. */
   transform:
-    rotateY(calc(var(--turn) * 14deg))
+    rotateY(calc(var(--turn) * 20deg))
     rotateZ(calc(var(--turn) * -1.6deg))
     scale(calc(1 + var(--turn) * 0.04));
 }
@@ -756,14 +765,15 @@ body > * { position: relative; z-index: 1; }
    which is what takes it from centred to hard right in this container. */
 .hero-words {
   grid-area: 1 / 1;
-  justify-self: stretch;
+  justify-self: start;
   align-self: end;
   margin-bottom: clamp(1.25rem, 5vh, 3.5rem);
-  width: 100%;
+  width: min(100%, 52ch);
   text-align: left;
-  /* Behind the object. The mark's own alpha does the masking. */
-  z-index: 1;
-  transform: translate3d(0, calc(var(--turn) * -4vh), 0);
+  /* In front of the mark, and still. The mark moves, the words do not: one
+     thing moving against a fixed thing reads as motion, two things moving
+     reads as a scroll effect. */
+  z-index: 2;
   pointer-events: none;
 }
 .hero-words :where(a) { pointer-events: auto; }
@@ -772,20 +782,19 @@ body > * { position: relative; z-index: 1; }
    the mark standing over the middle of it. Optical sizing is on, which is the
    whole reason this face was chosen over the display face used elsewhere. */
 .hero-head {
-  /* Lifted so the line crosses the LETTERS, not the felted wordmark. Crossing
-     the wordmark buried two words in another two words; crossing the letters
-     means the type passes through the gaps between three hanging objects,
-     which is the effect, and it stays readable. */
-  transform: translateY(-13vh);
+  /* Three words, three lines, stacked down the left. Set as a block rather
+     than a sentence: at this size the stack is the composition, and it leaves
+     the right half of the frame to the object. */
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-hero);
   font-weight: 700;
   font-optical-sizing: auto;
   font-variation-settings: "opsz" 144, "SOFT" 20, "WONK" 1;
-  font-size: clamp(2.6rem, 8.4vw, 8.6rem);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.6rem, 7vw, 7.2rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
   color: var(--color-ink);
-  max-width: 20ch;
 }
 /* The word the mark stands on at rest, so it reads as deliberate when the
    lion uncovers it. */
