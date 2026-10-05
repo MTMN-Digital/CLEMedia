@@ -28,6 +28,31 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
 
+  /* The run-in. Armed from script only, so with no JS the slates are simply
+     in place, and disarmed again the moment it has played: the class carries
+     a transform, and a transform left on the slates would fight the drag. */
+  useEffect(() => {
+    const el = rail.current;
+    if (!el) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    el.classList.add("is-armed");
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        el.classList.add("is-in");
+        io.disconnect();
+        /* Longest delay plus the longest transition, then the classes come
+           off and the rail is an ordinary scroller again. */
+        const last = (el.children.length - 1) * 90 + 900;
+        window.setTimeout(() => el.classList.remove("is-armed", "is-in"), last + 60);
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const readEdges = useCallback(() => {
     const el = rail.current;
     if (!el) return;
@@ -150,9 +175,9 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
             <li
               key={ep.n}
               className="w-[78vw] shrink-0 sm:w-[54vw] lg:w-[30rem]"
-              /* Each slate sits a fraction off true, the way a physical thing
-                 placed by hand does. Alternating so the rail is not a comb. */
-              style={{ transform: `rotate(${i % 2 ? 0.7 : -0.6}deg)` }}
+              /* The tilt alternates so the rail is not a comb; --i staggers the
+                 run-in so the film arrives slate by slate. */
+              style={{ "--tilt": `${i % 2 ? 0.7 : -0.6}deg`, "--i": i } as React.CSSProperties}
             >
               <EpisodeSlate ep={ep} />
             </li>

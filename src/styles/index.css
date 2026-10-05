@@ -496,7 +496,31 @@ body > * { position: relative; z-index: 1; }
 }
 .filmstrip-rail::-webkit-scrollbar { display: none; }
 .filmstrip-rail:active { cursor: grabbing; }
-.filmstrip-rail > li { scroll-snap-align: center; }
+/* Each slate sits a fraction off true, the way a physical thing placed by hand
+   does. The angle is a variable rather than an inline transform so the run-in
+   below can translate the slate without throwing the angle away. */
+.filmstrip-rail > li {
+  scroll-snap-align: center;
+  transform: rotate(var(--tilt, 0deg));
+}
+
+/* The strip runs in from the right, once, on the way past: the length of film
+   arrives rather than being there all along. It is armed only by script, so
+   with no JS the slates are simply in place, and it hands over the moment it
+   lands. The slates are translated rather than the band, because the band's
+   own overflow is what clips them, and because translating the band would
+   leave a hole on the left of a full-bleed section. */
+.filmstrip-rail.is-armed > li {
+  opacity: 0;
+  transform: translate3d(5rem, 0, 0) rotate(var(--tilt, 0deg));
+}
+.filmstrip-rail.is-armed.is-in > li {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg));
+  transition:
+    opacity 0.6s var(--ease-out) calc(var(--i, 0) * 90ms),
+    transform 0.9s var(--ease-out) calc(var(--i, 0) * 90ms);
+}
 
 /* A slate inside the strip sits on the dark stock, so its own chrome loses the
    paper card treatment and keeps only the frame. */
@@ -525,6 +549,12 @@ body > * { position: relative; z-index: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   .filmstrip-rail { scroll-behavior: auto; }
+  .filmstrip-rail.is-armed > li,
+  .filmstrip-rail.is-armed.is-in > li {
+    opacity: 1;
+    transform: rotate(var(--tilt, 0deg));
+    transition: none;
+  }
 }
 
 
