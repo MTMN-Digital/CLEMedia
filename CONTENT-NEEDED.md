@@ -258,3 +258,37 @@ Closed since the last pass: the PupsPlayer screenshots (`app.screen1-3`) are no
 longer blocking, because the product is now drawn in code and captioned as the
 plan rather than a screenshot. Real screens replace the render whenever a build
 exists.
+
+## From Conor's email, 2026-10-05
+
+**The mission video.** Conor sent a Google Drive link. The file is not open to
+anyone with the link, so it cannot be fetched; access has been requested and he
+is in London for four days. When it arrives, the decision still to make is
+whether it is self-hosted (full control, no third-party player or cookies on a
+children's media site) or put on the show's YouTube channel (free bandwidth, a
+Google player on the page).
+
+**The family photographs.** Three personal snapshots of Conor, Lydia and their
+child arrived as a PDF, with a show still pasted over the child's face in each.
+They are NOT on the site and nothing has been prepared from them. They are
+personal photographs rather than editorial ones, and the company site does not
+need the founder's own child on it to make its argument. If a reason to use one
+appears later, the place is the fatherhood section of `/story`, and the child's
+face would be covered with a shaped cut-out rather than a pasted rectangle.
+Lydia is unwell; this is not a thing to chase.
+
+**The case study.** The section is now built on `/ethical-ai` and renders an
+honest statement of what is coming. To fill it, Conor needs to answer, for one
+real held release:
+
+| Field | What it needs |
+|---|---|
+| Episode | The number and title as the show numbers it |
+| Caught at | Which of the six stages, by number and name |
+| By | The person answerable at that stage, named as they want to be named |
+| What was caught | In their own words if possible |
+| What changed | What was actually different in the released episode |
+| Release moved | A real figure, or nothing at all |
+
+Fill `CASE` in `src/components/ethical-ai/CaseStudy.tsx` and the whole section
+renders. No layout work follows.

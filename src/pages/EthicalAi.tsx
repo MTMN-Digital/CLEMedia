@@ -5,6 +5,7 @@ import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
+import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
 import { Button, Card, Container, Kicker, Lead, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
@@ -182,6 +183,16 @@ export default function EthicalAi() {
               wait for that, and has.
             </p>
           </Settle>
+
+          {/* The case, when there is one to show. See CaseStudy: the section is
+              built and deliberately empty, because the alternative on this page
+              is inventing it. */}
+          <Settle className="mt-16">
+            <h3 className="t-h3 font-display">When it has happened</h3>
+          </Settle>
+          <div className="mt-5">
+            <CaseStudy />
+          </div>
         </Container>
       </Section>
 
