@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { HeroMark } from "@/components/home/HeroMark";
 
 /* ============================================================================
    The mark in WebGL, over the mark in CSS.
@@ -12,24 +11,33 @@ import { HeroMark } from "@/components/home/HeroMark";
    (see hero3d/scene.ts and hero3d/shaders.ts), so the turn moves the light
    across the wool.
 
-   THE FALLBACK IS THE BASELINE. The CSS hero underneath is always rendered,
-   always loaded first, and always carries the accessible name. The canvas is
-   an enhancement that fades in over it once a frame has been drawn, and it
-   fades out again if the browser takes the WebGL context away. No WebGL, a
-   software renderer, a phone or tablet below 1024px, or prefers-reduced-motion
-   never load three.js at all: the dynamic import is behind those checks, so
-   the main bundle does not pay for it either.
+   THE FALLBACK IS THE BASELINE. The CSS hero underneath (HeroMark, inside
+   HeroStage's .hero-dolly) is always rendered, always loaded first, and
+   always carries the accessible name. This component is only the canvas,
+   and it sits beside the dolly rather than inside it: the dolly is a CSS
+   scale, which is fine for flat shadows and flat images and is exactly what
+   must never happen to a canvas, because scaling a canvas scales finished
+   pixels and the wool goes soft. The canvas keeps one size, the figure's
+   box plus its bleed, and the scene moves its camera instead. It fades in
+   over the CSS mark once a frame has been drawn, and it fades out again if
+   the browser takes the WebGL context away. No WebGL, a software renderer,
+   a phone or tablet below 1024px, or prefers-reduced-motion never load
+   three.js at all: the dynamic import is behind those checks, so the main
+   bundle does not pay for it either.
 
    WHAT THIS COMPONENT DOES NOT DO. It does not know about scroll. HeroStage
-   owns the timeline and hands this a subscribe function for the eased turn;
-   this hands HeroStage a flag for when the canvas is live so the stage can
-   switch its CSS over (no rotate on the mark, layers hidden, sheen off).
+   owns the timeline and hands this a subscribe function for the eased turn
+   and the dolly; this hands HeroStage a flag for when the canvas is live so
+   the stage can switch its CSS over (no rotate on the mark, layers hidden,
+   sheen off).
    ========================================================================== */
 
 export interface HeroMark3DProps {
-  /** Register for the eased turn, 0 at rest to 1 at full turn. Fires at once
-      with the current value. Returns the unsubscribe. */
-  subscribe: (fn: (turn: number) => void) => () => void;
+  /** Register for the pose: the eased turn, 0 at rest to 1 at full turn, and
+      the dolly, the mark's size as a fraction of full, REST_SCALE at rest to
+      1 at the end. Fires at once with the current values. Returns the
+      unsubscribe. */
+  subscribe: (fn: (turn: number, dolly: number) => void) => () => void;
   /** The canvas has taken over (true) or handed back to CSS (false). */
   onLive: (live: boolean) => void;
 }
@@ -97,7 +105,7 @@ export function HeroMark3D({ subscribe, onLive }: HeroMark3DProps) {
           return;
         }
         scene = built;
-        unsubscribe = subscribe((turn) => built.setTurn(turn));
+        unsubscribe = subscribe((turn, dolly) => built.setPose(turn, dolly));
         onLive(true);
       } catch {
         /* Context refused, a texture failed, or the shader did not compile:
@@ -144,12 +152,7 @@ export function HeroMark3D({ subscribe, onLive }: HeroMark3DProps) {
     };
   }, [subscribe, onLive]);
 
-  return (
-    <div className="hero-3d">
-      {/* The CSS hero, and the only thing here a screen reader meets. */}
-      <HeroMark />
-      {/* Decorative: the picture a sighted reader sees once WebGL is up. */}
-      <canvas ref={canvas} className="hero-3d-canvas" aria-hidden="true" role="presentation" />
-    </div>
-  );
+  /* Decorative: the picture a sighted reader sees once WebGL is up. The
+     accessible mark is the HeroMark HeroStage renders beside this. */
+  return <canvas ref={canvas} className="hero-3d-canvas" aria-hidden="true" role="presentation" />;
 }

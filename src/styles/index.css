@@ -569,11 +569,22 @@ body > * { position: relative; z-index: 1; }
 /* ---------------------------------------------------------------------------
    The hero, as a photographed set.
 
-   Two custom properties are written by HeroStage once a frame: --p for the
-   overall timeline and --turn for the eased move. Every transform below is a
+   Five custom properties are written by HeroStage: --p for the overall
+   timeline, --turn for the eased move and --dolly for the mark's size as a
+   fraction of full (0.7 at rest, 1 at the end) once a frame; --rise for how
+   far below its final place the figure sits at rest and --words-off for how
+   far below theirs the words do, on resize. Every transform below is a
    calc off those, so the resting state is what renders when JS never runs,
    and the reduced-motion block at the bottom throws the hold away and shows
    the finished frame.
+
+   The move is one camera move, a dolly in with a tilt down, and every layer
+   takes it at the rate its distance gives it: the sweep grows and lifts a
+   little, the objects grow from 0.7 to full and lift into the top of the
+   frame, the words rise into the frame from below the floor, the near
+   leaves grow the most. On the WebGL path the objects' part of this is a
+   real camera move in the scene (hero3d/scene.ts); the CSS here scales only
+   flat things: the shadows, the layered fallback mark, the set.
 
    The set has a tonal range this page does not have anywhere else: from a lit
    pool of paper behind the objects to a corner about three stops deeper than
@@ -583,7 +594,17 @@ body > * { position: relative; z-index: 1; }
    (ink 11:1, body 7:1); the deep tones are corners, the near floor and the
    top of the paper, and no text goes there.
 --------------------------------------------------------------------------- */
-.hero-pin { --p: 0; --turn: 0; position: relative; }
+.hero-pin {
+  --p: 0;
+  --turn: 0;
+  --dolly: 0.7;
+  --rise: 0px;
+  /* Until HeroStage has measured: the words' own height plus the margin
+     under them, which is their distance to the edge when the frame is only
+     just tall enough for everything. */
+  --words-off: calc(100% + 5.5rem);
+  position: relative;
+}
 
 .hero-stage {
   /* The tones of the set, lit to dark. */
@@ -614,12 +635,19 @@ body > * { position: relative; z-index: 1; }
      the eye reads as depth. The words take none. */
   --pan: calc(var(--turn) * 1vw);
   position: sticky;
-  top: 0;
+  /* Stuck just under the header, not under it: the frame is the whole of
+     the screen below the header for the whole of the hold, and the next
+     section arrives only when the hold releases. */
+  top: var(--header-h, 0px);
   /* svh, not vh: on a phone the browser chrome makes vh taller than what the
      reader can actually see. The header height comes off the top because the
      header is sticky but still occupies flow. HeroStage measures it. */
   height: calc(100svh - var(--header-h, 0px));
-  overflow: hidden;
+  /* clip, not hidden: the words wait below the bottom edge at rest, and a
+     hidden overflow can still be scrolled by a focus landing in it, which
+     would drag the whole frame. A clipped one cannot; HeroStage finishes the
+     move instead when focus arrives early. */
+  overflow: clip;
   display: grid;
   /* A definite row. An auto row grows to the content's height, and the
      content (figure plus words) is taller than a short screen; this pins
@@ -654,7 +682,12 @@ body > * { position: relative; z-index: 1; }
   inset: 0 -6%;
   pointer-events: none;
   overflow: hidden;
-  transform: translate3d(var(--pan), 0, 0);
+  /* The sweep's share of the camera move: the smallest pan, a little growth
+     for the dolly, a little lift for the tilt. The floor runs 16% past the
+     bottom edge, so the lift never shows the stage behind it. */
+  transform-origin: 50% 45%;
+  transform: translate3d(var(--pan), calc(var(--turn) * -2.5%), 0) scale(calc(1 + var(--turn) * 0.08));
+  will-change: transform;
 }
 .hero-set > * { position: absolute; }
 /* The wall. Dark at the top, the lamp's pool left of centre, falloff right. */
@@ -763,10 +796,22 @@ body > * { position: relative; z-index: 1; }
      words take what they need and the figure gets the rest; on a short screen
      the figure is taller than its row and overflows UPWARD, so the strings
      run further off the top of the frame and the letters still clear the
-     headline. The two cannot overlap at any viewport. */
-  grid-template-rows: minmax(0, 1fr) auto;
+     headline. The two cannot overlap at any viewport.
+
+     minmax(0, max-content), not 1fr: the same thing on a short screen, where
+     the row takes all the space there is, but on a tall one the row stops at
+     the figure's own height and the rows pack to the top, so the strings
+     still run to the top of the frame instead of stopping in mid air with
+     empty wall above them. A hanging object hangs FROM something. */
+  grid-template-rows: minmax(0, max-content) auto;
   grid-template-columns: 100%;
-  row-gap: clamp(1.75rem, 5vh, 3rem);
+  align-content: start;
+  /* The air between the wordmark and the headline. The scene's camera is a
+     perspective camera, so at the end of the move the wordmark, nearest the
+     lens, hangs a little past the bottom of the figure's box; this gap is
+     measured so that what is left between wool and type is about the same
+     as the type's own cap height. */
+  row-gap: clamp(2.25rem, 6vh, 3.5rem);
   justify-items: center;
   width: min(100% - 2.5rem, 97.5rem);
   /* Full height of the stage. Without this it sizes to its tallest child, and
@@ -782,14 +827,44 @@ body > * { position: relative; z-index: 1; }
   position: relative;
   grid-row: 1;
   align-self: end;
-  width: clamp(230px, min(34vw, 60vh), 520px);
+  /* The mark at the end of the move. About 62% of the frame's width, which
+     is the size the client asked for, held back by the frame's height so
+     that the cut the top of the frame makes is always through string and
+     never through a letter. The letters begin 45% of the way down the mark's
+     box (the lion's mane, measured on the alpha), so at least 58% of the box
+     must be on screen to leave a few percent of string above them. What is
+     left for it is the frame less the words' block: the headline at 5.6vw
+     and 0.92 leading, the lead and the buttons with their gaps (about
+     10.3rem), the row gap (6vh) and the margin under the words (5vh).
+     Divide that remainder by 0.58 and you have this. On a 1440 by 900
+     screen it lands at about 830px, 58% of the frame; on a 1920 by 1080 at
+     about 1100px; on a shorter or squarer screen the height wins harder. */
+  width: clamp(
+    230px,
+    min(62vw, calc((100svh - var(--header-h, 0px)) * 1.72 - 19vh - 9vw - 17.8rem)),
+    1240px
+  );
   z-index: 2;
   /* The figure is scenery: it must not take the pointer, or the canvas would
      cover the buttons at the bottom of the frame on a short screen. */
   pointer-events: none;
   transform-style: preserve-3d;
-  /* The camera pan: three times the sweep's rate. */
-  transform: translate3d(calc(var(--pan) * 3), 0, 0);
+  /* The figure only ever translates, because the canvas is inside it. The
+     camera pan at three times the sweep's rate, and the tilt: at rest the
+     figure sits --rise lower than its final place (HeroStage measures it so
+     the scaled box's top edge is exactly the top of the frame) and lifts to
+     its place as the camera comes in. */
+  transform: translate3d(calc(var(--pan) * 3), calc(var(--rise) * (1 - var(--turn))), 0);
+}
+/* The dolly, for the flat things: the two shadows and the layered CSS mark
+   scale about the mark's centre from 0.7 to 1. The canvas is NOT in here; it
+   is the figure's other child, at one size, and the scene moves its camera
+   instead, because a CSS scale on a canvas is resampled pixels. */
+.hero-dolly {
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  transform: scale(var(--dolly));
 }
 .hero-object {
   position: relative;
@@ -919,19 +994,28 @@ body > * { position: relative; z-index: 1; }
 
 /* The words stand on the floor, in front of the objects, under the same lamp.
 
-   Present and readable from the first frame: a reader who never scrolls still
-   learns what the company does. They do not move. At rest the figure hangs
-   above them and nothing is covered; at full turn the figure has panned a
-   little to the right and they are still exactly where they were. */
+   In the tree and readable from the first frame: a reader not looking at the
+   screen meets the headline, the lead and the buttons whatever the picture is
+   doing. On screen they are below the bottom edge of the frame at rest, where
+   the floor runs on out of shot, and the tilt brings that floor and them up
+   into the frame as the camera comes in: they arrive by moving, as part of
+   the one move, not by fading in from nothing. Once placed they do not move.
+   At full turn the figure has panned a little to the right and they are
+   exactly where they were. The travel is the distance from their place to
+   the bottom edge, measured by HeroStage, so at rest the top of the headline
+   is just under the edge whatever the frame's height. */
 .hero-words {
   grid-row: 2;
   justify-self: center;
-  /* Clear of the scroll cue on the bottom edge at every height. */
-  margin-bottom: clamp(3rem, 8vh, 5rem);
+  /* Clear of the scroll cue on the bottom edge at every height. With the
+     6vh row gap above, this is the 11vh the figure's width rule takes off
+     the frame for the words. */
+  margin-bottom: clamp(2.25rem, 5vh, 3.5rem);
   width: min(100%, 64rem);
   text-align: center;
   z-index: 1;
   pointer-events: none;
+  transform: translate3d(0, calc((1 - var(--turn)) * var(--words-off)), 0);
 }
 .hero-words :where(a) { pointer-events: auto; }
 
@@ -981,7 +1065,12 @@ body > * { position: relative; z-index: 1; }
   z-index: 3;
   pointer-events: none;
   overflow: hidden;
-  transform: translate3d(calc(var(--pan) * 5), 0, 0);
+  /* The nearest thing to the lens grows the most as the camera comes in,
+     about the bottom edge it is pinned to, so the branches push out into
+     the corners and never toward the words. */
+  transform-origin: 50% 100%;
+  transform: translate3d(calc(var(--pan) * 5), 0, 0) scale(calc(1 + var(--turn) * 0.28));
+  will-change: transform;
 }
 .hero-near-leaves {
   width: 100%;
@@ -1025,19 +1114,23 @@ body > * { position: relative; z-index: 1; }
 }
 .hero-cue-rule { display: block; width: 2.5rem; height: 1px; background: var(--color-rule); }
 
-/* The WebGL mark. HeroMark3D mounts a canvas over the four CSS layers, in
-   the same square, bleeding 15% past it so the turned object is never
-   clipped. Once a frame is drawn HeroStage marks the stage .is-3d: the canvas
-   fades in, the flat layers fade out (opacity, not display, so the image that
-   carries the accessible name stays in the tree), and the rotation moves off
-   the CSS and into the scene. Context loss reverses it. */
-.hero-3d { position: relative; }
+/* The WebGL mark. HeroMark3D mounts a canvas over the figure's box, the
+   square the four CSS layers fill at the end of the move, bleeding 15% past
+   it so the turned object is never clipped. The canvas is a child of the
+   figure, beside the dolly and outside it, so it is translated with the
+   figure and never scaled; the scene draws the mark smaller at rest by
+   having its camera further away. Once a frame is drawn HeroStage marks the
+   stage .is-3d: the canvas fades in, the flat layers fade out (opacity, not
+   display, so the image that carries the accessible name stays in the
+   tree), and the rotation moves off the CSS and into the scene. Context
+   loss reverses it. */
 .hero-3d-canvas {
   position: absolute;
   top: -15%;
   left: -15%;
   width: 130%;
   height: 130%;
+  z-index: 3;
   display: block;
   pointer-events: none;
   opacity: 0;
@@ -1047,7 +1140,9 @@ body > * { position: relative; z-index: 1; }
 .hero-stage.is-3d .hero-3d-canvas { opacity: 1; }
 .hero-stage.is-3d .hero-layers { opacity: 0; }
 .hero-stage.is-3d .hero-layer { filter: none; }
-.hero-stage.is-3d .hero-mark { transform: scale(calc(1 + var(--turn) * 0.04)); }
+/* No transform at all on the CSS mark once the canvas has it: the turn and
+   the dolly are both in the scene. */
+.hero-stage.is-3d .hero-mark { transform: none; }
 .hero-stage.is-3d .hero-sheen { display: none; }
 
 /* Below the lg breakpoint there is no hold, no turn, no pan and no WebGL. The
@@ -1059,6 +1154,9 @@ body > * { position: relative; z-index: 1; }
   .hero-stage {
     --pan: 0px;
     position: relative;
+    /* No sticking, so no offset under the header: on a relative box the
+       sticky top would become a gap. */
+    top: auto;
     height: auto;
     padding: 1.75rem 0 3.25rem;
     perspective: none;
@@ -1068,12 +1166,14 @@ body > * { position: relative; z-index: 1; }
   .hero-near { inset: auto 0 0 0; height: 36%; transform: none; }
   .hero-stage { --set-fall: 28%; }
   .hero-set-floor { height: 54%; bottom: -10%; }
-  .hero-set-gobo { height: 60%; filter: blur(9px); }
+  /* Sharper on a phone, not softer: the leaves are a third the size here and
+     at 9px a real silhouette went back to being a smudge. */
+  .hero-set-gobo { height: 60%; filter: blur(4px); }
   .hero-near-close { filter: blur(10px); opacity: 0.42; }
   .hero-near-mid { filter: blur(5px); opacity: 0.36; }
   .hero-inner { display: block; width: min(100% - 2rem, 97.5rem); margin-inline: auto; height: auto; }
   .hero-figure { width: clamp(220px, 56vw, 400px); margin: 0 auto; transform: none; }
-  .hero-mark { transform: none; }
+  .hero-dolly, .hero-mark, .hero-words { transform: none; }
   .hero-shadow-wall { transform: translate3d(6%, 6%, 0) scale(1.03); }
   /* Less lean on a phone: the frame is narrow and the tail was reaching the
      lead copy at the right edge. */
@@ -1083,12 +1183,14 @@ body > * { position: relative; z-index: 1; }
   .hero-sheen, .hero-cue { display: none; }
 }
 
-/* Reduced motion: the finished frame, held still. No hold, no pan, no turn;
-   HeroStage never writes a property, so every calc above sits at rest. */
+/* Reduced motion: the finished frame, held still. No hold, no pan, no turn,
+   no dolly; HeroStage writes nothing but the header height, and every
+   transform above is switched off here, so the mark is at full size in its
+   final place with the words placed under it: the frame the move ends on. */
 @media (prefers-reduced-motion: reduce) {
   .hero-pin { height: auto !important; }
-  .hero-stage { position: relative; --pan: 0px; }
-  .hero-set, .hero-near, .hero-figure { transform: none; }
+  .hero-stage { position: relative; top: auto; --pan: 0px; }
+  .hero-set, .hero-near, .hero-figure, .hero-dolly, .hero-words { transform: none; }
   .hero-mark { transform: none; }
   .hero-sheen, .hero-cue { display: none; }
 }

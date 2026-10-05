@@ -15,13 +15,19 @@
    never poke through the elephant hanging in front of it.
 
    SCALE AND CAMERA. One unit is the width of the mark's square. The camera
-   is orthographic: with the relief standing off the plane, a perspective
-   camera would magnify the raised parts and show the sides of anything off
-   its axis even at rest, and at rest this canvas has to be the logo, pixel
-   for pixel. Under an orthographic camera depth is invisible until the
-   object turns, and then a point at depth z slides sideways by z sin(angle):
-   all of the parallax, none of the distortion. The layers' depths are the
-   CSS ones scaled up together, same order, same ratios.
+   is a perspective camera on a long lens (about 17 degrees across), and the
+   scroll DOLLIES it: it starts further back, with the mark at REST of its
+   full size, and drives in until the mark fills the figure's box. That is a
+   real move of the camera along its axis, not a scale of the canvas: the
+   canvas keeps its one size and its one drawing buffer, the mark is drawn
+   larger because the camera is nearer, and the wool stays sharp because
+   nothing is resampling finished pixels. Being a perspective camera, the
+   dolly also does what a dolly does and a zoom does not: the word in front
+   grows a little faster than the caterpillar behind it, so the objects pull
+   apart as the camera comes in. The lens is long enough that at rest, with
+   the camera at its furthest, the relief standing off each plane shifts by
+   under one percent of the mark's width, so the canvas is still the logo
+   the CSS layers under it show when it fades in over them.
    ========================================================================== */
 
 import {
@@ -33,7 +39,7 @@ import {
   Matrix3,
   Mesh,
   NoColorSpace,
-  OrthographicCamera,
+  PerspectiveCamera,
   PlaneGeometry,
   Scene,
   ShaderMaterial,
@@ -46,8 +52,10 @@ import { HERO_FRAGMENT, HERO_VERTEX } from "./shaders";
 import { buildLayerFields, type LayerFields } from "./fields";
 
 export interface HeroScene {
-  /** 0 at rest, 1 at full turn. Eased already by HeroStage. */
-  setTurn(turn: number): void;
+  /** `turn` is 0 at rest, 1 at full turn; `dolly` is the mark's size as a
+      fraction of its full size, REST at rest and 1 at the end of the move.
+      Both eased already by HeroStage. */
+  setPose(turn: number, dolly: number): void;
   dispose(): void;
 }
 
@@ -74,9 +82,28 @@ const ASPECT = 592 / 591;
 /** The CSS depths are in px over the 400px cap of the mark; they are opened
     up by this much so the objects visibly pass each other. */
 const DEPTH_SCALE = 1.6 / 400;
-const CAMERA_DISTANCE = 4;
+/** Where the camera ends, in mark widths: the near end of the dolly, with
+    the plane at Z_REF filling the figure's box. At rest it sits at
+    CAMERA_END / REST_SCALE, further back by exactly the factor the mark is
+    smaller. 4.5 widths with the 15% bleed is a 17 degree lens: long enough
+    that the relief barely shifts with distance and the objects land within
+    a percent of where the CSS layers put them when the canvas fades in,
+    short enough that the dolly still pulls the word in front away from the
+    caterpillar behind as it comes in. */
+const CAMERA_END = 4.5;
+/** The depth that fills the box exactly, in mark widths: a little in front
+    of the back plane, between the caterpillar and the lion. Put the back
+    plane here instead and the word, nearest the lens, overhangs the box by
+    3% at the end of the move and crowds the headline under it; put the word
+    there and the back layers shrink inside the CSS ones at the crossfade.
+    The middle splits the error to about one percent each way. */
+const Z_REF = 0.06;
 /** The canvas bleeds 15% past the mark's box on every side (see index.css). */
 const BLEED = 0.15;
+/** Width of the colour maps in texels. The drawing buffer is capped so the
+    mark is never drawn at much more than this many device pixels across:
+    past it there is no more wool to show, only more fragments to shade. */
+const TEXTURE_WIDTH = 1182;
 /** Full turn, in radians: 20 degrees, right edge going away from the reader
     (a positive rotation about Y, the same sign as CSS rotateY). Mirrors the
     angle in .hero-mark's transform in index.css. */
@@ -171,7 +198,6 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
     powerPreference: "high-performance",
     failIfMajorPerformanceCaveat: true,
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(new Color(0, 0, 0), 0);
   renderer.autoClear = false;
   /* A shader that fails to compile draws nothing, and nothing fading in over
@@ -188,9 +214,8 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
   };
 
   const scene = new Scene();
-  const camera = new OrthographicCamera(-1, 1, 1, -1, 0.5, 10);
-  camera.position.set(0, 0, CAMERA_DISTANCE);
-  camera.lookAt(0, 0, 0);
+  const camera = new PerspectiveCamera(22, 1, 0.5, 20);
+  camera.position.set(0, 0, CAMERA_END);
 
   const group = new Group();
   scene.add(group);
@@ -212,6 +237,7 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
   let disposed = false;
   let frame = 0;
   let turn = 0;
+  let dolly = 1;
   let ro: ResizeObserver | null = null;
 
   const onLost = () => {
@@ -302,20 +328,28 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
   const fit = () => {
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
+    /* The mark's box is the canvas less its bleed. */
+    const markCss = w / (1 + 2 * BLEED);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2, (TEXTURE_WIDTH * 1.15) / markCss);
+    renderer.setPixelRatio(Math.max(1, dpr));
     renderer.setSize(w, h, false);
-    /* The visible width is the mark's box plus its bleed on each side. */
+    /* At the near end of the dolly the visible width on the reference plane
+       is the mark's box plus its bleed on each side; the lens follows from
+       that and the camera's distance from that plane. */
     const halfW = (1 + 2 * BLEED) / 2;
     const halfH = halfW * (h / w);
-    camera.left = -halfW;
-    camera.right = halfW;
-    camera.top = halfH;
-    camera.bottom = -halfH;
+    camera.aspect = w / h;
+    camera.fov = (2 * Math.atan(halfH / (CAMERA_END - Z_REF)) * 180) / Math.PI;
     camera.updateProjectionMatrix();
   };
 
   const draw = () => {
     frame = 0;
     if (disposed) return;
+    /* The dolly: the camera comes in along its own axis. On-screen size
+       goes as one over distance, so the distance is the end distance over
+       the size HeroStage asked for. */
+    camera.position.z = CAMERA_END / dolly;
     group.rotation.set(0, turn * TURN_Y, turn * TURN_Z);
     group.updateMatrixWorld(true);
     rot.setFromMatrix4(group.matrixWorld);
@@ -364,10 +398,12 @@ export async function createHeroScene(canvas: HTMLCanvasElement, opts: HeroScene
   }
 
   return {
-    setTurn(next: number) {
-      const t = next < 0 ? 0 : next > 1 ? 1 : next;
-      if (t === turn) return;
+    setPose(nextTurn: number, nextDolly: number) {
+      const t = nextTurn < 0 ? 0 : nextTurn > 1 ? 1 : nextTurn;
+      const d = nextDolly < 0.2 ? 0.2 : nextDolly > 1 ? 1 : nextDolly;
+      if (t === turn && d === dolly) return;
       turn = t;
+      dolly = d;
       request();
     },
     dispose,
