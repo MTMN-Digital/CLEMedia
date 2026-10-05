@@ -1299,3 +1299,117 @@ body > * { position: relative; z-index: 1; }
   letter-spacing: 0.16em;
   color: var(--color-body);
 }
+
+/* ---------------------------------------------------------------------------
+   The rebuilt hero: one shot, with the room inside the canvas.
+
+   Everything the camera moves through is in the WebGL scene, so this file has
+   almost nothing to do. It sizes the frame, places the words over it, and
+   says what happens when there is no WebGL. The old `.hero-*` set, with its
+   CSS sweep, floor, gobo and leaves, is still used by the hero on the live
+   home page and is untouched; this block is additive while the three
+   directions are being compared.
+--------------------------------------------------------------------------- */
+.shot-pin { position: relative; }
+.shot-screen {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  /* The ground the canvas is drawn over. The scene renders with a clear alpha
+     of zero, so this is the room's own far tone and the GL floor and wall sit
+     on top of it: one colour, no seam at the canvas edge. */
+  background: var(--color-sunken);
+  isolation: isolate;
+}
+.shot-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Never a click target: the buttons are under it in the stacking order. */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+.shot-screen.is-live .shot-canvas { opacity: 1; }
+
+/* The flat mark, which is what the markup renders and what stays without
+   WebGL. It is in the middle of the frame, at the size the scene starts the
+   object at, so the handover from one to the other is not a jump. */
+.shot-flat {
+  position: relative;
+  width: min(52vh, 72vw);
+  transform: translateY(-6vh);
+  transition: opacity 0.5s var(--ease-out);
+}
+.shot-screen.is-live .shot-flat { opacity: 0; }
+
+/* The words arrive in the space the move opens under the mark. --w runs 0 to
+   1 across the second half of the move, so they are genuinely absent from the
+   frame a reader lands on rather than merely faint. */
+.shot-words {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(3rem, 9vh, 6rem);
+  width: min(100% - 2.5rem, 64rem);
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--w, 0);
+  transform: translate3d(-50%, calc((1 - var(--w, 0)) * 2.4rem), 0);
+}
+.shot-words :where(a) { pointer-events: auto; }
+
+/* The cue is the opposite: it is the only thing on the resting frame besides
+   the mark, and it is gone as soon as the reader has done what it asks. */
+.shot-cue {
+  position: absolute;
+  bottom: clamp(1.5rem, 3.5vh, 2.5rem);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--color-body);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: calc(1 - var(--w, 0));
+  transform: translateX(-50%);
+}
+
+/* Preview chrome only. Never rendered on a real page. */
+.shot-tag {
+  position: absolute;
+  top: calc(var(--header-h, 4.75rem) + 1rem);
+  left: 1.25rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: var(--color-raised);
+  color: var(--color-body);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No move, so no arrival: the hero is the mark with its words under it. */
+  .shot-pin { height: auto !important; }
+  .shot-screen { position: relative; height: auto; padding: 8vh 0 12vh; gap: 4vh; }
+  .shot-canvas { display: none; }
+  .shot-flat { opacity: 1 !important; transform: none; }
+  .shot-words {
+    position: static;
+    opacity: 1;
+    transform: none;
+    width: min(100% - 2.5rem, 64rem);
+    margin-inline: auto;
+  }
+  .shot-cue { display: none; }
+}
