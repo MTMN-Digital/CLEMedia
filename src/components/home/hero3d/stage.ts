@@ -63,8 +63,11 @@ const CAM_Z_END = 2.4;
 
 /** How far the camera drops across the move, in mark widths. The axis stays
     horizontal, so this does not tilt the shot: it raises the mark in the
-    frame and uncovers the floor the headline stands on. */
-const CAM_DROP = 0.32;
+    frame and opens the band the headline lands in. It has to be this large.
+    At 0.32 the mark finished with its wordmark across the middle of the
+    frame and "Watch. Play. Learn." landed on top of "FAMILY MEDIA", which is
+    unreadable and was the one fault every one of the three sets shared. */
+const CAM_DROP = 0.5;
 /** The camera's height at rest, which decides where the mark sits in the
     frame before anything has happened. Slightly above the mark's centre so
     the resting frame has more floor under the object than air over it. */
