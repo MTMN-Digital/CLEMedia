@@ -261,12 +261,27 @@ exists.
 
 ## From Conor's email, 2026-10-05
 
-**The mission video.** Conor sent a Google Drive link. The file is not open to
-anyone with the link, so it cannot be fetched; access has been requested and he
-is in London for four days. When it arrives, the decision still to make is
-whether it is self-hosted (full control, no third-party player or cookies on a
-children's media site) or put on the show's YouTube channel (free bandwidth, a
-Google player on the page).
+**The mission video. LANDED, live on the site.** The file came through on
+2026-10-05 (64 seconds, 3856x2144, 37 MB). It is self-hosted rather than put on
+YouTube: a third-party player sets cookies and reports every view back to
+Google, which is not a thing to put on a children's media company's site when
+the alternative is three static files. Shipped as 1080p (15 MB), 720p (7 MB)
+and 480p (3 MB), with the rendition chosen at runtime from the window and the
+connection, muted autoplay on entering view, and one press for sound. It plays
+in two places: a section of its own on the home page, below the argument and
+above the series, and full width on `/story`.
+
+Captions are generated from the audio and checked by hand, and they are the
+part that needs Conor's eye: `public/video/mission.en.vtt`. One correction was
+already needed, "positive pugs and pals" to "The Pawsitive Pugs & Pals". If any
+other word is wrong it is wrong on screen for anyone watching with sound off,
+which on a muted autoplaying film is most people.
+
+One judgement for Conor rather than for us: the film is animated in the show's
+own CG, and this site argues that AI is a tool in a human-led process and never
+the author. His own film of his own show is his to place, and nothing on the
+page claims it was made any particular way. Worth him knowing it sits two
+sections above the responsible-AI copy.
 
 **The family photographs.** Three personal snapshots of Conor, Lydia and their
 child arrived as a PDF, with a show still pasted over the child's face in each.

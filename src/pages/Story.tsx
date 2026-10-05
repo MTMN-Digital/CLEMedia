@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
+import { MissionVideo } from "@/components/MissionVideo";
 import { Wipe } from "@/components/Wipe";
 import { Button, Card, Container, Kicker, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
@@ -346,6 +347,20 @@ export default function Story() {
               of them can hold a release back. That is worth more to me than volume.
             </p>
           </Spread>
+        </Container>
+      </Section>
+
+      {/* ═══ THE FILM. The one place on the site where he says it himself
+          rather than through a page. It breaks the letter's measure, like the
+          pull quote and the garden before it, because a film set inside a
+          65ch column is a thumbnail. Muted until asked, captioned, and the
+          controls are there from the first frame. ═══ */}
+      <Section labelledBy="film-h" className="!pt-0">
+        <Container width="wide">
+          <Settle>
+            <h2 id="film-h" className="t-h2 max-w-[18ch]">The mission, in his own words</h2>
+            <MissionVideo className="mt-10" eager />
+          </Settle>
         </Container>
       </Section>
 

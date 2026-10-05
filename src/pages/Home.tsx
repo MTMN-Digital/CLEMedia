@@ -6,6 +6,7 @@ import { HeroStage } from "@/components/home/HeroStage";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
+import { MissionVideo } from "@/components/MissionVideo";
 import { Stage } from "@/components/render/Stage";
 import { ReviewGateScene } from "@/components/home/ReviewGateScene";
 import {
@@ -226,6 +227,30 @@ export default function Home() {
               ))}
             </Settle>
           </div>
+        </Container>
+      </Section>
+
+      {/* ═══ 3b. THE FILM. Conor's own statement of the mission, in his
+          voice. It sits here and not under the hero because a visitor who has
+          not yet read what this company believes has no reason to give it a
+          minute; by this point they have read it, and the film is the person
+          behind it saying the same thing. It starts muted with its controls
+          showing, and one press turns the sound on. ═══ */}
+      <Section labelledBy="film-h">
+        <Container width="wide">
+          <Wipe className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end lg:gap-16">
+            <div>
+              <Kicker>In his own words</Kicker>
+              <h2 id="film-h" className="t-h2 mt-4 max-w-[14ch]">The mission, said out loud</h2>
+            </div>
+            <Lead className="lg:pb-2">
+              A minute on what we are making and who we are making it for. Captioned, and silent
+              until you ask for sound.
+            </Lead>
+          </Wipe>
+          <Settle className="mt-12">
+            <MissionVideo />
+          </Settle>
         </Container>
       </Section>
 
