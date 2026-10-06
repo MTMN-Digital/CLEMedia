@@ -1,71 +1,348 @@
+import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Container, Kicker, Lead, Panel, Section } from "@/components/ui";
 import { Settle } from "@/components/Settle";
-import { Bluebell } from "@/components/graphics";
-import { IconCard, IconDownload, IconPrint } from "@/components/icons";
+import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
+import { IconArrow, IconExternal } from "@/components/icons";
+import { Docket } from "@/components/shop/Docket";
+import { SheetBench } from "@/components/shop/PrintedSheet";
+import { formatPrice, useProducts } from "@/components/shop/catalogue";
+import { SITE } from "@/lib/site";
 
-const STEPS = [
-  { icon: IconPrint, n: "01", t: "Pick your printable", b: "Colouring books, puzzle packs and activity sheets built around the series." },
-  { icon: IconCard, n: "02", t: "Pay with card", b: "Handled by Stripe. No account, no sign up, no password to forget." },
-  { icon: IconDownload, n: "03", t: "Download it there and then", b: "Your file is ready immediately. Save it somewhere safe and print it as often as you like." },
+/* ============================================================================
+   The shop, rebuilt 2026-10-06.
+
+   WHAT WAS WRONG. Eyebrow, two-line heading, one lead, three identical
+   rounded cards with icon chips explaining that you pick a thing, pay for it
+   and download it, a note box, footer. 1661 pixels of page, the right half of
+   the frame empty, and not one sentence a reader would carry away. Every
+   fact on it was true and none of it was worth a section.
+
+   WHAT THIS PAGE ARGUES INSTEAD. The interesting thing about this shop is
+   what it refuses to do. No account, no email gate, no signup, no mailing
+   list, no subscription: Stripe takes a card and sends its own receipt, and
+   the file is yours. That is a real position in a market where a children's
+   printable usually costs an email address, and it is worth more than three
+   cards describing a checkout.
+
+   So the refusals are the page's second section, set as a ledger of hairline
+   rows, and each one is true of the code in api/ rather than a nice thing to
+   say. If the checkout ever starts collecting something, that ledger is the
+   thing to change first.
+
+   THE OBJECT. The shop sells paper, so the page opens on paper: a drawn
+   stack of sheets standing on a lit bench, stapled, punched and trimmed, with
+   its parts named in the margin. See src/components/shop/PrintedSheet.tsx for
+   why it is drawn and not photographed.
+
+   NO PRODUCTS EXIST YET. Nothing here invents one: no title, no price, no
+   count, no "from EUR 3". The shelf is visibly empty and says so, and the
+   terms of a purchase are stated as a docket because those are true before
+   the first file is uploaded. The moment a product is published in the admin
+   panel it appears in the index, and the empty state disappears on its own.
+   ========================================================================== */
+
+/* Each line is checkable against the code, which is the only reason it is on
+   the page. `where` names the file that makes it true. */
+const REFUSALS: { title: string; body: string; where: string }[] = [
+  {
+    title: "No account",
+    body: "There is nothing to sign up to and no password to forget. Nothing on this site has a login except the admin panel the team writes from.",
+    where: "no auth on the public site",
+  },
+  {
+    title: "No email gate",
+    body: "Stripe asks for an address so it can send you its own receipt. We never ask for one, and your file does not wait behind it.",
+    where: "api/create-checkout-session.ts",
+  },
+  {
+    title: "No mailing list",
+    body: "Buying something here never adds you to one. There is no box to untick, because there is no list to be added to.",
+    where: "api/stripe-webhook.ts writes the order and nothing else",
+  },
+  {
+    title: "One payment",
+    body: "Each file is bought once and kept. Nothing renews, nothing is a trial, and there is no subscription to remember to cancel.",
+    where: "Stripe mode: payment",
+  },
+  {
+    title: "One thing to watch",
+    body: "Your download link works for 24 hours and up to five downloads. That is the only thing we ask you to pay attention to: save the file when it arrives.",
+    where: "api/download.ts",
+  },
+];
+
+/* The kinds of thing being made, in the client's own words. Deliberately not
+   titles, prices or dates: those arrive with the first real product. */
+const KINDS: { kind: string; line: string }[] = [
+  { kind: "Colouring books", line: "Pages from the series to print, colour and put on the fridge." },
+  { kind: "Puzzle packs", line: "Puzzles and quizzes built around what happens in an episode." },
+  { kind: "Activity sheets", line: "Single sheets for one sitting, at home or in a classroom." },
 ];
 
 export default function Shop() {
+  const products = useProducts();
+
   return (
     <>
       <Seo
         title="Shop"
-        description="Printable activity books, puzzles and quizzes from The Pawsitive Pugs and Pals. Instant download, no account needed."
+        description="Printable colouring books, puzzle packs and activity sheets from The Pawsitive Pugs and Pals. Buy a file, download it, keep it. No account, no email gate, no mailing list."
         path="/shop"
       />
-      <Section className="relative overflow-hidden !pb-10">
-        <Bluebell size={52} className="pointer-events-none absolute right-8 top-6 text-clay/35 drift" />
-        <Container className="relative">
-          <div className="max-w-[44ch]">
-            <Kicker>Shop</Kicker>
-            <h1 className="mt-5 t-h1 font-display">Printables and activities</h1>
-          </div>
-          <Lead className="mt-6">
-            Colouring books, puzzles and quizzes to print at home or in the classroom. Buy it,
-            download it, keep it. No account, no sign up, and buying something never puts you on a
-            mailing list.
-          </Lead>
+
+      {/* ═══ THE OBJECT. The page opens on the thing being sold, lit and
+          standing on a bench, with the prose beside it rather than above a
+          row of cards. The right half of the frame is the point: the old page
+          left it empty on every breakpoint over 1100px. ═══ */}
+      <Section className="!pb-12 sm:!pb-16">
+        <Container width="wide">
+          <Settle className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-16 xl:gap-24">
+            <div>
+              <Kicker>Shop</Kicker>
+              <h1 className="t-display mt-6 max-w-[13ch]">Things you print and put on the table.</h1>
+              <Lead className="mt-7 max-w-[46ch]">
+                Colouring books, puzzle packs and activity sheets from{" "}
+                <em>The Pawsitive Pugs &amp; Pals&reg;</em>, for the kitchen table and for the
+                classroom. You buy a file, you download it, and it is yours to print as often as
+                you like.
+              </Lead>
+              <p className="mt-6 max-w-[46ch] text-[17px] leading-[1.72] text-body">
+                What you do not do is make an account, hand over an email address to get a free
+                sample, or end up on a list.
+              </p>
+              <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+                <TextLink href={SITE.showUrl}>
+                  Free activities on the show's site
+                  <IconExternal size={14} />
+                </TextLink>
+                <TextLink to="/app">
+                  Interactive activities live in {SITE.playerName}&trade;
+                  <IconArrow size={15} />
+                </TextLink>
+              </div>
+            </div>
+
+            <SheetBench
+              caption={
+                <>
+                  Drawn, not photographed. What arrives is a PDF: one sheet, or a stapled set of
+                  them.
+                </>
+              }
+            />
+          </Settle>
         </Container>
       </Section>
 
-      <Section className="!pt-0">
+      {/* ═══ THE REFUSALS. The page's argument, as a ledger. Hairline rows,
+          one mono annotation each naming where the promise is kept, which is
+          the Contact page's receipt idea applied to a shop. ═══ */}
+      <Section labelledBy="refuse-h" className="well">
+        <Container width="wide">
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-20 xl:gap-28">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 id="refuse-h" className="t-h1 max-w-[12ch]">What this shop does not ask you for</h2>
+              <p className="t-lead mt-7 max-w-[38ch] text-ink">
+                A printable for a four year old usually costs an email address. This one costs
+                whatever the file costs.
+              </p>
+              <p className="mt-5 max-w-[42ch] text-[16px] leading-[1.7] text-body">
+                Every line here is a thing the code does or does not do, not a policy we wrote
+                down afterwards.
+              </p>
+            </div>
+
+            <dl className="border-t border-rule">
+              {REFUSALS.map((r) => (
+                <div
+                  key={r.title}
+                  className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
+                >
+                  <dt className="text-[17px] font-semibold leading-snug text-ink">{r.title}</dt>
+                  <dd>
+                    <p className="max-w-[50ch] text-[16px] leading-[1.68] text-body">{r.body}</p>
+                    {/* Body, not muted: muted is AA-large only on the well
+                        fill and this line is 12px. Left in its own case: a
+                        file path uppercased is a file path that does not
+                        exist. */}
+                    <p className="mt-2 font-mono text-[12px] leading-[1.5] text-body">{r.where}</p>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Settle>
+        </Container>
+      </Section>
+
+      {/* ═══ THE SHELF. The index of what is on sale, beside the docket that
+          states the terms of a purchase. Empty today, and it says so in one
+          line rather than in a centred card with a reassuring heading. ═══ */}
+      {/* The one section that is not full width. The hero and the ledger are
+          wide because they are the page talking; the shelf is a list of
+          things, and a list set across 1560px is a spreadsheet. */}
+      <Section labelledBy="shelf-h">
         <Container>
-          <ol className="grid gap-5 sm:grid-cols-3">
-            {STEPS.map((s) => (
-              <Settle as="li" key={s.n}>
-                <Panel className="h-full p-7 transition-transform duration-300 hover:-translate-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="  flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-red-deep">
-                      <s.icon size={21} />
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.75fr)] lg:gap-16">
+            <div>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+                <h2 id="shelf-h" className="t-h2">On the shelf</h2>
+                <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
+                  {products.state === "ready"
+                    ? `${products.data.length} ${products.data.length === 1 ? "file" : "files"}`
+                    : "Nothing on sale yet"}
+                </p>
+              </div>
+
+              {products.state === "ready" ? (
+                <ul className="mt-9 border-t border-rule">
+                  {products.data.map((p) => (
+                    <li key={p.id} className="border-b border-rule">
+                      <Link
+                        to={`/shop/${p.slug}`}
+                        className="group flex items-center gap-5 py-5 sm:gap-7 sm:py-6"
+                      >
+                        <span className="w-[64px] shrink-0 sm:w-[84px]">
+                          {p.thumbnail ? (
+                            <img
+                              src={p.thumbnail}
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                              className="aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised object-cover"
+                            />
+                          ) : (
+                            <span className="block aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[17px] font-semibold text-ink">{p.title}</span>
+                          {p.description && (
+                            <span className="mt-1.5 block max-w-[52ch] text-[15px] leading-[1.6] text-body">
+                              {p.description.split("\n")[0]}
+                            </span>
+                          )}
+                        </span>
+                        <span className="tnum shrink-0 text-[17px] font-semibold text-ink">
+                          {formatPrice(p.price_cents, p.currency)}
+                        </span>
+                        <span className="shrink-0 text-red-deep transition-transform duration-300 group-hover:translate-x-1">
+                          <IconArrow size={17} />
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-9">
+                  <p className="t-lead max-w-[48ch] text-ink">
+                    The first files are being made. Nothing is on sale yet, and nothing is being
+                    held back behind a sign-up in the meantime.
+                  </p>
+                  <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.7] text-body">
+                    Each one will appear here with its artwork, what is in it and what it costs,
+                    on its own page. These are the kinds of thing being prepared.
+                  </p>
+
+                  <dl className="mt-9 border-t border-rule">
+                    {KINDS.map((k) => (
+                      <div
+                        key={k.kind}
+                        className="grid grid-cols-1 gap-x-10 gap-y-1 border-b border-rule py-5 sm:grid-cols-[13rem_minmax(0,1fr)]"
+                      >
+                        <dt className="text-[16px] font-semibold text-ink">{k.kind}</dt>
+                        <dd className="max-w-[46ch] text-[15.5px] leading-[1.65] text-body">{k.line}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+            </div>
+
+            <Settle className="lg:pt-2">
+              <Docket
+                label="What a purchase is"
+                rows={[
+                  { k: "Choose a file", v: "its own page" },
+                  { k: "Pay by card", v: "Stripe" },
+                  { k: "Download", v: "straight away" },
+                  { k: "Link valid for", v: "24 hours", strong: true },
+                  { k: "Downloads allowed", v: "5", strong: true },
+                  { k: "Account created", v: "none" },
+                ]}
+                foot={
+                  <>
+                    Save the file when it arrives. We do not keep a copy for you to come back to,
+                    because coming back would mean an account.
+                  </>
+                }
+              />
+            </Settle>
+          </div>
+        </Container>
+      </Section>
+
+      {/* ═══ THE HANDOFF. One deep band, rows not cards. The shop is the
+          smallest part of what the company gives families, so the page ends
+          by pointing at the parts that are free. ═══ */}
+      <Section deep labelledBy="free-h">
+        <Container width="wide">
+          <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
+            <div>
+              <h2 id="free-h" className="t-h2 max-w-[14ch]">Most of it costs nothing</h2>
+              <p className="t-lead mt-6 max-w-[40ch] opacity-85">
+                The episodes are free to watch and the show's own site carries family activities.
+                The shop is for the things worth printing.
+              </p>
+              <div className="mt-9">
+                <Button href={SITE.showUrl}>
+                  Visit the show site
+                  <IconExternal size={16} />
+                </Button>
+              </div>
+            </div>
+
+            <ul className="border-t border-white/20">
+              {[
+                {
+                  title: "Episodes and family activities",
+                  line: "The series lives on its own site, with the free colouring and activity resources beside it.",
+                  href: SITE.showUrl,
+                },
+                {
+                  title: `${SITE.playerName} is in development`,
+                  line: "Watch, play and learn in one place, with the interactive activities that do not print.",
+                  to: "/app",
+                },
+                {
+                  title: "Something wrong with a download",
+                  line: "Send us the receipt Stripe emailed you and we will put it right.",
+                  to: "/contact",
+                },
+              ].map((n) => {
+                const inner = (
+                  <>
+                    <span className="min-w-0">
+                      <span className="block text-[17px] font-semibold">{n.title}</span>
+                      <span className="t-body mt-1.5 block max-w-[46ch] opacity-80">{n.line}</span>
                     </span>
-                    <span className="font-display text-[14px] text-clay" aria-hidden="true">{s.n}</span>
-                  </div>
-                  <h2 className="mt-4 t-h3">{s.t}</h2>
-                  <p className="mt-2.5 text-[14.5px] leading-relaxed text-slate">{s.b}</p>
-                </Panel>
-              </Settle>
-            ))}
-          </ol>
-
-          <Panel tone="warm" className="mt-8 px-6 py-12 text-center">
-            <p className="font-display t-h3 text-ink">
-              The first printables are on their way
-            </p>
-            <p className="mx-auto mt-3 max-w-[46ch] text-[14.5px] text-deep">
-              Products are added from the admin panel with their file attached. Each one gets its
-              own page and a direct download the moment payment clears.
-            </p>
-          </Panel>
-
-          <p className="mt-8 max-w-[58ch] text-[14px] text-deep">
-            Interactive activities live inside the PupsPlayer app. This shop is for the things you
-            print and put on the table.
-          </p>
+                    <span className="mt-1 shrink-0 opacity-80 transition-opacity group-hover:opacity-100">
+                      {n.href ? <IconExternal size={16} /> : <IconArrow size={16} />}
+                    </span>
+                  </>
+                );
+                const cls = "group flex items-start justify-between gap-6 py-6 sm:py-7";
+                return (
+                  <li key={n.title} className="border-b border-white/20">
+                    {n.to ? (
+                      <Link to={n.to} className={cls}>{inner}</Link>
+                    ) : (
+                      <a href={n.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </Settle>
         </Container>
       </Section>
     </>

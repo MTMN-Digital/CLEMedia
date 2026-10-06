@@ -307,3 +307,127 @@ real held release:
 
 Fill `CASE` in `src/components/ethical-ai/CaseStudy.tsx` and the whole section
 renders. No layout work follows.
+
+## Shop and media
+
+Added 2026-10-06 with the rebuild of `/shop`, `/shop/:slug`, `/media` and
+`/download/:token`. All four pages are built to be good while empty: no product
+title, price, page count, publication, logo or quote is invented anywhere on
+them, and each empty slot below is visible on the page rather than filled with
+something plausible.
+
+### Shop
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **The first products** | ❌ | `/shop`, `/shop/:slug` | Nothing is in `products`. The shelf says so in one line and lists the kinds of thing coming (colouring books, puzzle packs, activity sheets) in the client's own words. The index, the price and the product page all appear by themselves the moment a row is published from the admin panel. Each needs: title, slug, description, price in cents, the PDF in the `product-files` bucket, and a thumbnail |
+| **Product artwork** | ❌ | `/shop/:slug` | `products.thumbnail` is a URL into `public-media`. The product page prints it on the drawn sheet, so a flat cover image is enough; nothing needs cutting out. With no thumbnail the page shows the blank sheet and says the artwork has not been uploaded |
+| **Page count and age suitability** | ❌ | `/shop/:slug` | The brief asks the product page to state how many pages are in a pack and what age it suits. **`products` has no column for either**, and neither is invented on the page. Two routes: put both in the first line of the product description (works today, no migration), or add `page_count int` and `age_range text` to `public.products` and the admin form. The page's spec docket is where they would go. Needs a decision before the first product goes in |
+| **Prices** | ⚠️ | `/shop` | The brief says around EUR 3 to 4. No price is printed anywhere until a real row exists: there is no "from EUR 3" on the shop page, because that is a price nobody has set |
+| **VAT treatment on digital goods** | ❌ | `/shop/:slug`, `/terms` | Still for the client and their accountant. The price shown is `price_cents` exactly as stored, with no tax line either way. If prices are to be shown VAT inclusive, that is a sentence on the product page and a note in the terms |
+
+### The gap between paying and downloading
+
+**This is a build gap, not a content gap, and it is the one thing in the shop
+that is not finished.**
+
+Stripe's `success_url` is `/download/pending?session_id=…` (see
+`api/create-checkout-session.ts`), and nothing maps a Stripe session id to a
+download token: `api/download.ts` accepts a token and nothing else, and the
+webhook mints the token into `orders` without emailing it. So a buyer who has
+just paid lands on a page that cannot reach their file.
+
+`/download/pending` now handles that state honestly: it confirms the payment,
+says the link is not on the page, and asks the buyer to send the Stripe receipt
+so the file can be sent back by hand. That is a holding position, not a
+solution. Closing it properly needs one of:
+
+1. a server route that exchanges `session_id` for the order's token, which is
+   the smallest change and keeps the no-account promise intact, or
+2. the webhook emailing the download link to the address Stripe collected,
+   which costs a sending service and should be checked against the promise that
+   a purchase never puts anyone on a list.
+
+Either is an API change and was out of scope for the page pass. Flagged here so
+it is not discovered during the stage 9 purchase-to-download test with the
+client.
+
+### Media and press
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **The December podcast** | ⚠️ | `/media` | The one real fact: a UK podcast appearance booked for December, with more to follow around the app launch. The index carries it with no show name, host, date or link, because none has been supplied. Needed to publish it properly: the show, the episode title, the air date and the URL |
+| **Coverage as it runs** | ❌ | `/media` | `media_items` is empty, so the index shows the booking and one visibly pending row. Any row added from the admin panel takes over the index automatically. A row wants: title, outlet, date, one sentence, link |
+| **Press contact routing** | ⚠️ | `/media`, `/contact` | The notes-to-editors sheet sends journalists to the press route on the contact form, because no press email address, phone number or named spokesperson has been supplied. A direct press address would be better on a press page, and so would a named contact |
+| **Artwork for press use** | ❌ | `/media` | The sheet says artwork comes through the press route rather than offering a download, because there is no press kit and the CLÉ mark still does not exist as a vector. Worth assembling once the mark lands: logo, character art, episode stills, founder portrait |
+| **No logo strip, deliberately** | ✅ | `/media` | Nothing has been written about the company yet, so there is no "as featured in" row and no quote. The page says so in a sentence rather than hiding the gap |
+
+## Journal
+
+Added 2026-10-06 with the rebuild of `/journal` and `/journal/:slug`. The index
+is now the journal's own front matter: a masthead, a statement of what the
+journal is for, the front page drawn as an object with its lead slot honestly
+empty, and the four strands set as a contents page. **No post, headline, date,
+author, reading time or category description is invented anywhere on either
+page.** The strand names are the only drafted content and they are labelled on
+the page as working names.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **The four strand names, confirmed** | ⚠️ | `/journal` | Still QUESTIONS.md #8. The page ships the four working names (The Research · How It's Made · Parents Helping Parents · Building CLÉ) and says in print that they are working names. A row added to `categories` with a matching slug (`research` `process` `parents` `company`) takes over the name and the description with no code change |
+| **The first piece** | ❌ | `/journal`, `/journal/:slug` | `posts` is empty, so the contents reads "In preparation" against every strand and the drawn front page carries "In preparation" in its headline slot. Publishing one post fills the masthead rail, the lead slot, the strand count and the published list at once. A post wants: title, slug, strand, excerpt, body, and a date |
+| **The four standing rules, signed off** | ⚠️ | `/journal` | The navy band makes four commitments in the company's name: every piece is written by a person and carries their name, corrections stay on the piece and say what changed, nothing is sponsored and nothing is advertised, and a reader can ask for a subject. The first restates what `/` and `/ethical-ai` already say about the production process. The other three are new and are Conor's to confirm or strike before launch |
+| **The cadence** | ⚠️ | `/journal` | "One piece a week, once we start" comes from the handoff note. It is a promise with nothing behind it yet, so it is phrased as the plan rather than as something already happening. Worth confirming before launch, because the first missed week is visible on a page that counts pieces |
+| **Author names as they want to be named** | ❌ | `/journal/:slug` | `posts.author` is a free text column and the byline prints it exactly. A post with no author simply has no byline rather than defaulting to the company. Same caution as the team credits: a film credit is not necessarily how someone wants to be named on a company site |
+| **Hero images for pieces** | ❌ | `/journal/:slug` | `posts.hero_image` is a URL into `public-media` and the template runs it edge to edge. `hero_alt` is used as both the caption and the alternative text, so it should read as a caption. Without one the piece opens on type, which is a legitimate look and not a gap |
+| **`journal.default`** | ❌ | `/journal` | Listed above under photography. The rebuilt index does not use it: the index is a contents page rather than a grid of cards, so there is nothing for a default card image to fill. It is still worth having for Open Graph on a piece with no hero |
+
+**How a post should be written.** `posts.body` is a plain text column and the
+public page renders a small Markdown subset, so Conor can write in the admin
+textarea with no editor and no HTML: `## ` for a section heading, `### ` for a
+sub-heading, `> ` for a pull quote, `- ` for a bullet list, `1. ` for a numbered
+list, `---` for a rule, `**bold**`, `*italic*`, `[text](/page-or-url)` for a
+link and `![caption](image-url)` for an image. Anything else prints as the
+characters that were typed. Stored HTML is deliberately not rendered: it would
+put an injection path through the public site for the sake of a convenience in
+an admin panel one person uses.
+
+## Contact and utility
+
+`/contact`, `/privacy`, `/terms`, `/cookies` and the 404, from the page uplift
+on 2026-10-06. Nothing below has been guessed at on the pages themselves.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **Registered company details** | ❌ | `/contact`, `/privacy` | Company number and registered office. The slot is BUILT AND VISIBLY EMPTY on the closing band of `/contact` ("not published yet"), because the privacy policy already promises both "at the foot of this page once registration details are confirmed". Two lines of data fills it, and the privacy policy's own promise stops being outstanding |
+| **Who reads each enquiry route** | ❌ | `/contact` | The form marks a message as partnership, educator, press or general, and that is all anyone has told us. The page therefore says nothing about who opens which, and names no person against any route. If Conor wants "partnership enquiries reach Conor directly" on the page, he has to say it is true first |
+| **A reply time** | ❌ | `/contact` | Deliberately absent. No "we reply within two working days" anywhere, because nobody has committed to one. It is the cheapest credibility line on the page and the easiest to break |
+| **A postal address, a phone number, office hours** | ❌ | `/contact` | None supplied, none invented. An address is the one of the three an investor actually looks for; see registered company details above |
+| **A press pack** | ❌ | `/contact` | Already listed above from the earlier pass. Still none, so the press route takes a message rather than offering a download |
+| **Solicitor review of all three legal documents** | ⚠️ | `/privacy`, `/terms`, `/cookies` | The three pages are typeset as documents now, with numbered and anchored sections, an index and defined terms marked. **Not one word of the clause text was changed**, and every page carries the "Draft, pending legal review" notice at the top of the document. They are drafts until a solicitor has been through them |
+| **The date on the legal documents** | ⚠️ | `/privacy`, `/terms`, `/cookies` | `DRAFTED` in `src/pages/Legal.tsx` is `2026-09-20`, the day the wording was last written. It used to be `new Date()`, so the page told every reader it had been updated the day they opened it, which on a GDPR page is a false statement about a legal document. **Change a clause, change that constant in the same edit.** |
+
+**What the three legal drafts do not cover.** Listed for whoever reviews them,
+not filled in here, because writing any of it would be drafting law rather than
+setting it:
+
+- **Privacy.** No contact details for the controller beyond "the contact page",
+  no retention periods in actual time ("a reasonable period afterwards"), no
+  statement about transfers outside the EEA, and the processors are described by
+  role ("our hosting and database providers, our payment processor and our email
+  delivery provider") rather than named. Supabase, Stripe and Resend are the
+  three the code actually talks to.
+- **Terms.** No company identification block: registered name, company number,
+  registered office and VAT status are all required of an Irish company selling
+  to consumers online, and none is stated. VAT treatment of digital goods is
+  summarised as "include any applicable tax", which is the client's and their
+  accountant's call, not ours. No complaints route and no ODR reference.
+- **Cookies.** No cookie table: name, purpose and duration of each. The analytics
+  paragraph states a preference for a cookieless tool rather than naming the one
+  in use, which is correct while none is installed and has to be filled in the
+  day one is.
+
+**The 404.** It uses the episode title slates `slate.ep1`, `slate.ep2` and
+`slate.ep3` as the frames either side of the missing one. Those are currently
+the four public YouTube thumbnails; whenever Alan exports the kit's own TITLE
+SLATES into the same slots the page picks them up with no change.

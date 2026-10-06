@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
@@ -16,16 +17,28 @@ import type { AssetKey } from "@/lib/brand";
    credibility the other pages build and told the sender nothing about where
    their words went.
 
-   So the page now does three things, in order. It asks what the message is
+   So the page now does four things, in order. It asks what the message is
    about, as a rail of four routes rather than a stack of cards. It shows, live,
    the message as the team will receive it (the receipt, the device this page
-   owns), built from the same rules as api/contact.ts. And it puts the faces of
-   the people on the other side of the form under it.
+   owns), built from the same rules as api/contact.ts. It routes the four
+   audiences this site is written for to the page that already answers them,
+   including the parents the form is not really for. And it puts the faces of
+   the people on the other side of the form under all of it.
+
+   THE FOUR AUDIENCES, 2026-10-06. The site is written for investors and
+   partners, broadcasters and distributors, educators and schools, and parents,
+   and a contact page is where all four arrive at once. The alternative to one
+   form with a dropdown is not a second form: it is saying plainly which page
+   answers which reader, and letting most of them leave without writing
+   anything. That is section 3, and it is why the parents' row sends people off
+   this site entirely, to the show.
 
    What it deliberately does not say: how fast a reply comes, who answers which
-   route, a phone number, an address, office hours. None of that has been
-   supplied, and a contact page that invents it is the one place a lie gets
-   found out.
+   route, a phone number, office hours. None of that has been supplied, and a
+   contact page that invents it is the one place a lie gets found out. The
+   registered company details have their slot on the closing band and are
+   visibly empty for the same reason, which is the pattern
+   src/components/ethical-ai/CaseStudy.tsx set.
 
    Functional contract, unchanged: POST /api/contact with
    { route, company_website, name, email, organisation, message }. The route
@@ -89,6 +102,37 @@ const ALSO: { name: string; role: string; remit: string; asset?: AssetKey }[] = 
     role: "Strategic Advisor",
     asset: "person.david",
     remit: "Shapes platform strategy and the low-stimulation media framework that connects screen time to real-world creativity, nature and offline play.",
+  },
+];
+
+/* The four audiences the site is written for, each sent to the page that
+   already answers them. Every destination is a real page of this site or the
+   show's own; nothing here is a form, and nothing claims what the reader will
+   find beyond what that page actually carries. */
+const ELSEWHERE: { who: string; title: string; line: string; to?: string; href?: string }[] = [
+  {
+    who: "Investors and partners",
+    title: "Our story",
+    line: "Conor Sexton on what he saw, what he could not find, and what it took to build the alternative.",
+    to: "/story",
+  },
+  {
+    who: "Broadcasters and distributors",
+    title: "The team and the advisors",
+    line: "Who makes each episode, and who is answerable at each stage of the review.",
+    to: "/team",
+  },
+  {
+    who: "Educators and schools",
+    title: "Responsible AI",
+    line: "The six stages an episode passes through, and where AI is and is not used in making one.",
+    to: "/ethical-ai",
+  },
+  {
+    who: "Parents",
+    title: "The show's own site",
+    line: "Episodes, characters and the family activities all live there rather than here.",
+    href: SITE.showUrl,
   },
 ];
 
@@ -323,7 +367,67 @@ export default function Contact() {
         </Container>
       </Section>
 
-      {/* ═══ 3. THE OTHER SIDE OF THE FORM.
+      {/* ═══ 3. THE READERS WHO SHOULD NOT BE WRITING A LETTER.
+          Four audiences, four destinations, as hairline rows across the full
+          width. Rows rather than cards on purpose: four boxes with four little
+          icons is the shape this whole pass exists to remove, and an index is
+          what a reader scanning for their own description actually wants. ═══ */}
+      <Section className="!pt-4 sm:!pt-6" labelledBy="else-h">
+        <Container width="wide">
+          <div className="hairline pt-14 sm:pt-16">
+            <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+              <h2 id="else-h" className="t-h2 max-w-[18ch]">What the site already sets out</h2>
+              <Lead className="lg:pb-1">
+                Some of this is answered better by a page than by us. Who is asking, and where it
+                is written down.
+              </Lead>
+            </Settle>
+
+            <Settle as="ul" className="mt-10">
+              {ELSEWHERE.map((e) => {
+                const icon = e.href ? <IconExternal size={16} /> : <IconArrow size={16} />;
+                const inner = (
+                  <>
+                    <span className="eyebrow !text-[11px] leading-snug">{e.who}</span>
+                    {/* The arrow rides with the title on a phone and moves to
+                        the far edge of the row on a desktop. A single arrow in
+                        the last column dropped onto a line of its own once the
+                        grid collapsed, which looked like a stray glyph. */}
+                    <span className="flex items-start justify-between gap-5">
+                      <span className="text-[17px] font-semibold text-ink">{e.title}</span>
+                      <span className="mt-0.5 shrink-0 text-muted transition-colors group-hover:text-red-deep sm:hidden">
+                        {icon}
+                      </span>
+                    </span>
+                    <span className="t-body max-w-[54ch] text-body">{e.line}</span>
+                    <span className="mt-1 hidden shrink-0 text-muted transition-colors group-hover:text-red-deep sm:block sm:justify-self-end">
+                      {icon}
+                    </span>
+                  </>
+                );
+                const cls =
+                  "group grid items-start gap-x-10 gap-y-2 py-6 sm:grid-cols-[minmax(0,0.45fr)_minmax(0,0.55fr)_minmax(0,1fr)_auto] sm:py-7";
+                return (
+                  /* No closing rule under the last row: the people section
+                     opens with its own, and two hairlines 130px apart read as
+                     a mistake rather than as a frame. */
+                  <li key={e.who} className="hairline">
+                    {e.to ? (
+                      <Link to={e.to} className={cls}>{inner}</Link>
+                    ) : (
+                      <a href={e.href} target="_blank" rel="noopener noreferrer" className={cls}>
+                        {inner}
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </Settle>
+          </div>
+        </Container>
+      </Section>
+
+      {/* ═══ 4. THE OTHER SIDE OF THE FORM.
           The five people named on every episode's review stages in one row of
           faces, then the two who are on the team in a different capacity, each
           in a hairline row with their remit. The whole site argues "made by
@@ -336,8 +440,8 @@ export default function Contact() {
             <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
               <h2 id="people-h" className="t-h2 max-w-[18ch]">Who is on the other side</h2>
               <Lead className="lg:pb-1">
-                The company you are writing to. First, the five people named on the review stages
-                of every episode.
+                Not a shared inbox with a logo over it. First, the five people named on the review
+                stages of every episode.
               </Lead>
             </Settle>
 
@@ -386,28 +490,59 @@ export default function Contact() {
         </Container>
       </Section>
 
-      {/* ═══ 4. THE SHOW, the one deep band.
-          A parent who lands here is probably looking for the episodes, which
-          live on the show's own site. The felted wordmark is a photograph of a
-          real object, so it is framed as on the home page rather than cut out. ═══ */}
-      <Section deep labelledBy="show-h">
+      {/* ═══ 5. WHO THE LETTER IS ADDRESSED TO, the one deep band.
+          The page ends on the formal identity of the company, because the
+          reader it is written for is doing diligence and a name with no
+          company behind it is the gap they notice. The show cross-link used to
+          close the page here; it has moved up into section 3, where the
+          audience it is for is actually named, and this band carries what a
+          letter needs instead: who it goes to, and what is not yet published.
+
+          The registered details are EMPTY ON PURPOSE. Nobody has supplied a
+          company number or a registered office, the privacy policy promises
+          both, and inventing either on the page that invites investors to
+          write would be the worst place on this site to be caught out. Logged
+          in CONTENT-NEEDED.md. ═══ */}
+      <Section deep labelledBy="company-h">
         <Container width="wide">
-          <Settle className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
+          <Settle className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-20">
             <div>
-              <h2 id="show-h" className="t-h2 max-w-[16ch]">Looking for the show itself?</h2>
-              <p className="t-lead mt-6 max-w-[46ch] opacity-85">
-                Episodes, characters and activities from <em>The Pawsitive Pugs &amp; Pals</em>®
-                live on the show's own site. This site is the company behind it.
+              <h2 id="company-h" className="t-h2 max-w-[16ch]">The company you are writing to</h2>
+              <p className="t-lead mt-6 max-w-[48ch] opacity-85">
+                An Irish company that makes one series, with the people who make it named on every
+                stage of it.
               </p>
-              <div className="mt-9">
-                <Button href={SITE.showUrl} variant="quiet" className="!border-raised/35 !text-raised hover:!border-raised/70">
-                  Visit pawsitivepugs.com<IconExternal size={15} />
-                </Button>
-              </div>
+
+              <dl className="mt-10 border-t border-white/20">
+                <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
+                  <dt className="eyebrow !text-[11px]">Company</dt>
+                  <dd className="text-[16px] font-semibold">CLÉ Family Media</dd>
+                </div>
+                <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
+                  <dt className="eyebrow !text-[11px]">Trade marks</dt>
+                  <dd className="t-body opacity-90">
+                    <em>The Pawsitive Pugs &amp; Pals</em>&reg; and PupsPlayer&trade;, both of CLÉ
+                    Family Media.
+                  </dd>
+                </div>
+                <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
+                  <dt className="eyebrow !text-[11px]">Registered details</dt>
+                  <dd className="t-body opacity-90">
+                    The company number and registered office are not published yet. They go here,
+                    and at the foot of the{" "}
+                    <Link to="/privacy" className="link-draw font-semibold">privacy policy</Link>,
+                    as soon as registration is confirmed.
+                  </dd>
+                </div>
+              </dl>
             </div>
-            <div className="w-[clamp(220px,60%,360px)] lg:justify-self-end">
-              <Card className="tilt-b overflow-hidden p-2">
-                <Figure asset="brand.show" rounded="rounded-[var(--radius-md)]" sizes="360px" />
+
+            {/* The mark itself, framed rather than cut out: it is a photograph
+                of a needle-felted object, and a cut-out object on a flat navy
+                field loses the one thing that makes it worth showing. */}
+            <div className="w-[clamp(200px,58%,320px)] lg:justify-self-end">
+              <Card className="card-still tilt-a overflow-hidden p-2">
+                <Figure asset="brand.cle" rounded="rounded-[var(--radius-md)]" sizes="320px" />
               </Card>
             </div>
           </Settle>
