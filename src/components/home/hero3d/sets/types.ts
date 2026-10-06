@@ -1,4 +1,4 @@
-import type { Group, Texture, Vector3, WebGLRenderer } from "three";
+import type { Group, MeshStandardMaterial, Texture, Vector3, WebGLRenderer } from "three";
 
 /* ============================================================================
    What a set is.
@@ -44,6 +44,18 @@ export interface SetContext {
   front: Group;
   /** Loads a texture from /brand or /video, already colour-managed. */
   loadTexture(url: string): Promise<Texture>;
+  /** Loads a PBR material's maps from a /hero3d/tex folder written by
+      scripts/fetch-hero-assets.py, and returns a material wired up with them.
+      Colour maps are sRGB and data maps are linear, which is the single
+      easiest thing to get wrong and the reason this is not done per set. */
+  loadMaterial(folder: string, opts?: { repeat?: number; roughness?: number }): Promise<MeshStandardMaterial>;
+  /** Loads a glTF from /hero3d/model and returns its scene, ready to clone or
+      to read a mesh out of for instancing. */
+  loadModel(url: string): Promise<Group>;
+  /** Lights the whole scene from a Radiance probe, which is what gives every
+      metal part a real highlight shape instead of one point specular. Call it
+      once; the set still owns its own key light for the shadow. */
+  loadEnvironment(url: string, intensity?: number): Promise<void>;
   /** A design token read off the document, so a set uses the page's palette
       rather than inventing one. Returns the fallback if the token is unset. */
   token(name: string, fallback: string): string;

@@ -1400,7 +1400,14 @@ body > * { position: relative; z-index: 1; }
 .shot-words {
   position: absolute;
   left: 50%;
-  bottom: clamp(3rem, 9vh, 6rem);
+  /* Low, because this hero has a horizon. The board's cut edge lands at about
+     two thirds down the frame at the end of the move, and everything above it
+     is planting: the headline set at 9vh sat squarely on the hedge and could
+     not be read. The strip of lit studio floor between that edge and the
+     bottom of the frame is the only clean ground in the shot, so the words
+     stand on it, which is also the true thing to do with a set that has a
+     floor in it. */
+  bottom: clamp(0.25rem, 0.8vh, 0.75rem);
   width: min(100% - 2.5rem, 64rem);
   text-align: center;
   z-index: 1;

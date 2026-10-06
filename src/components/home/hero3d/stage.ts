@@ -32,7 +32,13 @@
    ========================================================================== */
 
 import {
+  ACESFilmicToneMapping,
+  EquirectangularReflectionMapping,
   Group,
+  LinearSRGBColorSpace,
+  MeshStandardMaterial,
+  PMREMGenerator,
+  RepeatWrapping,
   PCFSoftShadowMap,
   PerspectiveCamera,
   Scene,
@@ -41,6 +47,8 @@ import {
   WebGLRenderer,
   type Texture,
 } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { createHeroMark, MARK_LAYER_COUNT, MARK_LAYER_FIRST, MARK_LIGHT_REST, MARK_TEXTURE_WIDTH } from "./mark";
 import type { HeroSet, SetContext, SetFactory } from "./sets/types";
 
@@ -106,6 +114,17 @@ export async function createHeroStage(
   /* Six render calls a frame would otherwise rebuild the shadow map six
      times. It is rebuilt once, by hand, at the top of each frame. */
   renderer.shadowMap.autoUpdate = false;
+  /* Filmic, because the set is lit by a real light probe whose highlights run
+     well past white and clipping them turns every metal edge into a flat
+     blown patch. The mark is untouched by this: it draws through its own
+     GLSL3 shader, which three does not inject a tone mapping chunk into, so
+     the artwork still leaves the canvas exactly as it was photographed. */
+  renderer.toneMapping = ACESFilmicToneMapping;
+  /* Under one, deliberately. The probe plus the key put more light into this
+     scene than the warm paper palette can take at unity: the sweep went to
+     white and the cream lost its temperature entirely, which is the opposite
+     of the house surface. */
+  renderer.toneMappingExposure = 0.79;
 
   let shaderFailed = false;
   renderer.debug.onShaderError = (gl, _program, vs, fs) => {
@@ -128,6 +147,8 @@ export async function createHeroStage(
 
   const loader = new TextureLoader();
   const textures: Texture[] = [];
+  const materials: MeshStandardMaterial[] = [];
+  let envTarget: { texture: Texture; dispose(): void } | null = null;
 
   let disposed = false;
   let frame = 0;
@@ -152,6 +173,53 @@ export async function createHeroStage(
       t.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
       textures.push(t);
       return t;
+    },
+    async loadMaterial(folder, opts = {}) {
+      const base = `/hero3d/tex/${folder}`;
+      const [map, normalMap, roughnessMap, aoMap] = await Promise.all([
+        loader.loadAsync(`${base}/Diffuse.webp`),
+        loader.loadAsync(`${base}/nor_gl.webp`),
+        loader.loadAsync(`${base}/Rough.webp`),
+        loader.loadAsync(`${base}/AO.webp`),
+      ]);
+      /* The colour map is the only one of the four that is a colour. The other
+         three are measurements, and decoding them through sRGB is the classic
+         way to end up with a surface that is too rough and too bumpy in the
+         shadows and flat everywhere else. */
+      map.colorSpace = SRGBColorSpace;
+      for (const t of [normalMap, roughnessMap, aoMap]) t.colorSpace = LinearSRGBColorSpace;
+      const anis = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      for (const t of [map, normalMap, roughnessMap, aoMap]) {
+        t.wrapS = t.wrapT = RepeatWrapping;
+        t.anisotropy = anis;
+        if (opts.repeat) t.repeat.set(opts.repeat, opts.repeat);
+        textures.push(t);
+      }
+      const m = new MeshStandardMaterial({
+        map,
+        normalMap,
+        roughnessMap,
+        aoMap,
+        roughness: opts.roughness ?? 1,
+        metalness: 0,
+      });
+      materials.push(m);
+      return m;
+    },
+    async loadModel(url) {
+      const gltf = await new GLTFLoader().loadAsync(url);
+      return gltf.scene;
+    },
+    async loadEnvironment(url, intensity = 1) {
+      const hdr = await new RGBELoader().loadAsync(url);
+      hdr.mapping = EquirectangularReflectionMapping;
+      const pmrem = new PMREMGenerator(renderer);
+      const target = pmrem.fromEquirectangular(hdr);
+      scene.environment = target.texture;
+      scene.environmentIntensity = intensity;
+      envTarget = target;
+      pmrem.dispose();
+      hdr.dispose();
     },
     token(name, fallback) {
       const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -267,7 +335,10 @@ export async function createHeroStage(
     canvas.removeEventListener("webglcontextlost", onLost);
     heroSet?.dispose();
     mark?.dispose();
+    for (const m of materials) m.dispose();
     for (const t of textures) t.dispose();
+    envTarget?.dispose();
+    scene.environment = null;
     renderer.dispose();
   }
 

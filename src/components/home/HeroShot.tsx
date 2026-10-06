@@ -181,11 +181,11 @@ export function HeroShot({
               Watch. <span className="hero-head-2">Play.</span> Learn.
             </span>
           </h1>
-          <p className="t-lead hero-lead mx-auto mt-6 max-w-[46ch]">
+          <p className="t-lead hero-lead mx-auto mt-3 max-w-[46ch]">
             Calm stories for young children, and the activities that take them off the screen
             afterwards.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
             <Button to="/ethical-ai">
               How we make it
               <IconArrow size={16} />

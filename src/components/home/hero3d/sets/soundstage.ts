@@ -12,6 +12,7 @@ import {
   HemisphereLight,
   IcosahedronGeometry,
   InstancedMesh,
+  StaticDrawUsage,
   Mesh,
   MeshStandardMaterial,
   Object3D,
@@ -21,6 +22,7 @@ import {
   Vector3,
   type Material,
 } from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { BACK_Z, FLOOR_Y, type HeroSet, type SetContext } from "./types";
 
 /* ============================================================================
@@ -96,13 +98,21 @@ const BOARD_Z1 = -0.4;
    the lead paragraph and one of the buttons. Behind and lower, its face lands
    under the headline and the words sit on lit floor. */
 /** Top of the scenic foam, where the planting stands. */
-const GROUND_Y = -0.67;
+/* The board is a rostrum about a third of a mark width thick, and its top is
+   set by one requirement: the frame has three bands and the words get the
+   bottom one to themselves. The mark hangs in the sweep, a shallow strip of
+   garden sits under it, and the lit studio floor in front of the cut edge is
+   clean ground the headline can stand on. Measured at the end of the move,
+   this puts the cut edge at about 560 of 900 and leaves the words 340 pixels
+   of floor. Lower than this and the hedge climbs into the headline, which is
+   how the first three builds of this set read: unreadable. */
+const GROUND_Y = -0.63;
 /** Where the painted ply rostrum stops and the cut foam starts. The two bands
     on the cut face are what say "built" rather than "modelled", so the pale
     one is kept thin and the dark one deep: the first split them evenly and
     deeply inset the ply, and the whole edge then sat in its own shadow at
     roughly the tone of the floor behind it, which lost the edge entirely. */
-const FOAM_Y = -0.73;
+const FOAM_Y = -0.69;
 
 const BOARD_CX = (BOARD_X0 + BOARD_X1) / 2;
 const BOARD_CZ = (BOARD_Z0 + BOARD_Z1) / 2;
@@ -289,85 +299,8 @@ function pathGeometry(): BufferGeometry {
   return g;
 }
 
-/** One grass blade, three triangles, standing in +Y over a unit height and
-    curving a little toward +Z so a field of them catches the key unevenly. */
-function bladeGeometry(): BufferGeometry {
-  const w = 0.0085;
-  const positions = new Float32Array([
-    -w, 0, 0,
-    w, 0, 0,
-    -w * 0.5, 0.62, 0.06,
-    w * 0.5, 0.62, 0.06,
-    0, 1, 0.19,
-  ]);
-  const g = new BufferGeometry();
-  g.setAttribute("position", new BufferAttribute(positions, 3));
-  g.setIndex([0, 1, 3, 0, 3, 2, 2, 3, 4]);
-  g.computeVertexNormals();
-  return g;
-}
 
-/** A fern frond: wider than a blade, arching, notched by the taper alone. */
-function frondGeometry(): BufferGeometry {
-  const positions: number[] = [];
-  const indices: number[] = [];
-  const steps = 4;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const w = 0.055 * (1 - t) * (0.35 + 0.65 * Math.sin(Math.PI * Math.min(1, t * 1.25)));
-    const y = t;
-    const z = 0.22 * t * t;
-    positions.push(-w, y, z, w, y, z);
-    if (i < steps) {
-      const a = i * 2;
-      indices.push(a, a + 1, a + 3, a, a + 3, a + 2);
-    }
-  }
-  const g = new BufferGeometry();
-  g.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3));
-  g.setIndex(indices);
-  g.computeVertexNormals();
-  return g;
-}
 
-/** A model tree for the back of the board: a trunk and a canopy of small
-    overlapping clumps, which is what scenic foliage on a tabletop set actually
-    is. The first version used four clumps at a fifth of the tree's height each
-    and the trees came out as faceted lollipops, big enough that the eye read
-    polygons rather than leaves. Many small clumps at a higher subdivision read
-    as mass; a few big ones never do. */
-function modelTree(
-  trunkMat: Material,
-  leafMat: Material,
-  h: number,
-  r: () => number,
-  keep: <T extends BufferGeometry>(g: T) => T,
-): Group {
-  const g = new Group();
-  const trunk = new Mesh(keep(new CylinderGeometry(0.016 * h, 0.042 * h, h * 0.58, 6)), trunkMat);
-  trunk.position.y = h * 0.29;
-  trunk.castShadow = true;
-  g.add(trunk);
-
-  const clumps = 7;
-  for (let i = 0; i < clumps; i++) {
-    const rad = h * (0.12 + r() * 0.07);
-    const clump = new Mesh(keep(new IcosahedronGeometry(rad, 1)), leafMat);
-    const a = (i / clumps) * Math.PI * 2 + r() * 0.8;
-    const t = i / (clumps - 1);
-    const spread = h * 0.21 * (1 - t * 0.55);
-    clump.position.set(
-      Math.cos(a) * spread * (0.5 + r() * 0.8),
-      h * (0.52 + t * 0.42 + r() * 0.05),
-      Math.sin(a) * spread * (0.5 + r() * 0.8),
-    );
-    clump.rotation.set(r() * 3, r() * 3, r() * 3);
-    clump.scale.set(1, 0.74, 1);
-    clump.castShadow = true;
-    g.add(clump);
-  }
-  return g;
-}
 
 /** A lamp on the rig: barrel, hood, stem. Dark, matte, small. */
 function lamp(body: Material, keep: <T extends BufferGeometry>(g: T) => T): Group {
@@ -403,18 +336,22 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   const sunken = new Color(ctx.token("--color-sunken", "#d8c4a2"));
   const ink = new Color(ctx.token("--color-ink", "#1a1614"));
   const sage = new Color(ctx.token("--color-sage", "#94b7a4"));
-  const navy = new Color(ctx.token("--color-navy", "#1f325b"));
 
   /* The ground under the planting is darker than the planting standing on it,
      so a thin patch of grass reads as earth in shadow rather than as a flat
      green panel with weeds on it. */
   const mossBase = new Color(0x33492a).lerp(sage, 0.08);
-  const grassLit = new Color(0x6d8c42).lerp(sage, 0.1);
   const grassDeep = new Color(0x3a5028);
-  /* Bluebells, mixed up out of the page's navy rather than picked as a violet.
-     A saturated violet in this frame would be the only cold accent on the
-     page and would read as decoration. */
-  const bluebell = new Color().copy(navy).lerp(new Color(0x5468c6), 0.68);
+  /* The bluebell colour that used to live here is gone with the sticks it
+     tinted. The flowers are a scan of celandine now, so their colour comes
+     from the photograph rather than from the palette. */
+
+  /* One Radiance probe lights everything. It is what gives the steel a real
+     highlight shape instead of the single point specular a lone SpotLight
+     puts on every rounded surface, and what puts light into the shaded side
+     of the plants. The key below still exists, because the probe cannot cast
+     the mark's shadow onto the set. CC0, see public/hero3d/ASSET-LICENCES.md. */
+  await ctx.loadEnvironment("/hero3d/hdri/brown_photostudio_02_1k.hdr", 0.38);
 
   /* ---- The sweep --------------------------------------------------------
      Warm paper, the one large bright surface, and the thing the picture is
@@ -443,7 +380,27 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
    an AA body text needs, so it went lighter again. The second is that it
    is simply what a rostrum on a stage is made of, and the brighter band also
    sharpens the step from green to studio that the whole set is built around. */
-  const ply = mat(new MeshStandardMaterial({ color: new Color(0xd6c0a2), roughness: 0.78, metalness: 0.04 }));
+  /* Real birch ply, scanned, rather than a brown rectangle. The cut face of
+     the board is the line the whole set is built around and the surface the
+     headline lands on, so it is the one place a flat colour showed most. The
+     tint keeps it at the pale end: the headline measured 3.4:1 against the
+     mid brown this started as, which fails AA for body text. */
+  /* PAINTED ply, not bare. The scan's own diffuse is a mid brown varnished
+     sheet, and the cut face is the band the headline stands on: tinted light
+     it still landed around a dark brown once the room's exposure came down,
+     and the headline disappeared into it twice. So the grain comes from the
+     scan's normal and roughness maps, which is where grain actually lives,
+     and the colour is paint. A rostrum on a stage is painted anyway. */
+  const plyMaps = await ctx.loadMaterial("plywood", { repeat: 2.5 });
+  const ply = mat(
+    new MeshStandardMaterial({
+      color: new Color(0xeee4d2),
+      normalMap: plyMaps.normalMap,
+      roughnessMap: plyMaps.roughnessMap,
+      roughness: 0.92,
+      metalness: 0,
+    }),
+  );
   const foam = mat(
     new MeshStandardMaterial({
       color: new Color().copy(sunken).lerp(paper, 0.68),
@@ -485,9 +442,18 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   ctx.back.add(ground);
 
   /* ---- The planting -----------------------------------------------------
-     Clumped, not scattered: an even field of grass is a lawn, and a lawn is
-     the one thing an Irish hedgerow floor is not. Clump centres are drawn from
-     the seeded stream, so this layout is a decision rather than an accident.
+     Real scanned plants, instanced, instead of the triangle blades and the
+     clustered spheres this had. That swap is the single biggest change in
+     this set and the reason the rest of it had to be rebuilt around it: a
+     scanned grass clump has a bent spine, translucent tips and litter at its
+     base, and no amount of tuning makes a flat quad do any of that. The three
+     models are CC0 from Poly Haven, listed in public/hero3d/ASSET-LICENCES.md,
+     and shrunk for the web by scripts/optimise-hero-assets.py.
+
+     Clumped, not scattered: an even field is a lawn, and a lawn is the one
+     thing an Irish hedgerow floor is not. Clump centres come from the seeded
+     stream, so the layout is a decision rather than an accident.
+
      The planted region is the part of the board the lens actually sees. The
      board runs off both edges, but at the end of the move the frame is only
      about 2.2 units wide at the board's depth, so planting past that is paid
@@ -497,18 +463,6 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   const PLANT_Z0 = BOARD_Z0 + 0.06;
   const PLANT_Z1 = BOARD_Z1 - 0.02;
 
-  const clumpCount = 46;
-  const clumps: { x: number; z: number; rad: number }[] = [];
-  for (let i = 0; i < clumpCount; i++) {
-    clumps.push({
-      /* Even across the planted region now that it is centred on the frame.
-         The old weighting pushed clumps left because the board sat to the
-         right of centre; it does not any more. */
-      x: PLANT_X0 + r() * (PLANT_X1 - PLANT_X0),
-      z: PLANT_Z0 + r() * (PLANT_Z1 - PLANT_Z0),
-      rad: 0.09 + r() * 0.2,
-    });
-  }
   /* The path, laid before the planting so the planting can be kept off it. */
   const path = new Mesh(
     keep(pathGeometry()),
@@ -523,308 +477,194 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   path.receiveShadow = true;
   ctx.back.add(path);
 
-  /* Placements are worked out first and the meshes sized to what survived,
-     because an instance that fails the path test cannot simply be skipped: an
-     unwritten instance matrix is the identity, which parks a blade at the
-     world origin, in the middle of the mark. */
-  const GRASS_TRIES = 8600;
-  const blades: { x: number; z: number; h: number; w: number; yaw: number; lean: number; tone: number }[] = [];
-  for (let i = 0; i < GRASS_TRIES; i++) {
-    let x: number;
-    let z: number;
-    let lean = 0.1;
-    let edge = false;
-    if (i % 11 === 0) {
-      edge = true;
-      /* A handful of blades sit ON the cut edges and lean out over them, so the
-         edge breaks into grass instead of ending as a clean machined line. */
-      /* All of them on the front edge now. The board runs off both sides, so
-         the front cut is the only edge the lens ever sees, and a few blades
-         leaning out over it are what stop it reading as a machined line.
-         Set back a little rather than hanging over: blades that overhung it
-         curtained the cut face, and that face is the subject of the set. */
-      x = PLANT_X0 + r() * (PLANT_X1 - PLANT_X0);
-      z = BOARD_Z1 + 0.004;
-      lean = 0.5;
-    } else {
-      const c = clumps[(i * 7) % clumpCount];
-      const a = r() * Math.PI * 2;
-      const d = Math.pow(r(), 0.6) * c.rad;
-      x = Math.min(PLANT_X1, Math.max(PLANT_X0, c.x + Math.cos(a) * d));
-      z = Math.min(PLANT_Z1, Math.max(PLANT_Z0, c.z + Math.sin(a) * d));
-    }
-    /* Half the height of the first build. A blade at 0.08 of a mark width is
-       nearly forty pixels on a laptop, which is a reed, not grass, and it was
-       the single loudest reason the first frame read as a 3D render. */
-    /* The blades on the cut edges run longer and lie over, the way grass that
-       has nothing to hold it up does. It also softens the straight line the
-       board makes along the bottom of the frame at the end of the move. */
-    const h = (0.019 + r() * 0.026) * (edge ? 1.55 : 1);
-    const w = 0.75 + r() * 0.5;
-    const yaw = r() * Math.PI * 2;
-    const tone = Math.pow(r(), 0.7);
-    const bend = (r() - 0.5) * lean;
-    if (onPath(x, z, 0.01)) continue;
-    blades.push({ x, z, h, w, yaw, lean: bend, tone });
+  const [grassSrc, fernSrc, flowerSrc] = await Promise.all([
+    ctx.loadModel("/hero3d/model/grass_medium_01/grass_medium_01_1k.gltf"),
+    ctx.loadModel("/hero3d/model/fern_02/fern_02_1k.gltf"),
+    ctx.loadModel("/hero3d/model/celandine_01/celandine_01_1k.gltf"),
+  ]);
+
+  /**
+   * Flattens a loaded model into one instanced mesh, scaled so it stands a
+   * given height in this scene's units.
+   *
+   * Each of these models is several meshes sharing one material, so they
+   * merge cleanly. Two things are forced on the way through. The material is
+   * switched from blended to alpha tested, because a few hundred instances of
+   * blended foliage cannot be depth sorted against each other and the result
+   * is leaves winking through one another as the camera moves. And the
+   * geometry is recentred on its own footprint, so an instance's position is
+   * where the plant stands rather than wherever the scan's origin happened to
+   * be.
+   */
+  function plantFrom(src: Group, count: number, height: number): InstancedMesh {
+    const geoms: BufferGeometry[] = [];
+    let material: MeshStandardMaterial | null = null;
+    src.updateMatrixWorld(true);
+    src.traverse((o) => {
+      const m = o as Mesh;
+      if (!m.isMesh) return;
+      const g = m.geometry.clone().applyMatrix4(m.matrixWorld);
+      g.deleteAttribute("uv1");
+      geoms.push(g);
+      if (!material) material = (m.material as MeshStandardMaterial).clone();
+    });
+    const merged = mergeGeometries(geoms, false);
+    for (const g of geoms) g.dispose();
+    merged.computeBoundingBox();
+    const bb = merged.boundingBox!;
+    const s = height / Math.max(bb.max.y - bb.min.y, 1e-4);
+    merged.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+    merged.scale(s, s, s);
+    keep(merged);
+
+    const mtl = material as unknown as MeshStandardMaterial;
+    mtl.transparent = false;
+    mtl.alphaTest = 0.45;
+    mtl.side = DoubleSide;
+    mtl.depthWrite = true;
+    mat(mtl);
+
+    const inst = new InstancedMesh(merged, mtl, count);
+    inst.castShadow = true;
+    inst.receiveShadow = true;
+    inst.instanceMatrix.setUsage(StaticDrawUsage);
+    return inst;
   }
 
-  const grass = new InstancedMesh(
-    keep(bladeGeometry()),
-    mat(
-      new MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.82,
-        metalness: 0,
-        side: DoubleSide,
-      }),
-    ),
-    blades.length,
-  );
-  grass.receiveShadow = true;
-  const bladeColor = new Color();
-  for (let i = 0; i < blades.length; i++) {
-    const b = blades[i];
-    dummy.position.set(b.x, groundHeight(b.x, b.z) - 0.004, b.z);
-    dummy.rotation.set(b.lean, b.yaw, b.lean * 0.7);
-    dummy.scale.set(b.w, b.h, 1);
+  /** Puts one instance down, standing on the ground at x, z. */
+  function place(inst: InstancedMesh, i: number, x: number, z: number, scale: number, yaw: number, lean = 0) {
+    dummy.position.set(x, groundHeight(x, z), z);
+    dummy.rotation.set(lean * (r() - 0.5), yaw, lean * (r() - 0.5));
+    dummy.scale.setScalar(scale);
     dummy.updateMatrix();
-    grass.setMatrixAt(i, dummy.matrix);
-    /* Tip to root tonal spread. A single green over two thousand blades reads
-       as one carpet of plastic however good the lighting is. */
-    bladeColor.copy(grassDeep).lerp(grassLit, b.tone);
-    grass.setColorAt(i, bladeColor);
+    inst.setMatrixAt(i, dummy.matrix);
+  }
+
+  /* Clump centres, shared by the grass and the flowers so they grow together
+     the way they do in a hedge bottom rather than in two separate layers. */
+  const clumps: { x: number; z: number; rad: number }[] = [];
+  for (let i = 0; i < 44; i++) {
+    clumps.push({
+      x: PLANT_X0 + r() * (PLANT_X1 - PLANT_X0),
+      z: PLANT_Z0 + r() * (PLANT_Z1 - PLANT_Z0),
+      rad: 0.09 + r() * 0.2,
+    });
+  }
+
+  /** A point in a clump that is not on the path, or null after ten tries. */
+  function inClump(pad: number): { x: number; z: number } | null {
+    for (let t = 0; t < 10; t++) {
+      const c = clumps[Math.floor(r() * clumps.length)];
+      const a = r() * Math.PI * 2;
+      const d = Math.pow(r(), 0.6) * c.rad;
+      const x = Math.min(PLANT_X1, Math.max(PLANT_X0, c.x + Math.cos(a) * d));
+      const z = Math.min(PLANT_Z1, Math.max(PLANT_Z0, c.z + Math.sin(a) * d));
+      if (!onPath(x, z, pad)) return { x, z };
+    }
+    return null;
+  }
+
+  /* Grass. The ground cover, so it is the one with real density. Instances
+     that fail the path test are parked at scale zero rather than skipped: an
+     unwritten instance matrix is the identity, which would stand a clump at
+     the world origin, in the middle of the mark. */
+  const GRASS_N = 620;
+  const grass = plantFrom(grassSrc, GRASS_N, 0.055);
+  for (let i = 0; i < GRASS_N; i++) {
+    const p = inClump(0.03);
+    if (!p) {
+      dummy.position.set(0, -99, 0);
+      dummy.scale.setScalar(0);
+      dummy.rotation.set(0, 0, 0);
+      dummy.updateMatrix();
+      grass.setMatrixAt(i, dummy.matrix);
+      continue;
+    }
+    place(grass, i, p.x, p.z, 0.55 + Math.pow(r(), 1.6) * 1.1, r() * Math.PI * 2, 0.12);
   }
   ctx.back.add(grass);
 
-  /* Moss: flattened lumps, denser than the grass and a stop darker, because
-     moss in shot is a texture and not a plant. Small enough that the facets
-     of a twenty triangle lump are below the size the eye reads as a polygon. */
-  const mossPlaces: { x: number; z: number }[] = [];
-  for (let i = 0; i < 900; i++) {
-    const c = clumps[(i * 5) % clumpCount];
-    const a = r() * Math.PI * 2;
-    const d = Math.pow(r(), 0.5) * (c.rad + 0.12);
-    const x = Math.min(PLANT_X1, Math.max(BOARD_X0 + 0.01, c.x + Math.cos(a) * d));
-    const z = Math.min(PLANT_Z1, Math.max(PLANT_Z0, c.z + Math.sin(a) * d));
-    if (onPath(x, z, 0)) continue;
-    mossPlaces.push({ x, z });
+  /* Ferns, sparse, where a hedge bottom is damp. Big enough to read as an
+     individual plant rather than as more ground cover. */
+  const FERN_N = 54;
+  const ferns = plantFrom(fernSrc, FERN_N, 0.085);
+  for (let i = 0; i < FERN_N; i++) {
+    const p = inClump(0.06) ?? { x: PLANT_X0 + r() * (PLANT_X1 - PLANT_X0), z: PLANT_Z0 + r() * 0.3 };
+    place(ferns, i, p.x, p.z, 0.7 + r() * 0.8, r() * Math.PI * 2, 0.1);
   }
-  const moss = new InstancedMesh(
-    keep(new IcosahedronGeometry(0.03, 0)),
-    mat(new MeshStandardMaterial({ color: 0xffffff, roughness: 0.98, metalness: 0 })),
-    mossPlaces.length,
-  );
-  moss.receiveShadow = true;
-  const mossColor = new Color();
-  for (let i = 0; i < mossPlaces.length; i++) {
-    const m = mossPlaces[i];
-    dummy.position.set(m.x, groundHeight(m.x, m.z) - 0.009, m.z);
-    dummy.rotation.set(r() * 3, r() * 3, r() * 3);
-    dummy.scale.set(0.6 + r() * 0.9, 0.3 + r() * 0.25, 0.6 + r() * 0.9);
-    dummy.updateMatrix();
-    moss.setMatrixAt(i, dummy.matrix);
-    mossColor.copy(mossBase).lerp(i % 3 === 0 ? grassLit : grassDeep, r() * 0.55);
-    moss.setColorAt(i, mossColor);
-  }
-  ctx.back.add(moss);
+  ctx.back.add(ferns);
 
-  /* Ferns, in the damp side of the board under the trees. */
-  const FERN_PLANTS = 14;
-  const FRONDS = 5;
-  const fern = new InstancedMesh(
-    keep(frondGeometry()),
-    mat(
-      new MeshStandardMaterial({
-        color: new Color(0x4d6b38),
-        roughness: 0.86,
-        metalness: 0,
-        side: DoubleSide,
-      }),
-    ),
-    FERN_PLANTS * FRONDS,
-  );
-  fern.receiveShadow = true;
-  for (let p = 0; p < FERN_PLANTS; p++) {
-    let x = 0.1 + r() * 2.4;
-    let z = PLANT_Z0 + r() * (PLANT_Z1 - PLANT_Z0) * 0.7;
-    if (onPath(x, z, 0.03)) {
-      /* Pushed off the path rather than dropped, so the count stays fixed and
-         the instanced mesh has no identity matrices left in it. */
-      x += 0.16;
-      z -= 0.12;
-    }
-    const y = groundHeight(x, z) - 0.005;
-    const scale = 0.055 + r() * 0.05;
-    const twist = r() * Math.PI * 2;
-    for (let f = 0; f < FRONDS; f++) {
-      const a = twist + (f / FRONDS) * Math.PI * 2;
-      dummy.position.set(x, y, z);
-      dummy.rotation.set(0, a, 0);
-      dummy.rotateX(0.62 + r() * 0.3);
-      dummy.scale.setScalar(scale * (0.7 + r() * 0.5));
-      dummy.updateMatrix();
-      fern.setMatrixAt(p * FRONDS + f, dummy.matrix);
-    }
+  /* Celandine, which is a real Irish woodland floor flower and the only
+     yellow in the garden. It replaces the blue sticks that stood in for
+     bluebells: a stick is a stick, and these are a scan of the actual plant.
+     Kept to the lit half of the board, because a flower the key never reaches
+     is a dark speck. */
+  const FLOWER_N = 96;
+  const flowers = plantFrom(flowerSrc, FLOWER_N, 0.062);
+  for (let i = 0; i < FLOWER_N; i++) {
+    const p = inClump(0.05) ?? { x: PLANT_X0 + r() * 1.6, z: PLANT_Z0 + r() * 0.8 };
+    place(flowers, i, p.x, p.z, 0.6 + r() * 0.7, r() * Math.PI * 2, 0.14);
   }
-  ctx.back.add(fern);
-
-  /* Bluebells: drifts, nodding one way, the only cool note inside the board.
-     Stem and bells are two instanced meshes rather than one merged spike,
-     because merging needs the example BufferGeometryUtils and two draw calls
-     is cheaper than another dependency. */
-  const DRIFTS: readonly (readonly [number, number, number])[] = [
-    [0.42, -0.22, 0.34],
-    [1.55, -0.62, 0.42],
-    [2.25, -1.5, 0.38],
-    [0.72, -1.15, 0.3],
-  ];
-  const SPIKES = 64;
-  const BELLS_PER = 6;
-  const stemMat = mat(
-    new MeshStandardMaterial({ color: new Color(0x4a6636), roughness: 0.85, metalness: 0 }),
-  );
-  const stems = new InstancedMesh(keep(new CylinderGeometry(0.003, 0.0045, 1, 3)), stemMat, SPIKES);
-  const bells = new InstancedMesh(
-    keep(new ConeGeometry(0.0105, 0.024, 6, 1, true)),
-    mat(
-      new MeshStandardMaterial({
-        color: bluebell,
-        roughness: 0.6,
-        metalness: 0,
-        side: DoubleSide,
-      }),
-    ),
-    SPIKES * BELLS_PER,
-  );
-  for (let i = 0; i < SPIKES; i++) {
-    const d = DRIFTS[i % DRIFTS.length];
-    const a = r() * Math.PI * 2;
-    const dist = Math.pow(r(), 0.6) * d[2];
-    let x = Math.min(PLANT_X1, Math.max(BOARD_X0 + 0.04, d[0] + Math.cos(a) * dist));
-    let z = Math.min(PLANT_Z1, Math.max(PLANT_Z0, d[1] + Math.sin(a) * dist));
-    if (onPath(x, z, 0.02)) {
-      x += 0.1;
-      z -= 0.09;
-    }
-    const y = groundHeight(x, z);
-    const h = 0.062 + r() * 0.04;
-    const tiltX = (r() - 0.5) * 0.3;
-    const tiltZ = (r() - 0.5) * 0.3;
-    dummy.position.set(x, y + h / 2, z);
-    dummy.rotation.set(tiltX, 0, tiltZ);
-    dummy.scale.set(1, h, 1);
-    dummy.updateMatrix();
-    stems.setMatrixAt(i, dummy.matrix);
-
-    const nod = r() * Math.PI * 2;
-    for (let b = 0; b < BELLS_PER; b++) {
-      /* Packed along the top third rather than spread up the stem. Spread out,
-         the spike reads as a bare stick with spines on it, which is what the
-         first build looked like at this size: a dead thistle, not a bluebell. */
-      const t = 0.62 + b * 0.068;
-      const bx = x + tiltZ * h * t + Math.cos(nod) * 0.013;
-      const bz = z - tiltX * h * t + Math.sin(nod) * 0.013;
-      dummy.position.set(bx, y + h * t, bz);
-      /* Bells hang mouth down and nod to one side, which is the whole
-         silhouette of a bluebell: upright cones read as crocuses. */
-      dummy.rotation.set(Math.PI - 0.3 * Math.sin(nod), nod, 0.3 * Math.cos(nod));
-      dummy.scale.setScalar(0.78 + r() * 0.35);
-      dummy.updateMatrix();
-      bells.setMatrixAt(i * BELLS_PER + b, dummy.matrix);
-    }
-  }
-  ctx.back.add(stems, bells);
+  ctx.back.add(flowers);
 
   /* ---- The hedgerow at the back of the board ----------------------------
-     A bank of foliage along the back edge with two small trees standing out of
-     it. This is where the two tonal worlds meet most sharply, so the line it
-     draws does more for the idea than any other single piece: green and alive
-     below it, warm paper above it.
+     A bank along the back edge, built from the same grass and fern scans at
+     a much larger scale rather than from its own geometry. Two reasons. It
+     costs no extra download, and a hedge made of the same plants as the
+     ground in front of it is what a hedge actually is, where the first build
+     used clustered spheres and read as a row of broccoli.
 
-     It replaced four free standing trees. Separate trees at that size read as
-     lollipops on sticks and left the back edge of the board showing between
-     them; a hedge is also simply what the back of an Irish garden is. */
-  const trunkMat = mat(
-    new MeshStandardMaterial({ color: new Color(0x4a3a2c), roughness: 0.9, metalness: 0 }),
-  );
-  const oakMat = mat(
-    new MeshStandardMaterial({ color: new Color(0x2f4a2a), roughness: 0.92, metalness: 0 }),
-  );
-  const hazelMat = mat(
-    new MeshStandardMaterial({ color: new Color(0x44632f), roughness: 0.92, metalness: 0 }),
-  );
-
-  /* Many small leaves rather than a few big ones. The first build used 110
-     instances at a radius of about 0.15 of a mark width, and at the size the
-     lens sees the back of the board that is a row of broccoli florets: the eye
-     counts the lumps. Roughly a thousand instances a third of the size read as
-     a mass of foliage with light falling through it, which is what a hedge is,
-     and it costs about seventy thousand triangles. */
-  const HEDGE_COUNT = 980;
-  const hedge = new InstancedMesh(
-    keep(new IcosahedronGeometry(0.042, 1)),
-    mat(new MeshStandardMaterial({ color: 0xffffff, roughness: 0.93, metalness: 0 })),
-    HEDGE_COUNT,
-  );
-  hedge.castShadow = true;
-  const hedgeColor = new Color();
-  const oakTone = new Color(0x31492c);
-  const hazelTone = new Color(0x55713c);
-  const HEDGE_X0 = -2.5;
-  const HEDGE_X1 = 2.5;
-  for (let i = 0; i < HEDGE_COUNT; i++) {
-    const t = r();
-    const x = HEDGE_X0 + t * (HEDGE_X1 - HEDGE_X0);
-    /* Three staggered ranks, so the bank has a front, a middle and a back and
-       the key falls off through it instead of lying flat on one wall. */
-    const rank = i % 3;
-    const z = BOARD_Z0 + 0.02 + rank * 0.085 + (r() - 0.5) * 0.07;
-    /* The crown is not level: a hedge grown in is higher in the middle of each
-       stretch and thins at the ends. Two slow waves along its length, so the
+     This is where the two tonal worlds meet most sharply, so the line it
+     draws does more for the idea than any other single piece: green and
+     alive below it, warm paper above it. */
+  const HEDGE_N = 150;
+  /* Grass, not fern. A fern at this size reads as tropical foliage, which is
+     the one thing an Irish hedge bottom is not, and at 0.46 of a mark width
+     each frond was the size of the lion. */
+  const hedge = plantFrom(grassSrc, HEDGE_N, 0.2);
+  const HEDGE_X0 = -2.6;
+  const HEDGE_X1 = 2.6;
+  for (let i = 0; i < HEDGE_N; i++) {
+    const x = HEDGE_X0 + r() * (HEDGE_X1 - HEDGE_X0);
+    const z = BOARD_Z0 + 0.02 + (i % 3) * 0.075 + (r() - 0.5) * 0.06;
+    /* The crown is not level. Two slow waves along its length, so the
        silhouette against the paper has a shape rather than a straight top. */
-    const wave =
-      0.62 +
-      0.3 * Math.sin(x * 1.15 + 0.6) +
-      0.16 * Math.sin(x * 2.9 - 1.4);
-    const top = Math.max(0.2, wave) * (rank === 2 ? 1.22 : rank === 1 ? 1.05 : 0.9);
-    /* Instances are packed up the face of the bank, denser low down, so the
-       foliage has a body instead of being a single shell of leaves. */
-    const up = Math.pow(r(), 0.7) * top;
-    const jitter = 0.055;
-    dummy.position.set(
-      x + (r() - 0.5) * jitter,
-      groundHeight(x, z) + up * 0.42,
-      z + (r() - 0.5) * jitter,
-    );
-    dummy.rotation.set(r() * 3, r() * 3, r() * 3);
-    const sc = 0.72 + r() * 0.7;
-    dummy.scale.set(sc * 1.12, sc * 0.92, sc);
-    dummy.updateMatrix();
-    hedge.setMatrixAt(i, dummy.matrix);
-    /* Lighter toward the top of the bank, because that is the part the key
-       actually reaches. A hedge of one flat green is a cut-out of a hedge. */
-    hedgeColor.copy(oakTone).lerp(hazelTone, Math.pow(r(), 1.3) * 0.55 + (up / top) * 0.45);
-    hedge.setColorAt(i, hedgeColor);
+    const wave = 0.78 + 0.26 * Math.sin(x * 1.15 + 0.6) + 0.13 * Math.sin(x * 2.9 - 1.4);
+    place(hedge, i, x, z, Math.max(0.3, wave) * (0.8 + r() * 0.5), r() * Math.PI * 2, 0.16);
   }
   ctx.back.add(hedge);
 
-  for (const [x, z, h, leaf] of [
-    [0.95, -1.74, 0.46, hazelMat],
-    [2.05, -1.8, 0.56, oakMat],
-  ] as const) {
-    const tree = modelTree(trunkMat, leaf, h, r, keep);
-    tree.position.set(x, groundHeight(x, z) - 0.01, z);
-    tree.rotation.y = r() * Math.PI * 2;
-    ctx.back.add(tree);
+  /* A second rank of tall grass through the hedge, which breaks the fern
+     frond silhouette up so the bank does not read as one repeated plant. */
+  const HEDGE_GRASS_N = 190;
+  const hedgeGrass = plantFrom(fernSrc, HEDGE_GRASS_N, 0.13);
+  for (let i = 0; i < HEDGE_GRASS_N; i++) {
+    const x = HEDGE_X0 + r() * (HEDGE_X1 - HEDGE_X0);
+    const z = BOARD_Z0 + 0.01 + (i % 4) * 0.06 + (r() - 0.5) * 0.05;
+    place(hedgeGrass, i, x, z, 0.6 + r() * 0.9, r() * Math.PI * 2, 0.18);
   }
+  ctx.back.add(hedgeGrass);
+
 
   /* ---- The kit ----------------------------------------------------------
      Painted steel, not silhouette: half metal and medium rough, so the key
      puts one bright edge down every bar. Set A learned this the expensive way,
      with near black props that read as cardboard cut outs on paper. */
-  const steel = mat(
-    new MeshStandardMaterial({ color: new Color(0x3b322b), roughness: 0.42, metalness: 0.58 }),
-  );
+  /* Painted steel, scanned. The rig, the stands and the hardware are the
+     parts the light probe does the most for: a real roughness map breaks the
+     highlight up along a bar instead of running one clean specular line down
+     it, which is what says metal rather than plastic. */
+  const steel = await ctx.loadMaterial("metal_plate", { repeat: 1.4 });
+  /* A metal's colour tints its REFLECTION, it is not an albedo, so the dark
+     brown this started with multiplied the studio probe down to nothing and
+     the rig came out as black cut-outs for the second time in this set's
+     life. Near white, and the scanned maps carry the colour and the wear. */
+  /* Cool, so it reads as steel against a warm room. Tinted warm it came out
+     looking like varnished timber, which is the one material already on the
+     board underneath it. */
+  steel.color = new Color(0x9fa5a8);
+  steel.metalness = 0.72;
+  steel.envMapIntensity = 1.15;
   const cloth = mat(
     new MeshStandardMaterial({
       color: new Color().copy(ink).lerp(new Color(0x4a3e34), 0.72),
@@ -1027,7 +867,12 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
      than turning it into a black band, and it throws the mark's shadow back
      onto the moss at about x 0.5, z -0.75, which is the cue that the object is
      really hanging there. */
-  const key = new SpotLight(0xfff0d6, 245, 26, 0.58, 0.5, 2);
+  /* Down from 245. That figure was set when this light was doing everything:
+     key, fill and bounce. The probe does the fill now, so the spot is back to
+     what a key actually is, the one source that models the subject and throws
+     its shadow. Left at the old value the sweep went to paper white and the
+     garden lost every shadow inside it. */
+  const key = new SpotLight(0xfff0d6, 34, 26, 0.58, 0.5, 2);
   key.position.set(-3.4, 4.6, 5.2);
   const target = new Object3D();
   target.position.set(0.35, -0.6, -0.55);
@@ -1045,10 +890,12 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   /* Fill. Warm from above and bounced clay from below, kept low so the right
      of the garden and the far corner of the cove genuinely fall away: a single
      even level across the frame is a web page background, not a set. */
-  ctx.lights.add(new HemisphereLight(0xf6ead3, 0x4e3626, 0.46));
+  /* Almost nothing now. The probe carries the sky and bounce; this is only
+     here to stop the undersides of the planting going fully black. */
+  ctx.lights.add(new HemisphereLight(0xf6ead3, 0x4e3626, 0.12));
   /* One weak cool wash from the right, the daylight any set gets off its own
      white walls. It is what stops the green reading as olive. */
-  const wash = new DirectionalLight(0xc9d8de, 0.26);
+  const wash = new DirectionalLight(0xc9d8de, 0.1);
   wash.position.set(4.2, 2.4, 1.6);
   ctx.lights.add(wash);
 

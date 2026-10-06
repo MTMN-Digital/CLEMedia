@@ -1,0 +1,65 @@
+[
+  {
+    "slug": "brown_photostudio_02",
+    "kind": "hdri",
+    "name": "Brown Photostudio 02",
+    "authors": [
+      "Sergej Majboroda"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/brown_photostudio_02"
+  },
+  {
+    "slug": "plywood",
+    "kind": "texture",
+    "name": "Plywood",
+    "authors": [
+      "Rob Tuytel"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/plywood"
+  },
+  {
+    "slug": "metal_plate",
+    "kind": "texture",
+    "name": "Metal Plate",
+    "authors": [
+      "Rob Tuytel"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/metal_plate"
+  },
+  {
+    "slug": "grass_medium_01",
+    "kind": "model",
+    "name": "Grass Medium 01",
+    "authors": [
+      "Rob Tuytel",
+      "Rico Cilliers"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/grass_medium_01"
+  },
+  {
+    "slug": "fern_02",
+    "kind": "model",
+    "name": "Fern 02",
+    "authors": [
+      "Rob Tuytel",
+      "Rico Cilliers"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/fern_02"
+  },
+  {
+    "slug": "celandine_01",
+    "kind": "model",
+    "name": "Celandine 01",
+    "authors": [
+      "Rob Tuytel",
+      "Rico Cilliers"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/celandine_01"
+  }
+]
