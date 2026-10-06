@@ -1001,19 +1001,14 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
      narrows, the flag rises out of the top as the camera drops. Five earlier
      heroes had nothing here, and every one of them read as a logo being
      enlarged rather than a camera travelling. */
+  /* A bare column, nothing else. It had a knuckle and an arm on it, and at
+     rest those sat exactly where the hang bar crosses the frame: three heavy
+     dark pieces meeting in the top left corner, which reads as scaffolding
+     and pulls the eye off the mark. A single vertical does the whole job a
+     foreground object has, which is to cross the lens and leave early. */
   const nearStand = new Group();
   const nearColumn = new Mesh(keep(new CylinderGeometry(0.042, 0.052, 2.6, 14)), steel);
-  const nearKnuckle = new Mesh(keep(new CylinderGeometry(0.055, 0.055, 0.095, 12)), steel);
-  nearKnuckle.rotation.x = Math.PI / 2;
-  nearKnuckle.position.y = 0.34;
-  /* The arm points out of the frame, not into it. It pointed inward in the
-     first build and crossed the same part of the frame as the far stand's arm,
-     and two dark diagonals at the same angle read as scaffolding rather than
-     as two separate pieces of kit. */
-  const nearArm = new Mesh(keep(new CylinderGeometry(0.026, 0.026, 0.62, 8)), steel);
-  nearArm.rotation.z = Math.PI / 2 + 0.42;
-  nearArm.position.set(-0.26, 0.4, 0.01);
-  nearStand.add(nearColumn, nearKnuckle, nearArm);
+  nearStand.add(nearColumn);
   nearStand.position.set(-1.12, -0.25, 1.22);
   ctx.front.add(nearStand);
 
