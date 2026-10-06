@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
@@ -85,20 +85,46 @@ function expiryLabel(iso?: string): string | null {
 export default function Download() {
   const { token } = useParams();
   const [state, setState] = useState<State>({ k: "loading" });
+  /* Bounded: six retries two seconds apart, then the pending screen. An
+     unbounded poll on a payment page is a page that never stops asking. */
+  const tries = useRef(0);
 
   const fetchLink = useCallback(async () => {
     if (!token) {
       setState({ k: "error", code: "not_found" });
       return;
     }
-    if (token === "pending") {
+    /* Two ways in. The ordinary one is a download token in the path. The other
+       is the redirect Stripe performs the instant a payment succeeds, which
+       lands on /download/pending carrying a session id: api/download.ts now
+       resolves that to the same order, so somebody who has just paid reaches
+       their file instead of a page telling them to go and find a receipt. */
+    const session = token === "pending" ? new URLSearchParams(window.location.search).get("session_id") : null;
+    if (token === "pending" && !session) {
       setState({ k: "pending" });
       return;
     }
+    const query = session
+      ? `session_id=${encodeURIComponent(session)}`
+      : `token=${encodeURIComponent(token)}`;
     setState({ k: "loading" });
     try {
-      const r = await fetch(`/api/download?token=${encodeURIComponent(token)}`);
+      const r = await fetch(`/api/download?${query}`);
       const d = await r.json();
+      /* The webhook that writes the order is asynchronous and the buyer's
+         redirect regularly beats it, so a 202 means "paid, not written yet".
+         Retried a few times a couple of seconds apart, then left on the
+         pending screen, which tells them what to do rather than spinning. */
+      if (r.status === 202 || d.error === "pending") {
+        if (tries.current < 6) {
+          tries.current += 1;
+          window.setTimeout(() => void fetchLink(), 2000);
+          setState({ k: "loading" });
+        } else {
+          setState({ k: "pending" });
+        }
+        return;
+      }
       if (!r.ok) {
         const code: ErrorCode = code_of(d.error);
         setState({ k: "error", code });

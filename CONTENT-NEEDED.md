@@ -310,6 +310,20 @@ renders. No layout work follows.
 
 ## Shop and media
 
+### Purchase to download, CLOSED 2026-10-06
+
+The gap raised above is fixed in code. `api/download.ts` now accepts
+`session_id` as well as `token` and resolves it against `orders.stripe_session_id`,
+and `/download/pending` reads the session id out of Stripe's redirect, retries
+six times two seconds apart while the webhook catches up, and falls back to the
+pending screen after that. A buyer who has just paid now reaches their file
+without anyone being emailed a receipt by hand.
+
+Still to do, and it needs the client: the end to end purchase test at build
+stage 9, against live keys, with a real card. Nothing here has been exercised
+against Stripe itself.
+
+
 Added 2026-10-06 with the rebuild of `/shop`, `/shop/:slug`, `/media` and
 `/download/:token`. All four pages are built to be good while empty: no product
 title, price, page count, publication, logo or quote is invented anywhere on
