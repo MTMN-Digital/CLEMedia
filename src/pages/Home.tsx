@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
@@ -121,12 +121,6 @@ function NotifyForm() {
 }
 
 export default function Home() {
-  /* The set is a dynamic import so three.js stays out of the main bundle, and
-     it is memoised so a re-render never rebuilds the scene. */
-  const heroSet = useCallback(
-    () => import("@/components/home/hero3d/sets/soundstage").then((m) => m.soundstageSet),
-    [],
-  );
 
   return (
     <>
@@ -137,15 +131,11 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* ═══ 1. HERO. One shot: the mark hangs over a miniature of the show's
-          garden, built on a board that visibly ends, standing on a studio
-          sweep with a rig over it. The first scroll holds the page and pushes
-          the camera in through that room, and the words arrive in the band the
-          move opens. The room is in the same WebGL scene as the mark, which is
-          the whole point: a camera move past a flat backdrop reads as a
-          picture being enlarged, and five earlier versions of this hero were
-          rejected for exactly that. See HeroShot and hero3d/. ═══ */}
-      <HeroShot set={heroSet} />
+      {/* ═══ 1. HERO. One still: the mark hanging in a lit room, with the
+          words under it. The room is a rendered photograph rather than a live
+          scene, so the page decodes an image instead of running a renderer.
+          See HeroShot for why the WebGL version was taken out. ═══ */}
+      <HeroShot />
 
       {/* The garden, edge to edge, as the horizon the rest of the page sits
           under. It does not drift: one thing moving against a fixed ground is

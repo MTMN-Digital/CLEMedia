@@ -22,8 +22,6 @@ import PreviewC from "@/pages/preview/PreviewC";
 // Admin is lazy, it pulls in the Supabase client, which the public site
 // should never have to download.
 const Admin = lazy(() => import("@/pages/admin/Admin"));
-// Each hero direction pulls in three.js, so the preview is lazy too.
-const HeroPreview = lazy(() => import("@/pages/preview/HeroPreview"));
 
 export default function App() {
   return (
@@ -40,15 +38,6 @@ export default function App() {
         <Route path="shop" element={<Shop />} />
         <Route path="shop/:slug" element={<ShopProduct />} />
         <Route path="contact" element={<Contact />} />
-        {/* The three hero directions, for the client to compare on the deploy. */}
-        <Route
-          path="preview/hero/:which"
-          element={
-            <Suspense fallback={<p className="p-8 font-body text-muted">Loading…</p>}>
-              <HeroPreview />
-            </Suspense>
-          }
-        />
         <Route path="download/:token" element={<Download />} />
         <Route path="privacy" element={<Legal doc="privacy" />} />
         <Route path="terms" element={<Legal doc="terms" />} />

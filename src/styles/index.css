@@ -1318,131 +1318,65 @@ body > * { position: relative; z-index: 1; }
    home page and is untouched; this block is additive while the three
    directions are being compared.
 --------------------------------------------------------------------------- */
-.shot-pin { position: relative; }
-.shot-screen {
-  position: sticky;
-  /* Under the header, and a viewport tall LESS the header. It was a full
-     100svh starting below a 76px sticky header, so the bottom 76px of the
-     hero, the scroll cue among it, sat off the screen: measured on the live
-     site the cue's top was at 928 in a 900px viewport. --header-h is written
-     by HeroShot, and the fallback keeps this honest if script never runs. */
-  top: var(--header-h, 0px);
-  height: calc(100svh - var(--header-h, 0px));
-  overflow: hidden;
+/* ---------------------------------------------------------------------------
+   The hero, as one still.
+
+   There is no canvas here any more and no scroll-driven camera. The room is a
+   rendered photograph (or, until that lands, the lit pool and floor drawn
+   below), the mark is layered artwork over it, and the only thing that moves
+   is a few pixels of lag on the mark as the page scrolls away. See HeroShot
+   for why the WebGL version was taken out.
+--------------------------------------------------------------------------- */
+.shot-still {
+  position: relative;
   display: grid;
-  place-items: center;
-  /* The ground the canvas is drawn over. The scene renders with a clear alpha
-     of zero, so this is the room's own far tone and the GL floor and wall sit
-     on top of it: one colour, no seam at the canvas edge. */
-  background: var(--color-sunken);
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+  align-content: center;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  min-height: min(92svh, 60rem);
+  padding: clamp(3rem, 9vh, 7rem) var(--gutter) clamp(3.5rem, 10vh, 8rem);
+  overflow: hidden;
   isolation: isolate;
+  background: var(--color-sunken);
 }
-/* The room, in CSS, underneath the canvas.
 
-   The scene draws the floor, the wall and the light, so for a reader with
-   WebGL this is never seen. For a reader without it, it is the difference
-   between a hero and a logo floating on a flat tan field, which is what this
-   shipped as: `failIfMajorPerformanceCaveat` refuses a software renderer, so
-   that is not a rare reader, it is anyone on a machine with hardware
-   acceleration off, a remote desktop or an older integrated GPU.
-
-   One lit pool up and to the left falling into a corner several stops down,
-   and a floor the object can stand on. The same two things that make the
-   scene read as a set. */
-.shot-screen::before {
+/* The room. One lit pool up and to the left falling into a corner several
+   stops down, and a floor the mark can stand over: the same two things that
+   made the scene read as a set, drawn in two gradients instead of fifteen
+   hundred instances. The rendered plate replaces this background and nothing
+   else when it is ready. */
+.shot-still::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
   background:
     linear-gradient(
       to bottom,
-      transparent 0 58%,
-      color-mix(in srgb, var(--color-muted) 9%, transparent) 58%,
-      color-mix(in srgb, var(--color-muted) 17%, transparent) 100%
+      transparent 0 56%,
+      color-mix(in srgb, var(--color-muted) 10%, transparent) 56%,
+      color-mix(in srgb, var(--color-muted) 19%, transparent) 100%
     ),
     radial-gradient(
-      125% 100% at 24% 6%,
+      120% 98% at 26% 4%,
       var(--color-raised) 0%,
-      var(--color-paper-1) 34%,
-      var(--color-paper-2) 62%,
-      var(--color-paper-3) 84%,
-      color-mix(in srgb, var(--color-muted) 34%, var(--color-paper-3)) 100%
+      var(--color-paper-1) 32%,
+      var(--color-paper-2) 60%,
+      var(--color-paper-3) 83%,
+      color-mix(in srgb, var(--color-muted) 36%, var(--color-paper-3)) 100%
     );
 }
 
-.shot-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  /* Never a click target: the buttons are under it in the stacking order. */
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
+.shot-mark {
+  width: min(52vh, 64vw, 38rem);
+  align-self: end;
+  will-change: transform;
 }
-.shot-screen.is-live .shot-canvas { opacity: 1; }
 
-/* The flat mark, which is what the markup renders and what stays without
-   WebGL. It is in the middle of the frame, at the size the scene starts the
-   object at, so the handover from one to the other is not a jump. */
-.shot-flat {
-  position: relative;
-  width: min(52vh, 72vw);
-  transform: translateY(-6vh);
-  transition: opacity 0.5s var(--ease-out);
-}
-.shot-screen.is-live .shot-flat { opacity: 0; }
-
-/* The words arrive in the space the move opens under the mark. --w runs 0 to
-   1 across the second half of the move, so they are genuinely absent from the
-   frame a reader lands on rather than merely faint. */
-.shot-words {
-  position: absolute;
-  left: 50%;
-  /* Low, because this hero has a horizon. The board's cut edge lands at about
-     two thirds down the frame at the end of the move, and everything above it
-     is planting: the headline set at 9vh sat squarely on the hedge and could
-     not be read. The strip of lit studio floor between that edge and the
-     bottom of the frame is the only clean ground in the shot, so the words
-     stand on it, which is also the true thing to do with a set that has a
-     floor in it. */
-  bottom: clamp(0.25rem, 0.8vh, 0.75rem);
-  width: min(100% - 2.5rem, 64rem);
+.shot-copy {
+  width: min(100%, 64rem);
   text-align: center;
-  z-index: 1;
-  pointer-events: none;
-  opacity: var(--w, 0);
-  transform: translate3d(-50%, calc((1 - var(--w, 0)) * 2.4rem), 0);
-}
-.shot-words :where(a) { pointer-events: auto; }
-
-/* The lead runs in ink here, not in the body brown it uses everywhere else.
-   This hero's words land on the cut face of the set's board, which is pale
-   birch ply but is still a wooden surface with a lit side and a shaded side.
-   Measured off the rendered pixels at the end of the move, the body brown
-   came out at 4.42:1 against the shaded half of that face, which is under the
-   4.5 an AA body text needs, and the ply had already been lightened twice to
-   chase it. Lightening it a third time would have turned a board into cream.
-   In ink the same paragraph measures 8.6:1 across the whole face. */
-.shot-words .hero-lead { color: var(--color-ink); }
-
-/* The cue is the opposite: it is the only thing on the resting frame besides
-   the mark, and it is gone as soon as the reader has done what it asks. */
-.shot-cue {
-  position: absolute;
-  bottom: clamp(1.5rem, 3.5vh, 2.5rem);
-  left: 50%;
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  color: var(--color-body);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  opacity: calc(1 - var(--w, 0));
-  transform: translateX(-50%);
 }
 
 /* Preview chrome only. Never rendered on a real page. */
@@ -1461,42 +1395,7 @@ body > * { position: relative; z-index: 1; }
   text-transform: uppercase;
 }
 
-/* No scene, so no move: the hero is a finished still with its words already
-   placed. Shared with the reduced-motion case below, because the two want
-   exactly the same thing. */
-.shot-pin.is-flat { height: auto !important; }
-.shot-screen.is-flat {
-  position: relative;
-  /* The sticky offset has to come off with the stickiness. Left on, a
-     relatively positioned box is simply pushed down by it, which opened a
-     bare 76px band of page above the set. */
-  top: 0;
-  height: auto;
-  padding: 7vh 0 11vh;
-  gap: 3vh;
-}
-.shot-screen.is-flat .shot-canvas { display: none; }
-.shot-screen.is-flat .shot-flat { opacity: 1; }
-.shot-screen.is-flat .shot-words {
-  position: static;
-  opacity: 1;
-  transform: none;
-  margin-inline: auto;
-}
-.shot-screen.is-flat .shot-cue { display: none; }
-
 @media (prefers-reduced-motion: reduce) {
-  /* No move, so no arrival: the hero is the mark with its words under it. */
-  .shot-pin { height: auto !important; }
-  .shot-screen { position: relative; top: 0; height: auto; padding: 8vh 0 12vh; gap: 4vh; }
-  .shot-canvas { display: none; }
-  .shot-flat { opacity: 1 !important; transform: none; }
-  .shot-words {
-    position: static;
-    opacity: 1;
-    transform: none;
-    width: min(100% - 2.5rem, 64rem);
-    margin-inline: auto;
-  }
-  .shot-cue { display: none; }
+  .shot-mark { transform: none !important; }
 }
+
