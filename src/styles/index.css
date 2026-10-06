@@ -1174,10 +1174,6 @@ body > * { position: relative; z-index: 1; }
   opacity: 0;
   transition: opacity 0.5s var(--ease-out);
 }
-.hero-layers { transition: opacity 0.5s var(--ease-out); }
-.hero-stage.is-3d .hero-3d-canvas { opacity: 1; }
-.hero-stage.is-3d .hero-layers { opacity: 0; }
-.hero-stage.is-3d .hero-layer { filter: none; }
 /* No transform at all on the CSS mark once the canvas has it: the turn and
    the dolly are both in the scene. */
 .hero-stage.is-3d .hero-mark { transform: none; }
@@ -1319,103 +1315,209 @@ body > * { position: relative; z-index: 1; }
    directions are being compared.
 --------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------
-   The hero, as one still.
+   The hero: a multiplane.
 
-   There is no canvas here any more and no scroll-driven camera. The room is a
-   rendered photograph (or, until that lands, the lit pool and floor drawn
-   below), the mark is layered artwork over it, and the only thing that moves
-   is a few pixels of lag on the mark as the page scrolls away. See HeroShot
-   for why the WebGL version was taken out.
+   Three planes of one rendered photograph, scaled and raised at different
+   rates by a single --p the scroll handler writes, with the mark tilting
+   between two of them and the copy arriving to the right of centre. Nothing
+   renders at runtime: these are images on the compositor. See HeroShot for
+   why the live WebGL version was taken out.
+
+   Every transform here is driven by --p (0 at rest, 1 settled) and --w (the
+   copy's own arrival, which runs across the back half of the move). No JS
+   touches a style except those two numbers.
 --------------------------------------------------------------------------- */
-.shot-still {
-  position: relative;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  justify-items: center;
-  align-content: center;
-  gap: clamp(1.5rem, 4vh, 3rem);
-  min-height: min(92svh, 60rem);
-  padding: clamp(3rem, 9vh, 7rem) var(--gutter) clamp(3.5rem, 10vh, 8rem);
+.shot-pin { position: relative; }
+.shot-screen {
+  position: sticky;
+  top: var(--header-h, 0px);
+  height: calc(100svh - var(--header-h, 0px));
   overflow: hidden;
   isolation: isolate;
-  background: var(--color-sunken);
+  background: var(--color-paper-1);
+  perspective: 1400px;
+  --p: 0;
+  --w: 0;
 }
 
-/* The room: one rendered photograph, behind everything.
-
-   A tabletop model of the garden on a warm paper sweep, shot on an 85mm with
-   one softbox up and to the left, rendered once in Cycles and encoded to AVIF,
-   WebP and JPEG at three widths (scripts/render-hero-plate.py, then
-   encode-hero-plate.py). The browser decodes an image; it runs no renderer.
-
-   The picture is built to this layout, not cropped to it: the plant tops sit
-   at 52% of frame height, the plywood cut edge at 60 to 62%, and everything
-   below is clean lit floor measuring about 15:1 against ink, which is the band
-   the headline, the lead and the buttons stand on. Anchored to the bottom so
-   that band survives when a short viewport crops the sweep off the top. */
-.shot-still::before {
-  content: "";
+/* The planes. Each one is positioned to bleed past the frame, because a plane
+   that scales up from a frame-sized box runs out of picture at its edges. */
+.plane {
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--color-paper-1);
+  inset: -8%;
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  background-size: cover;
+  transform-origin: 50% 78%;
+  will-change: transform;
+}
+
+/* The sweep. Almost still: it is a wall, and a wall that moves is a wall the
+   eye stops believing. */
+.plane-back {
+  z-index: 0;
+  transform: scale(calc(1 + 0.05 * var(--p)));
   background-image: image-set(
     url("/brand/hero-plate-2560.avif") type("image/avif"),
     url("/brand/hero-plate-2560.webp") type("image/webp"),
     url("/brand/hero-plate-2560.jpg") type("image/jpeg")
   );
-  background-size: cover;
-  background-position: 50% 100%;
-  background-repeat: no-repeat;
 }
 
-@media (max-width: 1400px) {
-  .shot-still::before {
-    background-image: image-set(
-      url("/brand/hero-plate-1920.avif") type("image/avif"),
-      url("/brand/hero-plate-1920.webp") type("image/webp"),
-      url("/brand/hero-plate-1920.jpg") type("image/jpeg")
-    );
-  }
+/* The garden bed and the board it stands on. Moves enough to separate from
+   the wall behind it. Hidden until the layered render replaces the single
+   plate: an empty plane would otherwise paint a second copy of the room. */
+.plane-mid {
+  z-index: 1;
+  display: none;
+  transform: scale(calc(1 + 0.16 * var(--p))) translateY(calc(var(--p) * 1.6vh));
 }
+
+/* Nearest the lens: the spill on the floor and whatever stands at the frame
+   edge. Moves most, and leaves. */
+.plane-fore {
+  z-index: 3;
+  display: none;
+  transform: scale(calc(1 + 0.34 * var(--p))) translateY(calc(var(--p) * 5vh));
+}
+
+/* The mark, between the garden and the foreground, growing and tilting as the
+   move settles. The tilt is a positive rotateY, which swings the RIGHT edge
+   away from the reader: the first build had it negative and the left edge
+   went back, which reads as the object leaning into the camera rather than
+   turning on its strings. */
+.shot-mark {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 14%;
+  width: min(38vh, 44vw, 31rem);
+  /* It starts centred and walks left as it settles, because the copy arrives
+     into the right of the frame and the two were landing in the same band:
+     the headline was unreadable across the lion. The horizontal move is also
+     the strongest part of the parallax, since it is the only element that
+     changes its position rather than just its size. */
+  transform:
+    translateX(calc(-50% - var(--p) * 13%))
+    translateY(calc((1 - var(--p)) * 5vh))
+    scale(calc(0.86 + 0.14 * var(--p)))
+    rotateY(calc(var(--p) * 7deg))
+    rotateZ(calc(var(--p) * -1.1deg));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* The copy arrives to the right of centre, not under the mark. It is set left
+   aligned because a centred block pinned to the right half reads as a mistake
+   rather than a decision. */
+.shot-copy {
+  position: absolute;
+  z-index: 4;
+  left: 56%;
+  right: var(--gutter);
+  bottom: clamp(2.5rem, 9vh, 5.5rem);
+  max-width: 34rem;
+  opacity: var(--w);
+  transform: translateX(calc((1 - var(--w)) * 2.5rem));
+  pointer-events: none;
+}
+.shot-copy :where(a) { pointer-events: auto; }
+.shot-copy .hero-head {
+  /* Smaller than the centred version this replaces: the block now has half
+     the frame rather than all of it, and the line must not wrap. */
+  font-size: clamp(1.9rem, 3.5vw, 3.6rem);
+}
+
+.shot-cue {
+  position: absolute;
+  z-index: 4;
+  bottom: clamp(1.25rem, 3vh, 2.25rem);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--color-body);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: calc(1 - var(--w));
+  transform: translateX(-50%);
+}
+
+/* A phone gets a different structure, not the desktop one squeezed.
+
+   The desktop frame works because the copy is placed into a quiet part of the
+   picture. At 390 wide there is no quiet part: the plate's own bands land
+   wherever `cover` puts them and the headline ended up across the wordmark
+   and the hedge, unreadable. So on a phone the plate is a band at the top
+   with the mark in it, and the copy sits on plain paper underneath. The
+   plate is anchored to its own bottom edge, which is the lit floor, so the
+   join reads as that floor continuing rather than as a crop.
+
+   There is also no pinned scroll here: holding a phone screen for two swipes
+   before the page will start is a cost a reader did not agree to. */
 @media (max-width: 820px) {
-  .shot-still::before {
+  .shot-pin { height: auto !important; }
+  .shot-screen {
+    position: relative;
+    top: 0;
+    height: auto;
+    padding: 0 0 9vh;
+    perspective: none;
+    background: var(--color-raised);
+    --p: 1;
+    --w: 1;
+  }
+  .plane {
+    inset: 0 0 auto 0;
+    /* Deep enough that the wordmark's descenders clear the band edge: at 52vh
+       "FAMILY MEDIA" was sliced by the join. */
+    height: 57vh;
+    transform: none !important;
+  }
+  .plane-back {
     background-image: image-set(
       url("/brand/hero-plate-1280.avif") type("image/avif"),
       url("/brand/hero-plate-1280.webp") type("image/webp"),
       url("/brand/hero-plate-1280.jpg") type("image/jpeg")
     );
   }
-}
-
-.shot-mark {
-  width: min(52vh, 64vw, 38rem);
-  align-self: end;
-  will-change: transform;
-}
-
-.shot-copy {
-  width: min(100%, 64rem);
-  text-align: center;
-}
-
-/* Preview chrome only. Never rendered on a real page. */
-.shot-tag {
-  position: absolute;
-  top: calc(var(--header-h, 4.75rem) + 1rem);
-  left: 1.25rem;
-  padding: 0.35rem 0.7rem;
-  border: 1px solid var(--color-rule);
-  border-radius: 999px;
-  background: var(--color-raised);
-  color: var(--color-body);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  .shot-mark {
+    position: relative;
+    z-index: 2;
+    left: auto;
+    top: auto;
+    margin: 8vh auto 0;
+    width: min(56vw, 17rem);
+    transform: none !important;
+  }
+  .shot-copy {
+    /* Relative, NOT static. z-index has no effect on a static element, so
+       static dropped the copy out of the stacking order and the plate, which
+       is absolutely positioned, painted straight over it: the lead and both
+       buttons were in the DOM at the right coordinates and simply invisible. */
+    position: relative;
+    z-index: 4;
+    inset: auto;
+    max-width: none;
+    margin: 0;
+    padding: 5vh var(--gutter) 0;
+    background: var(--color-raised);
+    opacity: 1;
+    transform: none;
+    text-align: center;
+  }
+  .shot-copy .hero-head { font-size: clamp(1.8rem, 8.5vw, 2.6rem); white-space: normal; }
+  .shot-copy .hero-lead { margin-inline: auto; }
+  .shot-copy > div { justify-content: center; }
+  .shot-cue { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shot-mark { transform: none !important; }
+  /* No move: the settled frame, with everything already placed. */
+  .shot-pin { height: auto !important; }
+  .shot-screen { position: relative; top: 0; height: auto; padding: 6vh 0 9vh; --p: 1; --w: 1; }
+  .plane, .shot-mark, .shot-copy { transition: none; }
 }
 

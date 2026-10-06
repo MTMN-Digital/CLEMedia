@@ -5,94 +5,137 @@ import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
-   The hero, as one still.
+   The hero: a multiplane.
 
-   WHAT THIS REPLACED, and why. For several days this was a real-time WebGL
-   scene: the garden miniature on a studio sweep, a camera pushing through it
-   on scroll, scanned plants instanced by the thousand, a shadow map and six
-   render passes a frame. It was rejected repeatedly, and the last version of
-   it was also laggy, which is the part that settled the argument. Fifteen
-   hundred alpha-tested instances and a 2048 shadow map on a full-viewport
-   canvas is not something to put in front of a parent on a phone. And tuning
-   a picture by nudging constants and re-rendering is a bad way to art-direct
-   a shot: it took five rounds just to get the headline legible.
+   THE SHAPE OF IT. The reader lands on the mark hanging in a room, seen from
+   low down with the garden close to the lens. The first scroll holds the page
+   and pushes in: the planes scale and rise at different rates, which is a
+   camera move, the mark grows and tilts on its strings, and the headline, the
+   lead and the buttons arrive to the right of centre. Then it settles and the
+   page carries on.
 
-   So the room becomes a photograph, rendered once, offline, at whatever
-   quality we like, and the page simply shows it. The browser decodes an image
-   instead of rendering a scene, so this cannot be laggy, there is no WebGL
-   path to fall back from, and the look is locked in a build artefact that
-   cannot regress between releases.
+   WHY A MULTIPLANE AND NOT A RENDERER. This hero was a live WebGL scene for
+   several days. It was rejected repeatedly and the last version was laggy,
+   which is what settled it: fifteen hundred alpha-tested instances and a
+   shadow map on a full-viewport canvas is not something to put in front of a
+   parent on a phone. So the room is a photograph, rendered once in Cycles,
+   and cut into depth planes. Scaling three images at different rates is the
+   oldest trick in animation and the browser does it on the compositor: no
+   renderer runs, nothing is uploaded per frame, and the quality ceiling is a
+   path tracer rather than sixteen milliseconds.
 
-   WHAT IS STILL LIVE. Only the mark, which stays as its own layers in the DOM
-   rather than being baked into the plate: it is the brand asset, it has to be
-   crisp at any pixel ratio, it carries the alt text, and keeping it separate
-   means the room behind it can be re-rendered without touching it.
+   WHAT EACH PLANE DOES. The sweep barely moves because it is a wall. The
+   garden moves more. The nearest things move most and leave the frame. That
+   difference in rate IS the depth; one rate would be a zoom.
 
-   UNTIL THE RENDERED PLATE LANDS the room is drawn in CSS: one lit pool
-   falling into a corner, and a floor under it. That is meant to be a decent
-   hero in its own right rather than a placeholder, because the render is a
-   job measured in hours and the site has to look right in the meantime.
+   THE MARK stays in the DOM rather than being baked into the plate: it is the
+   brand asset, it has to be crisp at any pixel ratio, it carries the alt
+   text, and it is the one thing that tilts.
    ========================================================================== */
 
-export function HeroShot() {
-  const mark = useRef<HTMLDivElement>(null);
+/** Length of the hold, in viewport heights, on top of the sticky screen. */
+const TRAVEL = 0.9;
+/** Where in the move the words start arriving, and where they have landed. */
+const WORDS_IN = 0.45;
+const WORDS_SET = 0.9;
 
-  /* The one piece of motion left. The mark lags the page by a few pixels as
-     it scrolls away, which reads as an object standing in front of the room
-     rather than printed on it. Everything else is still, and this is the
-     whole of the hero's JavaScript. */
+function clamp01(n: number) {
+  return n < 0 ? 0 : n > 1 ? 1 : n;
+}
+/** Smootherstep: zero velocity at both ends, so the move neither jumps off
+    the first frame nor stops dead against the end of the hold. */
+function ease(p: number) {
+  const t = clamp01(p);
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+export function HeroShot() {
+  const pin = useRef<HTMLDivElement>(null);
+  const screen = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const el = mark.current;
-    if (!el) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const host = pin.current;
+    const inner = screen.current;
+    if (!host || !inner) return;
+
+    const measureHeader = () => {
+      const header = document.querySelector("header");
+      host.style.setProperty("--header-h", `${header ? Math.round(header.getBoundingClientRect().height) : 0}px`);
+    };
 
     let frame = 0;
-    const apply = () => {
+    const read = () => {
       frame = 0;
-      const y = Math.min(window.scrollY, window.innerHeight);
-      el.style.transform = `translate3d(0, ${(y * 0.08).toFixed(1)}px, 0)`;
+      const span = host.offsetHeight - inner.offsetHeight;
+      const raw = span > 0 ? clamp01((window.scrollY - host.offsetTop) / span) : 0;
+      const p = ease(raw);
+      inner.style.setProperty("--p", p.toFixed(4));
+      inner.style.setProperty("--w", clamp01((p - WORDS_IN) / (WORDS_SET - WORDS_IN)).toFixed(4));
     };
     const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(apply);
+      if (!frame) frame = requestAnimationFrame(read);
     };
-    apply();
+    const onResize = () => {
+      measureHeader();
+      onScroll();
+    };
+
+    measureHeader();
+    read();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
   return (
-    <section className="shot-still" aria-label="CLÉ Family Media">
-      <div ref={mark} className="shot-mark">
-        <HeroMark sizes="(min-width: 1280px) 620px, 64vw" />
-      </div>
+    <div ref={pin} className="shot-pin" style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
+      <div ref={screen} className="shot-screen">
+        {/* The planes. Each is one rendered layer of the same photograph, and
+            each moves at its own rate. `back` is opaque and carries the room;
+            the others are cut out of it with alpha. */}
+        <div aria-hidden="true" className="plane plane-back" />
+        <div aria-hidden="true" className="plane plane-mid" />
 
-      <div className="shot-copy">
-        <h1 className="hero-head">
-          <span aria-hidden="true" className="hero-head-shadow">
-            Watch. Play. Learn.
-          </span>
-          <span className="hero-head-face">
-            Watch. <span className="hero-head-2">Play.</span> Learn.
-          </span>
-        </h1>
-        <p className="t-lead hero-lead mx-auto mt-5 max-w-[46ch]">
-          Calm stories for young children, and the activities that take them off the screen
-          afterwards.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Button to="/ethical-ai">
-            How we make it
-            <IconArrow size={16} />
-          </Button>
-          <Button href={SITE.showUrl} variant="quiet">
-            Visit the show
-            <IconExternal size={15} />
-          </Button>
+        <div className="shot-mark">
+          <HeroMark sizes="(min-width: 1280px) 600px, 62vw" />
         </div>
+
+        <div aria-hidden="true" className="plane plane-fore" />
+
+        <div className="shot-copy">
+          <h1 className="hero-head">
+            <span aria-hidden="true" className="hero-head-shadow">
+              Watch. Play. Learn.
+            </span>
+            <span className="hero-head-face">
+              Watch. <span className="hero-head-2">Play.</span> Learn.
+            </span>
+          </h1>
+          <p className="t-lead hero-lead mt-4 max-w-[42ch]">
+            Calm stories for young children, and the activities that take them off the screen
+            afterwards.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-4">
+            <Button to="/ethical-ai">
+              How we make it
+              <IconArrow size={16} />
+            </Button>
+            <Button href={SITE.showUrl} variant="quiet">
+              Visit the show
+              <IconExternal size={15} />
+            </Button>
+          </div>
+        </div>
+
+        <span aria-hidden="true" className="shot-cue">
+          <span className="hero-cue-rule" />
+          Scroll
+        </span>
       </div>
-    </section>
+    </div>
   );
 }
