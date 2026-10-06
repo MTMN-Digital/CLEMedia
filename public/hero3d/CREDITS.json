@@ -61,5 +61,25 @@
     ],
     "licence": "CC0",
     "source": "https://polyhaven.com/a/celandine_01"
+  },
+  {
+    "slug": "boulder_01",
+    "kind": "model",
+    "name": "Boulder 01",
+    "authors": [
+      "Rico Cilliers"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/boulder_01"
+  },
+  {
+    "slug": "dry_branches_medium_01",
+    "kind": "model",
+    "name": "Dry Branches Medium 01",
+    "authors": [
+      "Rico Cilliers"
+    ],
+    "licence": "CC0",
+    "source": "https://polyhaven.com/a/dry_branches_medium_01"
   }
 ]

@@ -19,3 +19,13 @@ _scratch/
 # Parallel preview builds: one output directory per agent working at once.
 dist-[a-c]
 dist-p[0-9]
+
+# Raw render inputs for the hero plate: scanned models, PBR sets and the light
+# probe, about 17 MB. They are build inputs, not site assets, and nothing on
+# the site loads them: the only shipped artefact is public/brand/hero-plate-*.
+# Left in public/ because the render scripts expect them there, but kept out of
+# the repo so they are not deployed. Re-fetch with:
+#   python3 scripts/fetch-hero-assets.py && python3 scripts/optimise-hero-assets.py
+public/hero3d/**
+!public/hero3d/ASSET-LICENCES.md
+!public/hero3d/CREDITS.json
