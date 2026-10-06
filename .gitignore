@@ -19,6 +19,7 @@ _scratch/
 # Parallel preview builds: one output directory per agent working at once.
 dist-[a-c]
 dist-p[0-9]
+dist-q[0-9]
 
 # Raw render inputs for the hero plate: scanned models, PBR sets and the light
 # probe, about 17 MB. They are build inputs, not site assets, and nothing on
