@@ -1321,8 +1321,13 @@ body > * { position: relative; z-index: 1; }
 .shot-pin { position: relative; }
 .shot-screen {
   position: sticky;
-  top: 0;
-  height: 100svh;
+  /* Under the header, and a viewport tall LESS the header. It was a full
+     100svh starting below a 76px sticky header, so the bottom 76px of the
+     hero, the scroll cue among it, sat off the screen: measured on the live
+     site the cue's top was at 928 in a 900px viewport. --header-h is written
+     by HeroShot, and the fallback keeps this honest if script never runs. */
+  top: var(--header-h, 0px);
+  height: calc(100svh - var(--header-h, 0px));
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -1332,6 +1337,39 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-sunken);
   isolation: isolate;
 }
+/* The room, in CSS, underneath the canvas.
+
+   The scene draws the floor, the wall and the light, so for a reader with
+   WebGL this is never seen. For a reader without it, it is the difference
+   between a hero and a logo floating on a flat tan field, which is what this
+   shipped as: `failIfMajorPerformanceCaveat` refuses a software renderer, so
+   that is not a rare reader, it is anyone on a machine with hardware
+   acceleration off, a remote desktop or an older integrated GPU.
+
+   One lit pool up and to the left falling into a corner several stops down,
+   and a floor the object can stand on. The same two things that make the
+   scene read as a set. */
+.shot-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0 58%,
+      color-mix(in srgb, var(--color-muted) 9%, transparent) 58%,
+      color-mix(in srgb, var(--color-muted) 17%, transparent) 100%
+    ),
+    radial-gradient(
+      125% 100% at 24% 6%,
+      var(--color-raised) 0%,
+      var(--color-paper-1) 34%,
+      var(--color-paper-2) 62%,
+      var(--color-paper-3) 84%,
+      color-mix(in srgb, var(--color-muted) 34%, var(--color-paper-3)) 100%
+    );
+}
+
 .shot-canvas {
   position: absolute;
   inset: 0;
@@ -1416,10 +1454,34 @@ body > * { position: relative; z-index: 1; }
   text-transform: uppercase;
 }
 
+/* No scene, so no move: the hero is a finished still with its words already
+   placed. Shared with the reduced-motion case below, because the two want
+   exactly the same thing. */
+.shot-pin.is-flat { height: auto !important; }
+.shot-screen.is-flat {
+  position: relative;
+  /* The sticky offset has to come off with the stickiness. Left on, a
+     relatively positioned box is simply pushed down by it, which opened a
+     bare 76px band of page above the set. */
+  top: 0;
+  height: auto;
+  padding: 7vh 0 11vh;
+  gap: 3vh;
+}
+.shot-screen.is-flat .shot-canvas { display: none; }
+.shot-screen.is-flat .shot-flat { opacity: 1; }
+.shot-screen.is-flat .shot-words {
+  position: static;
+  opacity: 1;
+  transform: none;
+  margin-inline: auto;
+}
+.shot-screen.is-flat .shot-cue { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   /* No move, so no arrival: the hero is the mark with its words under it. */
   .shot-pin { height: auto !important; }
-  .shot-screen { position: relative; height: auto; padding: 8vh 0 12vh; gap: 4vh; }
+  .shot-screen { position: relative; top: 0; height: auto; padding: 8vh 0 12vh; gap: 4vh; }
   .shot-canvas { display: none; }
   .shot-flat { opacity: 1 !important; transform: none; }
   .shot-words {

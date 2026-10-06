@@ -56,6 +56,14 @@ export function HeroShot({
   const screen = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [live, setLive] = useState(false);
+  /* Set as soon as we know the scene will never run: no WebGL, a refused
+     context, a shader that would not compile, or a reader who has asked for
+     reduced motion. The hero then stops being a pinned camera move and
+     becomes a finished still, with its words already in place. Without this
+     the page's first frame is the mark alone on a blank field and the
+     headline, the lead and both buttons are invisible until somebody
+     scrolls, which is how it shipped and how it looked. */
+  const [flat, setFlat] = useState(false);
 
   /* The scroll, written to custom properties every frame and handed to the
      scene. One source of progress for the CSS and the GL, so the words can
@@ -68,6 +76,13 @@ export function HeroShot({
     const host = pin.current;
     const inner = screen.current;
     if (!host || !inner) return;
+
+    const measureHeader = () => {
+      const header = document.querySelector("header");
+      const h = header ? Math.round(header.getBoundingClientRect().height) : 0;
+      host.style.setProperty("--header-h", `${h}px`);
+    };
+    measureHeader();
 
     let frame = 0;
     const read = () => {
@@ -84,21 +99,28 @@ export function HeroShot({
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(read);
     };
+    const onResize = () => {
+      measureHeader();
+      onScroll();
+    };
 
     read();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
   useEffect(() => {
     const el = canvas.current;
     if (!el) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setFlat(true);
+      return;
+    }
 
     let cancelled = false;
     let stage: { setProgress(p: number): void; dispose(): void } | null = null;
@@ -123,8 +145,11 @@ export function HeroShot({
         setLive(true);
       } catch (err) {
         /* No WebGL, no shader, no context: the flat mark is already on the
-           screen and stays there. Nothing to undo. */
-        if (!cancelled) console.warn("hero3d: staying flat", err);
+           screen and stays there, and the hero becomes its static self. */
+        if (!cancelled) {
+          setFlat(true);
+          console.warn("hero3d: staying flat", err);
+        }
       }
     })();
 
@@ -136,8 +161,8 @@ export function HeroShot({
   }, [set]);
 
   return (
-    <div ref={pin} className="shot-pin" style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
-      <div ref={screen} className={`shot-screen${live ? " is-live" : ""}`}>
+    <div ref={pin} className={`shot-pin${flat ? " is-flat" : ""}`} style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
+      <div ref={screen} className={`shot-screen${live ? " is-live" : ""}${flat ? " is-flat" : ""}`}>
         <canvas ref={canvas} className="shot-canvas" aria-hidden="true" />
 
         {/* The mark as flat layers, which is what renders before the scene is
