@@ -105,7 +105,14 @@ def main() -> int:
         for suffix, payload in outputs.items():
             target = args.output_dir / f"hero-plate-{width}.{suffix}"
             target.write_bytes(payload)
-            print(f"{target.relative_to(ROOT)}: {len(payload) / 1024:.1f} KB")
+            """Reported relative to the repo when it is inside it, absolute
+            otherwise: relative_to raises on any path outside ROOT, and this
+            was crashing every run that passed an explicit --output-dir."""
+            try:
+                shown = target.relative_to(ROOT)
+            except ValueError:
+                shown = target
+            print(f"{shown}: {len(payload) / 1024:.1f} KB")
     return 0
 
 

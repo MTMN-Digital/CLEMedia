@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Render the offline tabletop-garden hero plate with Blender Cycles.
+"""Hero plate test scene: the garden model on a studio sweep, one softbox.
 
-Run from the repository root:
-  pbuild run --weight 6G -- /home/david/.local/bin/blender -b -P scripts/render-hero-plate.py -- --out /tmp/hero.png --width 1280 --samples 32
+Same CLI as scripts/render-hero-plate.py so it can be swapped in:
+  blender -b -P scene.py -- --out /path/plate.png --width 1280 --samples 32
 
-All scene direction is deliberately gathered in the constants below. Keep the
-plant seed fixed when comparing revisions, otherwise the garden changes too.
+Everything that is a decision is a named constant below. Units are metres,
+the floor is z = 0, the garden board is centred on the origin, the camera
+looks along +Y.
 """
 
 from __future__ import annotations
@@ -19,367 +20,637 @@ from pathlib import Path
 import bpy
 from mathutils import Matrix, Vector
 
+# ---------------------------------------------------------------------------
+# ART DIRECTION
+# ---------------------------------------------------------------------------
+RANDOM_SEED = 7
+
+# Frame. 16:9 so a 92svh desktop viewport crops only a few percent.
+FRAME_ASPECT = 16 / 9
+
+# Camera. Low tripod, long lens, almost level: the garden flattens into a
+# strip and the sweep's floor seam hides behind it.
+CAMERA_DISTANCE = 5.0           # metres back from the board centre
+CAMERA_HEIGHT = 0.42            # metres above the floor
+CAMERA_PITCH_DEG = -2.3         # negative looks down
+CAMERA_LENS_MM = 85.0
+CAMERA_SENSOR_MM = 36.0
+CAMERA_F_STOP = 2.8
+CAMERA_FOCUS_Y = 0.0            # focus on the board centre line
+
+# The sweep: one roll of seamless paper, floor into cove into wall.
+SWEEP_HALF_WIDTH = 8.0
+SWEEP_FLOOR_FRONT_Y = -7.0
+SWEEP_COVE_START_Y = 1.6
+SWEEP_COVE_RADIUS = 0.9
+SWEEP_WALL_HEIGHT = 4.0
+SWEEP_ALBEDO = (0.72, 0.61, 0.33, 1.0)   # linear; roughly sRGB 0.87 0.81 0.61
+SWEEP_ROUGHNESS = 0.85
+SWEEP_TOOTH = 0.04                        # paper grain bump strength
+
+# The garden board: a model base, plywood, standing on the floor.
+BOARD_WIDTH = 2.6
+BOARD_DEPTH = 0.55
+BOARD_THICKNESS = 0.036
+BOARD_BEVEL = 0.002
+SOIL_INSET = 0.0                # flush with the board edge, like a scenic layer
+SOIL_THICKNESS = 0.012
+SOIL_CRUMBLE = 0.010            # displacement so the soil edge is not a ruled line
+SOIL_ALBEDO = (0.045, 0.028, 0.015, 1.0)
+
+# Plants at model scale. The kits are real scale, so a 0.33 m grass tuft at
+# 0.36 becomes a 0.12 m model tuft.
+GRASS_COUNT = 700
+GRASS_SCALE = (0.30, 0.48)
+FERN_COUNT = 30                 # fern_02 is a hart's-tongue: broad straps, keep it small
+FERN_SCALE = (0.26, 0.38)
+CELANDINE_COUNT = 8
+CELANDINE_SCALE = (0.22, 0.32)
+BRANCH_COUNT = 6
+BRANCH_SCALE = (0.14, 0.24)
+BOULDER_COUNT = 1
+BOULDER_SCALE = (0.06, 0.08)
+BOULDER_VALUE = 0.55            # the scan is a pale sandstone; darken it to a garden stone
+BOULDER_SATURATION = 0.6
+PLANT_FRONT_MARGIN = 0.04       # bare soil between the plants and the front edge
+BACK_DENSITY_BIAS = 1.2         # > 1 crowds plants toward the back row
+
+# The spill: what fell off the model onto the clean floor.
+SPILL_GRASS_COUNT = 6
+SPILL_GRASS_SCALE = (0.26, 0.44)
+SPILL_TWIG_COUNT = 6            # dry twigs lying on the paper read as debris at once
+SPILL_TWIG_SCALE = (0.07, 0.13)
+SPILL_FROND_COUNT = 3
+SPILL_DEPTH = 0.30              # how far in front of the board edge it reaches
+SPILL_CRUMB_COUNT = 90
+SPILL_CRUMB_RADIUS = (0.003, 0.007)
+SPILL_SPECK_COUNT = 260         # fine soil dust close to the edge
+SPILL_SPECK_RADIUS = (0.0008, 0.002)
+SPILL_FROND = True
+
+# The stand at the right edge of frame, close to camera, out of focus.
+STAND_X = 0.69
+STAND_Y = -1.7
+STAND_HEIGHT = 2.6
+STAND_RADIUS = 0.016
+STAND_PAINT = (0.012, 0.012, 0.012, 1.0)
+STAND_PAINT_ROUGHNESS = 0.45
+SANDBAG_ALBEDO = (0.022, 0.019, 0.016, 1.0)
+
+# Light. A big soft key up-left-front for the garden and the floor, and one
+# background lamp making the pool on the cove up-left of the mark. The pool is
+# a touch warmer than the key, the way a tungsten background lamp sits
+# against a daylight-balanced softbox.
+KEY_LOCATION = (-1.8, -3.0, 2.8)
+KEY_TARGET = (0.0, -1.0, 0.0)
+KEY_SIZE = (1.6, 2.0)
+KEY_POWER_W = 480.0
+KEY_COLOUR = (1.0, 0.95, 0.84)   # warm white, less magenta than a blackbody
+KEY_SPREAD_DEG = 70.0
+# A black cutter hung just above the camera's frame line. It shadows the
+# backdrop from the key, so the cove belongs to the pool lamp alone, while
+# the garden and the floor in front of it stay in the key.
+FLAG_Y = -0.5
+FLAG_BOTTOM_Z = 0.95
+FLAG_SIZE = (3.4, 2.05)          # tall: a 2 m softbox 2.5 m away throws a long penumbra
+POOL_LOCATION = (-2.4, -0.2, 2.6)
+POOL_TARGET = (-0.6, 2.4, 0.75)
+POOL_POWER_W = 3000.0
+POOL_KELVIN = 4600.0
+POOL_CONE_DEG = 40.0
+POOL_BLEND = 0.85
+POOL_RADIUS = 0.4
+# A small hard lamp low at the back right, raking toward the camera: it puts
+# a shadow wedge under the plywood edge and a rim on the plant tops against
+# the dark corner. Never on the backdrop.
+KICK_LOCATION = (2.6, 0.8, 0.35)
+KICK_TARGET = (0.0, -0.3, 0.05)
+KICK_SIZE = 0.15
+KICK_POWER_W = 420.0
+KICK_KELVIN = 4000.0
+WORLD_STRENGTH = 0.04
+WORLD_ROTATION_DEG = 60.0
+
+# Picture.
+VIEW_TRANSFORM = "AgX"
+VIEW_LOOK = "AgX - Punchy"
+EXPOSURE = 0.0
+CPU_THREADS = 12
+
+ROOT = Path("/home/david/Documents/GitHub/clients/cle-media")
+ASSETS = ROOT / "public" / "hero3d"
+
 
 # ---------------------------------------------------------------------------
-# ART DIRECTION KNOBS
+# helpers
 # ---------------------------------------------------------------------------
-RANDOM_SEED = 1042                 # Fixed seed for the garden layout.
-FRAME_ASPECT = 16 / 10             # Output width divided by output height.
-CAMERA_LOCATION = (0.0, -14.0, 7.0)
-CAMERA_TARGET = (0.0, 1.1, 2.25)
-CAMERA_LENS_MM = 50.0
-CAMERA_F_STOP = 11.0               # Kept high so the browser crop stays crisp.
-BOARD_SIZE = (12.0, 3.2, 0.46)
-BOARD_LOCATION = (0.0, 2.00, 0.50)
-SOIL_SIZE = (11.4, 2.6, 0.16)
-SOIL_LOCATION = (0.0, 2.00, 0.79)
-GARDEN_CLEAR_HALF_WIDTH = 2.25     # Empty centre for the hanging browser mark.
-GARDEN_CLUSTER_X = 3.45            # Left and right garden bank centres.
-GARDEN_CLUSTER_JITTER_X = 1.65
-GARDEN_DEPTH_RANGE = (0.75, 3.20)
-PLANT_BASE_Z = 0.96
-PLANT_COUNT_PER_SIDE = 30
-GRASS_SCALE = (0.48, 0.82)
-FERN_SCALE = (0.48, 0.76)
-CELANDINE_SCALE = (0.38, 0.62)
-WORLD_STRENGTH = 0.42
-KEY_LOCATION = (-5.4, -4.0, 8.8)
-KEY_ENERGY_WATTS = 1050.0
-KEY_SIZE_METRES = 5.0
-KEY_COLOUR = (1.0, 0.67, 0.42)
-SWEEP_HALF_WIDTH = 17.0
-SWEEP_FLOOR_FRONT = -6.5
-SWEEP_COVE_START_Y = 3.85
-SWEEP_COVE_RADIUS = 1.85
-SWEEP_COVE_CENTRE_Y = 5.70
-SWEEP_WALL_HEIGHT = 10.5
-RIG_BAR_LOCATION = (0.0, 3.4, 5.55)
-RIG_BAR_LENGTH = 14.0
-RIG_BAR_RADIUS = 0.075
-RIG_DROP_X = (-6.2, 6.2)
-RIG_DROP_BOTTOM_Z = 4.20
-RIG_DROP_DEPTH = 2.7
-RIG_DROP_RADIUS = 0.045
-STAND_X = (-5.65, 5.85)
-STAND_Y = 1.95
-STAND_HEIGHT = 5.8
-STAND_RADIUS = 0.065
-STAND_FOOT_RADIUS = 0.62
-STAND_FOOT_DEPTH = 0.08
-STAND_FOOT_Z = 0.10
-SOFTBOX_LOCATION = (4.2, 2.95, 5.25)
-SOFTBOX_SIZE = (2.0, 0.20, 1.15)
-SOFTBOX_DIFFUSER_LOCATION = (4.2, 2.80, 5.25)
-SOFTBOX_DIFFUSER_SIZE = (1.78, 0.035, 0.94)
-SOFTBOX_DIFFUSER_COLOUR = (1.0, 0.82, 0.58, 1.0)
-SOFTBOX_DIFFUSER_ROUGHNESS = 0.35
-SWEEP_COLOUR = (0.68, 0.54, 0.39, 1.0)
-SWEEP_ROUGHNESS = 0.76
-SOIL_COLOUR = (0.09, 0.045, 0.018, 1.0)
-BOARD_BEVEL = 0.08
-SOIL_BEVEL = 0.04
-PBR_TEXTURE_SCALE = (1.4, 1.4, 1.4)
-PBR_AO_STRENGTH = 0.34
-METALNESS = 0.82
-RENDER_EXPOSURE = 0.65
-CPU_THREADS = 16
+def cli() -> argparse.Namespace:
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    p = argparse.ArgumentParser()
+    p.add_argument("--out", required=True, type=Path)
+    p.add_argument("--width", type=int, default=2560)
+    p.add_argument("--samples", type=int, default=256)
+    return p.parse_args(argv)
 
 
-ROOT = Path(__file__).resolve().parent.parent
-ASSET_ROOT = ROOT / "public" / "hero3d"
+def link(obj: bpy.types.Object) -> None:
+    bpy.context.scene.collection.objects.link(obj)
 
 
-def blender_arguments() -> argparse.Namespace:
-    """Read only arguments placed after Blender's required double dash."""
-    argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--out", required=True, type=Path, help="PNG output path")
-    parser.add_argument("--width", type=int, default=2560, help="Output width in pixels")
-    parser.add_argument("--samples", type=int, default=256, help="Cycles samples per pixel")
-    args = parser.parse_args(argv)
-    if args.width < 320:
-        parser.error("--width must be at least 320")
-    if args.samples < 1:
-        parser.error("--samples must be at least 1")
-    return args
+def smooth(obj: bpy.types.Object) -> None:
+    for poly in obj.data.polygons:
+        poly.use_smooth = True
 
 
-def look_at(obj: bpy.types.Object, target: tuple[float, float, float]) -> None:
-    obj.rotation_euler = (Vector(target) - obj.location).to_track_quat("-Z", "Y").to_euler()
+def principled(name: str):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    bsdf = nodes.get("Principled BSDF")
+    return mat, nodes, mat.node_tree.links, bsdf
 
 
-def set_smooth(obj: bpy.types.Object) -> None:
-    if obj.type != "MESH":
-        return
-    for polygon in obj.data.polygons:
-        polygon.use_smooth = True
-
-
-def cube(name: str, location, dimensions, material, bevel: float = 0.0) -> bpy.types.Object:
-    bpy.ops.mesh.primitive_cube_add(location=location)
-    obj = bpy.context.object
-    obj.name = name
-    obj.dimensions = dimensions
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-    if bevel:
-        modifier = obj.modifiers.new("Soft edges", "BEVEL")
-        modifier.width = bevel
-        modifier.segments = 3
-    obj.data.materials.append(material)
-    return obj
-
-
-def cylinder(name: str, location, radius: float, depth: float, material) -> bpy.types.Object:
-    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=radius, depth=depth, location=location)
-    obj = bpy.context.object
-    obj.name = name
-    set_smooth(obj)
-    obj.data.materials.append(material)
-    return obj
-
-
-def image_node(nodes, path: Path, colour: bool):
-    image = bpy.data.images.load(str(path), check_existing=True)
-    image.colorspace_settings.name = "sRGB" if colour else "Non-Color"
-    node = nodes.new("ShaderNodeTexImage")
-    node.image = image
-    node.interpolation = "Linear"
-    return node
-
-
-def pbr_material(name: str, texture_name: str) -> bpy.types.Material:
-    """Use every supplied PBR map on a material with generated coordinates."""
-    folder = ASSET_ROOT / "tex" / texture_name
-    material = bpy.data.materials.new(name)
-    material.use_nodes = True
-    nodes, links = material.node_tree.nodes, material.node_tree.links
-    nodes.clear()
-    output = nodes.new("ShaderNodeOutputMaterial")
-    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    texcoord = nodes.new("ShaderNodeTexCoord")
-    mapping = nodes.new("ShaderNodeMapping")
-    mapping.inputs["Scale"].default_value = PBR_TEXTURE_SCALE
-    links.new(texcoord.outputs["Generated"], mapping.inputs["Vector"])
-    links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
-
-    diffuse = image_node(nodes, folder / "Diffuse.webp", True)
-    roughness = image_node(nodes, folder / "Rough.webp", False)
-    normal = image_node(nodes, folder / "nor_gl.webp", False)
-    occlusion = image_node(nodes, folder / "AO.webp", False)
-    normal_map = nodes.new("ShaderNodeNormalMap")
-    multiply = nodes.new("ShaderNodeMixRGB")
-    multiply.blend_type = "MULTIPLY"
-    multiply.inputs[0].default_value = PBR_AO_STRENGTH
-    for texture in (diffuse, roughness, normal, occlusion):
-        links.new(mapping.outputs["Vector"], texture.inputs["Vector"])
-    links.new(diffuse.outputs["Color"], multiply.inputs[1])
-    links.new(occlusion.outputs["Color"], multiply.inputs[2])
-    links.new(multiply.outputs["Color"], bsdf.inputs["Base Color"])
-    links.new(roughness.outputs["Color"], bsdf.inputs["Roughness"])
-    links.new(normal.outputs["Color"], normal_map.inputs["Color"])
-    links.new(normal_map.outputs["Normal"], bsdf.inputs["Normal"])
-    if texture_name == "metal_plate":
-        bsdf.inputs["Metallic"].default_value = METALNESS
-    return material
-
-
-def simple_material(name: str, colour, roughness: float, metallic: float = 0.0) -> bpy.types.Material:
-    material = bpy.data.materials.new(name)
-    material.diffuse_color = colour
-    material.use_nodes = True
-    bsdf = material.node_tree.nodes.get("Principled BSDF")
+def flat_material(name, colour, roughness, metallic=0.0):
+    mat, _, _, bsdf = principled(name)
     bsdf.inputs["Base Color"].default_value = colour
     bsdf.inputs["Roughness"].default_value = roughness
     bsdf.inputs["Metallic"].default_value = metallic
-    return material
+    return mat
 
 
-def make_sweep(material) -> bpy.types.Object:
-    """Create one broad floor, quarter-round cove and wall mesh."""
-    profile = [(SWEEP_FLOOR_FRONT, 0.0), (SWEEP_COVE_START_Y, 0.0)]
-    radius, centre_y = SWEEP_COVE_RADIUS, SWEEP_COVE_CENTRE_Y
-    for step in range(1, 9):
-        angle = (math.pi / 2) * (step / 8)
-        profile.append((centre_y - radius * math.cos(angle), radius * math.sin(angle)))
-    profile.extend([(centre_y, SWEEP_WALL_HEIGHT)])
-    half_width = SWEEP_HALF_WIDTH
+def image(nodes, path: Path, colour: bool):
+    img = bpy.data.images.load(str(path), check_existing=True)
+    img.colorspace_settings.name = "sRGB" if colour else "Non-Color"
+    node = nodes.new("ShaderNodeTexImage")
+    node.image = img
+    return node
+
+
+def sweep_material():
+    mat, nodes, links, bsdf = principled("Seamless paper")
+    bsdf.inputs["Base Color"].default_value = SWEEP_ALBEDO
+    bsdf.inputs["Roughness"].default_value = SWEEP_ROUGHNESS
+    coord = nodes.new("ShaderNodeTexCoord")
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 900.0
+    noise.inputs["Detail"].default_value = 3.0
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = SWEEP_TOOTH
+    links.new(coord.outputs["Object"], noise.inputs["Vector"])
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def plywood_face_material():
+    mat, nodes, links, bsdf = principled("Plywood face")
+    folder = ASSETS / "tex" / "plywood"
+    coord = nodes.new("ShaderNodeTexCoord")
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (0.6, 0.6, 0.6)
+    links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    diff = image(nodes, folder / "Diffuse.webp", True)
+    rough = image(nodes, folder / "Rough.webp", False)
+    nor = image(nodes, folder / "nor_gl.webp", False)
+    nmap = nodes.new("ShaderNodeNormalMap")
+    for t in (diff, rough, nor):
+        t.projection = "BOX"
+        t.projection_blend = 0.2
+        links.new(mapping.outputs["Vector"], t.inputs["Vector"])
+    links.new(diff.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(rough.outputs["Color"], bsdf.inputs["Roughness"])
+    links.new(nor.outputs["Color"], nmap.inputs["Color"])
+    links.new(nmap.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def plywood_edge_material():
+    """The cut edge: five plies, alternating light birch and darker glue line."""
+    mat, nodes, links, bsdf = principled("Plywood edge")
+    coord = nodes.new("ShaderNodeTexCoord")
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(coord.outputs["Object"], sep.inputs["Vector"])
+    wave = nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "BANDS"
+    wave.bands_direction = "Z"
+    wave.wave_profile = "SAW"
+    wave.inputs["Scale"].default_value = 1.0 / (BOARD_THICKNESS / 5.0)
+    wave.inputs["Distortion"].default_value = 0.4
+    links.new(coord.outputs["Object"], wave.inputs["Vector"])
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[0].color = (0.70, 0.55, 0.32, 1.0)
+    ramp.color_ramp.elements[1].position = 0.14
+    ramp.color_ramp.elements[1].color = (0.10, 0.055, 0.025, 1.0)
+    e = ramp.color_ramp.elements.new(0.26)
+    e.color = (0.74, 0.58, 0.34, 1.0)
+    links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.8
+    return mat
+
+
+def soil_material():
+    mat, nodes, links, bsdf = principled("Soil")
+    coord = nodes.new("ShaderNodeTexCoord")
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 180.0
+    noise.inputs["Detail"].default_value = 6.0
+    links.new(coord.outputs["Object"], noise.inputs["Vector"])
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.025, 0.014, 0.007, 1.0)
+    ramp.color_ramp.elements[1].color = (0.09, 0.06, 0.035, 1.0)
+    links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.6
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    bsdf.inputs["Roughness"].default_value = 0.95
+    return mat
+
+
+def box(name, centre, dims, material, bevel=0.0):
+    bpy.ops.mesh.primitive_cube_add(location=centre)
+    obj = bpy.context.object
+    obj.name = name
+    obj.dimensions = dims
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    if bevel:
+        m = obj.modifiers.new("bevel", "BEVEL")
+        m.width = bevel
+        m.segments = 2
+    obj.data.materials.append(material)
+    return obj
+
+
+def cylinder(name, centre, radius, depth, material, verts=32):
+    bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=radius, depth=depth, location=centre)
+    obj = bpy.context.object
+    obj.name = name
+    smooth(obj)
+    obj.data.materials.append(material)
+    return obj
+
+
+# ---------------------------------------------------------------------------
+# the set
+# ---------------------------------------------------------------------------
+def build_sweep():
+    profile = [(SWEEP_FLOOR_FRONT_Y, 0.0), (SWEEP_COVE_START_Y, 0.0)]
+    cy = SWEEP_COVE_START_Y
+    r = SWEEP_COVE_RADIUS
+    for i in range(1, 17):
+        a = (math.pi / 2) * i / 16
+        profile.append((cy + r * math.sin(a), r - r * math.cos(a)))
+    profile.append((cy + r, SWEEP_WALL_HEIGHT))
     verts = []
-    for x in (-half_width, half_width):
+    for x in (-SWEEP_HALF_WIDTH, SWEEP_HALF_WIDTH):
         verts.extend((x, y, z) for y, z in profile)
-    rows = len(profile)
-    faces = []
-    for index in range(rows - 1):
-        faces.append((index, index + 1, rows + index + 1, rows + index))
-    mesh = bpy.data.meshes.new("Cyclorama mesh")
+    n = len(profile)
+    faces = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+    mesh = bpy.data.meshes.new("sweep")
     mesh.from_pydata(verts, [], faces)
-    mesh.materials.append(material)
-    sweep = bpy.data.objects.new("Cyclorama sweep", mesh)
-    bpy.context.scene.collection.objects.link(sweep)
-    set_smooth(sweep)
-    return sweep
+    mesh.materials.append(sweep_material())
+    obj = bpy.data.objects.new("Sweep", mesh)
+    link(obj)
+    smooth(obj)
 
 
-def import_plant_sources() -> dict[str, list[bpy.types.Object]]:
-    """Import each glTF once, then keep it hidden as linked-mesh source data."""
-    sources = {}
-    source_collection = bpy.data.collections.new("Plant mesh sources")
-    bpy.context.scene.collection.children.link(source_collection)
-    gltfs = {
-        "grass": ASSET_ROOT / "model" / "grass_medium_01" / "grass_medium_01_1k.gltf",
-        "fern": ASSET_ROOT / "model" / "fern_02" / "fern_02_1k.gltf",
-        "celandine": ASSET_ROOT / "model" / "celandine_01" / "celandine_01_1k.gltf",
+def build_board():
+    face = plywood_face_material()
+    edge = plywood_edge_material()
+    board = box("Board", (0, 0, BOARD_THICKNESS / 2), (BOARD_WIDTH, BOARD_DEPTH, BOARD_THICKNESS), face, BOARD_BEVEL)
+    board.data.materials.append(edge)
+    for poly in board.data.polygons:
+        if abs(poly.normal.z) < 0.5:
+            poly.material_index = 1
+    soil_top = BOARD_THICKNESS + SOIL_THICKNESS
+    soil = box(
+        "Soil",
+        (0, 0, BOARD_THICKNESS + SOIL_THICKNESS / 2),
+        (BOARD_WIDTH - 2 * SOIL_INSET, BOARD_DEPTH - 2 * SOIL_INSET, SOIL_THICKNESS),
+        soil_material(),
+        0.003,
+    )
+    sub = soil.modifiers.new("subdivide", "SUBSURF")
+    sub.subdivision_type = "SIMPLE"
+    sub.levels = 5
+    sub.render_levels = 6
+    clouds = bpy.data.textures.new("soil crumble", type="CLOUDS")
+    clouds.noise_scale = 0.025
+    clouds.noise_depth = 3
+    disp = soil.modifiers.new("crumble", "DISPLACE")
+    disp.texture = clouds
+    disp.strength = SOIL_CRUMBLE
+    disp.mid_level = 0.5
+    return soil_top
+
+
+def import_kits() -> dict[str, list[tuple[bpy.types.Object, Vector]]]:
+    """Each glTF is a kit of variants laid out in a row. Keep every variant as
+    a hidden source and remember its own base centre so instances land where
+    they are asked to."""
+    kits = {
+        "grass": "grass_medium_01/grass_medium_01_1k.gltf",
+        "fern": "fern_02/fern_02_1k.gltf",
+        "celandine": "celandine_01/celandine_01_1k.gltf",
+        "branch": "dry_branches_medium_01/dry_branches_medium_01_1k.gltf",
+        "boulder": "boulder_01/boulder_01_1k.gltf",
     }
-    for kind, gltf in gltfs.items():
+    sources = {}
+    hidden = bpy.data.collections.new("kit sources")
+    bpy.context.scene.collection.children.link(hidden)
+    for kind, rel in kits.items():
         bpy.ops.object.select_all(action="DESELECT")
-        bpy.ops.import_scene.gltf(filepath=str(gltf))
-        imported = [obj for obj in bpy.context.selected_objects if obj.type == "MESH"]
-        if not imported:
-            raise RuntimeError(f"No mesh imported from {gltf}")
-        for obj in imported:
-            for collection in list(obj.users_collection):
-                collection.objects.unlink(obj)
-            source_collection.objects.link(obj)
-            obj.hide_render = True
-            obj.hide_viewport = True
-        sources[kind] = imported
+        bpy.ops.import_scene.gltf(filepath=str(ASSETS / "model" / rel))
+        meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+        entries = []
+        for o in meshes:
+            lo = Vector((1e9,) * 3)
+            hi = Vector((-1e9,) * 3)
+            for c in o.bound_box:
+                w = o.matrix_world @ Vector(c)
+                lo = Vector(map(min, lo, w))
+                hi = Vector(map(max, hi, w))
+            base = Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z))
+            for col in list(o.users_collection):
+                col.objects.unlink(o)
+            hidden.objects.link(o)
+            o.hide_render = True
+            o.hide_viewport = True
+            entries.append((o, base))
+        sources[kind] = entries
+        if kind == "boulder":
+            for obj, _ in entries:
+                for mat in obj.data.materials:
+                    darken_base_colour(mat, BOULDER_VALUE, BOULDER_SATURATION)
     return sources
 
 
-def plant_instance(sources, kind: str, location, scale: float, rotation: float) -> None:
-    """Create a linked mesh copy, retaining glTF material and alpha details."""
-    transform = Matrix.Translation(location) @ Matrix.Rotation(rotation, 4, "Z") @ Matrix.Diagonal((scale, scale, scale, 1.0))
-    for source in sources[kind]:
-        instance = source.copy()
-        instance.data = source.data
-        instance.animation_data_clear()
-        instance.name = f"{kind} instance"
-        instance.hide_render = False
-        instance.hide_viewport = False
-        instance.matrix_world = transform @ source.matrix_world
-        bpy.context.scene.collection.objects.link(instance)
+def darken_base_colour(mat, value: float, saturation: float) -> None:
+    """Insert a hue/saturation node ahead of the Principled base colour."""
+    tree = mat.node_tree
+    bsdf = next((n for n in tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if bsdf is None:
+        return
+    base = bsdf.inputs["Base Color"]
+    if not base.is_linked:
+        return
+    link_in = base.links[0]
+    hsv = tree.nodes.new("ShaderNodeHueSaturation")
+    hsv.inputs["Value"].default_value = value
+    hsv.inputs["Saturation"].default_value = saturation
+    tree.links.new(link_in.from_socket, hsv.inputs["Color"])
+    tree.links.remove(link_in)
+    tree.links.new(hsv.outputs["Color"], base)
 
 
-def plant_banks(sources) -> None:
+def place(sources, kind, rng, location, scale, yaw, tilt=(0.0, 0.0)):
+    src, base = rng.choice(sources[kind])
+    xf = (
+        Matrix.Translation(location)
+        @ Matrix.Rotation(yaw, 4, "Z")
+        @ Matrix.Rotation(tilt[0], 4, "X")
+        @ Matrix.Rotation(tilt[1], 4, "Y")
+        @ Matrix.Diagonal((scale, scale, scale, 1.0))
+        @ Matrix.Translation(-base)
+    )
+    inst = src.copy()
+    inst.data = src.data
+    inst.hide_render = False
+    inst.hide_viewport = False
+    inst.name = f"{kind}"
+    inst.matrix_world = xf @ src.matrix_world
+    link(inst)
+
+
+def plant_garden(sources, soil_top):
     rng = random.Random(RANDOM_SEED)
-    for side in (-1, 1):
-        for _ in range(PLANT_COUNT_PER_SIDE):
-            x = side * (GARDEN_CLUSTER_X + rng.uniform(-GARDEN_CLUSTER_JITTER_X, GARDEN_CLUSTER_JITTER_X))
-            y = rng.uniform(*GARDEN_DEPTH_RANGE)
-            # Preserve an intentionally open central aisle for the mark and copy.
-            if abs(x) < GARDEN_CLEAR_HALF_WIDTH:
-                x = side * GARDEN_CLEAR_HALF_WIDTH
-            dice = rng.random()
-            if dice < 0.58:
-                kind, scale_range = "grass", GRASS_SCALE
-            elif dice < 0.84:
-                kind, scale_range = "fern", FERN_SCALE
-            else:
-                kind, scale_range = "celandine", CELANDINE_SCALE
-            plant_instance(
+    hw = BOARD_WIDTH / 2 - SOIL_INSET - 0.02
+    y_front = -BOARD_DEPTH / 2 + SOIL_INSET + PLANT_FRONT_MARGIN
+    y_back = BOARD_DEPTH / 2 - SOIL_INSET - 0.02
+
+    def y_pick():
+        t = rng.random() ** (1.0 / BACK_DENSITY_BIAS)
+        return y_front + t * (y_back - y_front)
+
+    for kind, count, scale in (
+        ("boulder", BOULDER_COUNT, BOULDER_SCALE),
+        ("branch", BRANCH_COUNT, BRANCH_SCALE),
+        ("fern", FERN_COUNT, FERN_SCALE),
+        ("celandine", CELANDINE_COUNT, CELANDINE_SCALE),
+        ("grass", GRASS_COUNT, GRASS_SCALE),
+    ):
+        for _ in range(count):
+            x = rng.uniform(-hw, hw)
+            y = y_pick()
+            z = soil_top - (0.01 if kind == "boulder" else 0.002)
+            place(sources, kind, rng, (x, y, z), rng.uniform(*scale), rng.uniform(0, math.tau))
+
+
+def spill(sources):
+    rng = random.Random(RANDOM_SEED + 1)
+    edge_y = -BOARD_DEPTH / 2
+    crumb = flat_material("Crumb", SOIL_ALBEDO, 0.95)
+    for _ in range(SPILL_GRASS_COUNT):
+        d = rng.random() ** 2 * SPILL_DEPTH
+        x = rng.uniform(-1.1, 1.1)
+        y = edge_y - 0.01 - d
+        # Lying flat on the floor, blades pointing away from where they fell.
+        place(
+            sources,
+            "grass",
+            rng,
+            (x, y, 0.004),
+            rng.uniform(*SPILL_GRASS_SCALE),
+            rng.uniform(0, math.tau),
+            tilt=(math.radians(rng.uniform(78, 92)), 0.0),
+        )
+    if SPILL_FROND:
+        place(sources, "fern", rng, (-0.35, edge_y - 0.09, 0.004), 0.17, math.radians(200), tilt=(math.radians(88), 0.0))
+        for _ in range(SPILL_FROND_COUNT - 1):
+            place(
                 sources,
-                kind,
-                (x, y, PLANT_BASE_Z),
-                rng.uniform(*scale_range),
-                rng.uniform(0.0, math.tau),
+                "fern",
+                rng,
+                (rng.uniform(-1.0, 1.0), edge_y - 0.02 - rng.random() ** 2 * SPILL_DEPTH, 0.004),
+                rng.uniform(0.16, 0.24),
+                rng.uniform(0, math.tau),
+                tilt=(math.radians(rng.uniform(80, 90)), 0.0),
             )
+    for _ in range(SPILL_TWIG_COUNT):
+        place(
+            sources,
+            "branch",
+            rng,
+            (rng.uniform(-1.2, 1.2), edge_y - 0.02 - rng.random() ** 1.5 * SPILL_DEPTH, 0.002),
+            rng.uniform(*SPILL_TWIG_SCALE),
+            rng.uniform(0, math.tau),
+        )
+    for count, radius, reach_power in (
+        (SPILL_CRUMB_COUNT, SPILL_CRUMB_RADIUS, 2.2),
+        (SPILL_SPECK_COUNT, SPILL_SPECK_RADIUS, 3.0),
+    ):
+        for _ in range(count):
+            d = rng.random() ** reach_power * SPILL_DEPTH
+            x = rng.uniform(-1.25, 1.25)
+            r = rng.uniform(*radius)
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=r, location=(x, edge_y - 0.004 - d, r * 0.8))
+            o = bpy.context.object
+            o.scale = (1.0, rng.uniform(0.7, 1.3), rng.uniform(0.5, 0.9))
+            o.rotation_euler = (rng.random(), rng.random(), rng.random())
+            o.data.materials.append(crumb)
 
 
-def studio_kit(metal) -> None:
-    """Add visible rig hardware, one key softbox and an edge stand."""
-    bar = cylinder("Overhead rig bar", RIG_BAR_LOCATION, RIG_BAR_RADIUS, RIG_BAR_LENGTH, metal)
-    bar.rotation_euler[1] = math.pi / 2
-    for x in RIG_DROP_X:
-        cylinder("Rig drop", (x, RIG_BAR_LOCATION[1], RIG_DROP_BOTTOM_Z), RIG_DROP_RADIUS, RIG_DROP_DEPTH, metal)
+def stand():
+    paint = flat_material("Stand paint", STAND_PAINT, STAND_PAINT_ROUGHNESS)
+    chrome = flat_material("Stand chrome", (0.8, 0.8, 0.8, 1.0), 0.25, metallic=1.0)
+    cylinder("Stand riser", (STAND_X, STAND_Y, STAND_HEIGHT / 2), STAND_RADIUS, STAND_HEIGHT, paint)
+    cylinder("Stand collar", (STAND_X, STAND_Y, 1.05), STAND_RADIUS * 1.9, 0.05, chrome)
+    cylinder("Stand collar 2", (STAND_X, STAND_Y, 1.75), STAND_RADIUS * 1.9, 0.05, chrome)
+    # Three legs at stepped heights, the turtle base of a C-stand.
+    for i, (a_deg, length) in enumerate(((300, 0.44), (60, 0.40), (90, 0.30))):
+        a = math.radians(a_deg)
+        tilt = math.radians(74)
+        half = length / 2
+        centre = (
+            STAND_X + half * math.sin(tilt) * math.cos(a),
+            STAND_Y + half * math.sin(tilt) * math.sin(a),
+            0.03 + half * math.cos(tilt) + i * 0.04,
+        )
+        leg = cylinder("Stand leg", centre, 0.012, length, paint, 16)
+        leg.rotation_euler = (0.0, tilt, a)
+    # The sandbag: two lobes draped over the leg that points at the camera.
+    bag = flat_material("Sandbag", SANDBAG_ALBEDO, 0.9)
+    leg_y = STAND_Y - 0.30
+    for dx in (-0.075, 0.075):
+        lobe = box("Sandbag lobe", (STAND_X + dx, leg_y, 0.05), (0.13, 0.17, 0.10), bag, 0.035)
+        lobe.rotation_euler = (0.0, math.radians(-12 if dx < 0 else 12), math.radians(8))
+    box("Sandbag strap", (STAND_X, leg_y, 0.11), (0.16, 0.08, 0.025), bag, 0.01)
 
-    for x in STAND_X:
-        cylinder("Studio stand", (x, STAND_Y, STAND_HEIGHT / 2), STAND_RADIUS, STAND_HEIGHT, metal)
-        cylinder("Studio stand foot", (x, STAND_Y, STAND_FOOT_Z), STAND_FOOT_RADIUS, STAND_FOOT_DEPTH, metal)
-    cube("Softbox housing", SOFTBOX_LOCATION, SOFTBOX_SIZE, metal, 0.05)
-    cube("Softbox diffuser", SOFTBOX_DIFFUSER_LOCATION, SOFTBOX_DIFFUSER_SIZE, simple_material("Diffuser", SOFTBOX_DIFFUSER_COLOUR, SOFTBOX_DIFFUSER_ROUGHNESS), 0.02)
 
-
-def configure_world() -> None:
-    world = bpy.context.scene.world or bpy.data.worlds.new("World")
-    bpy.context.scene.world = world
-    world.use_nodes = True
-    nodes, links = world.node_tree.nodes, world.node_tree.links
+def world():
+    w = bpy.context.scene.world or bpy.data.worlds.new("World")
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    nodes, links = w.node_tree.nodes, w.node_tree.links
     nodes.clear()
-    output = nodes.new("ShaderNodeOutputWorld")
-    background = nodes.new("ShaderNodeBackground")
-    environment = nodes.new("ShaderNodeTexEnvironment")
-    environment.image = bpy.data.images.load(str(ASSET_ROOT / "hdri" / "brown_photostudio_02_1k.hdr"), check_existing=True)
-    background.inputs["Strength"].default_value = WORLD_STRENGTH
-    links.new(environment.outputs["Color"], background.inputs["Color"])
-    links.new(background.outputs["Background"], output.inputs["Surface"])
+    out = nodes.new("ShaderNodeOutputWorld")
+    bg = nodes.new("ShaderNodeBackground")
+    env = nodes.new("ShaderNodeTexEnvironment")
+    env.image = bpy.data.images.load(str(ASSETS / "hdri" / "brown_photostudio_02_1k.hdr"), check_existing=True)
+    coord = nodes.new("ShaderNodeTexCoord")
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Rotation"].default_value = (0.0, 0.0, math.radians(WORLD_ROTATION_DEG))
+    links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
+    links.new(mapping.outputs["Vector"], env.inputs["Vector"])
+    bg.inputs["Strength"].default_value = WORLD_STRENGTH
+    links.new(env.outputs["Color"], bg.inputs["Color"])
+    links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
-def configure_camera() -> None:
-    bpy.ops.object.camera_add(location=CAMERA_LOCATION)
-    camera = bpy.context.object
-    camera.name = "Hero camera"
-    camera.data.lens = CAMERA_LENS_MM
-    camera.data.dof.use_dof = True
-    camera.data.dof.focus_object = None
-    camera.data.dof.focus_distance = (Vector(CAMERA_LOCATION) - Vector(CAMERA_TARGET)).length
-    camera.data.dof.aperture_fstop = CAMERA_F_STOP
-    look_at(camera, CAMERA_TARGET)
-    bpy.context.scene.camera = camera
-
-
-def configure_key() -> None:
+def key():
     bpy.ops.object.light_add(type="AREA", location=KEY_LOCATION)
-    key = bpy.context.object
-    key.name = "Warm key softbox"
-    key.data.energy = KEY_ENERGY_WATTS
-    key.data.shape = "DISK"
-    key.data.size = KEY_SIZE_METRES
-    key.data.color = KEY_COLOUR
-    look_at(key, (0.0, 1.1, 0.8))
+    k = bpy.context.object
+    k.name = "Key softbox"
+    k.data.shape = "RECTANGLE"
+    k.data.size, k.data.size_y = KEY_SIZE
+    k.data.energy = KEY_POWER_W
+    k.data.spread = math.radians(KEY_SPREAD_DEG)
+    k.data.color = KEY_COLOUR
+    k.rotation_euler = (Vector(KEY_TARGET) - Vector(KEY_LOCATION)).to_track_quat("-Z", "Y").to_euler()
+
+    flag_mat = flat_material("Flag", (0.01, 0.01, 0.01, 1.0), 0.9)
+    bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-0.2, FLAG_Y, FLAG_BOTTOM_Z + FLAG_SIZE[1] / 2))
+    flag = bpy.context.object
+    flag.name = "Top flag"
+    flag.scale = (FLAG_SIZE[0], FLAG_SIZE[1], 1.0)
+    flag.rotation_euler = (math.radians(90.0), 0.0, 0.0)
+    flag.data.materials.append(flag_mat)
+
+    bpy.ops.object.light_add(type="SPOT", location=POOL_LOCATION)
+    p = bpy.context.object
+    p.name = "Background pool"
+    p.data.energy = POOL_POWER_W
+    p.data.spot_size = math.radians(POOL_CONE_DEG)
+    p.data.spot_blend = POOL_BLEND
+    p.data.shadow_soft_size = POOL_RADIUS
+    p.data.use_nodes = True
+    nodes, links = p.data.node_tree.nodes, p.data.node_tree.links
+    emission = nodes.get("Emission")
+    bb = nodes.new("ShaderNodeBlackbody")
+    bb.inputs["Temperature"].default_value = POOL_KELVIN
+    links.new(bb.outputs["Color"], emission.inputs["Color"])
+    p.rotation_euler = (Vector(POOL_TARGET) - Vector(POOL_LOCATION)).to_track_quat("-Z", "Y").to_euler()
+
+    bpy.ops.object.light_add(type="AREA", location=KICK_LOCATION)
+    kick = bpy.context.object
+    kick.name = "Kicker"
+    kick.data.shape = "SQUARE"
+    kick.data.size = KICK_SIZE
+    kick.data.energy = KICK_POWER_W
+    kick.data.spread = math.radians(90.0)
+    kick.data.use_nodes = True
+    nodes, links = kick.data.node_tree.nodes, kick.data.node_tree.links
+    emission = nodes.get("Emission")
+    bb = nodes.new("ShaderNodeBlackbody")
+    bb.inputs["Temperature"].default_value = KICK_KELVIN
+    links.new(bb.outputs["Color"], emission.inputs["Color"])
+    kick.rotation_euler = (Vector(KICK_TARGET) - Vector(KICK_LOCATION)).to_track_quat("-Z", "Y").to_euler()
 
 
-def configure_render(args) -> None:
-    scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE_NEXT" if args.samples == 0 else "CYCLES"
-    scene.render.resolution_x = args.width
-    scene.render.resolution_y = round(args.width / FRAME_ASPECT)
-    scene.render.resolution_percentage = 100
-    scene.render.image_settings.file_format = "PNG"
-    scene.render.image_settings.color_mode = "RGB"
-    scene.render.film_transparent = False
-    scene.render.filepath = str(args.out)
-    scene.render.engine = "CYCLES"
-    scene.cycles.device = "CPU"
-    scene.cycles.samples = args.samples
-    scene.cycles.use_denoising = True
-    scene.cycles.preview_samples = min(args.samples, 32)
-    scene.render.threads_mode = "FIXED"
-    scene.render.threads = CPU_THREADS
-    scene.view_settings.look = "AgX - Medium High Contrast"
-    scene.view_settings.exposure = RENDER_EXPOSURE
-    scene.view_settings.gamma = 1.0
+def camera():
+    loc = Vector((0.0, -CAMERA_DISTANCE, CAMERA_HEIGHT))
+    bpy.ops.object.camera_add(location=loc)
+    cam = bpy.context.object
+    cam.name = "Camera"
+    cam.data.lens = CAMERA_LENS_MM
+    cam.data.sensor_width = CAMERA_SENSOR_MM
+    cam.data.sensor_fit = "HORIZONTAL"
+    cam.rotation_euler = (math.radians(90.0 + CAMERA_PITCH_DEG), 0.0, 0.0)
+    cam.data.dof.use_dof = True
+    cam.data.dof.focus_distance = CAMERA_DISTANCE + CAMERA_FOCUS_Y
+    cam.data.dof.aperture_fstop = CAMERA_F_STOP
+    cam.data.dof.aperture_blades = 9
+    bpy.context.scene.camera = cam
 
 
-def main() -> None:
-    args = blender_arguments()
+def render(args):
+    s = bpy.context.scene
+    s.render.engine = "CYCLES"
+    s.cycles.device = "CPU"
+    s.cycles.samples = args.samples
+    s.cycles.use_denoising = True
+    s.cycles.use_adaptive_sampling = True
+    s.render.threads_mode = "FIXED"
+    s.render.threads = CPU_THREADS
+    s.render.resolution_x = args.width
+    s.render.resolution_y = round(args.width / FRAME_ASPECT)
+    s.render.resolution_percentage = 100
+    s.render.image_settings.file_format = "PNG"
+    s.render.image_settings.color_mode = "RGB"
+    s.render.filepath = str(args.out)
+    s.view_settings.view_transform = VIEW_TRANSFORM
+    s.view_settings.look = VIEW_LOOK
+    s.view_settings.exposure = EXPOSURE
+    s.render.film_transparent = False
+
+
+def main():
+    args = cli()
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    bpy.ops.object.select_all(action="SELECT")
-    bpy.ops.object.delete(use_global=False)
-    for collection in list(bpy.data.collections):
-        bpy.data.collections.remove(collection)
-
-    plywood = pbr_material("Plywood PBR", "plywood")
-    metal = pbr_material("Metal plate PBR", "metal_plate")
-    sweep = simple_material("Warm sweep", SWEEP_COLOUR, SWEEP_ROUGHNESS)
-    soil = simple_material("Garden soil", SOIL_COLOUR, 0.94)
-    make_sweep(sweep)
-    cube("Plywood garden board", BOARD_LOCATION, BOARD_SIZE, plywood, BOARD_BEVEL)
-    cube("Soil on board", SOIL_LOCATION, SOIL_SIZE, soil, SOIL_BEVEL)
-    plant_banks(import_plant_sources())
-    studio_kit(metal)
-    configure_world()
-    configure_camera()
-    configure_key()
-    configure_render(args)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    build_sweep()
+    soil_top = build_board()
+    sources = import_kits()
+    plant_garden(sources, soil_top)
+    spill(sources)
+    stand()
+    world()
+    key()
+    camera()
+    render(args)
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out.with_suffix(".blend")))
     bpy.ops.render.render(write_still=True)
 
