@@ -1364,6 +1364,16 @@ body > * { position: relative; z-index: 1; }
 }
 .shot-words :where(a) { pointer-events: auto; }
 
+/* The lead runs in ink here, not in the body brown it uses everywhere else.
+   This hero's words land on the cut face of the set's board, which is pale
+   birch ply but is still a wooden surface with a lit side and a shaded side.
+   Measured off the rendered pixels at the end of the move, the body brown
+   came out at 4.42:1 against the shaded half of that face, which is under the
+   4.5 an AA body text needs, and the ply had already been lightened twice to
+   chase it. Lightening it a third time would have turned a board into cream.
+   In ink the same paragraph measures 8.6:1 across the whole face. */
+.shot-words .hero-lead { color: var(--color-ink); }
+
 /* The cue is the opposite: it is the only thing on the resting frame besides
    the mark, and it is gone as soon as the reader has done what it asks. */
 .shot-cue {

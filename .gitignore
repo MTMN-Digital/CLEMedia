@@ -15,3 +15,7 @@ dist-preview
 
 # Scratch output from the depth-map checker and other local proofs.
 _scratch/
+
+# Parallel preview builds: one output directory per agent working at once.
+dist-[a-c]
+dist-p[0-9]

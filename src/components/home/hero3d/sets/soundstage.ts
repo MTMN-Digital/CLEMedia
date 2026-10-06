@@ -78,10 +78,17 @@ const COVE_CURVE_Z = BACK_Z + COVE_RADIUS;
    dressed and lit. It runs off the right of frame and off the back of the
    floor, because a set that ends on all four sides is a diorama in a box, and
    this one is meant to read as a build that continues past the shot. */
-const BOARD_X0 = -0.35;
-const BOARD_X1 = 3.1;
+/* The board runs off BOTH sides of the frame. It used to start just left of
+   centre and run right, which left the whole left of the picture as bare
+   paper and put the garden in one corner: the set read as a prop placed in a
+   room rather than as the thing being shot. Spanning the frame makes its
+   front cut edge a single horizontal line across the lower third, and that
+   line is the subject. Green and alive above it, warm studio floor below it,
+   and the words stand on the floor. */
+const BOARD_X0 = -3.6;
+const BOARD_X1 = 3.6;
 const BOARD_Z0 = COVE_CURVE_Z + 0.05;
-const BOARD_Z1 = -0.15;
+const BOARD_Z1 = -0.4;
 /* The board sits behind the mark's plane and low. The camera drops half a
    mark width across the move, which raises everything below its axis in the
    frame, and at the first placement (front edge at z 0.42, surface at -0.66)
@@ -89,13 +96,13 @@ const BOARD_Z1 = -0.15;
    the lead paragraph and one of the buttons. Behind and lower, its face lands
    under the headline and the words sit on lit floor. */
 /** Top of the scenic foam, where the planting stands. */
-const GROUND_Y = -0.82;
+const GROUND_Y = -0.67;
 /** Where the painted ply rostrum stops and the cut foam starts. The two bands
     on the cut face are what say "built" rather than "modelled", so the pale
     one is kept thin and the dark one deep: the first split them evenly and
     deeply inset the ply, and the whole edge then sat in its own shadow at
     roughly the tone of the floor behind it, which lost the edge entirely. */
-const FOAM_Y = -0.87;
+const FOAM_Y = -0.73;
 
 const BOARD_CX = (BOARD_X0 + BOARD_X1) / 2;
 const BOARD_CZ = (BOARD_Z0 + BOARD_Z1) / 2;
@@ -106,9 +113,9 @@ const BOARD_D = BOARD_Z1 - BOARD_Z0;
     the mark's shadow falls across, around x 0.5, z -0.75, so the shadow lands
     on something flat enough to be read as a shadow. */
 const MOUNDS: readonly (readonly [number, number, number, number])[] = [
-  [1.15, -1.45, 0.62, 0.1],
-  [2.35, -0.95, 0.5, 0.075],
-  [0.05, -1.7, 0.4, 0.055],
+  [-1.25, -1.5, 0.62, 0.1],
+  [1.45, -1.0, 0.55, 0.08],
+  [0.15, -1.75, 0.42, 0.055],
 ];
 
 /* ---- The path -----------------------------------------------------------
@@ -120,11 +127,11 @@ const MOUNDS: readonly (readonly [number, number, number, number])[] = [
    strongest cue that the object is really hanging there was being thrown away
    on a surface that could not receive it. */
 const PATH: readonly (readonly [number, number])[] = [
-  [-0.26, 0.44],
-  [0.18, -0.14],
+  [-2.3, -0.32],
+  [-1.0, -0.52],
   [0.55, -0.78],
-  [1.3, -1.18],
-  [2.35, -1.6],
+  [1.6, -1.12],
+  [2.9, -1.5],
 ];
 const PATH_HALF = 0.062;
 const PATH_CURVE = new CatmullRomCurve3(PATH.map(([x, z]) => new Vector3(x, 0, z)));
@@ -427,7 +434,16 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   /* Painted ply, lifted off near black. At the end of the move its front face
      is a band across the whole bottom of the frame, and at the first value it
      read as a black bar rather than as the side of a rostrum. */
-  const ply = mat(new MeshStandardMaterial({ color: new Color(0x8a6f55), roughness: 0.72, metalness: 0.06 }));
+  /* Bare birch ply, not stained timber. Two reasons, and the first is the one
+   that forced it: the headline lands on this face at the end of the move, and
+   at the mid brown it started on, the ink measured 3.4:1 against it, which
+   fails AA for body text. Measured off the rendered pixels at the end of the
+   move, not off the token: the first lift to 0xc0a888 put the headline at
+   8.8:1 but left the lead paragraph at 4.45:1, which is still under the 4.5
+   an AA body text needs, so it went lighter again. The second is that it
+   is simply what a rostrum on a stage is made of, and the brighter band also
+   sharpens the step from green to studio that the whole set is built around. */
+  const ply = mat(new MeshStandardMaterial({ color: new Color(0xd6c0a2), roughness: 0.78, metalness: 0.04 }));
   const foam = mat(
     new MeshStandardMaterial({
       color: new Color().copy(sunken).lerp(paper, 0.68),
@@ -472,10 +488,12 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
      Clumped, not scattered: an even field of grass is a lawn, and a lawn is
      the one thing an Irish hedgerow floor is not. Clump centres are drawn from
      the seeded stream, so this layout is a decision rather than an accident.
-     The planted region stops short of the frame on the right because nothing
-     past x 2.7 is ever in shot. */
-  const PLANT_X0 = BOARD_X0 + 0.015;
-  const PLANT_X1 = 2.7;
+     The planted region is the part of the board the lens actually sees. The
+     board runs off both edges, but at the end of the move the frame is only
+     about 2.2 units wide at the board's depth, so planting past that is paid
+     for and never shown. */
+  const PLANT_X0 = -2.1;
+  const PLANT_X1 = 2.1;
   const PLANT_Z0 = BOARD_Z0 + 0.06;
   const PLANT_Z1 = BOARD_Z1 - 0.02;
 
@@ -483,9 +501,10 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   const clumps: { x: number; z: number; rad: number }[] = [];
   for (let i = 0; i < clumpCount; i++) {
     clumps.push({
-      /* Weighted toward the left of the board, which is the half that is in
-         frame at the end of the move and the half the cut edge is on. */
-      x: PLANT_X0 + Math.pow(r(), 1.3) * (PLANT_X1 - PLANT_X0),
+      /* Even across the planted region now that it is centred on the frame.
+         The old weighting pushed clumps left because the board sat to the
+         right of centre; it does not any more. */
+      x: PLANT_X0 + r() * (PLANT_X1 - PLANT_X0),
       z: PLANT_Z0 + r() * (PLANT_Z1 - PLANT_Z0),
       rad: 0.09 + r() * 0.2,
     });
@@ -519,16 +538,13 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
       edge = true;
       /* A handful of blades sit ON the cut edges and lean out over them, so the
          edge breaks into grass instead of ending as a clean machined line. */
-      if (r() < 0.4) {
-        /* Set back from the left edge rather than hanging over it. Blades that
-           overhung this one curtained the cut face, and that face is the whole
-           subject of the set: the line where the garden stops. */
-        x = BOARD_X0 + 0.045;
-        z = PLANT_Z0 + r() * (PLANT_Z1 - PLANT_Z0);
-      } else {
-        x = PLANT_X0 + r() * (PLANT_X1 - PLANT_X0);
-        z = BOARD_Z1 + 0.004;
-      }
+      /* All of them on the front edge now. The board runs off both sides, so
+         the front cut is the only edge the lens ever sees, and a few blades
+         leaning out over it are what stop it reading as a machined line.
+         Set back a little rather than hanging over: blades that overhung it
+         curtained the cut face, and that face is the subject of the set. */
+      x = PLANT_X0 + r() * (PLANT_X1 - PLANT_X0);
+      z = BOARD_Z1 + 0.004;
       lean = 0.5;
     } else {
       const c = clumps[(i * 7) % clumpCount];
@@ -738,31 +754,56 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
     new MeshStandardMaterial({ color: new Color(0x44632f), roughness: 0.92, metalness: 0 }),
   );
 
-  const HEDGE_COUNT = 64;
+  /* Many small leaves rather than a few big ones. The first build used 110
+     instances at a radius of about 0.15 of a mark width, and at the size the
+     lens sees the back of the board that is a row of broccoli florets: the eye
+     counts the lumps. Roughly a thousand instances a third of the size read as
+     a mass of foliage with light falling through it, which is what a hedge is,
+     and it costs about seventy thousand triangles. */
+  const HEDGE_COUNT = 980;
   const hedge = new InstancedMesh(
-    keep(new IcosahedronGeometry(0.1, 1)),
+    keep(new IcosahedronGeometry(0.042, 1)),
     mat(new MeshStandardMaterial({ color: 0xffffff, roughness: 0.93, metalness: 0 })),
     HEDGE_COUNT,
   );
   hedge.castShadow = true;
   const hedgeColor = new Color();
-  const oakTone = new Color(0x2f4a2a);
-  const hazelTone = new Color(0x4b6a38);
+  const oakTone = new Color(0x31492c);
+  const hazelTone = new Color(0x55713c);
+  const HEDGE_X0 = -2.5;
+  const HEDGE_X1 = 2.5;
   for (let i = 0; i < HEDGE_COUNT; i++) {
-    const t = i / (HEDGE_COUNT - 1);
-    /* Two staggered rows, so the bank has a front and a back and the light
-       falls off through it instead of lying flat on one wall of leaves. */
-    const row = i % 2;
-    const x = BOARD_X0 + 0.05 + t * (PLANT_X1 + 0.3 - BOARD_X0) + (r() - 0.5) * 0.16;
-    const z = BOARD_Z0 + (row === 0 ? 0.12 : 0.02) + (r() - 0.5) * 0.1;
-    const rad = 0.8 + r() * 0.9 + (row === 1 ? 0.3 : 0);
-    const lift = (0.9 + r() * 0.8) * (row === 1 ? 1.25 : 1);
-    dummy.position.set(x, groundHeight(x, z) + 0.05 * lift, z);
+    const t = r();
+    const x = HEDGE_X0 + t * (HEDGE_X1 - HEDGE_X0);
+    /* Three staggered ranks, so the bank has a front, a middle and a back and
+       the key falls off through it instead of lying flat on one wall. */
+    const rank = i % 3;
+    const z = BOARD_Z0 + 0.02 + rank * 0.085 + (r() - 0.5) * 0.07;
+    /* The crown is not level: a hedge grown in is higher in the middle of each
+       stretch and thins at the ends. Two slow waves along its length, so the
+       silhouette against the paper has a shape rather than a straight top. */
+    const wave =
+      0.62 +
+      0.3 * Math.sin(x * 1.15 + 0.6) +
+      0.16 * Math.sin(x * 2.9 - 1.4);
+    const top = Math.max(0.2, wave) * (rank === 2 ? 1.22 : rank === 1 ? 1.05 : 0.9);
+    /* Instances are packed up the face of the bank, denser low down, so the
+       foliage has a body instead of being a single shell of leaves. */
+    const up = Math.pow(r(), 0.7) * top;
+    const jitter = 0.055;
+    dummy.position.set(
+      x + (r() - 0.5) * jitter,
+      groundHeight(x, z) + up * 0.42,
+      z + (r() - 0.5) * jitter,
+    );
     dummy.rotation.set(r() * 3, r() * 3, r() * 3);
-    dummy.scale.set(rad * 1.15, lift * 0.95, rad);
+    const sc = 0.72 + r() * 0.7;
+    dummy.scale.set(sc * 1.12, sc * 0.92, sc);
     dummy.updateMatrix();
     hedge.setMatrixAt(i, dummy.matrix);
-    hedgeColor.copy(oakTone).lerp(hazelTone, Math.pow(r(), 1.4));
+    /* Lighter toward the top of the bank, because that is the part the key
+       actually reaches. A hedge of one flat green is a cut-out of a hedge. */
+    hedgeColor.copy(oakTone).lerp(hazelTone, Math.pow(r(), 1.3) * 0.55 + (up / top) * 0.45);
     hedge.setColorAt(i, hedgeColor);
   }
   ctx.back.add(hedge);
@@ -866,15 +907,21 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
     leg.castShadow = true;
     stand.add(leg);
   }
-  stand.position.set(-1.52, 0, -0.55);
+  /* On the bare floor in front of the cut edge. It used to stand at z -0.55,
+     which the widened board now covers: the stand would have been buried in
+     the moss. Its base on the paper is the piece that proves the garden is
+     standing on a floor rather than being one. */
+  stand.position.set(-1.02, 0, 0.3);
   ctx.back.add(stand);
 
   /* A sandbag at its foot and a cable running off left. Floor dressing is only
      visible from about a unit behind the mark, so this is the only place it can
      go, and a bare sweep with nothing on it is a backdrop and not a room. */
   const sandbag = new Mesh(keep(new IcosahedronGeometry(0.17, 1)), cloth);
-  sandbag.position.set(-0.78, FLOOR_Y + 0.06, -0.92);
-  sandbag.scale.set(1, 0.5, 0.78);
+  /* Back and smaller. At z 0.52 it was the nearest thing in the frame by the
+     end of the move and read as a black boulder in the bottom corner. */
+  sandbag.position.set(-1.38, FLOOR_Y + 0.05, 0.02);
+  sandbag.scale.set(0.72, 0.36, 0.56);
   sandbag.rotation.y = 0.5;
   sandbag.castShadow = true;
   ctx.back.add(sandbag);
@@ -930,14 +977,14 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
     keep(
       new TubeGeometry(
         new CatmullRomCurve3([
-          new Vector3(BOARD_X0 + 0.1, FLOOR_Y + 0.015, BOARD_Z0 + 0.5),
-          new Vector3(-0.62, FLOOR_Y + 0.015, -1.1),
-          new Vector3(-1.3, FLOOR_Y + 0.015, -0.62),
-          new Vector3(-2.1, FLOOR_Y + 0.015, -1.35),
-          new Vector3(-3.4, FLOOR_Y + 0.015, -1.0),
+          new Vector3(-3.0, FLOOR_Y + 0.015, 0.95),
+          new Vector3(-1.5, FLOOR_Y + 0.015, 0.2),
+          new Vector3(-0.1, FLOOR_Y + 0.015, 0.78),
+          new Vector3(1.5, FLOOR_Y + 0.015, 0.16),
+          new Vector3(3.0, FLOOR_Y + 0.015, 0.85),
         ]),
         44,
-        0.016,
+        0.011,
         6,
         false,
       ),
@@ -967,36 +1014,16 @@ export async function soundstageSet(ctx: SetContext): Promise<HeroSet> {
   nearArm.rotation.z = Math.PI / 2 + 0.42;
   nearArm.position.set(-0.26, 0.4, 0.01);
   nearStand.add(nearColumn, nearKnuckle, nearArm);
-  nearStand.position.set(-0.98, -0.25, 1.22);
+  nearStand.position.set(-1.12, -0.25, 1.22);
   ctx.front.add(nearStand);
 
-  /* The flag is a cutter on a frame, not a black triangle. The first build hung
-     a bare panel and it read as a corner banner, because a shape with no edge
-     detail and no highlight on it is a silhouette and the eye files it as a
-     mistake. The steel frame along its two visible edges is what makes it
-     cloth stretched on something. */
-  const flag = new Group();
-  const panel = new Mesh(keep(new PlaneGeometry(0.52, 0.86)), cloth);
-  const frameLeft = new Mesh(keep(new CylinderGeometry(0.012, 0.012, 0.86, 6)), steel);
-  frameLeft.position.set(-0.26, 0, 0.008);
-  const frameBottom = new Mesh(keep(new CylinderGeometry(0.012, 0.012, 0.52, 6)), steel);
-  frameBottom.rotation.z = Math.PI / 2;
-  frameBottom.position.set(0, -0.43, 0.008);
-  flag.add(frameBottom);
-  const flagArm = new Mesh(keep(new CylinderGeometry(0.019, 0.019, 0.56, 8)), steel);
-  flagArm.rotation.z = Math.PI / 2 - 0.45;
-  flagArm.position.set(-0.46, 0.3, 0.03);
-  flag.add(panel, frameLeft, flagArm);
-  /* Angled to face the key rather than away from it. Turned the other way it
-     is lit edge on, and a tall unlit rectangle at the edge of the frame is a
-     black band, which is how the second build of this read: a page element,
-     not a cutter standing just outside the shot. Its bottom edge is kept
-     inside the frame for the same reason. */
-  flag.rotation.y = 0.5;
-  flag.position.set(1.0, 0.3, 1.3);
-  /* No shadow from the flag. Traced it once: with this key it lands around
-     x 2.5, off the right of frame, so it costs a shadow pass and buys nothing. */
-  ctx.front.add(flag);
+  /* There was a flag here, a cutter on a frame just outside the top right.
+     It is gone. At this lens its panel was cropped by the frame edge into a
+     dark quadrilateral with no readable shape, which the eye files as a
+     rendering fault rather than as a piece of kit, and the near stand on the
+     left already does the one job a foreground object has to do: cross the
+     lens and leave early. Two near objects at opposite corners also closed the
+     frame in on the mark like a vignette. One is the composition. */
 
   /* ---- The light --------------------------------------------------------
      One key, up and to the left and in front, which is where the artwork's own

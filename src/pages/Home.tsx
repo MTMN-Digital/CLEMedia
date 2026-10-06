@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
-import { HeroStage } from "@/components/home/HeroStage";
+import { HeroShot } from "@/components/home/HeroShot";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
@@ -121,6 +121,13 @@ function NotifyForm() {
 }
 
 export default function Home() {
+  /* The set is a dynamic import so three.js stays out of the main bundle, and
+     it is memoised so a re-render never rebuilds the scene. */
+  const heroSet = useCallback(
+    () => import("@/components/home/hero3d/sets/soundstage").then((m) => m.soundstageSet),
+    [],
+  );
+
   return (
     <>
       <Seo
@@ -130,9 +137,15 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* ═══ 1. HERO. See HeroStage: the mark is held, turned and lit as a
-          physical object while the page waits, then the garden takes over. ═══ */}
-      <HeroStage />
+      {/* ═══ 1. HERO. One shot: the mark hangs over a miniature of the show's
+          garden, built on a board that visibly ends, standing on a studio
+          sweep with a rig over it. The first scroll holds the page and pushes
+          the camera in through that room, and the words arrive in the band the
+          move opens. The room is in the same WebGL scene as the mark, which is
+          the whole point: a camera move past a flat backdrop reads as a
+          picture being enlarged, and five earlier versions of this hero were
+          rejected for exactly that. See HeroShot and hero3d/. ═══ */}
+      <HeroShot set={heroSet} />
 
       {/* The garden, edge to edge, as the horizon the rest of the page sits
           under. It does not drift: one thing moving against a fixed ground is
