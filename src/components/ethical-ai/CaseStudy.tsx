@@ -61,7 +61,18 @@ const FIELDS: { label: string; of: (c: Case) => string | undefined }[] = [
 export function CaseStudy() {
   if (!CASE) {
     return (
-      <div className="rounded-[var(--radius-lg)] border border-dashed border-red/45 bg-[color-mix(in_srgb,var(--color-raised)_45%,transparent)] p-5 sm:p-7">
+      /* No fill. Two reasons, and the second is the one that matters.
+         A slot being held open should look held open, and a dashed edge on the
+         bare ground says that better than a tinted sheet does. And the tint it
+         used to carry was a `color-mix(..., transparent)`, which Chrome
+         serialises as `color(srgb 0.99 0.97 0.93 / 0.45)`: a contrast checker
+         that parses a computed background by sweeping it for numbers reads
+         those fractions as an RGB triple, decides the panel is almost black,
+         and reports eight AA failures in this block that were never on the
+         screen. Dropping the fill removes the hazard instead of arguing with
+         the checker, and the type below now sits on the wall ground, where
+         body measures 6.7:1 and the red label 5.1:1. */
+      <div className="rounded-[var(--radius-lg)] border border-dashed border-red/45 p-5 sm:p-7">
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-red-deep">
           Held for the first case
         </p>
@@ -80,8 +91,8 @@ export function CaseStudy() {
                like a ruled sheet. The label takes the width it needs and the
                rule takes what is left. */
             <div key={f.label} className="hairline grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-5 py-3">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{f.label}</dt>
-              <dd aria-hidden="true" className="h-px bg-[color-mix(in_srgb,var(--color-body)_22%,transparent)]" />
+              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-body">{f.label}</dt>
+              <dd aria-hidden="true" className="h-px bg-body opacity-25" />
             </div>
           ))}
         </dl>

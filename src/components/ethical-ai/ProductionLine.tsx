@@ -154,14 +154,20 @@ function HoldGlyph() {
 
 /* ── Markers ─────────────────────────────────────────────────────────────── */
 
-const MARK = "relative z-10 flex h-14 shrink-0 items-center justify-center";
+/* `w-max` matters. A marker is centred in a lane narrower than the widest of
+   them, and without an intrinsic width the two-portrait markers stretched to
+   the lane instead: the face wrappers kept their height, lost half their width
+   and rendered as two tall ovals on a phone. Every face below therefore also
+   carries `shrink-0`. */
+const MARK = "relative z-10 flex h-12 w-max shrink-0 items-center justify-center sm:h-14";
+const GLYPH = `${MARK} w-12 sm:w-14`;
 
 function Marker({ s, innerRef }: { s: Station; innerRef: (el: HTMLDivElement | null) => void }) {
   if (s.kind === "tool") {
     return (
       <div
         ref={innerRef}
-        className={`${MARK} w-14 rounded-[var(--radius-md)] border border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))] text-ink`}
+        className={`${GLYPH} rounded-[var(--radius-md)] border border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))] text-ink`}
       >
         <ToolGlyph />
       </div>
@@ -169,7 +175,7 @@ function Marker({ s, innerRef }: { s: Station; innerRef: (el: HTMLDivElement | n
   }
   if (s.kind === "gate") {
     return (
-      <div ref={innerRef} className={`${MARK} w-14 rounded-full bg-raised text-red-deep ring-2 ring-red/70`}>
+      <div ref={innerRef} className={`${GLYPH} rounded-full bg-raised text-red-deep ring-2 ring-red/70`}>
         <HoldGlyph />
       </div>
     );
@@ -178,9 +184,9 @@ function Marker({ s, innerRef }: { s: Station; innerRef: (el: HTMLDivElement | n
     /* Faces are capped at two and overlap, so the widest marker on the chain
        stays inside the lane the return path has to share with it. */
     return (
-      <div ref={innerRef} className={`${MARK} -space-x-4`}>
+      <div ref={innerRef} className={`${MARK} -space-x-5 sm:-space-x-4`}>
         {s.faces.map((a) => (
-          <div key={a} className="h-14 w-14 overflow-hidden rounded-full bg-sunken ring-2 ring-[var(--color-raised)]">
+          <div key={a} className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-sunken ring-2 ring-[var(--color-raised)] sm:h-14 sm:w-14">
             <Figure asset={a} rounded="rounded-full" className="aspect-square" sizes="56px" />
           </div>
         ))}
@@ -188,7 +194,7 @@ function Marker({ s, innerRef }: { s: Station; innerRef: (el: HTMLDivElement | n
     );
   }
   return (
-    <div ref={innerRef} className={`${MARK} w-14 rounded-full border border-rule bg-raised text-ink`}>
+    <div ref={innerRef} className={`${GLYPH} rounded-full border border-rule bg-raised text-ink`}>
       <TeamGlyph />
     </div>
   );
@@ -284,7 +290,7 @@ function Account({ s }: { s: Station }) {
   const kindLabel = s.kind === "tool" ? "Tool assists" : s.kind === "gate" ? "Gate, can hold" : "Person decides";
   return (
     <>
-      <p className={`tnum font-mono text-[10.5px] uppercase tracking-[0.14em] ${s.kind === "gate" ? "text-red-deep" : "text-muted"}`}>
+      <p className={`tnum font-mono text-[10.5px] uppercase tracking-[0.14em] ${s.kind === "gate" ? "text-red-deep" : "text-body"}`}>
         {s.index && <span className="mr-2">{s.index}</span>}
         {kindLabel}
       </p>
@@ -456,9 +462,13 @@ export function ProductionLine({ gateSlot }: { gateSlot?: ReactNode }) {
           return (
             <li
               key={s.title}
-              className="grid grid-cols-[3.25rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3 sm:grid-cols-[3.5rem_minmax(0,1fr)] sm:gap-x-5 lg:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)] lg:gap-x-0 lg:gap-y-0"
+              className="grid grid-cols-[4rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:gap-x-5 lg:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)] lg:gap-x-0 lg:gap-y-0"
             >
-              <div className="lg:col-start-2 lg:row-start-1 lg:flex lg:justify-center">
+              {/* Centred in the lane at every width, not left aligned: a
+                  two-portrait marker is wider than a single one, so left
+                  aligned they sit on two different axes and the rail, which is
+                  drawn through the FIRST marker's centre, misses the rest. */}
+              <div className="flex justify-center lg:col-start-2 lg:row-start-1">
                 <Marker s={s} innerRef={(el) => { marks.current[i] = el; }} />
               </div>
               <div className={`col-start-2 pt-0.5 lg:row-start-1 lg:pt-0 ${near}`}>
