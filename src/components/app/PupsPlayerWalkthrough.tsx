@@ -340,6 +340,9 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
         onKeyDown={move}
         className="order-2 grid grid-cols-3 gap-x-3 lg:order-1 lg:grid-cols-1 lg:gap-0"
       >
+        {/* Inactive stages run at --color-body, not --color-muted. The device
+            now stands on the `.wall` ground, where muted measures 4.44:1 and
+            fails AA; body is 6.7:1 on the same fill. */}
         {STAGES.map((s, i) => {
           const on = s.id === stage;
           return (
@@ -355,7 +358,7 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
               tabIndex={on ? 0 : -1}
               onClick={() => setStage(s.id)}
               className={`hairline group block w-full py-4 text-left transition-colors duration-300 lg:py-6 ${
-                on ? "text-ink" : "text-muted hover:text-body"
+                on ? "text-ink" : "text-body hover:text-ink"
               }`}
             >
               <span className="flex items-center gap-3">
@@ -367,7 +370,7 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
                 />
                 <span id={`${base}-title-${s.id}`} className="t-h3 font-bold">{s.title}</span>
               </span>
-              <span className={`t-sm mt-2.5 hidden leading-relaxed lg:block ${on ? "text-body" : "text-muted"}`}>
+              <span className={`t-sm mt-2.5 hidden leading-relaxed lg:block ${on ? "text-ink" : "text-body"}`}>
                 {s.line}
               </span>
             </button>
@@ -390,7 +393,12 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
                 aria-hidden="true"
                 className="absolute left-1/2 top-[0.35em] hidden h-[0.28em] w-[0.28em] -translate-x-1/2 rounded-full bg-raised/35 @md:block"
               />
-              <div className="relative aspect-[7/10] overflow-hidden rounded-[1.6em] bg-paper-1 @md:aspect-[4/3]">
+              {/* 16/10 in landscape, not 4/3. On a 1440 screen the device is
+                  close to a metre of band and at 4/3 its own content floated
+                  in the middle of 740px of empty screen, which made the one
+                  object the page is built around look thin. 16/10 is a real
+                  tablet ratio and takes 120px of air out of the interior. */}
+              <div className="relative aspect-[7/10] overflow-hidden rounded-[1.6em] bg-paper-1 @md:aspect-[16/10]">
                 {STAGES.map((s) => {
                   const on = s.id === stage;
                   return (
@@ -411,15 +419,19 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
             </div>
           </div>
         </div>
-        <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
-          Drawn from the plan, not a screenshot
-        </p>
-        {/* On a phone the stage line lives here, under the device, because
-            three short titles in a row leave no room for it. */}
-        <p className="t-body mt-4 text-body lg:hidden" aria-live="polite">
-          {current.line}
-        </p>
+        {/* The "drawn from the plan, not a screenshot" label used to hang
+            here. It is now the standing label at the head of the band, where
+            a reader meets it BEFORE mistaking the render for a capture, which
+            is the whole job of the sentence. */}
       </div>
+
+      {/* On a phone the stage line lives here, because three short titles in a
+          row leave no room for it beside them. order-3 and not inside the
+          device column: a caption describing the selected tab has to come
+          AFTER the tabs, or a reader meets the answer before the control. */}
+      <p className="order-3 t-body text-body lg:hidden" aria-live="polite">
+        {current.line}
+      </p>
     </div>
   );
 }

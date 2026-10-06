@@ -8,13 +8,11 @@ import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { MissionVideo } from "@/components/MissionVideo";
 import { Stage } from "@/components/render/Stage";
-import { ReviewGateScene } from "@/components/home/ReviewGateScene";
+import { CallSheet } from "@/components/home/CallSheet";
 import {
-  Button, Container, Kicker, Lead, Section,
-  SectionHeading, TextLink,
+  Button, Container, Kicker, Lead, Section, TextLink,
 } from "@/components/ui";
 import { IconArrow, IconMail } from "@/components/icons";
-import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
    THE RULE THIS PAGE WAS REBUILT ON.
@@ -29,6 +27,31 @@ import type { AssetKey } from "@/lib/brand";
    that is how pawsitivepugs.com carries its own pages. And an empty frame is
    never rendered on this page. Where an asset is missing, the section is built
    from what exists instead, and the gap is listed in CONTENT-NEEDED.md.
+
+   ──────────────────────────────────────────────────────────────────────────
+   THE SHAPE, added 2026-10-06.
+
+   The page was ten thousand pixels of one silhouette: eight sections, every
+   one of them a heading with rows or cards under it, every one at the same
+   1560px container, almost all of them on the same cream. Blur the text and
+   four of them were indistinguishable.
+
+   It now runs: a full-bleed frame, then ONE tall band on the deeper wall that
+   holds the whole argument (the thesis and the three stages, as a set page
+   rather than as two sections), then the two big objects the page already had
+   and never bettered (the film, then the filmstrip running off the right
+   edge), then the call sheet, whose faces and stage figures make a column you
+   can read without reading, then one narrow sunken band for the AI position,
+   then the navy close. Wide, wide, wide, narrow, deep: the widths carry the
+   rhythm, not the headings.
+
+   Removed rather than restyled:
+     - the second garden picture. The page opens on a full-bleed garden frame
+       and then showed a smaller crop of the same garden twelve hundred pixels
+       later. /story owns the swing-tree print.
+     - the six-row running order. It was the third copy of one idea on the
+       site, and the faces underneath it were the same six people again. The
+       two are one list now; see CallSheet.
    ========================================================================== */
 
 const STAGES = [
@@ -57,27 +80,6 @@ const EPISODES: Episode[] = [
   { n: "004", title: "The Cuckoo's Incredible Journey", runtime: "9:58", asset: "slate.ep4",
     href: "https://www.youtube.com/watch?v=yHYYBpMfE6M",
     line: "Finn and Fia go on a new adventure and meet a cuckoo who has travelled a very long way to get back to the garden." },
-];
-
-/* Portraits arrived 2026-10-01 with the client's bios, so the names finally
-   have faces against them, which on a page whose whole argument is "made by
-   named people" is the single most useful image on it.
-
-   Names and titles follow that handoff: Alan rather than Al, Lydia Harding
-   rather than Lydia Sexton, Kirstie without the surname the earlier draft gave
-   her. Paula's book is Full STEAM Ahead; an earlier draft credited her with
-   Síolta in Practice, which the client's own biography does not.
-
-   Six here, not the whole company: Mansi's handoff carried no photograph or
-   biography, so she is on /team in full rather than as the one blank tile in a
-   row of faces. The link under this grid is what carries the reader to her. */
-const PEOPLE: { name: string; role: string; line: string; asset?: AssetKey }[] = [
-  { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor", line: "Sets each episode's concept and story alongside Alan, and leads strategy and partnerships." },
-  { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula", line: "Lectures in early childhood education at SETU Carlow and wrote Full STEAM Ahead. Reviews learning intent against early years practice." },
-  { name: "Alan Compton", role: "Creative Director", asset: "person.alan", line: "Writes and directs. The look, the performances and the pace of an episode are his call." },
-  { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia", line: "Reads script and production from a parent's point of view, and from a child's, before anything is released." },
-  { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education, and a qualified SNA. Checks that what is made is age-appropriate." },
-  { name: "David Toth", role: "Strategic Advisor", asset: "person.david", line: "Two decades advising Nickelodeon, LEGO and BBC Kids on content quality and platform safety. Shapes platform strategy here." },
 ];
 
 function NotifyForm() {
@@ -139,7 +141,13 @@ export default function Home() {
 
       {/* The garden, edge to edge, as the horizon the rest of the page sits
           under. It does not drift: one thing moving against a fixed ground is
-          an object, two things moving against each other is a scroll effect. */}
+          an object, two things moving against each other is a scroll effect.
+
+          The caption is not decoration. This is a frame from the animation,
+          not a photograph of a real garden, and a company whose Responsible AI
+          page turns on being straight about how the work is made cannot put an
+          uncaptioned rendered image at the top of its home page. It is also
+          the page's first use of the registered mark. */}
       <div className="h-[clamp(260px,44vw,620px)] overflow-hidden">
         <Figure
           asset="home.hero"
@@ -150,28 +158,51 @@ export default function Home() {
           sizes="100vw"
         />
       </div>
+      <Container width="wide">
+        <p className="mt-3.5 text-right font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+          A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
+        </p>
+      </Container>
 
-      {/* ═══ 2. THESIS. The first change of room. The page has been one flat
-          clay surface up to here; the argument that the company is different
-          from the market is the right place to put the reader somewhere
-          physically different, so it runs edge to edge on a wall a stop deeper
-          than the paper, under the same lamp as the rest of the room. ═══ */}
-      <Section labelledBy="thesis-h" className="wall">
-        <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
-            <div>
+      {/* ═══ 2. THE ARGUMENT, on the wall.
+
+          One band, two movements, and the page's only change of room. The
+          thesis and the three stages used to be two sections of the same
+          height on the same ground, and the second of them spent a tall
+          photograph and six hundred pixels of empty bottom-right to say three
+          short things. Together on the deeper ground they are the centre of
+          gravity the page did not have: a display line at the top of the
+          band, the argument set in three columns under a rule, and the model
+          as three panels divided by hairlines, which is a printed page rather
+          than three cards.
+
+          The wall is a stop deeper than the paper and no deeper: measured, the
+          first version of this surface put body copy at 3.2:1. See index.css.
+          ═══ */}
+      <div className="wall">
+        <Section labelledBy="thesis-h" className="!pb-0">
+          <Container width="wide">
+            <Wipe>
               <Kicker>What we believe</Kicker>
-              <h2 id="thesis-h" className="t-h1 mt-6 max-w-[16ch]">
+              {/* The one display-sized line below the hero. A page whose
+                  headings are all one size is flat however good the words
+                  are, so the argument gets the jump and the section headings
+                  stay at h2. */}
+              <h2 id="thesis-h" className="t-display mt-6 max-w-[19ch]">
                 We are not going to tell anyone their child watches too much television.
               </h2>
-            </div>
-            <div className="t-lead space-y-6 lg:pt-16">
-              <p>
+            </Wipe>
+
+            {/* Three columns under one rule. Each is about forty characters,
+                which is a column measure rather than a paragraph stretched to
+                the width of a monitor. */}
+            <Settle className="hairline mt-14 grid gap-x-12 gap-y-8 pt-10 md:grid-cols-3 lg:gap-x-16">
+              <p className="t-lead text-body">
                 The gap we saw is narrower than that. Not enough content made at a child's pace,
                 with genuine educational intent, and with a clear account of who made it and who
                 checked it.
               </p>
-              <p>
+              <p className="t-lead text-body">
                 Much of what fills the market is fast and loud, built around how long a child keeps
                 watching rather than what they take away from it. Attention is what gets measured,
                 so attention is what gets designed for.
@@ -179,79 +210,88 @@ export default function Home() {
               <p className="border-l-2 border-[var(--color-red)] pl-5 font-display text-[clamp(1.125rem,0.95rem+0.6vw,1.4rem)] leading-snug text-ink">
                 We would rather make the episode the beginning of the thing than the whole of it.
               </p>
-            </div>
-          </Settle>
-        </Container>
-      </Section>
-
-      {/* ═══ 3. THE MODEL. Three across, not a pinned stack. A sticky stack
-          spends the reader's scroll to deliver its content, and three cards of
-          two lines each do not earn 186vh of it. ═══ */}
-      <Section labelledBy="model-h">
-        <Container width="wide">
-          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-            <Settle>
-              <SectionHeading
-                id="model-h"
-                kicker="The model"
-                title="One episode, three stages"
-                lead="Designed to move a child from the screen into play and conversation, rather than to hold them in front of it."
-              />
-              {/* The garden is a print standing on the bench, not a picture in
-                  a frame: same lamp, same ledge, same room as the show wordmark
-                  further down the page. */}
-              <div className="mt-10">
-                <Stage backdrop rake ground="ledge" tilt={5} depth={0.55} light={-30}>
-                  <Figure
-                    asset="story.garden"
-                    rounded="rounded-[var(--radius-sm)]"
-                    sizes="(min-width: 1024px) 34vw, 92vw"
-                  />
-                </Stage>
-              </div>
             </Settle>
+          </Container>
+        </Section>
 
-            {/* Three across on tablet, stacked again on desktop. Three short cards
-                side by side next to a tall photograph left the bottom right of a
-                wide screen empty; stacked, the column runs the height of the
-                image beside it. */}
-            <Settle className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:gap-6 lg:self-center">
-              {STAGES.map((st) => (
-                /* An index card with its number on the tab, rather than a
-                   rounded rectangle with the number printed inside it. */
-                <div
+        {/* ═══ 2b. THE MODEL, still on the wall. Three panels of one sheet,
+            divided by hairlines, with the figures set large in mono. Not three
+            cards: a card on a wall reads as something stuck to it, and these
+            three words are the company's proposition, not three features. ═══ */}
+        <Section labelledBy="model-h" className="!pt-20 sm:!pt-24">
+          <Container width="wide">
+            <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+              <h2 id="model-h" className="t-h2 max-w-[14ch]">One episode, three stages</h2>
+              <Lead className="lg:pb-1">
+                Designed to move a child from the screen into play and conversation, rather than to
+                hold them in front of it.
+              </Lead>
+            </Wipe>
+
+            <Settle as="ol" className="mt-12 grid gap-y-8 sm:grid-cols-3 sm:gap-y-0">
+              {STAGES.map((st, i) => (
+                <li
                   key={st.n}
-                  className="card-stock flex h-full flex-col p-7 pt-8 lg:grid lg:grid-cols-[minmax(0,14ch)_minmax(0,1fr)] lg:items-baseline lg:gap-10 lg:p-8 lg:pt-9"
+                  /* The rule sits in the gutter between columns, so the first
+                     column is flush left with the heading above it and the
+                     text in all three starts at the same inset from its own
+                     rule. Equal padding either side of the rule, not a left
+                     margin on two of the three. */
+                  className={
+                    i === 0
+                      ? "hairline pt-7 sm:border-t-0 sm:pt-0 sm:pr-8 lg:pr-12"
+                      : "hairline pt-7 sm:border-t-0 sm:border-l sm:border-[color:var(--color-rule)] sm:pt-0 sm:pl-8 lg:pl-12" +
+                        (i === 1 ? " sm:pr-8 lg:pr-12" : "")
+                  }
                 >
-                  <span className="card-tab tnum" aria-hidden="true">{st.n}</span>
-                  <h3 className="t-h3 font-display">{st.title}</h3>
-                  <p className="t-body mt-3 text-body lg:mt-0">{st.body}</p>
-                </div>
+                  <span
+                    className="tnum block font-mono text-[clamp(1.75rem,1.4rem+1.1vw,2.4rem)] leading-none text-body"
+                    aria-hidden="true"
+                  >
+                    {st.n}
+                  </span>
+                  {/* Calistoga, at a size it is drawn for. These three words
+                      are the hero's own and were being set at 19px. */}
+                  <h3 className="mt-5 font-display text-[clamp(1.5rem,1.25rem+0.9vw,2rem)] leading-[1.1]">
+                    {st.title}
+                  </h3>
+                  <p className="t-body mt-3.5 max-w-[38ch] text-body">{st.body}</p>
+                </li>
               ))}
             </Settle>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      </div>
 
-      {/* ═══ 3b. THE FILM. Conor's own statement of the mission, in his
+      {/* ═══ 3. THE FILM. Conor's own statement of the mission, in his
           voice. It sits here and not under the hero because a visitor who has
           not yet read what this company believes has no reason to give it a
           minute; by this point they have read it, and the film is the person
           behind it saying the same thing. It starts muted with its controls
-          showing, and one press turns the sound on. ═══ */}
+          showing, and one press turns the sound on.
+
+          The player takes the full 1560 and the heading does not: a title
+          block that fills the width ahead of it makes the film look like one
+          more row. The credit sits on the rule the player hangs from, which is
+          where a credit goes. ═══ */}
       <Section labelledBy="film-h">
         <Container width="wide">
-          <Wipe className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end lg:gap-16">
+          <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-end">
             <div>
               <Kicker>In his own words</Kicker>
               <h2 id="film-h" className="t-h2 mt-4 max-w-[14ch]">The mission, said out loud</h2>
             </div>
-            <Lead className="lg:pb-2">
+            <Lead className="lg:pb-1">
               A minute on what we are making and who we are making it for. Captioned, and silent
               until you ask for sound.
             </Lead>
           </Wipe>
-          <Settle className="mt-12">
+          {/* 1:03 is the duration of the file that ships, not a round number. */}
+          <p className="hairline mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 pt-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+            <span>Conor Sexton, founder</span>
+            <span className="tnum">1:03</span>
+          </p>
+          <Settle className="mt-5">
             <MissionVideo />
           </Settle>
         </Container>
@@ -260,30 +300,50 @@ export default function Home() {
       {/* ═══ 4. THE SERIES. A filmstrip, because perforated stock IS the
           trade. The felted show wordmark is a photograph of a real object on a
           lit felt backdrop, so it cannot be knocked out the way the CLE mark
-          was. It is framed instead, the same treatment the hero gives the
-          garden, which reads as a placed object rather than a pasted tile.
+          was. It is staged instead: leaned back on the ledge under the same
+          lamp as the plates below it.
 
           The strip then runs off the right edge of the page. Boxed inside the
           container it stopped dead at a hard vertical edge mid-slate, which
           reads as a clipping bug rather than as film continuing. ═══ */}
-      <Section labelledBy="series-h">
+      <Section labelledBy="series-h" className="!pb-16 sm:!pb-20">
         <Container width="wide">
-          <Wipe className="grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-end lg:gap-16">
-            <div>
-              {/* The felted wordmark is a photograph of a real object, so it
-                  is staged rather than framed: leaned back on the ledge under
-                  the same lamp as the plates below it. */}
-              <div className="w-[clamp(240px,30vw,400px)]">
-                <Stage backdrop rake ground="ledge" tilt={5} depth={0.6} light={-28}>
-                  <Figure asset="brand.show" rounded="rounded-[var(--radius-sm)]" sizes="400px" />
-                </Stage>
-              </div>
-              <h2 id="series-h" className="t-h2 mt-9 max-w-[16ch]">Our first original series</h2>
+          {/* The wordmark beside the heading rather than above it: stacked, the
+              header block was four hundred pixels tall before a slate arrived.
+
+              Two things had to change before this object read as anything at
+              all. The file is cream felt lettering on a cream felt ground with
+              a third of the frame empty around it, so at the 288px the stage
+              gave it the lettering was about 150px wide and the whole thing
+              photographed as a blank tan panel. It is cropped to the object
+              (the backdrop's own padding is up to 48px a side, so the stage
+              has to be about a hundred wider than the object you want) and
+              given a column wide enough to read. Knocking it out of its
+              background was tried first and is not possible: unlike the CLÉ
+              mark it is lit felt on felt, and a chroma key on it eats the
+              letters. */}
+          <Wipe className="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-end">
+            <div className="w-full max-w-[32rem]">
+              <Stage backdrop rake ground="ledge" tilt={5} depth={0.6} light={-28}>
+                <div className="aspect-[3.1] overflow-hidden rounded-[var(--radius-sm)]">
+                  <Figure
+                    asset="brand.show"
+                    fill
+                    rounded="rounded-none"
+                    position="center 46%"
+                    sizes="(min-width: 1024px) 420px, 88vw"
+                  />
+                </div>
+              </Stage>
             </div>
-            <Lead className="lg:pb-2">
-              Finn, the fawn pug, and Fia, the black pug, in a garden that rewards slowing down.
-              Four episodes released so far, nine to eleven minutes each.
-            </Lead>
+            <div className="lg:pb-2">
+              <h2 id="series-h" className="t-h2 max-w-[16ch]">Our first original series</h2>
+              <Lead className="mt-4">
+                The Pawsitive Pugs &amp; Pals. Finn, the fawn pug, and Fia, the black pug, in a
+                garden that rewards slowing down. Four episodes released so far, nine to eleven
+                minutes each.
+              </Lead>
+            </div>
           </Wipe>
         </Container>
 
@@ -298,71 +358,37 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* ═══ 5. WHO CHECKS IT ═══ */}
-      <Section labelledBy="gates-h">
-        <Container width="wide"><ReviewGateScene /></Container>
-      </Section>
-
-      {/* ═══ 6. THE PEOPLE. Names and what each one checks. No empty portrait
-          frames: Paula is listed second because she is the credential that
-          survives a search. ═══ */}
+      {/* ═══ 5. WHO MAKES IT, AND WHO CHECKS IT. One list, not two: see
+          CallSheet for what it replaced and why. ═══ */}
       <Section labelledBy="people-h">
         <Container width="wide">
-          <Settle>
-            <SectionHeading
-              id="people-h"
-              kicker="The people behind it"
-              title="Named, and answerable"
-              lead="Every person here appears in the production and review sequence, not only on an about page."
-            />
-          </Settle>
-          {/* The casting wall. Six prints standing on the bench under the same
-              lamp, each one leaning a little differently because a hand put it
-              there. Square, not circular: a circular crop is an avatar, and an
-              avatar is a user interface. These are photographs of people who
-              are answerable for something. */}
-          <Settle className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {PEOPLE.map((p, i) => (
-              <article key={p.name} className="flex h-full flex-col">
-                {p.asset && (
-                  <Stage
-                    seated
-                    lift
-                    tilt={4 + (i % 3)}
-                    turn={i % 2 ? -2.5 : 2}
-                    roll={i % 2 ? 0.5 : -0.6}
-                    depth={0.4 + (i % 3) * 0.08}
-                    light={-30}
-                    radius="var(--radius-sm)"
-                    className="w-[clamp(140px,22vw,176px)]"
-                  >
-                    <Figure asset={p.asset} rounded="rounded-[var(--radius-sm)]" className="aspect-square" sizes="176px" />
-                  </Stage>
-                )}
-                <h3 className="t-h3 mt-7">{p.name}</h3>
-                <p className="eyebrow mt-2 !text-[11px]">{p.role}</p>
-                <p className="t-body mt-3 max-w-[38ch] text-body">{p.line}</p>
-              </article>
-            ))}
-          </Settle>
-          <Settle className="mt-9">
-            <TextLink to="/team">The full team and advisory board<IconArrow size={15} /></TextLink>
-          </Settle>
+          <CallSheet headingId="people-h" />
         </Container>
       </Section>
 
-      {/* ═══ 7. THE AI POSITION ═══ */}
-      <Section labelledBy="ai-h">
-        <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-            <SectionHeading
-              id="ai-h"
-              kicker="Responsible AI"
-              title="AI is a production tool. People remain responsible for the work."
-            />
+      {/* ═══ 6. THE AI POSITION. The one narrow section on the page, on the one
+          sunken ground. A single argument does not want 1560px, and after a
+          wide list of faces the reader should feel the page close in before
+          the navy band. ═══ */}
+      <Section labelledBy="ai-h" className="well">
+        <Container width="text">
+          <Settle>
+            <Kicker>Responsible AI</Kicker>
+            <h2 id="ai-h" className="t-h2 mt-4 max-w-[20ch]">
+              AI is a production tool. People remain responsible for the work.
+            </h2>
+          </Settle>
+          {/* The statement sits at lead size rather than body. Three
+              paragraphs an investor will actually stop and read are the one
+              place on this page where the text should be bigger than the row
+              copy, and at this measure it comes out around sixty characters
+              a line. An earlier version of this put the card in a column
+              beside the heading, which left a dead quarter of the band under
+              the heading and no good width for either. */}
+          <Settle className="mt-10 lg:mt-12">
             <div className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
               <span className="card-tab" aria-hidden="true">POSITION</span>
-              <div className="t-body space-y-5 text-body">
+              <div className="t-lead space-y-5 text-body">
                 <p>
                   Our creative and educational decisions are made by people. In final production we
                   use Runway for visual production and ElevenLabs for voice production. Our team
@@ -382,10 +408,11 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 8. CONTACT, the one deep band ═══ */}
+      {/* ═══ 7. CONTACT, the one deep band. The two offers are different
+          things, so a rule stands between them rather than a gap. ═══ */}
       <Section deep labelledBy="cta-h">
         <Container width="wide">
-          <Settle className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+          <Settle className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             <div>
               <h2 id="cta-h" className="t-h2 max-w-[16ch]">Working with CLÉ Family Media</h2>
               <p className="t-lead mt-6 max-w-[46ch] opacity-85">
@@ -395,7 +422,7 @@ export default function Home() {
               </p>
               <div className="mt-9"><Button to="/contact">Send an enquiry<IconArrow size={16} /></Button></div>
             </div>
-            <div>
+            <div className="lg:border-l lg:border-white/15 lg:pl-16">
               <h3 className="t-h3">Occasional updates</h3>
               <p className="t-body mt-3 max-w-[40ch] opacity-80">
                 Production notes and company news, for adults. Infrequent, and easy to leave.

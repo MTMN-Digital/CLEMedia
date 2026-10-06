@@ -37,6 +37,7 @@ export function Figure({
 }: Props) {
   const a = ASSETS[asset];
 
+
   if (!a.base) {
     return (
       <AssetPlaceholder
@@ -72,9 +73,25 @@ export function Figure({
         alt={a.alt}
         width={a.width}
         height={a.height}
-        loading={priority ? "eager" : "lazy"}
+        /* Eager, even for images far down the page, and the reason is not
+           laziness about performance.
+
+           This site drives its scroll with Lenis, and under it the browser's
+           own "is this nearly on screen" heuristic does not reliably fire:
+           measured on the home page, wheel-scrolling the whole document left
+           images with an empty currentSrc that never resolved, while the same
+           page with prefers-reduced-motion, which switches Lenis off, loaded
+           every one. A reader on a laptop simply saw a gap where a photograph
+           should be. An IntersectionObserver that flipped the attribute was
+           tried first and did not catch every case either.
+
+           A broken image is a worse bug than a few hundred kilobytes, so the
+           attribute goes and the priority hint does the work instead: the one
+           image a page actually leads with is high, everything else is low,
+           and the browser queues them behind the things that matter. */
+        loading="eager"
         decoding={priority ? "sync" : "async"}
-        fetchPriority={priority ? "high" : "auto"}
+        fetchPriority={priority ? "high" : "low"}
         style={position ? { objectPosition: position } : undefined}
         className={`${fill ? "h-full w-full" : "h-auto w-full"} object-cover ${rounded} ${className}`}
       />

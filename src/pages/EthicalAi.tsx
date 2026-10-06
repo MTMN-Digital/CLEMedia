@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
 import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
-import { Button, Card, Container, Kicker, Lead, Section } from "@/components/ui";
+import { Button, Container, Kicker, Lead, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -16,19 +15,28 @@ import { IconArrow } from "@/components/icons";
    company that makes children's media with AI tools has to say exactly what
    the tools do, what people decide, and where the work can be stopped.
 
-   The page is built around one drawing, the production line, and everything
-   else serves it: what the tools do and do not do, the lines the company
-   holds, the questions people actually ask. Every sentence here is the
-   client's own position or already in the repo. Nothing is added: no
-   incident, no number, no date. The real sent-back episode has not been
-   supplied and is not invented here either (CONTENT-NEEDED.md).
-   ========================================================================== */
+   SHAPE, set 2026-10-06. One drawing owns the middle of this page: a vertical
+   chain on a full-bleed wall band, markers down a centre lane, each station's
+   account alternating either side of it, and a dashed return climbing back
+   from the gate to the tools. Nothing above it or below it is wide: the page
+   opens on a short two-column statement, and closes on a measure, a single
+   column of principles and a set of questions. With the text blurred it is a
+   light head, one tall dark band with a spine down the middle of it, then
+   narrow columns and the navy foot, which is a silhouette no other page here
+   has.
 
-const DO_NOT = [
-  "Decide what a story should teach, how a character should behave, or what is appropriate for the children watching.",
-  "Generate and publish anything automatically. Every output is directed, reviewed and approved by the team before publication.",
-  "Replace the educational judgement of qualified people. Learning objectives, activities, language and child development stay with them.",
-];
+   WHAT WENT. The sequence used to be drawn once as a strip across the top and
+   then described again twice: a tools section halfway down that re-named
+   Runway and ElevenLabs with the one show frame parked in a card beside it,
+   and a case-study heading with a lone paragraph under it and about 700px of
+   nothing around it. Both are now stations ON the chain, which is where they
+   were always arguing from. The page lost two sections and gained density.
+
+   Every sentence here is the client's own position or already in the repo.
+   Nothing is added: no incident, no number, no date. The real sent-back
+   episode has not been supplied and is not invented here either
+   (CONTENT-NEEDED.md).
+   ========================================================================== */
 
 const LINES = [
   {
@@ -72,7 +80,7 @@ const QUESTIONS = [
   },
   {
     q: "What happens when a review identifies a problem?",
-    a: "The work is revised and re-reviewed before it goes out. A release can be delayed to make that possible, and has been. Getting an episode right matters more to us than getting it out on the original date.",
+    a: "The work is revised and re-reviewed before it goes out. A release can be delayed to make that possible, and has. Getting an episode right matters more to us than getting it out on the original date.",
   },
 ];
 
@@ -125,7 +133,7 @@ export default function EthicalAi() {
       {/* ═══ 1. THE POSITION, as the headline. The client's own line, which the
           home page already carries as a section heading, is the whole page in
           twelve words, so it is the h1 and nothing paraphrases it. ═══ */}
-      <Section className="!pb-0">
+      <Section className="!pb-12 sm:!pb-16">
         <Container width="wide">
           <Settle>
             <Kicker>Responsible AI</Kicker>
@@ -148,14 +156,15 @@ export default function EthicalAi() {
         </Container>
       </Section>
 
-      {/* ═══ 2. THE PRODUCTION LINE. The spine. Full width, because seven
-          stations with a face on each need the room, and because the drawing
-          is the page's argument rather than an illustration beside it. ═══ */}
-      <Section labelledBy="line-h">
+      {/* ═══ 2. THE CHAIN. The page's one band and its whole argument. Full
+          bleed on the wall ground, because this is a different room rather
+          than more of the same page, and because a drawing that is the
+          argument should not be boxed to the width of a paragraph. ═══ */}
+      <Section labelledBy="line-h" className="wall">
         <Container width="wide">
           <Settle className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
             <h2 id="line-h" className="t-h2 max-w-[18ch]">Six stages, and one place for the tools</h2>
-            <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted" aria-label="Key">
+            <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[11px] uppercase tracking-[0.14em] text-body" aria-label="Key">
               <li className="flex items-center gap-2.5">
                 <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border border-rule bg-raised" />
                 Person decides
@@ -171,11 +180,14 @@ export default function EthicalAi() {
             </ul>
           </Settle>
 
+          {/* One Settle around the whole chain, not one per station: the draw-on
+              of the return path keys off this element's own .is-armed.is-in, and
+              a per-station Settle would arm seven separate clocks for one line. */}
           <Settle className="mt-14 sm:mt-16">
-            <ProductionLine />
+            <ProductionLine gateSlot={<CaseStudy />} />
           </Settle>
 
-          <Settle className="mt-12 flex max-w-[64ch] gap-4">
+          <Settle className="mt-14 flex max-w-[64ch] gap-4">
             <span aria-hidden="true" className="mt-3 h-px w-8 shrink-0 border-t-[1.75px] border-dashed border-red" />
             <p className="t-body text-body">
               The dashed return is the part that matters. When the final review asks for changes, the
@@ -183,40 +195,35 @@ export default function EthicalAi() {
               wait for that, and has.
             </p>
           </Settle>
-
-          {/* The case, when there is one to show. See CaseStudy: the section is
-              built and deliberately empty, because the alternative on this page
-              is inventing it. */}
-          <Settle className="mt-16">
-            <h3 className="t-h3 font-display">When it has happened</h3>
-          </Settle>
-          <div className="mt-5">
-            <CaseStudy />
-          </div>
         </Container>
       </Section>
 
       {/* ═══ 3. NEITHER WORD IS TRUE. The two descriptions the company refuses,
           side by side with a rule between them, and the sentence that
-          resolves them above. Set in type alone: the point is the words. ═══ */}
+          resolves them above. Narrow, and set in type alone: after the band
+          the page wants one quiet argument at one measure. ═══ */}
       <Section labelledBy="honest-h">
         <Container width="default">
           <Wipe>
-            <h2 id="honest-h" className="t-h2 max-w-[22ch]">
+            <h2 id="honest-h" className="t-h2 max-w-[20ch]">
               We would rather describe that accurately than flatter ourselves in either direction.
             </h2>
-            <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-0">
+            <div className="mt-10 grid gap-9 md:grid-cols-2 md:gap-0">
               <div className="md:pr-12">
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Not handmade</p>
                 <p className="t-lead mt-4 text-ink">Calling this work handmade would be untrue.</p>
-                <p className="t-body mt-4 max-w-[40ch] text-body">
+                <p className="t-body mt-4 text-body">
                   Runway and ElevenLabs sit inside final production, and this page says so by name.
                 </p>
               </div>
-              <div className="hairline pt-10 md:border-t-0 md:border-l md:border-l-rule md:pl-12 md:pt-0">
+              {/* border-t explicitly, not the `.hairline` class: `.hairline` is
+                  author CSS later in the utilities layer than Tailwind's own
+                  `md:border-t-0`, so the stacked rule survived the breakpoint
+                  and drew a stray stub over the second column on desktop. */}
+              <div className="border-t border-t-rule pt-9 md:border-t-0 md:border-l md:border-l-rule md:pl-12 md:pt-0">
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Not AI-generated</p>
                 <p className="t-lead mt-4 text-ink">Calling it AI-generated would erase the people who actually make the decisions.</p>
-                <p className="t-body mt-4 max-w-[40ch] text-body">
+                <p className="t-body mt-4 text-body">
                   The story, the script, the direction, every review and the final approval are theirs.
                 </p>
               </div>
@@ -225,121 +232,72 @@ export default function EthicalAi() {
         </Container>
       </Section>
 
-      {/* ═══ 4. THE TOOLS. Named, with the one show frame on the page beside
-          them: a frame is the honest exhibit of what the tools produce, and
-          it is clearly the animated product, not a photograph of anything.
-          The frame hangs off the right of the column the way the hero garden
-          does on the home page, so the section is not two equal boxes. ═══ */}
-      <Section labelledBy="tools-h">
-        <Container width="wide">
-          <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:items-start lg:gap-20">
-            <Settle>
-              <h2 id="tools-h" className="t-h2 max-w-[18ch]">What the tools do, and what they do not</h2>
-              <Lead className="mt-5">
-                Two platforms, both inside final production, neither operating on its own.
-              </Lead>
-
-              <dl className="mt-10">
-                <div className="hairline grid gap-y-2 py-6 sm:grid-cols-[minmax(0,0.45fr)_minmax(0,1fr)] sm:gap-x-8">
-                  <dt>
-                    <span className="t-h3 block text-ink">Runway</span>
-                    <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Visual production</span>
-                  </dt>
-                  <dd className="t-body text-body">Supports elements of visual production and animation, to the script and direction set by the team.</dd>
-                </div>
-                <div className="hairline grid gap-y-2 py-6 sm:grid-cols-[minmax(0,0.45fr)_minmax(0,1fr)] sm:gap-x-8">
-                  <dt>
-                    <span className="t-h3 block text-ink">ElevenLabs</span>
-                    <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Voice production</span>
-                  </dt>
-                  <dd className="t-body text-body">Supports elements of audio and voice production, reviewed for quality and suitability before release.</dd>
-                </div>
-              </dl>
-
-              <div className="hairline pt-7">
-                <h3 className="t-h3">Neither tool is used to</h3>
-                <ul className="mt-4 space-y-3">
-                  {DO_NOT.map((line) => (
-                    <li key={line} className="flex gap-3.5">
-                      <span aria-hidden="true" className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-red" />
-                      <p className="t-body max-w-[58ch] text-body">{line}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <p className="t-sm mt-8 max-w-[60ch] text-body">
-                Naming the platforms does not imply that either provider endorses CLÉ Family Media. As
-                the technology changes we will keep reviewing the platforms we use, their commercial
-                terms, and how they align with our standards on intellectual property, consent and
-                responsible production.
-              </p>
-            </Settle>
-
-            <Wipe className="lg:pt-3">
-              <figure>
-                <Card className="tilt-b overflow-hidden p-2.5">
-                  <Figure
-                    asset="home.characters"
-                    rounded="rounded-[var(--radius-md)]"
-                    sizes="(min-width: 1024px) 40vw, 92vw"
-                  />
-                </Card>
-                <figcaption className="t-sm mt-5 max-w-[46ch] text-body">
-                  Finn and Fia, a frame from <em>The Pawsitive Pugs &amp; Pals®</em>. The visuals are
-                  produced with Runway, to a story, script and direction set by people, and are
-                  reviewed by the team before release.
-                </figcaption>
-              </figure>
-            </Wipe>
-          </div>
-        </Container>
-      </Section>
-
-      {/* ═══ 5. THE LINES WE HOLD. Six commitments as a long read in hairline
+      {/* ═══ 4. THE LINES WE HOLD. Six commitments as a long read in hairline
           rows, not six icon cards: a principle is a sentence a reader holds
           the company to, and it is easier to hold someone to a sentence than
           to a pictogram. ═══ */}
-      <Section labelledBy="lines-h">
-        <Container width="text">
-          <Settle>
+      <Section labelledBy="lines-h" className="!pt-6 sm:!pt-8 !pb-14 sm:!pb-16">
+        <Container width="default">
+          {/* The line sits on the heading's baseline immediately after it, not
+              flung to the far edge of the column: at 1440 a right-aligned
+              second cell put nine words a third of a metre from the heading
+              they belong to and the two read as unrelated. */}
+          <Settle className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-7">
             <h2 id="lines-h" className="t-h2">The lines we hold</h2>
-            <Lead className="mt-5">The standards we hold ourselves to.</Lead>
+            <p className="t-body text-body">The standards we hold ourselves to.</p>
           </Settle>
-          <Settle as="ol" className="mt-12">
+          <Settle as="ol" className="mt-10">
             {LINES.map((l) => (
               <li key={l.title} className="hairline grid gap-y-2 py-7 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-x-10">
                 <h3 className="t-h3 max-w-[16ch]">{l.title}</h3>
-                <p className="t-body text-body">{l.body}</p>
+                {/* Measured at 1440, not guessed: the free column set 89
+                    characters to the line and a 68ch cap still set 80, because
+                    `ch` on Hanken is about 8.7px against an average character
+                    of 7.3. 62ch lands at 73, which is inside the 75 the house
+                    reads as a measure rather than as a scan. */}
+                <p className="t-body max-w-[62ch] text-body">{l.body}</p>
               </li>
             ))}
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ 6. THE QUESTIONS PEOPLE ACTUALLY ASK ═══ */}
-      <Section labelledBy="faq-h">
-        <Container width="text">
+      {/* ═══ 5. THE QUESTIONS PEOPLE ACTUALLY ASK. On a sheet, not on the
+          ground: the rows above are already a full-width stack of hairline
+          rows, and two of those in a row is exactly the sameness this pass is
+          for. A sheet with a tab reads as a document handed over, which is
+          what a set of answers to standing questions is. ═══ */}
+      <Section labelledBy="faq-h" className="!pt-14 sm:!pt-16">
+        <Container width="default">
           <Settle>
-            <h2 id="faq-h" className="t-h2">The questions we are asked most</h2>
+            <h2 id="faq-h" className="t-h2 max-w-[18ch]">The questions we are asked most</h2>
           </Settle>
-          <Settle as="ul" className="mt-10 border-b border-b-rule">
-            {QUESTIONS.map((f, i) => (
-              <Question
-                key={f.q}
-                id={`ai-q-${i}`}
-                q={f.q}
-                a={f.a}
-                open={open === i}
-                onToggle={() => setOpen(open === i ? null : i)}
-              />
-            ))}
+          <Settle className="mt-9">
+            <div className="card-stock px-5 pb-2 pt-9 sm:px-9 sm:pt-10">
+              <span className="card-tab" aria-hidden="true">ASKED AND ANSWERED</span>
+              <ul>
+                {QUESTIONS.map((f, i) => (
+                  <Question
+                    key={f.q}
+                    id={`ai-q-${i}`}
+                    q={f.q}
+                    a={f.a}
+                    open={open === i}
+                    onToggle={() => setOpen(open === i ? null : i)}
+                  />
+                ))}
+              </ul>
+            </div>
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ 7. THE COMMITMENT, the one deep band ═══ */}
-      <Section deep labelledBy="commit-h">
+      {/* ═══ 6. THE COMMITMENT, the one deep band ═══ */}
+      {/* The site footer is navy too, so this band and the footer meet with no
+          edge between them. Its bottom padding is cut back accordingly: at the
+          full section rhythm the two together read as 900px of unbroken navy
+          with a hundred words in it. */}
+      <Section deep labelledBy="commit-h" className="!pb-14 sm:!pb-16">
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div>

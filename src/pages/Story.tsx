@@ -11,26 +11,42 @@ import { SITE } from "@/lib/site";
 import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
-   The founder's story, rebuilt 2026-10-02.
+   The founder's story.
 
    WHAT THIS PAGE IS. A letter from Conor Sexton to someone weighing up the
    company: an investor, a broadcaster, an educator. It is in his voice, first
    person, and it has to answer one question, which is whether there is a real
    person and a real reason behind the name.
 
-   THE DEVICE. The margin. A reader like that skims first and reads second, so
-   the page is set the way an annotated letter is: his prose runs in one
-   measure down the right, and a margin on the left carries the things a
-   skimmer is looking for (the section, the names, the faces, the route in and
-   the route out), in mono. Twice the margin empties and the page breaks its
-   own measure: once for the pull quote, which runs the full width of the page
-   as a statement between two rules, and once for the garden, edge to edge.
-   The biography sits on a changed ground, a sunken well, with the facts of
-   his route set as a ledger beside the prose.
+   THE DEVICE, unchanged and the reason this page works. The margin. A reader
+   like that skims first and reads second, so the page is set the way an
+   annotated letter is: his prose runs in one measure, and a margin carries the
+   things a skimmer is looking for (the section, the names, the faces, the route
+   in and the route out), in mono. A hairline runs down the inside edge of that
+   margin for the whole length of the letter, and it is the page's one quiet
+   detail: it breaks exactly where the page breaks its own measure, so the shape
+   of the argument is readable in the left edge alone.
 
-   The earlier version was a single 65ch column with a sticky table of
-   contents, which is a blog post. Nothing in it was wrong; it just never
-   changed pace.
+   FOUR MOMENTS, raised from two on 2026-10-06. The page was 7,170px tall with
+   the pull quote and the garden as the only changes of pace in a very long
+   read, which meant eight or nine screens of one rhythm. The two new ones are
+   objects rather than sections, so nothing was added to the page to make them:
+
+     1. the pull quote, full width between two rules
+     2. the garden, edge to edge
+     3. the route ledger, now a slip of card laid across the top edge of the
+        biography band rather than a second list in a second margin. The margin
+        was doing the same job twice, which is what made the middle of the page
+        read as a repeat of its own opening.
+     4. the film, in a room of its own on the wall ground, with the margin
+        flipped to the right. The one section that is not a letter is the one
+        section whose margin is on the other side.
+
+   AND IT IS DENSER. Padding between the letter's movements came down from a
+   full section gap to 72px, the garden band from 760px to 620px at its tallest,
+   the film from the full container width to the width it needs with its notes
+   beside it, and the sign-off rows from 56px to 40px. No sentence of his was
+   cut: every word on the page on 2026-10-02 is still on it.
 
    EVERY FACT HERE IS THE CLIENT'S. The ledger carries only what his own
    biography states: the trade, the one date he gives, the qualifications, the
@@ -72,6 +88,11 @@ const NEXT: { title: string; line: string; to?: string; href?: string }[] = [
    The margin grid. Margin left, prose right, stacked on anything under 1024px.
    The margin is sticky on desktop so the heading stays with the paragraph it
    belongs to, which is a layout property and not motion.
+
+   The rule lives on the prose column, not in the grid gap, because a rule drawn
+   as a border on the MARGIN column stretches to the margin's own height and a
+   sticky margin is short: it drew a 90px stub beside a 400px paragraph. On the
+   prose column it is always exactly as long as the prose it is annotating.
 ---------------------------------------------------------------------------- */
 function Spread({
   margin,
@@ -83,15 +104,29 @@ function Spread({
   className?: string;
 }) {
   return (
-    <Settle className={`grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-16 xl:grid-cols-[17rem_minmax(0,1fr)] xl:gap-24 ${className}`}>
+    /* Centred under 1024, where there is no margin column to sit against. A
+       62ch block left aligned in an 836px tablet container left 300px of blank
+       paper down the right of every screen, which is the exact complaint this
+       pass exists to answer. On a phone the cap is wider than the screen, so
+       nothing changes there. */
+    <Settle className={`mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)] ${className}`}>
       <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
-      <div className="max-w-[62ch] space-y-6 text-[17px] leading-[1.72] text-body">{children}</div>
+      <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
+        {/* 56ch, not 62. Measured in the browser rather than guessed: the ch
+            unit is the width of a zero, which in Hanken is wider than the
+            average letter, so 62ch was setting 77 characters to the line and
+            anything past about 75 reads cheap. 56ch lands at 69. */}
+        <div className="max-w-[56ch] space-y-5 text-[17px] leading-[1.72] text-body">{children}</div>
+      </div>
     </Settle>
   );
 }
 
 /* A line in the margin. Mono, small, muted: muted clears AA on every paper
-   stop, and the margin never sits on the well. */
+   stop, and the margin never sits on the well.
+   The width caps are lg-only on purpose. Under 1024px there is no margin
+   column, the note is a full width line above the prose, and a 26ch cap there
+   set a four word column down the left of a phone. */
 function Note({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <p className={`font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
 }
@@ -105,45 +140,53 @@ export default function Story() {
         path="/story"
       />
 
-      {/* ═══ OPENING. His first line, at display size, with the byline set
-          against it rather than under it. The portrait is the only image above
-          the fold: a first-person piece opens on the person. ═══ */}
-      <Section className="!pb-0">
-        <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,21rem)] lg:items-end lg:gap-16">
+      {/* ═══ MASTHEAD. The margin is established in the first screen rather
+          than at the second heading: his portrait, his name and the dek sit in
+          the margin column, and the headline starts on the prose axis the rest
+          of the letter is set to. Before this the masthead ran edge to edge in
+          the wide container while the letter ran in the default one, so the
+          page had two different left edges in its first two screens. ═══ */}
+      <Section className="!pb-0 !pt-14 sm:!pt-16">
+        <Container>
+          <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-end lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
             <div>
-              <Kicker>Our story</Kicker>
-              <h1 className="t-display mt-6 max-w-[15ch]">I did not set out to start a media company.</h1>
-            </div>
-            <div className="lg:pb-2">
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-4 lg:block">
                 {/* Width on the wrapper: Figure's own w-full beats a width in
                     className, which is a Tailwind ordering trap. */}
-                <div className="w-[84px] shrink-0 sm:w-[96px]">
-                  <Figure asset="person.conor" priority rounded="rounded-full" className="aspect-square" sizes="96px" />
+                <div className="w-[76px] shrink-0 sm:w-[88px] lg:w-[104px]">
+                  <Figure asset="person.conor" priority rounded="rounded-full" className="aspect-square" sizes="104px" />
                 </div>
-                <div>
+                <div className="lg:mt-5">
                   <p className="text-[16px] font-semibold text-ink">Conor Sexton</p>
                   <p className="eyebrow mt-1.5 !text-[11px]">Founder and CEO</p>
                 </div>
               </div>
-              <p className="t-body mt-6 max-w-[36ch] text-body">
+              <Note className="mt-5 lg:max-w-[26ch]">
                 On what he saw, what he could not find, and what it took to build the alternative.
-              </p>
+              </Note>
+            </div>
+            <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
+              <Kicker>Our story</Kicker>
+              <h1 className="t-display mt-5 max-w-[15ch]">I did not set out to start a media company.</h1>
             </div>
           </Settle>
-          <div className="hairline mt-14 sm:mt-20" />
+          {/* The rule takes the same cap as the masthead above it. Left at the
+              container width it ran 140px past the centred block on a tablet
+              and underlined nothing. */}
+          <div className="hairline mx-auto mt-12 max-w-[62ch] sm:mt-14 lg:max-w-none" />
         </Container>
       </Section>
 
-      {/* ═══ WHAT I SAW ═══ */}
-      <Section labelledBy="saw-h" className="!pt-14 sm:!pt-16">
+      {/* ═══ THE LETTER. Three movements and the pull quote, in ONE section
+          rather than three, because three sections meant three lots of 112px
+          of padding doing nothing between four paragraphs of prose. ═══ */}
+      <Section labelledBy="saw-h" className="!pt-12 !pb-16 sm:!pt-16 sm:!pb-20">
         <Container>
           <Spread
             margin={
               <>
                 <h2 id="saw-h" className="t-h2">What I saw</h2>
-                <Note className="mt-4 max-w-[26ch]">Beside a small child, before any of this was a company.</Note>
+                <Note className="mt-4 lg:max-w-[26ch]">Beside a small child, before any of this was a company.</Note>
               </>
             }
           >
@@ -160,21 +203,13 @@ export default function Story() {
               time, I could not accept that this was simply how children's content had to work.
             </p>
           </Spread>
-        </Container>
-      </Section>
 
-      {/* ═══ BECOMING A PARENT. The one paragraph, then the page breaks its
-          own measure: the pull quote runs the full width between two rules,
-          set in the display face with the quotation marks hung in red. Not a
-          box with a coloured edge, which is what it was. Then the measure
-          resumes with an empty margin. ═══ */}
-      <Section labelledBy="parent-h" className="!pt-0">
-        <Container>
           <Spread
+            className="mt-16 sm:mt-[4.5rem]"
             margin={
               <>
                 <h2 id="parent-h" className="t-h2">Becoming a parent</h2>
-                <Note className="mt-4 max-w-[26ch]">What I went looking for, and how little of it there was.</Note>
+                <Note className="mt-4 lg:max-w-[26ch]">What I went looking for, and how little of it there was.</Note>
               </>
             }
           >
@@ -186,9 +221,12 @@ export default function Story() {
           </Spread>
         </Container>
 
-        <Container width="wide" className="my-14 sm:my-20">
+        {/* MOMENT ONE. The measure breaks: the quote runs the full width
+            between two rules, set in the display face with the quotation marks
+            hung in red. Not a box with a coloured edge, which is what it was. */}
+        <Container width="wide" className="my-10 sm:my-14">
           <Wipe>
-            <blockquote className="border-y border-rule py-10 sm:py-14 lg:py-16">
+            <blockquote className="border-y border-rule py-10 sm:py-14">
               <p className="t-h1 max-w-[26ch] pl-[0.45em] font-display text-ink [text-indent:-0.45em]">
                 <span className="text-red-deep" aria-hidden="true">&ldquo;</span>
                 I was not looking for something to keep her quiet. I was looking for something I
@@ -211,14 +249,16 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ THE GARDEN. Edge to edge and taller than it is wide on a phone,
-          because this is the world the company built and a thumbnail in a
-          text column says the opposite. Captioned as what it is: a frame from
-          the show, not a photograph. ═══ */}
+      {/* ═══ MOMENT TWO. The garden, edge to edge and taller than it is wide on
+          a phone, because this is the world the company built and a thumbnail in
+          a text column says the opposite. Brought down from a 760px ceiling to
+          620px: at 760 it filled a 900px laptop screen on its own and the page
+          lost the caption and the band under it in one scroll. Captioned as what
+          it is, a frame from the show and not a photograph. ═══ */}
       <Section className="!py-0" as="div">
         <Wipe>
           <figure>
-            <div className="h-[clamp(320px,56vw,760px)] overflow-hidden">
+            <div className="h-[clamp(300px,46vw,620px)] overflow-hidden">
               <Figure
                 asset="story.garden"
                 fill
@@ -228,7 +268,12 @@ export default function Story() {
               />
             </div>
             <Container width="wide">
-              <figcaption className="pt-4">
+              {/* The caption needs clearance under it as well as over it: the
+                  ledger card in the next band crosses this boundary, and at
+                  pt-4/pb-0 its top corner landed on the same line as the
+                  caption and read as a collision rather than as a slip of
+                  paper laid down. */}
+              <figcaption className="max-w-[58ch] pb-8 pt-4 sm:pb-10">
                 <Note>The garden the series is set in, with its rope swing. A frame from The Pawsitive Pugs &amp; Pals&reg;.</Note>
               </figcaption>
             </Container>
@@ -236,21 +281,33 @@ export default function Story() {
         </Wipe>
       </Section>
 
-      {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width,
-          with his route set as a ledger beside the prose. Muted and red are
-          AA-large only on this fill, so everything here is body or ink.
-          Added from the client's own biography; every line is his. ═══ */}
-      <Section labelledBy="here-h" className="well">
+      {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width.
+          MOMENT THREE is the route itself, which is no longer a second list in
+          a second margin but a slip of card laid across the top edge of the
+          band, tabbed and a fraction off true. The margin was carrying a
+          heading, a note, four faces AND a ledger across the page, so the
+          middle of the letter read as a repeat of its own opening.
+
+          Muted and red are AA-large only on the sunken fill, so everything on
+          the band itself is body or ink; the card is raised paper, where muted
+          is safe again. Added from the client's own biography; every line is
+          his. ═══ */}
+      <Section labelledBy="here-h" className="well !py-16 sm:!py-20">
         <Container width="wide">
-          <Settle className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20 xl:gap-28">
+          {/* The card column is wide on purpose. At 27rem every ledger line
+              wrapped to two and the sheet ran 640px tall beside 600px of
+              prose, with a 290px hole between them. At 37rem most lines set in
+              one, the sheet is a third shorter, and the gutter reads as a
+              gutter instead of as a gap nobody filled. */}
+          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,37rem)] xl:gap-14">
             <div>
               <h2 id="here-h" className="t-h1 max-w-[12ch]">How I got here</h2>
-              <p className="t-lead mt-8 max-w-[44ch] text-ink">
+              <p className="t-lead mt-6 max-w-[42ch] text-ink">
                 I spent thirteen years in food retail, starting as an apprentice and finishing as
                 head butcher. It is not the background anyone expects behind a children's media
                 company, and I would not trade it.
               </p>
-              <div className="mt-6 max-w-[56ch] space-y-5 text-[17px] leading-[1.72] text-body">
+              <div className="mt-5 max-w-[56ch] space-y-4 text-[17px] leading-[1.72] text-body">
                 <p>
                   You learn quickly what people actually want when they are standing in front of
                   you, and you learn to run a counter that does not fall apart on a Saturday.
@@ -268,16 +325,22 @@ export default function Story() {
               </div>
             </div>
 
-            <div className="lg:pt-3">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-body">The short version</p>
-              <ol className="mt-4">
+            {/* The slip of card. -mt is bigger than the band's own padding on
+                purpose, so the sheet crosses the edge and sits half on the
+                paper above and half on the well: .bleed-up alone stops 26px
+                short of the boundary once the band's padding is counted, which
+                reads as a card that nearly lines up rather than one laid down
+                by hand. */}
+            <div className="card-stock tilt-b relative self-start px-5 pb-5 pt-7 sm:px-7 sm:pb-7 sm:pt-8 lg:-mt-28">
+              <span className="card-tab uppercase">The short version</span>
+              <ol>
                 {LEDGER.map((row) => (
                   <li
                     key={row.tag}
-                    className="hairline grid grid-cols-1 gap-x-8 gap-y-1 py-4 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:py-5"
+                    className="hairline grid grid-cols-1 gap-x-6 gap-y-0.5 py-3 first:border-t-0 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
                   >
-                    <span className="tnum font-mono text-[13px] leading-[1.6] text-body">{row.tag}</span>
-                    <span className="text-[16px] leading-[1.6] text-ink">{row.line}</span>
+                    <span className="tnum font-mono text-[12px] leading-[1.7] tracking-[0.01em] text-muted">{row.tag}</span>
+                    <span className="text-[15.5px] leading-[1.6] text-ink">{row.line}</span>
                   </li>
                 ))}
               </ol>
@@ -288,19 +351,20 @@ export default function Story() {
 
       {/* ═══ BUILDING AN ALTERNATIVE. The margin carries the four faces the
           prose names, so "people who knew far more than I did" has people in
-          it. The characters appear once, small, as a placed object beside the
-          paragraph that introduces them: supporting cast, on this site. ═══ */}
-      <Section labelledBy="build-h">
+          it. It is now the ONLY list in the margin on this page. The characters
+          appear once, small, as a placed object beside the paragraph that
+          introduces them: supporting cast, on this site. ═══ */}
+      <Section labelledBy="build-h" className="!py-16 sm:!py-20">
         <Container>
           <Spread
             margin={
               <>
                 <h2 id="build-h" className="t-h2">Building an alternative</h2>
-                <ul className="mt-6 space-y-3.5">
+                <ul className="mt-5 space-y-3">
                   {PEOPLE.map((p) => (
                     <li key={p.name} className="flex items-center gap-3">
-                      <div className="w-[44px] shrink-0">
-                        <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="44px" />
+                      <div className="w-[40px] shrink-0">
+                        <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="40px" />
                       </div>
                       <div>
                         <p className="text-[14px] font-semibold leading-tight text-ink">{p.name}</p>
@@ -309,7 +373,7 @@ export default function Story() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6">
+                <div className="mt-5">
                   <TextLink to="/ethical-ai">The six review stages<IconArrow size={15} /></TextLink>
                 </div>
               </>
@@ -329,19 +393,19 @@ export default function Story() {
               the start rather than added once the scripts were finished, which is a slower way
               to make a show and, as far as we can tell, the only way to make this one.
             </p>
-            <figure className="!mt-9 w-[min(100%,340px)] sm:ml-auto">
-              <Card className="card-still tilt-b overflow-hidden p-2">
+            <figure className="!mt-8 w-[min(100%,300px)] sm:ml-auto">
+              <Card className="card-still tilt-a overflow-hidden p-2">
                 <Figure
                   asset="home.characters"
                   rounded="rounded-[var(--radius-md)]"
-                  sizes="340px"
+                  sizes="300px"
                 />
               </Card>
-              <figcaption className="mt-3 pl-1">
+              <figcaption className="mt-2.5 pl-1">
                 <Note>Finn and Fia, with a hen. A frame from the series.</Note>
               </figcaption>
             </figure>
-            <p className="!mt-9">
+            <p className="!mt-8">
               Being a small studio is not something we are apologising for. It means the people
               who set the story are the same people who check it before release, and that any
               of them can hold a release back. That is worth more to me than volume.
@@ -350,29 +414,45 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ THE FILM. The one place on the site where he says it himself
-          rather than through a page. It breaks the letter's measure, like the
-          pull quote and the garden before it, because a film set inside a
-          65ch column is a thumbnail. Muted until asked, captioned, and the
-          controls are there from the first frame. ═══ */}
-      <Section labelledBy="film-h" className="!pt-0">
+      {/* ═══ MOMENT FOUR. The film, in a room of its own. The one section of
+          this page that is not a letter is the one section whose margin is on
+          the right, on the wall ground rather than the paper: the reader feels
+          the change of register before reading a word of it.
+
+          It used to run the full 1376px of the wide container, which made it
+          774px tall and left the page with a single enormous rectangle and
+          nothing beside it. At 1030px it is still the largest thing on the
+          page and its notes have somewhere to be. ═══ */}
+      <Section labelledBy="film-h" className="wall !py-16 sm:!py-20">
         <Container width="wide">
-          <Settle>
-            <h2 id="film-h" className="t-h2 max-w-[18ch]">The mission, in his own words</h2>
-            <MissionVideo className="mt-10" eager />
+          <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-14">
+            <div>
+              <h2 id="film-h" className="t-h2 max-w-[18ch]">The mission, in his own words</h2>
+              <MissionVideo className="mt-7" eager />
+            </div>
+            {/* Not sticky, unlike the letter's margin. There is no long column
+                of prose here for a heading to track, and a sticky note beside a
+                600px film just slides about for no reason. */}
+            <div className="lg:pt-12">
+              <p className="eyebrow">In his own words</p>
+              <p className="mt-4 font-mono text-[12px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
+                The film starts muted. Turn the sound on when you are ready to, and the captions
+                are there whether you do or not. Nothing on this site starts talking at you.
+              </p>
+            </div>
           </Settle>
         </Container>
       </Section>
 
       {/* ═══ HOW IT REACHES YOU ═══ */}
-      <Section labelledBy="reach-h" className="!pt-0">
+      <Section labelledBy="reach-h" className="!py-16 sm:!py-20">
         <Container>
           <Spread
             margin={
               <>
                 <h2 id="reach-h" className="t-h2">How it reaches you</h2>
                 <Note className="mt-4">Watch. Play. Learn.</Note>
-                <ul className="mt-6 space-y-3">
+                <ul className="mt-5 space-y-3">
                   <li>
                     <TextLink href={SITE.showUrl}>The show's own site<IconExternal size={14} /></TextLink>
                   </li>
@@ -404,9 +484,9 @@ export default function Story() {
       {/* ═══ THE SIGN-OFF, on the one deep band. A letter ends with a name and
           an address, so this one does: his, and three places the reader can
           go to check what he has said. Rows, not cards. ═══ */}
-      <Section deep labelledBy="next-h">
+      <Section deep labelledBy="next-h" className="!py-16 sm:!py-20">
         <Container width="wide">
-          <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
               <div className="flex items-center gap-4">
                 <div className="w-[56px] shrink-0">
@@ -417,12 +497,12 @@ export default function Story() {
                   <p className="eyebrow mt-1 !text-[11px]">Founder and CEO</p>
                 </div>
               </div>
-              <h2 id="next-h" className="t-h2 mt-10 max-w-[16ch]">If you are weighing up the company</h2>
-              <p className="t-lead mt-6 max-w-[42ch] opacity-85">
+              <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">If you are weighing up the company</h2>
+              <p className="t-lead mt-5 max-w-[42ch] opacity-85">
                 I would rather answer your questions directly than have you guess at them from a
                 website.
               </p>
-              <div className="mt-9 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <Button to="/contact">Send an enquiry<IconArrow size={16} /></Button>
               </div>
             </div>
@@ -433,14 +513,14 @@ export default function Story() {
                   <>
                     <span className="min-w-0">
                       <span className="block text-[17px] font-semibold">{n.title}</span>
-                      <span className="t-body mt-1.5 block max-w-[44ch] opacity-80">{n.line}</span>
+                      <span className="t-body mt-1 block max-w-[44ch] opacity-80">{n.line}</span>
                     </span>
                     <span className="mt-1 shrink-0 opacity-80 transition-opacity group-hover:opacity-100">
                       {n.href ? <IconExternal size={16} /> : <IconArrow size={16} />}
                     </span>
                   </>
                 );
-                const cls = "group flex items-start justify-between gap-6 py-6 sm:py-7";
+                const cls = "group flex items-start justify-between gap-6 py-5";
                 return (
                   <li key={n.title} className="border-b border-white/20">
                     {n.to ? (

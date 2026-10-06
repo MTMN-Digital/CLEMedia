@@ -1,0 +1,13 @@
+Calistoga and Montserrat are used here under the SIL Open Font License, Version 1.1.
+
+Calistoga, Copyright (c) The Calistoga Project Authors.
+             https://github.com/googlefonts/calistoga
+Montserrat, Copyright (c) The Montserrat Project Authors.
+             https://github.com/JulietaUla/Montserrat
+
+Full licence text: https://openfontlicense.org/open-font-license-official-text/
+
+Both fonts are self-hosted from this directory rather than loaded from the
+Google Fonts CDN. That is deliberate: it avoids sending visitor IP addresses
+to a third party, which matters for a site whose positioning is responsible
+data practice, and it removes a render-blocking third-party request.

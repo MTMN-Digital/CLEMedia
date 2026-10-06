@@ -54,6 +54,11 @@ MODELS = [
     ("celandine_01", "1k"),
     ("boulder_01", "1k"),
     ("dry_branches_medium_01", "1k"),
+    # v2 bed: a moss carpet, small shrub forms and a flowering ground cover so
+    # the model reads as a planted bed rather than mown meadow grass.
+    ("moss_01", "1k"),
+    ("shrub_02", "1k"),
+    ("periwinkle_plant", "1k"),
 ]
 
 

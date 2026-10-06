@@ -203,7 +203,7 @@ the header lockup, the favicon set and every Open Graph card. QUESTIONS.md #21.
 ## The one thing that would most improve this site
 
 A real sent-back episode. The handoff refers to a case; the specifics have never
-been supplied. `ReviewGateScene` now states the process with no invented detail,
+been supplied. `CallSheet` now states the process with no invented detail,
 and there is a marked slot in it waiting for: which episode, what was caught, by
 whom, what changed, and how long the release moved.
 
@@ -445,3 +445,89 @@ setting it:
 `slate.ep3` as the frames either side of the missing one. Those are currently
 the four public YouTube thumbnails; whenever Alan exports the kit's own TITLE
 SLATES into the same slots the page picks them up with no change.
+
+## Home
+
+From the layout pass on 2026-10-06. The page was rebuilt below the hero for
+shape and density: no copy that states a fact was changed, nothing was added to
+fill space, and nothing new was claimed. Three things it would like and does not
+have, and two notes about where things moved.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **The real sent-back episode** | ❌ | Home, `/ethical-ai` | Still the one thing that would most improve this site; see that heading above. The marked slot moved with the section: it is now in `src/components/home/CallSheet.tsx`, not `ReviewGateScene`, which was deleted when the running order and the faces became one list. The page currently says only "a release has been held back to make changes", which is the furthest the supplied material goes |
+| **A photograph of the real garden** | ❌ | Home, the full-bleed band under the hero | `garden.real`. The band is a frame from the animation, and it is now captioned as one, in mono, under the image. That caption is honest and it is also an admission: the first thing a visitor sees below the hero is rendered. A photograph of the garden the show is based on replaces it with no code change |
+| **A still of the team at work** | ❌ | Home, between the film and the series | `process.workspace` or `process.review`. There is no slot rendered for it, because an empty frame is never rendered on this page. If a real one arrives it earns a band of its own |
+
+**Two notes for whoever edits this page next.**
+
+- **The felted show wordmark is cream lettering on a cream felt ground**, with a
+  third of the frame empty around it. Below roughly 400px of lettering it
+  photographs as a blank tan panel, which is how it had been shipping. It is now
+  cropped to the object and given a column wide enough to carry it. It cannot be
+  knocked out of its background the way the CLÉ mark was: that mark sat on a
+  green screen, this one is lit felt on felt and a key eats the letters. A
+  trimmed PNG of the wordmark on transparent, from the kit, would remove the
+  crop and the guesswork. It is already on the export list as `object.pack`'s
+  neighbour.
+- **Mansi is still the only person in the review sequence with no face**, so the
+  home page lists six people and sends the reader to `/team` for the rest. That
+  link is the only thing carrying her, which is a weak place for a named member
+  of the production team to live.
+
+## Responsible AI and app
+
+From the layout and craft pass on 2026-10-06, which rebuilt `/ethical-ai`
+around a vertical chain and rebuilt `/app` around the drawn device. **No copy
+that states a fact was changed on either page, and nothing was invented.** What
+follows is what the two pages are still waiting on.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **A real held release** | ❌ | `/ethical-ai` | Unchanged from the case study table above, and now the most visible gap on the site. The slot is no longer a paragraph floating in the middle of the page: it is a ruled sheet hanging off the gate station of the chain, labelled "Held for the first case", with the six fields drawn and empty. Fill `CASE` in `src/components/ethical-ai/CaseStudy.tsx` and it prints as a filled ledger with no layout work |
+| **Kirstie's surname** | ❌ | `/app`, `/team`, `/ethical-ai` | She is the only person in the review sequence carried by a first name alone. Every other reviewer is named in full beside their role, so hers reads as missing rather than as a choice |
+| **A PupsPlayer capture, once a build exists** | ❌ | `/app` | The device on the page is drawn in HTML and CSS from the plan, and the band says so in the label beside its heading: "Drawn from the plan, not a screenshot". **The day a real capture arrives, that label has to come off in the same edit**, or the page is understating what it is showing. `app.hero` and `app.screen1-3` are still the empty slots for it |
+| **Confirmation of the six commitments** | ⚠️ | `/app` | Already listed above and still open. They are now set as two columns of a three-column spread, so each one has a column of its own and is harder to skim past, which makes confirming them more urgent rather than less |
+| **A target window for launch** | ⚠️ | `/app` | Already listed above. "Where it stands" prints Status, Stores and Until then, and the Status row is the one line a date would go into |
+
+**What this pass removed, so nobody looks for it.** The three reviewer
+biographies on `/app` are gone; the three names, roles and one line each stay,
+and the link to the full sequence goes to `/ethical-ai`. The separate tools
+section on `/ethical-ai` is gone: Runway, ElevenLabs, the limits on both and
+the show frame are now the tools station of the chain, which is the one place
+in the sequence they apply to. Nothing was cut that is not still on the page or
+on the page it links to.
+
+## Story and team
+
+From the layout and craft pass on 2026-10-06, which made `/story` denser and
+gave it two more changes of pace, and rebuilt `/team` as a single dossier table
+where the six review stages are the columns and the people are the rows.
+**Not one word of Conor's letter was cut, no biography was shortened, and no
+fact was added to either page.** What follows is what the two pages are waiting
+on.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **A photograph of Mansi, and two lines about her** | ❌ | `/team` | The one person in the review sequence the handoff sent no photograph and no biography for. In the dossier her row keeps its place in the column of faces and leaves the frame empty, with no disc, no initial and no label, because an invented placeholder on a page about named people is worse than a gap. Her entry is a single sentence where everyone else has three. `person.mansi` is the slot |
+| **Kirstie's surname** | ❌ | `/team` | Already listed above for `/app` and `/ethical-ai`. It matters most here: the dossier prints a full name and a role against every other row, so a first name on its own reads as something nobody got round to |
+| **Confirmed job titles for Alan, Paula and Lydia** | ⚠️ | `/team`, `/story` | The handoff gives a title for Conor, Kirstie and David and leaves these three out. The titles in `src/components/team/people.ts` are the ones the company was already using, and they now appear twice on the site in the dossier and in the margin of the story. One line from Conor confirms or corrects all three |
+| **The six stage clauses, confirmed as the company's wording** | ⚠️ | `/team` | The column heads of the dossier are the only description of each stage on this page, so each stage's one clause is now load bearing rather than decorative. The full sentences still live on `/ethical-ai`, which owns that account. If a clause is wrong, it is wrong in two places |
+| **A photograph of the real garden** | ❌ | `/story` | `garden.real`. The band that runs edge to edge in the middle of the letter is a frame from the animated show and is captioned as one. The show's world is based on a real garden, and a photograph of that garden is the single image that would do most for this page: it is the one moment where the letter stops and shows the reader something, and at the moment what it shows is a render |
+| **A photograph of Conor at work** | ❌ | `/story` | The letter carries his portrait three times (masthead, the people list, the sign-off) and no picture of him doing anything. `process.workspace` and `craft.felting` are the open slots. Not blocking: the page reads without it |
+| **Conor and Lydia together** | ❌ | `/story` | `story.lead` is still null and is now unused by the page: the masthead is his portrait alone, which is correct for a first person letter. Listed so nobody wires a two person photograph into a section that is written in one voice |
+
+**What this pass removed, so nobody looks for it.** The horizontal stage track
+at the top of `/team` is gone, and so is the separate adviser card at the
+bottom. Both are in the dossier now: the stages are its columns, and the
+adviser is a row under a rule whose six cells are replaced by the statement
+that the sequence does not apply to him. No stage sentence, no biography and no
+name was dropped. On `/story`, the route through food retail and MTU is no
+longer a second list in the left margin; it is a tabbed card laid across the
+top edge of the biography band, carrying the same eight lines.
+
+**One thing that is deliberately still empty.** `team.group`, a photograph of
+the team together, has no slot on the rebuilt page at all. The dossier is a
+column of individual faces because the argument it makes is that named people
+are answerable at named stages, which a group shot cannot show. If a group
+photograph arrives it belongs on the home page or on `/ethical-ai`, not here.
