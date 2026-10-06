@@ -328,6 +328,14 @@ body > * { position: relative; z-index: 1; }
   /* The same button inside the navy band. Without this it is ink on navy with
      an ink hairline, which is close to invisible, and three separate pages
      reached for the same inline override to escape it. One rule here instead. */
+  /* A text link on the navy band runs in cream, not in the red it uses on
+     paper. Measured: --color-red-deep (#8e2428) on --color-navy (#1f325b) is
+     1.46:1, so the footer's "Partnership enquiries" link, which is on every
+     page of the site, was very close to invisible and nowhere near the 4.5:1
+     an AA body link needs. Cream on the same navy is 11.9:1. The underline
+     draws from currentColor, so it follows without a second rule. */
+  .deep :where(.link-draw) { color: #fdf8ed; }
+
   .deep .btn-quiet {
     border-color: rgba(253, 248, 237, 0.35);
     color: var(--color-raised);
