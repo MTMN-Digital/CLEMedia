@@ -139,6 +139,17 @@ BOARD_X = -1.45
 BOARD_DEPTH = 1.15              # a bed with rows behind rows, not a trough
 BOARD_THICKNESS = 0.036
 BOARD_BEVEL = 0.002
+# The planter. A raised vegetable bed: timber sides standing proud of the soil,
+# with posts at the corners. The sides ARE the boundary the downward tilt is
+# there to show, and a flat board with soil on it has none.
+PLANTER_WALL = 0.040            # board thickness
+PLANTER_HEIGHT = 0.235          # how far the sides stand off the floor
+PLANTER_POST = 0.072            # corner posts, square
+PLANTER_POST_RISE = 0.045       # how far the posts stand proud of the boards
+PLANTER_SOIL_DROP = 0.055       # soil surface below the top of the boards
+PLANTER_BEVEL = 0.0025
+TIMBER_ALBEDO = (0.106, 0.064, 0.032, 1.0)   # linear; a warm mid brown softwood
+TIMBER_GRAIN = (0.062, 0.036, 0.018, 1.0)    # the darker streaks in it
 SOIL_INSET = 0.0                # flush with the board edge, like a scenic layer
 SOIL_THICKNESS = 0.012
 SOIL_CRUMBLE = 0.010            # displacement so the soil edge is not a ruled line
@@ -234,6 +245,25 @@ STAND_PAINT_ROUGHNESS = 0.45
 SANDBAG_ALBEDO = (0.022, 0.019, 0.016, 1.0)
 STAND_2_X = -2.05
 STAND_2_Y = 1.30
+# A third stand between the other two, so the rig reads as a rig rather than
+# as a single lamp.
+STAND_3 = (-1.58, 0.92, 2.3)    # x, y, height
+
+# The step ladder, at the right hand edge. Its feet are in shot and the stiles
+# run out of the top of the frame, which is what a ladder on a set does.
+LADDER_POSITION = (1.58, 0.58)
+LADDER_HEIGHT = 1.85
+LADDER_SPREAD = 0.80            # foot to foot, front pair to back pair
+LADDER_WIDTH = 0.52
+LADDER_STEPS = 5
+LADDER_ALBEDO = (0.055, 0.052, 0.048, 1.0)
+
+# The trolley, on the floor in front of the bed and well below the headline.
+CART_POSITION = (0.95, -1.05)
+CART_SIZE = (0.44, 0.30, 0.52)
+CART_TAPE = [(-0.10, 0.02), (-0.04, -0.05)]
+TIN_OFFSET = (0.34, -0.16)
+CLAMPS = [(-0.46, -0.22, 18.0), (-0.30, -0.33, -42.0)]
 STAND_2_HEIGHT = 2.15
 # The flag on its arm, entering top left. A black rectangle on a boom is the
 # single most legible "this is a lit set" object there is, and it does the job
@@ -243,11 +273,6 @@ STAND_2_HEIGHT = 2.15
 # The arm hangs off the right hand stand and reaches back INTO the frame, so
 # the flag is a thing on a stand. On its own knuckle in mid air it was a small
 # black card floating in the middle of the picture, attached to nothing.
-ARM_X = STAND_X
-ARM_Y = STAND_Y
-ARM_Z = 1.62
-ARM_LENGTH = 0.70
-ARM_DIR = -1.0                  # reaching left, toward the set
 # Small, and in the corner. At 0.60 x 0.44 on a 0.86 m arm the panel landed in
 # the middle of the frame at a third of its width and read as a wall-mounted
 # television, which is the opposite of the job: a flag is an edge intrusion
@@ -255,11 +280,9 @@ ARM_DIR = -1.0                  # reaching left, toward the set
 # Smaller again, and far enough left that the frame cuts it. At 0.40 x 0.34 it
 # survived the hero's `cover` crop as a featureless black rectangle a tenth of
 # the picture wide, which reads as a hole in the image rather than as a flag.
-FLAG_PANEL = (0.56, 0.42)
 # Swung well off the wall. Parallel to the backdrop the panel read as a dark
 # rectangle painted onto the paper; at 38 degrees you see it is a board in the
 # air with a stand holding it.
-FLAG_PANEL_TILT_DEG = 38.0
 # No cable coil. The lens is 0.17 m off the floor, so a coil is seen almost
 # edge on and collapses into a flat dark ellipse whatever the turn spacing: it
 # read as a frisbee left on the paper. The spill debris dresses the floor.
@@ -283,12 +306,6 @@ KEY_SIZE = (1.6, 2.0)
 KEY_POWER_W = 170.0
 KEY_COLOUR = (1.0, 0.95, 0.84)   # warm white, less magenta than a blackbody
 KEY_SPREAD_DEG = 70.0
-# A black cutter hung just above the camera's frame line. It shadows the
-# backdrop from the key, so the cove belongs to the pool lamp alone, while
-# the garden and the floor in front of it stay in the key.
-FLAG_Y = -0.5
-FLAG_BOTTOM_Z = 0.95
-FLAG_SIZE = (3.4, 2.05)          # tall: a 2 m softbox 2.5 m away throws a long penumbra
 # Moved back and up, away from the softbox: from (-2.4, -0.2, 2.6) its cone
 # grazed the softbox housing and lit the black skin to a pale grey, so the lamp
 # in frame looked like a paper lampshade.
@@ -449,6 +466,36 @@ def sweep_material():
     return mat
 
 
+def timber_material():
+    """Sawn softwood for the planter and the cart top. The plywood face
+    material is pale birch, and at planter scale it read as painted MDF: the
+    sides of the bed were the brightest thing in the lower half of the frame
+    and pulled the eye off the planting they are supposed to contain."""
+    mat, nodes, links, bsdf = principled("Timber")
+    bsdf.inputs["Base Color"].default_value = TIMBER_ALBEDO
+    bsdf.inputs["Roughness"].default_value = 0.78
+    coord = nodes.new("ShaderNodeTexCoord")
+    stretch = nodes.new("ShaderNodeMapping")
+    stretch.inputs["Scale"].default_value = (1.0, 26.0, 26.0)
+    grain = nodes.new("ShaderNodeTexNoise")
+    grain.inputs["Scale"].default_value = 16.0
+    grain.inputs["Detail"].default_value = 7.0
+    tone = nodes.new("ShaderNodeMix")
+    tone.data_type = "RGBA"
+    tone.inputs[0].default_value = 0.38
+    tone.inputs[6].default_value = TIMBER_ALBEDO
+    tone.inputs[7].default_value = TIMBER_GRAIN
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.12
+    links.new(coord.outputs["Object"], stretch.inputs["Vector"])
+    links.new(stretch.outputs["Vector"], grain.inputs["Vector"])
+    links.new(grain.outputs["Fac"], tone.inputs["Factor"])
+    links.new(tone.outputs[2], bsdf.inputs["Base Color"])
+    links.new(grain.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
 def plywood_face_material():
     mat, nodes, links, bsdf = principled("Plywood face")
     folder = ASSETS / "tex" / "plywood"
@@ -565,18 +612,45 @@ def build_sweep():
 
 
 def build_board():
-    face = plywood_face_material()
-    edge = plywood_edge_material()
-    board = box("Board", (BOARD_X, 0, BOARD_THICKNESS / 2), (BOARD_WIDTH, BOARD_DEPTH, BOARD_THICKNESS), face, BOARD_BEVEL)
-    board.data.materials.append(edge)
-    for poly in board.data.polygons:
-        if abs(poly.normal.z) < 0.5:
-            poly.material_index = 1
-    soil_top = BOARD_THICKNESS + SOIL_THICKNESS
+    """A planter: a raised vegetable bed with timber sides and corner posts.
+
+    It used to be a flat board with a layer of soil laid on top, which from a
+    low lens read as a scenic base and from a high one reads as nothing at all.
+    A box you can see the walls of has a near edge, a far edge and four
+    corners, and those edges are the boundary of the thing: that is what the
+    downward tilt is for, and a flat slab gave it nothing to find."""
+    wood = timber_material()
+
+    def timber(name, centre, dims):
+        return box(name, centre, dims, wood, PLANTER_BEVEL)
+
+    hw, hd = BOARD_WIDTH / 2, BOARD_DEPTH / 2
+    t, h = PLANTER_WALL, PLANTER_HEIGHT
+
+    timber("Planter base", (BOARD_X, 0, BOARD_THICKNESS / 2),
+           (BOARD_WIDTH, BOARD_DEPTH, BOARD_THICKNESS))
+    # Front and back run the full width; the ends sit between them, which is
+    # how the boards actually meet on a bed like this.
+    timber("Planter front", (BOARD_X, -hd + t / 2, h / 2), (BOARD_WIDTH, t, h))
+    timber("Planter back", (BOARD_X, hd - t / 2, h / 2), (BOARD_WIDTH, t, h))
+    for side in (-1, 1):
+        timber("Planter end", (BOARD_X + side * (hw - t / 2), 0, h / 2),
+               (t, BOARD_DEPTH - 2 * t, h))
+    # Corner posts, standing a little proud of the boards.
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            timber("Planter post",
+                   (BOARD_X + sx * (hw - PLANTER_POST / 2), sy * (hd - PLANTER_POST / 2),
+                    (h + PLANTER_POST_RISE) / 2),
+                   (PLANTER_POST, PLANTER_POST, h + PLANTER_POST_RISE))
+
+    # The soil sits INSIDE the walls and a little below their top edge, so the
+    # boards stand proud of it and read as sides rather than as a trim.
+    soil_top = h - PLANTER_SOIL_DROP
     soil = box(
         "Soil",
-        (BOARD_X, 0, BOARD_THICKNESS + SOIL_THICKNESS / 2),
-        (BOARD_WIDTH - 2 * SOIL_INSET, BOARD_DEPTH - 2 * SOIL_INSET, SOIL_THICKNESS),
+        (BOARD_X, 0, soil_top - SOIL_THICKNESS / 2),
+        (BOARD_WIDTH - 2 * t - 0.004, BOARD_DEPTH - 2 * t - 0.004, SOIL_THICKNESS),
         soil_material(),
         0.003,
     )
@@ -592,6 +666,81 @@ def build_board():
     disp.strength = SOIL_CRUMBLE
     disp.mid_level = 0.5
     return soil_top
+
+
+def strut(name, a, b, radius, material, verts=12):
+    """A cylinder running from point a to point b.
+
+    Worth having: the first step ladder was built by placing cylinders at
+    guessed centres and rotating them by a guessed angle, and it came out as an
+    easel with grey panels floating between the legs."""
+    a, b = Vector(a), Vector(b)
+    d = b - a
+    obj = cylinder(name, (a + b) / 2, radius, d.length, material, verts)
+    obj.rotation_euler = d.to_track_quat("Z", "Y").to_euler()
+    return obj
+
+
+def ladder():
+    """A step ladder, open, at the right hand edge of frame. Its feet are in
+    shot and the stiles run out of the top, which is what a ladder on a set
+    does; it is the tallest thing here and it gives the room a vertical."""
+    paint = flat_material("Ladder", LADDER_ALBEDO, 0.72)
+    x, y = LADDER_POSITION
+    half, w, H = LADDER_SPREAD / 2, LADDER_WIDTH / 2, LADDER_HEIGHT
+
+    # Two A-frames, front and back, meeting at the apex.
+    for lean in (-half, half):
+        for dy in (-w, w):
+            strut("Ladder stile", (x + lean, y + dy, 0.0), (x, y + dy, H), 0.019, paint)
+
+    # Treads on the front pair only, each sitting where those stiles are at
+    # that height, so they actually touch the legs they are fixed to.
+    for i in range(LADDER_STEPS):
+        f = (i + 1) / (LADDER_STEPS + 1)
+        z = H * (1.0 - f)
+        tx = x - half * (1.0 - z / H)
+        box("Ladder tread", (tx, y, z + 0.011), (0.155, LADDER_WIDTH, 0.022), paint, 0.004)
+
+    # The spreader bar that stops it opening further.
+    zb = H * 0.42
+    strut("Ladder spreader", (x - half * (1 - zb / H), y, zb),
+          (x + half * (1 - zb / H), y, zb), 0.008, paint, 8)
+
+
+def cart():
+    """A trolley of gear, and what gets left on the paper around it: tape,
+    a tin, a couple of clamps. All of it low, and all of it well below the
+    headline, so the right of the frame is dressed without being busy."""
+    steel = flat_material("Cart steel", (0.045, 0.045, 0.048, 1.0), 0.42, metallic=1.0)
+    ply = timber_material()
+    x, y = CART_POSITION
+    w, d, h = CART_SIZE
+
+    box("Cart top", (x, y, h), (w, d, 0.028), ply, 0.004)
+    box("Cart shelf", (x, y, h * 0.42), (w - 0.06, d - 0.06, 0.022), ply, 0.004)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            cylinder("Cart leg", (x + sx * (w / 2 - 0.04), y + sy * (d / 2 - 0.04), h / 2),
+                     0.012, h, steel, 10)
+            cylinder("Cart castor", (x + sx * (w / 2 - 0.04), y + sy * (d / 2 - 0.04), 0.022),
+                     0.022, 0.016, steel, 12).rotation_euler = (math.radians(90), 0, 0)
+
+    rubber = flat_material("Tape", (0.02, 0.02, 0.021, 1.0), 0.7)
+    for i, (dx, dy) in enumerate(CART_TAPE):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.052, minor_radius=0.021,
+                                         major_segments=40, minor_segments=12,
+                                         location=(x + dx, y + dy, h + 0.049))
+        t = bpy.context.object
+        t.name = f"Tape {i}"
+        t.data.materials.append(rubber)
+        smooth(t)
+    tin = cylinder("Paint tin", (x + TIN_OFFSET[0], y + TIN_OFFSET[1], 0.072), 0.075, 0.144,
+                   flat_material("Tin", (0.30, 0.29, 0.27, 1.0), 0.3, metallic=1.0), 28)
+    tin.rotation_euler = (0.0, 0.0, 0.0)
+    for dx, dy, rot in CLAMPS:
+        c = box("Clamp", (x + dx, y + dy, 0.016), (0.11, 0.035, 0.032), steel, 0.006)
+        c.rotation_euler = (0.0, 0.0, math.radians(rot))
 
 
 def import_kits() -> dict[str, list[tuple[bpy.types.Object, Vector]]]:
@@ -920,23 +1069,21 @@ def studio():
         ), 0.010, length, paint, 16)
         leg.rotation_euler = (0.0, tilt, a)
 
+    x3, y3, h3 = STAND_3
+    cylinder("Stand 3 riser", (x3, y3, h3 / 2), STAND_RADIUS * 0.85, h3, paint)
+    cylinder("Stand 3 collar", (x3, y3, 0.88), STAND_RADIUS * 1.6, 0.042, chrome)
+    for a_deg in (190, 310, 70):
+        a, tilt, length = math.radians(a_deg), math.radians(76), 0.32
+        half = length / 2
+        leg = cylinder("Stand 3 leg", (
+            x3 + half * math.sin(tilt) * math.cos(a),
+            y3 + half * math.sin(tilt) * math.sin(a),
+            0.03 + half * math.cos(tilt),
+        ), 0.0095, length, paint, 14)
+        leg.rotation_euler = (0.0, tilt, a)
 
-def flag_rig():
-    """The arm and flag, on the near plane. They hang three metres in front of
-    the backdrop, so moving them at the backdrop's rate would flatten exactly
-    the depth the layers exist to create."""
-    paint = flat_material("Arm paint", STAND_PAINT, STAND_PAINT_ROUGHNESS)
-    chrome = flat_material("Arm chrome", (0.8, 0.8, 0.8, 1.0), 0.25, metallic=1.0)
-    arm = cylinder("Flag arm", (ARM_X + ARM_DIR * ARM_LENGTH / 2, ARM_Y, ARM_Z),
-                   0.011, ARM_LENGTH, chrome, 16)
-    arm.rotation_euler = (0.0, math.radians(90), 0.0)
-    cylinder("Flag knuckle", (ARM_X, ARM_Y, ARM_Z), 0.030, 0.07, paint, 20)
-    flag = box("Flag panel", (ARM_X + ARM_DIR * ARM_LENGTH, ARM_Y,
-                              ARM_Z - FLAG_PANEL[1] / 2 - 0.02),
-               (FLAG_PANEL[0], 0.012, FLAG_PANEL[1]),
-               flat_material("Flag fabric", (0.008, 0.008, 0.008, 1.0), 0.95))
-    flag.rotation_euler = (0.0, 0.0, math.radians(FLAG_PANEL_TILT_DEG))
-
+    # A small head clamped in at the top right corner, body dark and its front
+    # catching light, to balance the softbox at the other side of the frame.
 
 def world():
     w = bpy.context.scene.world or bpy.data.worlds.new("World")
@@ -1109,7 +1256,8 @@ def main():
     tag("back", room)
     tag("back", paper_roll)
     box_origin, box_rot = tag("back", softbox)
-    tag("back", flag_rig)
+    tag("back", ladder)
+    tag("back", cart)
     tag("back", cable)
     world()
     key(box_origin, box_rot)

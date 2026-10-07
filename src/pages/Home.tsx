@@ -139,17 +139,6 @@ export default function Home() {
           See HeroShot for why the WebGL version was taken out. ═══ */}
       <HeroShot />
 
-      {/* The set's floor, running on past the hero. The hero used to stop dead
-          at the bottom of the screen and the next thing was a full bleed frame
-          from the show: two unrelated worlds butted together. The photograph
-          now dissolves at the foot of the hero and this strip, cut from the
-          bottom of the same render, carries its paper and its scattered litter
-          down into the page before anything else begins. */}
-      <div className="hero-floor" aria-hidden="true" />
-      {/* A breath of plain paper before the frame from the show, so the two
-          pictures are not butted against each other. */}
-      <div className="h-[clamp(14px,2.6vw,38px)]" aria-hidden="true" />
-
       {/* The garden, edge to edge, as the horizon the rest of the page sits
           under. It does not drift: one thing moving against a fixed ground is
           an object, two things moving against each other is a scroll effect.

@@ -1372,11 +1372,6 @@ body > * { position: relative; z-index: 1; }
      bottom of the screen. The screen's own ground is the page's ground, so
      the paper floor of the set runs on into the page rather than ending at a
      ruled line, and the band below carries its litter a little further. */
-  /* Finishes at 97, not 100. The planes are scaled, and the mask scales with
-     them, so a fade that only reached nothing at the plane's own bottom edge
-     was still faintly painting at the screen's bottom edge and left a step
-     where the hero met the band. */
-  mask-image: linear-gradient(to bottom, #000 82%, transparent 97%);
   will-change: transform;
 }
 
@@ -1409,19 +1404,6 @@ body > * { position: relative; z-index: 1; }
      move. */
   transform: scale(calc(1 + 0.16 * var(--s)));
   background-image: url("/brand/hero-mid-2560.webp");
-}
-
-/* The floor, continuing past the hero. A strip cut from the bottom of the
-   same render, soft at both ends: it melts out of the hero's own floor and
-   melts into the page, carrying the scatter of soil and leaf litter with it.
-   Nothing here is a divider or a decoration; it is the same piece of paper. */
-.hero-floor {
-  height: clamp(58px, 7vw, 118px);
-  margin-top: -1px;          /* no hairline where two cream surfaces meet */
-  background-image: url("/brand/hero-floor-1920.webp");
-  background-size: cover;
-  background-position: 50% 0;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
 }
 
 /* THERE IS NO NEAR PLANE. There was, carrying the spilled soil and leaf
