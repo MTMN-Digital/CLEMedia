@@ -593,7 +593,11 @@ body > * { position: relative; z-index: 1; }
 .edge-print {
   font-size: 9.5px;
   letter-spacing: 0.34em;
-  color: rgba(246, 240, 226, 0.42);
+  /* 0.55, not the 0.42 this was set at. Real edge print is faint, but at
+     0.42 over the #15110f stock it measures 3.77:1 and this is 9.5px text,
+     which AA wants at 4.5. 0.55 measures 5.61 and still reads as print on
+     film rather than as a caption. */
+  color: rgba(246, 240, 226, 0.55);
 }
 .frame-ticks {
   height: 100%;
