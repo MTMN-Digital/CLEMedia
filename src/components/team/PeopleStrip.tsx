@@ -1,0 +1,50 @@
+import { Figure } from "@/components/Figure";
+import type { Member } from "./people";
+
+/* ============================================================================
+   The faces, across the foot of the page's opening band.
+
+   WHY IT IS HERE. The brief puts people first, and the page opened on a title,
+   a lead and a mono note with 400px of bare wall under them: the first actual
+   photograph of anyone was a 76px square some way down a table. The band now
+   ends on the team at a size where they read as people rather than as row
+   markers, and the matrix below answers the harder question of who is
+   answerable for what.
+
+   NOT A TEAM GRID. There are no cards, no hover states, no job titles repeated
+   from the table under every face, and nothing is clickable. It is a row of
+   portraits and names, once, at the point of arrival.
+
+   WHOEVER HAS NO PORTRAIT IS NOT HERE, and no frame is drawn for them. An
+   empty square in a row of faces reads as a missing person; the table below
+   carries everyone either way.
+   ========================================================================== */
+
+export function PeopleStrip({ people }: { people: Member[] }) {
+  const shown = people.filter((p) => p.asset);
+  if (shown.length < 2) return null;
+
+  return (
+    <ul
+      /* Scrolls sideways on a phone rather than wrapping to two ragged rows or
+         shrinking six faces to thumbnails again. `-mx-` plus matching padding
+         so the row bleeds to the band's edge as it scrolls. */
+      className="-mx-[var(--gutter)] mt-12 flex gap-4 overflow-x-auto px-[var(--gutter)] pb-1 sm:gap-5 lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0"
+    >
+      {shown.map((p) => (
+        <li key={p.name} className="w-[38vw] shrink-0 sm:w-[25vw] lg:w-auto">
+          <Figure
+            asset={p.asset!}
+            rounded="rounded-[var(--radius-md)]"
+            className="aspect-square"
+            /* The source crops are 440 square, 880 at 2x, so a column on a
+               1440 screen asks for about 200 and gets a real 2x image. */
+            sizes="(min-width: 1024px) 200px, 38vw"
+          />
+          <p className="t-sm mt-3 font-bold leading-tight text-ink">{p.name}</p>
+          <p className="eyebrow mt-1 !text-[10px]">{p.role}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}

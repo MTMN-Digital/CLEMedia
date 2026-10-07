@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
-"""Encode one hero render into the nine browser delivery files.
+"""Encode one hero render into its browser delivery files.
 
-Example:
-  python3 scripts/encode-hero-plate.py /tmp/hero-plate.png
+  python3 scripts/encode-hero-plate.py /tmp/final-back.png --name back
+  python3 scripts/encode-hero-plate.py /tmp/final-mid.png  --name mid
+
+The back plate is opaque and ships AVIF, WebP and JPEG at three widths.
+
+The mid and fore plates are cut-outs and ship WebP ONLY. They need alpha, which
+rules out JPEG, and no AVIF encoder on this machine can write it: this Pillow
+build has no AVIF at all, and ffmpeg's libaom cannot produce the auxiliary
+alpha item an AVIF needs. WebP with alpha is supported by every browser in
+current use, and a browser without it paints the back plate alone, which still
+carries this layer's shadow.
 """
 
 from __future__ import annotations
@@ -30,6 +39,7 @@ def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("render", type=Path, help="Rendered PNG or other Pillow-readable image")
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIRECTORY)
+    parser.add_argument("--name", default="plate", help="hero-<name>-<width>.<ext>")
     return parser.parse_args()
 
 
@@ -40,6 +50,12 @@ def flattened(image: Image.Image) -> Image.Image:
     backdrop = Image.new("RGB", image.size, (214, 193, 164))
     backdrop.paste(image, mask=image.getchannel("A"))
     return backdrop
+
+
+def has_alpha(image: Image.Image) -> bool:
+    """True only when the alpha channel actually cuts something out. A render
+    saved as RGBA with every pixel opaque is an opaque plate."""
+    return image.mode == "RGBA" and image.getchannel("A").getextrema()[0] < 250
 
 
 def resize(image: Image.Image, width: int) -> Image.Image:
@@ -94,16 +110,16 @@ def main() -> int:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with Image.open(args.render) as source:
         source.load()
-        master = flattened(source)
+        cutout = has_alpha(source)
+        master = source.copy() if cutout else flattened(source)
     for width in WIDTHS:
         plate = resize(master, width)
-        outputs = {
-            "avif": avif_encode(plate),
-            "webp": pillow_encode(plate, "WEBP", WEBP_QUALITIES),
-            "jpg": pillow_encode(plate, "JPEG", JPEG_QUALITIES),
-        }
+        outputs = {"webp": pillow_encode(plate, "WEBP", WEBP_QUALITIES)}
+        if not cutout:
+            outputs["avif"] = avif_encode(plate)
+            outputs["jpg"] = pillow_encode(plate, "JPEG", JPEG_QUALITIES)
         for suffix, payload in outputs.items():
-            target = args.output_dir / f"hero-plate-{width}.{suffix}"
+            target = args.output_dir / f"hero-{args.name}-{width}.{suffix}"
             target.write_bytes(payload)
             """Reported relative to the repo when it is inside it, absolute
             otherwise: relative_to raises on any path outside ROOT, and this

@@ -531,3 +531,29 @@ the team together, has no slot on the rebuilt page at all. The dossier is a
 column of individual faces because the argument it makes is that named people
 are answerable at named stages, which a group shot cannot show. If a group
 photograph arrives it belongs on the home page or on `/ethical-ai`, not here.
+
+## Portraits, consistency (added 2026-10-07)
+
+The six supplied portraits now open `/team` at roughly 200px square rather than
+as 76px row markers, which is the first thing a visitor to that page sees.
+
+At that size they do not sit together. They are a studio headshot on black, a
+corporate headshot on grey, two plain indoor shots, one outdoor photograph with
+a bright green garden behind it, and one on a white wall. Each is a perfectly
+good photograph; as a row they read as six photographs borrowed from six
+places, which is the one thing a page arguing that this is a serious company
+should not read as.
+
+**What would fix it, in order of preference:**
+
+1. One sitting, everyone, same lens, same light, same background. Half a day.
+2. Failing that, a matched background for each: any single plain colour, shot
+   or re-shot, so the row has one backdrop.
+3. Failing both, permission to apply one tonal grade across all six here on the
+   site. It would unify them, and it is a normal editorial treatment, but it
+   alters how six real people look and that is the client's call to make, not
+   ours. Nothing has been applied.
+
+Mansi has no portrait at all. Her row in the dossier carries her name and her
+biography and the strip simply leaves her out, because an empty frame in a row
+of faces reads as a missing person. One photograph closes that.

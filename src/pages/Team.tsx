@@ -5,6 +5,7 @@ import { Button, Container, Kicker, Lead, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { ADVISORS, STAGES, TEAM } from "@/components/team/people";
 import { Dossier } from "@/components/team/Dossier";
+import { PeopleStrip } from "@/components/team/PeopleStrip";
 
 /* ============================================================================
    Team and advisers.
@@ -90,6 +91,10 @@ export default function Team() {
                 </p>
               </div>
             </div>
+            {/* The band ends on the faces. It used to end on 400px of bare
+                wall, which is the "layouts are thin" complaint in one place:
+                the opening of the page about the team showed nobody. */}
+            <PeopleStrip people={[...TEAM, ...ADVISORS]} />
           </Wipe>
         </Container>
       </Section>

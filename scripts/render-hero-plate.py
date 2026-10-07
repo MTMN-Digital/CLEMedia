@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
-"""Hero plate test scene: the garden model on a studio sweep, one softbox.
+"""Hero plate: the garden model on a studio sweep, one softbox, in three layers.
 
-Same CLI as scripts/render-hero-plate.py so it can be swapped in:
-  blender -b -P scene.py -- --out /path/plate.png --width 1280 --samples 32
+  blender -b -P scripts/render-hero-plate.py -- \
+      --out /tmp/plate.png --width 1280 --samples 48 --layer back
+
+THE LAYERS EXIST SO THE HERO CAN PARALLAX. One flat photograph scaled up is a
+zoom, not a camera move: depth is the DIFFERENCE in rate between near and far,
+so the picture has to arrive in pieces. `back` is the room with the garden
+lifted out of it, `mid` is the board and its planting, `fore` is the spill on
+the floor, and the last two carry alpha.
+
+Each layer hides the other objects FROM THE CAMERA ONLY, never deletes them, so
+the garden still throws its shadow across the sweep in the back plate and still
+bounces green into the floor. Deleting them instead gives three images that
+cannot be recomposited into the shot they came from.
 
 Everything that is a decision is a named constant below. Units are metres,
 the floor is z = 0, the garden board is centred on the origin, the camera
@@ -30,9 +41,14 @@ FRAME_ASPECT = 16 / 9
 
 # Camera. Low tripod, long lens, almost level: the garden flattens into a
 # strip and the sweep's floor seam hides behind it.
-CAMERA_DISTANCE = 5.0           # metres back from the board centre
-CAMERA_HEIGHT = 0.42            # metres above the floor
-CAMERA_PITCH_DEG = -2.3         # negative looks down
+# Low, and looking UP: the lens sits below the top of the planting, so the bed
+# is met at its own height rather than surveyed from above, the floor
+# compresses to a sliver instead of a third of the frame, and the sweep rises
+# behind the mark. The old setup was 0.42 m pitched 2.3 degrees DOWN, which is
+# a person standing over a model, and it read as a strip of grass on a table.
+CAMERA_DISTANCE = 4.2           # metres back from the board centre
+CAMERA_HEIGHT = 0.17            # metres above the floor
+CAMERA_PITCH_DEG = 2.6          # positive looks up
 CAMERA_LENS_MM = 85.0
 CAMERA_SENSOR_MM = 36.0
 CAMERA_F_STOP = 2.8
@@ -50,7 +66,7 @@ SWEEP_TOOTH = 0.04                        # paper grain bump strength
 
 # The garden board: a model base, plywood, standing on the floor.
 BOARD_WIDTH = 2.6
-BOARD_DEPTH = 0.55
+BOARD_DEPTH = 1.15              # a bed with rows behind rows, not a trough
 BOARD_THICKNESS = 0.036
 BOARD_BEVEL = 0.002
 SOIL_INSET = 0.0                # flush with the board edge, like a scenic layer
@@ -60,14 +76,17 @@ SOIL_ALBEDO = (0.045, 0.028, 0.015, 1.0)
 
 # Plants at model scale. The kits are real scale, so a 0.33 m grass tuft at
 # 0.36 becomes a 0.12 m model tuft.
-GRASS_COUNT = 700
-GRASS_SCALE = (0.30, 0.48)
-FERN_COUNT = 30                 # fern_02 is a hart's-tongue: broad straps, keep it small
-FERN_SCALE = (0.26, 0.38)
-CELANDINE_COUNT = 8
-CELANDINE_SCALE = (0.22, 0.32)
-BRANCH_COUNT = 6
-BRANCH_SCALE = (0.14, 0.24)
+# Scales are roughly tripled from the first pass. At the old size the planting
+# stood 0.15 m in a one-metre frame, which is why it read as "some random
+# grass": a bank has to own the bottom of the picture to be a bank.
+GRASS_COUNT = 1150
+GRASS_SCALE = (0.70, 1.12)   # the seed heads silhouette dark; keep them short
+FERN_COUNT = 95                 # fern_02 is a hart's-tongue: broad straps, good mass
+FERN_SCALE = (0.62, 1.05)
+CELANDINE_COUNT = 16
+CELANDINE_SCALE = (0.55, 0.92)
+BRANCH_COUNT = 14
+BRANCH_SCALE = (0.32, 0.58)
 BOULDER_COUNT = 1
 BOULDER_SCALE = (0.06, 0.08)
 BOULDER_VALUE = 0.55            # the scan is a pale sandstone; darken it to a garden stone
@@ -75,20 +94,44 @@ BOULDER_SATURATION = 0.6
 PLANT_FRONT_MARGIN = 0.04       # bare soil between the plants and the front edge
 BACK_DENSITY_BIAS = 1.2         # > 1 crowds plants toward the back row
 
+# The bank's silhouette. Plants grow taller toward the frame edges and thin out
+# across the middle, so the planting curves up around the mark instead of
+# running flat across under it. The dip is what gives the mark somewhere to
+# hang; a level hedge would cut the picture in half.
+BANK_RISE = 0.80                # extra scale at the edges, over the centre
+BANK_DIP = 0.46                 # width of the quiet centre, as a fraction of half-width
+BANK_PROFILE = 1.7              # how abruptly the bank climbs out of the dip
+# The centre is actively held DOWN, not merely left unraised. The mark hangs
+# into this gap, and a bank that only rises at the edges still runs level
+# underneath it, which is the hedge the first version of this was.
+BANK_CENTRE_DROP = 0.42         # scale at dead centre, easing back to 1 at the dip edge
+BANK_BREAK = 0.22               # slow variation along the bank, so the top is not an arc
+# Asymmetry. The copy arrives right of centre, so the right side stays lower
+# and sparser and the weight sits left. Nothing here is a scrim behind the
+# words: the words land on a part of the set that was built to be quiet.
+PLANT_LEFT_BIAS = 0.34          # share of plants pushed toward the left half
+RIGHT_DROP = 0.22               # how much shorter the right side runs
+
 # The spill: what fell off the model onto the clean floor.
-SPILL_GRASS_COUNT = 6
+# The foreground is its own parallax plane, so it needs enough on it to read
+# as near. At SPILL_DEPTH 0.30 the debris all sat within a few centimetres of
+# the board and moved with it; at 0.85 it reaches most of the way to the lens,
+# lands lower and larger in frame, and goes properly soft at f/2.8.
+SPILL_GRASS_COUNT = 15
 SPILL_GRASS_SCALE = (0.26, 0.44)
-SPILL_TWIG_COUNT = 6            # dry twigs lying on the paper read as debris at once
+SPILL_TWIG_COUNT = 15            # dry twigs lying on the paper read as debris at once
 SPILL_TWIG_SCALE = (0.07, 0.13)
-SPILL_FROND_COUNT = 3
-SPILL_DEPTH = 0.30              # how far in front of the board edge it reaches
-SPILL_CRUMB_COUNT = 90
+SPILL_FROND_COUNT = 8
+SPILL_DEPTH = 0.85              # how far in front of the board edge it reaches
+SPILL_CRUMB_COUNT = 170
 SPILL_CRUMB_RADIUS = (0.003, 0.007)
-SPILL_SPECK_COUNT = 260         # fine soil dust close to the edge
+SPILL_SPECK_COUNT = 430         # fine soil dust close to the edge
 SPILL_SPECK_RADIUS = (0.0008, 0.002)
 SPILL_FROND = True
 
-# The stand at the right edge of frame, close to camera, out of focus.
+# The stands. The right one is close to the lens and out of focus; the left
+# one is further back and reads sharper, which is what tells the eye the room
+# has depth. A single stand in an empty corner looked like a prop.
 STAND_X = 0.69
 STAND_Y = -1.7
 STAND_HEIGHT = 2.6
@@ -96,6 +139,34 @@ STAND_RADIUS = 0.016
 STAND_PAINT = (0.012, 0.012, 0.012, 1.0)
 STAND_PAINT_ROUGHNESS = 0.45
 SANDBAG_ALBEDO = (0.022, 0.019, 0.016, 1.0)
+STAND_2_X = -1.02
+STAND_2_Y = 1.15
+STAND_2_HEIGHT = 2.15
+# The flag on its arm, entering top left. A black rectangle on a boom is the
+# single most legible "this is a lit set" object there is, and it does the job
+# the empty upper left of the old plate was not doing.
+# The frame tops out near z = 0.87 at this camera, so the arm hangs at 0.78 or
+# it is simply not in the picture, which is where the first pass put it.
+ARM_X = -1.22
+ARM_Y = 0.60
+ARM_Z = 0.80
+ARM_LENGTH = 0.34
+# Small, and in the corner. At 0.60 x 0.44 on a 0.86 m arm the panel landed in
+# the middle of the frame at a third of its width and read as a wall-mounted
+# television, which is the opposite of the job: a flag is an edge intrusion
+# that tells you there is a rig overhead, not a subject.
+# Smaller again, and far enough left that the frame cuts it. At 0.40 x 0.34 it
+# survived the hero's `cover` crop as a featureless black rectangle a tenth of
+# the picture wide, which reads as a hole in the image rather than as a flag.
+FLAG_PANEL = (0.30, 0.27)
+FLAG_PANEL_TILT_DEG = 8.0
+# No cable coil. The lens is 0.17 m off the floor, so a coil is seen almost
+# edge on and collapses into a flat dark ellipse whatever the turn spacing: it
+# read as a frisbee left on the paper. The spill debris dresses the floor.
+CABLE_TURNS = 0
+CABLE_CENTRE = (-0.40, -0.95)
+CABLE_RADIUS = 0.155
+CABLE_THICKNESS = 0.012
 
 # Light. A big soft key up-left-front for the garden and the floor, and one
 # background lamp making the pool on the cove up-left of the mark. The pool is
@@ -114,11 +185,15 @@ FLAG_Y = -0.5
 FLAG_BOTTOM_Z = 0.95
 FLAG_SIZE = (3.4, 2.05)          # tall: a 2 m softbox 2.5 m away throws a long penumbra
 POOL_LOCATION = (-2.4, -0.2, 2.6)
-POOL_TARGET = (-0.6, 2.4, 0.75)
-POOL_POWER_W = 3000.0
+# Aimed at the middle of the sweep, behind where the mark hangs, and tightened
+# from 40 degrees to 26. A broad lamp lit the whole backdrop evenly, which is
+# a flat wall; a pool puts the mark against light and lets the frame fall off
+# into the corners on its own.
+POOL_TARGET = (-0.10, 2.4, 0.62)
+POOL_POWER_W = 2600.0
 POOL_KELVIN = 4600.0
-POOL_CONE_DEG = 40.0
-POOL_BLEND = 0.85
+POOL_CONE_DEG = 26.0
+POOL_BLEND = 0.62
 POOL_RADIUS = 0.4
 # A small hard lamp low at the back right, raking toward the camera: it puts
 # a shadow wedge under the plywood edge and a rim on the plant tops against
@@ -150,6 +225,7 @@ def cli() -> argparse.Namespace:
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--width", type=int, default=2560)
     p.add_argument("--samples", type=int, default=256)
+    p.add_argument("--layer", choices=("all", "back", "mid", "fore"), default="all")
     return p.parse_args(argv)
 
 
@@ -435,6 +511,32 @@ def plant_garden(sources, soil_top):
         t = rng.random() ** (1.0 / BACK_DENSITY_BIAS)
         return y_front + t * (y_back - y_front)
 
+    def x_pick():
+        """Across the bed, weighted to the edges and then to the left.
+
+        Uniform x gave an even hedge. The edges carry the bank, the centre is
+        deliberately thin so the mark has air under it, and the left carries
+        more than the right because the copy lands on the right."""
+        u = rng.random()
+        edge = 1.0 - (1.0 - u) ** 1.9          # pushed outward
+        x = edge * hw * (1 if rng.random() > 0.5 else -1)
+        if x > 0 and rng.random() < PLANT_LEFT_BIAS:
+            x = -x
+        return x
+
+    def bank(x):
+        """Height multiplier at this x: a held-down middle, rising to the
+        edges, the right side lower for the copy, and a slow break along the
+        length so the top reads as planting rather than as a drawn curve."""
+        t = abs(x) / hw
+        if t <= BANK_DIP:
+            # Deepest at dead centre, back to full height at the dip's edge.
+            m = BANK_CENTRE_DROP + (1.0 - BANK_CENTRE_DROP) * (t / BANK_DIP) ** 1.4
+        else:
+            m = 1.0 + BANK_RISE * ((t - BANK_DIP) / (1.0 - BANK_DIP)) ** BANK_PROFILE
+        m *= 1.0 + BANK_BREAK * math.sin(x * 7.3 + 1.1)
+        return m * (1.0 - RIGHT_DROP) if x > 0 else m
+
     for kind, count, scale in (
         ("boulder", BOULDER_COUNT, BOULDER_SCALE),
         ("branch", BRANCH_COUNT, BRANCH_SCALE),
@@ -443,10 +545,11 @@ def plant_garden(sources, soil_top):
         ("grass", GRASS_COUNT, GRASS_SCALE),
     ):
         for _ in range(count):
-            x = rng.uniform(-hw, hw)
+            x = x_pick()
             y = y_pick()
             z = soil_top - (0.01 if kind == "boulder" else 0.002)
-            place(sources, kind, rng, (x, y, z), rng.uniform(*scale), rng.uniform(0, math.tau))
+            size = rng.uniform(*scale) * (1.0 if kind == "boulder" else bank(x))
+            place(sources, kind, rng, (x, y, z), size, rng.uniform(0, math.tau))
 
 
 def spill(sources):
@@ -454,8 +557,8 @@ def spill(sources):
     edge_y = -BOARD_DEPTH / 2
     crumb = flat_material("Crumb", SOIL_ALBEDO, 0.95)
     for _ in range(SPILL_GRASS_COUNT):
-        d = rng.random() ** 2 * SPILL_DEPTH
-        x = rng.uniform(-1.1, 1.1)
+        d = rng.random() ** 0.8 * SPILL_DEPTH
+        x = rng.uniform(-1.35, 1.35)
         y = edge_y - 0.01 - d
         # Lying flat on the floor, blades pointing away from where they fell.
         place(
@@ -528,6 +631,54 @@ def stand():
         lobe = box("Sandbag lobe", (STAND_X + dx, leg_y, 0.05), (0.13, 0.17, 0.10), bag, 0.035)
         lobe.rotation_euler = (0.0, math.radians(-12 if dx < 0 else 12), math.radians(8))
     box("Sandbag strap", (STAND_X, leg_y, 0.11), (0.16, 0.08, 0.025), bag, 0.01)
+
+
+def studio():
+    """The hardware that says this is a set and not a photograph of a garden:
+    a second stand back left, a flag on an arm cutting into the top corner,
+    and a coil of cable left on the paper."""
+    paint = flat_material("Rig paint", STAND_PAINT, STAND_PAINT_ROUGHNESS)
+    chrome = flat_material("Rig chrome", (0.8, 0.8, 0.8, 1.0), 0.25, metallic=1.0)
+
+    cylinder("Stand 2 riser", (STAND_2_X, STAND_2_Y, STAND_2_HEIGHT / 2),
+             STAND_RADIUS * 0.9, STAND_2_HEIGHT, paint)
+    cylinder("Stand 2 collar", (STAND_2_X, STAND_2_Y, 0.92), STAND_RADIUS * 1.7, 0.045, chrome)
+    for a_deg in (200, 320, 80):
+        a, tilt, length = math.radians(a_deg), math.radians(76), 0.34
+        half = length / 2
+        leg = cylinder("Stand 2 leg", (
+            STAND_2_X + half * math.sin(tilt) * math.cos(a),
+            STAND_2_Y + half * math.sin(tilt) * math.sin(a),
+            0.03 + half * math.cos(tilt),
+        ), 0.010, length, paint, 16)
+        leg.rotation_euler = (0.0, tilt, a)
+
+    arm = cylinder("Flag arm", (ARM_X + ARM_LENGTH / 2, ARM_Y, ARM_Z),
+                   0.011, ARM_LENGTH, chrome, 16)
+    arm.rotation_euler = (0.0, math.radians(90), 0.0)
+    cylinder("Flag knuckle", (ARM_X, ARM_Y, ARM_Z), 0.030, 0.07, paint, 20)
+    flag = box("Flag panel", (ARM_X + ARM_LENGTH, ARM_Y, ARM_Z - FLAG_PANEL[1] / 2 - 0.02),
+               (FLAG_PANEL[0], 0.012, FLAG_PANEL[1]),
+               flat_material("Flag fabric", (0.008, 0.008, 0.008, 1.0), 0.95))
+    flag.rotation_euler = (0.0, 0.0, math.radians(FLAG_PANEL_TILT_DEG))
+
+    # The coil: a torus per turn, lying flat, each slightly offset the way a
+    # cable never coils twice on the same circle.
+    rubber = flat_material("Cable", (0.014, 0.014, 0.015, 1.0), 0.6)
+    for i in range(CABLE_TURNS):
+        bpy.ops.mesh.primitive_torus_add(
+            # The turns have to be a clear gap apart or the coil renders as a
+            # solid disc, which reads as a frisbee on the floor.
+            major_radius=CABLE_RADIUS - i * 0.048,
+            minor_radius=CABLE_THICKNESS,
+            major_segments=56, minor_segments=12,
+            location=(CABLE_CENTRE[0] + i * 0.016, CABLE_CENTRE[1] - i * 0.012,
+                      CABLE_THICKNESS + i * 0.0015),
+        )
+        coil = bpy.context.object
+        coil.name = "Cable coil"
+        coil.data.materials.append(rubber)
+        smooth(coil)
 
 
 def world():
@@ -634,22 +785,53 @@ def render(args):
     s.view_settings.view_transform = VIEW_TRANSFORM
     s.view_settings.look = VIEW_LOOK
     s.view_settings.exposure = EXPOSURE
-    s.render.film_transparent = False
+    # Only the back plate is opaque. The other two are cut-outs that sit over
+    # it, so they need alpha, and RGBA has to be asked for explicitly or Blender
+    # writes the transparent film as black.
+    s.render.film_transparent = args.layer not in ("all", "back")
+    s.render.image_settings.color_mode = "RGBA" if s.render.film_transparent else "RGB"
+
+
+def tag(name: str, fn, *a, **k):
+    """Run a builder and mark everything it added, so the layers can be split
+    without the builders having to know the layers exist."""
+    before = set(bpy.context.scene.collection.objects)
+    result = fn(*a, **k)
+    for obj in set(bpy.context.scene.collection.objects) - before:
+        obj["plate_layer"] = name
+    return result
+
+
+def isolate(layer: str) -> None:
+    """Hide the other layers FROM THE CAMERA, and from nothing else.
+
+    `visible_camera = False` is the whole trick: the object stops being drawn
+    but still casts its shadow and still bounces light, so the back plate keeps
+    the shadow the garden throws across the sweep and the mid plate keeps the
+    green the floor returns into the leaves. Deleting the objects instead
+    yields three images that will not recomposite into the shot."""
+    if layer == "all":
+        return
+    for obj in bpy.context.scene.collection.objects:
+        if obj.get("plate_layer") not in (None, layer):
+            obj.visible_camera = False
 
 
 def main():
     args = cli()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    build_sweep()
-    soil_top = build_board()
+    tag("back", build_sweep)
+    soil_top = tag("mid", build_board)
     sources = import_kits()
-    plant_garden(sources, soil_top)
-    spill(sources)
-    stand()
+    tag("mid", plant_garden, sources, soil_top)
+    tag("fore", spill, sources)
+    tag("fore", stand)
+    tag("back", studio)
     world()
     key()
     camera()
+    isolate(args.layer)
     render(args)
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out.with_suffix(".blend")))
     bpy.ops.render.render(write_still=True)

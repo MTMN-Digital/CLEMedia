@@ -30,3 +30,4 @@ dist-q[0-9]
 public/hero3d/**
 !public/hero3d/ASSET-LICENCES.md
 !public/hero3d/CREDITS.json
+__pycache__/
