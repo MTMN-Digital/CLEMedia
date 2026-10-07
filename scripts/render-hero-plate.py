@@ -41,26 +41,68 @@ FRAME_ASPECT = 16 / 9
 
 # Camera. Low tripod, long lens, almost level: the garden flattens into a
 # strip and the sweep's floor seam hides behind it.
-# Low, and looking UP: the lens sits below the top of the planting, so the bed
-# is met at its own height rather than surveyed from above, the floor
-# compresses to a sliver instead of a third of the frame, and the sweep rises
-# behind the mark. The old setup was 0.42 m pitched 2.3 degrees DOWN, which is
-# a person standing over a model, and it read as a strip of grass on a table.
-CAMERA_DISTANCE = 4.2           # metres back from the board centre
-CAMERA_HEIGHT = 0.17            # metres above the floor
-CAMERA_PITCH_DEG = 2.6          # positive looks up
-CAMERA_LENS_MM = 85.0
+# Back, and up, with the WHOLE SET in frame. The previous pass put the lens
+# 170 mm off the floor on an 85 mm, which filled the frame with leaves and left
+# nowhere for the picture to stop: no board end, no floor beyond, no edge of
+# anything. A wider lens further back shows where the set finishes, which is
+# what makes it read as a built set rather than as a photograph of a garden.
+CAMERA_DISTANCE = 6.3           # metres back from the board centre
+CAMERA_HEIGHT = 0.98            # metres above the floor
+CAMERA_PITCH_DEG = -3.4         # negative looks down
+CAMERA_LENS_MM = 50.0
 CAMERA_SENSOR_MM = 36.0
-CAMERA_F_STOP = 2.8
+# Stopped down from 2.8. At this distance a wide aperture would hold nothing
+# anyway, and the point of the shot is now that you can see the whole thing.
+CAMERA_F_STOP = 3.5
 CAMERA_FOCUS_Y = 0.0            # focus on the board centre line
 
-# The sweep: one roll of seamless paper, floor into cove into wall.
-SWEEP_HALF_WIDTH = 8.0
-SWEEP_FLOOR_FRONT_Y = -7.0
+# The sweep: one roll of seamless paper, floor into cove into wall. It is now
+# NARROWER THAN THE FRAME on purpose. At 8 m half width it ran past both edges
+# of the picture and became "the background". The wall stands 2.5 m further
+# back than the bed, so it subtends much less than the frame does: at 1.95 m it
+# shrank to a hanging banner with black either side. 2.90 m puts its cut edges
+# just inside the frame at the wall while the floor runs off the sides, which
+# is what a roll of paper actually looks like from in front of it.
+SWEEP_HALF_WIDTH = 2.90
+SWEEP_FLOOR_FRONT_Y = -3.2
 SWEEP_COVE_START_Y = 1.6
 SWEEP_COVE_RADIUS = 0.9
-SWEEP_WALL_HEIGHT = 4.0
-SWEEP_ALBEDO = (0.72, 0.61, 0.33, 1.0)   # linear; roughly sRGB 0.87 0.81 0.61
+# Low enough that the TOP EDGE of the paper is in frame, with the roll above
+# it and a band of dark studio over that. A backdrop that runs out of the top
+# of the picture is a wall; one you can see the end of is a roll of paper.
+SWEEP_WALL_HEIGHT = 1.80
+# The scuff along the bottom. Paper that has been stood on is dirty where it
+# meets the floor, and nothing says "this is a real roll" faster.
+SWEEP_SCUFF_HEIGHT = 0.17
+SWEEP_SCUFF = (0.21, 0.17, 0.10, 1.0)
+# The roll itself, still on its bar above the wall.
+ROLL_RADIUS = 0.085
+ROLL_Z = 1.97
+
+# The room the paper hangs in. Dark, so the lit paper reads as a thing with
+# edges inside a larger darker space.
+ROOM_SIZE = (15.0, 17.0, 6.0)
+ROOM_ALBEDO = (0.032, 0.029, 0.026, 1.0)
+
+# The key, as an object you can SEE. A softbox at the top left of frame, with
+# its own stand under it. A light that is only ever an effect leaves the
+# picture looking found; a light you can see in shot makes it a set.
+# Beside the set rather than in front of it. At y = -1.25 it was a metre closer
+# to the lens than the bed, so it blew up to a third of the frame width and the
+# frame cut it in half at the corner.
+SOFTBOX_CENTRE = (-1.30, -0.35, 1.34)
+SOFTBOX_FACE = (0.85, 0.64)     # the diffusion panel, width by height
+SOFTBOX_DEPTH = 0.46
+SOFTBOX_YAW_DEG = -34.0         # swung to face the bed
+SOFTBOX_PITCH_DEG = 22.0        # tipped down toward it
+
+# A cable from the softbox stand, down and away across the paper.
+CABLE_THICKNESS = 0.011
+CABLE_RUN = [(-1.38, -0.44), (-1.46, -0.95), (-1.26, -1.38), (-0.88, -1.56)]
+CABLE_TURNS = 2
+CABLE_CENTRE = (-0.54, -1.64)
+CABLE_RADIUS = 0.17
+SWEEP_ALBEDO = (0.63, 0.51, 0.30, 1.0)   # linear; roughly sRGB 0.87 0.81 0.61
 SWEEP_ROUGHNESS = 0.85
 SWEEP_TOOTH = 0.04                        # paper grain bump strength
 
@@ -132,25 +174,33 @@ SPILL_FROND = True
 # The stands. The right one is close to the lens and out of focus; the left
 # one is further back and reads sharper, which is what tells the eye the room
 # has depth. A single stand in an empty corner looked like a prop.
-STAND_X = 0.69
-STAND_Y = -1.7
+# Pushed past the right edge of frame on purpose. A full height stand at 1.30
+# ran straight down the right third, which is exactly where the headline and
+# the buttons land: dark pole behind dark type. Only its arm and flag come into
+# shot now, entering from the top right above the copy.
+STAND_X = 2.25
+STAND_Y = -0.55
 STAND_HEIGHT = 2.6
 STAND_RADIUS = 0.016
 STAND_PAINT = (0.012, 0.012, 0.012, 1.0)
 STAND_PAINT_ROUGHNESS = 0.45
 SANDBAG_ALBEDO = (0.022, 0.019, 0.016, 1.0)
-STAND_2_X = -1.02
-STAND_2_Y = 1.15
+STAND_2_X = -2.05
+STAND_2_Y = 1.30
 STAND_2_HEIGHT = 2.15
 # The flag on its arm, entering top left. A black rectangle on a boom is the
 # single most legible "this is a lit set" object there is, and it does the job
 # the empty upper left of the old plate was not doing.
 # The frame tops out near z = 0.87 at this camera, so the arm hangs at 0.78 or
 # it is simply not in the picture, which is where the first pass put it.
-ARM_X = -1.22
-ARM_Y = 0.60
-ARM_Z = 0.80
-ARM_LENGTH = 0.34
+# The arm hangs off the right hand stand and reaches back INTO the frame, so
+# the flag is a thing on a stand. On its own knuckle in mid air it was a small
+# black card floating in the middle of the picture, attached to nothing.
+ARM_X = STAND_X
+ARM_Y = STAND_Y
+ARM_Z = 1.62
+ARM_LENGTH = 0.70
+ARM_DIR = -1.0                  # reaching left, toward the set
 # Small, and in the corner. At 0.60 x 0.44 on a 0.86 m arm the panel landed in
 # the middle of the frame at a third of its width and read as a wall-mounted
 # television, which is the opposite of the job: a flag is an edge intrusion
@@ -158,8 +208,11 @@ ARM_LENGTH = 0.34
 # Smaller again, and far enough left that the frame cuts it. At 0.40 x 0.34 it
 # survived the hero's `cover` crop as a featureless black rectangle a tenth of
 # the picture wide, which reads as a hole in the image rather than as a flag.
-FLAG_PANEL = (0.30, 0.27)
-FLAG_PANEL_TILT_DEG = 8.0
+FLAG_PANEL = (0.56, 0.42)
+# Swung well off the wall. Parallel to the backdrop the panel read as a dark
+# rectangle painted onto the paper; at 38 degrees you see it is a board in the
+# air with a stand holding it.
+FLAG_PANEL_TILT_DEG = 38.0
 # No cable coil. The lens is 0.17 m off the floor, so a coil is seen almost
 # edge on and collapses into a flat dark ellipse whatever the turn spacing: it
 # read as a frisbee left on the paper. The spill debris dresses the floor.
@@ -175,7 +228,12 @@ CABLE_THICKNESS = 0.012
 KEY_LOCATION = (-1.8, -3.0, 2.8)
 KEY_TARGET = (0.0, -1.0, 0.0)
 KEY_SIZE = (1.6, 2.0)
-KEY_POWER_W = 480.0
+# The lamp you can SEE is a practical: it sets the direction and it is in the
+# picture, but it is small and close, so on its own it burned a hot pool into
+# the paper right under itself and left the bed in the dark. The work is done
+# by FILL below, a big soft source off the camera's left shoulder, which is
+# what the bounce board would be on a real set.
+KEY_POWER_W = 170.0
 KEY_COLOUR = (1.0, 0.95, 0.84)   # warm white, less magenta than a blackbody
 KEY_SPREAD_DEG = 70.0
 # A black cutter hung just above the camera's frame line. It shadows the
@@ -184,15 +242,21 @@ KEY_SPREAD_DEG = 70.0
 FLAG_Y = -0.5
 FLAG_BOTTOM_Z = 0.95
 FLAG_SIZE = (3.4, 2.05)          # tall: a 2 m softbox 2.5 m away throws a long penumbra
-POOL_LOCATION = (-2.4, -0.2, 2.6)
+# Moved back and up, away from the softbox: from (-2.4, -0.2, 2.6) its cone
+# grazed the softbox housing and lit the black skin to a pale grey, so the lamp
+# in frame looked like a paper lampshade.
+POOL_LOCATION = (-2.9, 0.4, 3.0)
 # Aimed at the middle of the sweep, behind where the mark hangs, and tightened
 # from 40 degrees to 26. A broad lamp lit the whole backdrop evenly, which is
 # a flat wall; a pool puts the mark against light and lets the frame fall off
 # into the corners on its own.
-POOL_TARGET = (-0.10, 2.4, 0.62)
-POOL_POWER_W = 2600.0
+# Aimed at the WALL, not at the floor behind the bed. At z = 0.62 the cone
+# landed on the cove where the planting hides it, which is why the backdrop
+# stayed one flat wash however much the lamp was turned up.
+POOL_TARGET = (-0.25, 2.55, 1.38)
+POOL_POWER_W = 3200.0
 POOL_KELVIN = 4600.0
-POOL_CONE_DEG = 26.0
+POOL_CONE_DEG = 34.0
 POOL_BLEND = 0.62
 POOL_RADIUS = 0.4
 # A small hard lamp low at the back right, raking toward the camera: it puts
@@ -201,15 +265,26 @@ POOL_RADIUS = 0.4
 KICK_LOCATION = (2.6, 0.8, 0.35)
 KICK_TARGET = (0.0, -0.3, 0.05)
 KICK_SIZE = 0.15
-KICK_POWER_W = 420.0
+KICK_POWER_W = 150.0
 KICK_KELVIN = 4000.0
+# The real key: large, far enough back to be even across the whole bed, and out
+# of shot behind the camera's left shoulder.
+FILL_LOCATION = (-2.2, -3.4, 2.5)
+FILL_TARGET = (0.0, 0.1, 0.30)
+FILL_SIZE = (2.8, 2.1)
+FILL_POWER_W = 1200.0
+FILL_COLOUR = (1.0, 0.96, 0.88)
+
 WORLD_STRENGTH = 0.04
 WORLD_ROTATION_DEG = 60.0
 
 # Picture.
 VIEW_TRANSFORM = "AgX"
 VIEW_LOOK = "AgX - Punchy"
-EXPOSURE = 0.0
+# Down a stop and a bit. The sweep is a large, light, diffuse surface, so it
+# acts as a bounce for everything else: cutting the lamps individually barely
+# moved the picture, because most of what lights the set is the paper.
+EXPOSURE = -0.5
 CPU_THREADS = 12
 
 ROOT = Path("/home/david/Documents/GitHub/clients/cle-media")
@@ -246,6 +321,19 @@ def principled(name: str):
     return mat, nodes, mat.node_tree.links, bsdf
 
 
+def emissive_material(name, colour, strength):
+    """A surface that glows in shot. The softbox front was a plain diffuse
+    panel, so the lamp read as a pale cube rather than as something switched
+    on. It carries no light itself: the area light does that."""
+    mat, nodes, links, _ = principled(name)
+    out = nodes.get("Material Output")
+    emit = nodes.new("ShaderNodeEmission")
+    emit.inputs["Color"].default_value = colour
+    emit.inputs["Strength"].default_value = strength
+    links.new(emit.outputs["Emission"], out.inputs["Surface"])
+    return mat
+
+
 def flat_material(name, colour, roughness, metallic=0.0):
     mat, _, _, bsdf = principled(name)
     bsdf.inputs["Base Color"].default_value = colour
@@ -265,6 +353,31 @@ def image(nodes, path: Path, colour: bool):
 def sweep_material():
     mat, nodes, links, bsdf = principled("Seamless paper")
     bsdf.inputs["Base Color"].default_value = SWEEP_ALBEDO
+    # Dirt along the bottom, where the paper has been walked on. Driven by
+    # world Z so it follows the cove up and stops, broken up by noise so the
+    # edge of it is not a ruled line.
+    geo = nodes.new("ShaderNodeNewGeometry")
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[1].position = SWEEP_SCUFF_HEIGHT
+    ramp.color_ramp.elements[0].color = (1, 1, 1, 1)
+    ramp.color_ramp.elements[1].color = (0, 0, 0, 1)
+    grime = nodes.new("ShaderNodeTexNoise")
+    grime.inputs["Scale"].default_value = 11.0
+    grime.inputs["Detail"].default_value = 6.0
+    mul = nodes.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    mix = nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.inputs[6].default_value = SWEEP_ALBEDO
+    mix.inputs[7].default_value = SWEEP_SCUFF
+    links.new(geo.outputs["Position"], sep.inputs["Vector"])
+    links.new(sep.outputs["Z"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], mul.inputs[0])
+    links.new(grime.outputs["Fac"], mul.inputs[1])
+    links.new(mul.outputs["Value"], mix.inputs["Factor"])
+    links.new(mix.outputs[2], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = SWEEP_ROUGHNESS
     coord = nodes.new("ShaderNodeTexCoord")
     noise = nodes.new("ShaderNodeTexNoise")
@@ -633,6 +746,87 @@ def stand():
     box("Sandbag strap", (STAND_X, leg_y, 0.11), (0.16, 0.08, 0.025), bag, 0.01)
 
 
+def room():
+    """A dark box around everything. The paper is now narrower than the frame,
+    so something has to be behind and beside it, and a dim studio is what makes
+    the lit paper read as an object with edges rather than as the background."""
+    dark = flat_material("Room", ROOM_ALBEDO, 0.92)
+    w, d, h = ROOM_SIZE
+    shell = box("Room", (0.0, 1.0, h / 2 - 0.9), (w, d, h), dark)
+    # The camera stands inside it, so the inward faces are what gets shaded.
+    shell.data.flip_normals() if hasattr(shell.data, "flip_normals") else None
+
+
+def paper_roll():
+    """The roll still on its bar, above the top of the wall."""
+    roll = cylinder("Paper roll", (0.0, SWEEP_COVE_START_Y + SWEEP_COVE_RADIUS + ROLL_RADIUS,
+                                   ROLL_Z), ROLL_RADIUS, SWEEP_HALF_WIDTH * 2 + 0.16,
+                    sweep_material(), 40)
+    roll.rotation_euler = (0.0, math.radians(90), 0.0)
+    bar = cylinder("Roll bar", (0.0, SWEEP_COVE_START_Y + SWEEP_COVE_RADIUS + ROLL_RADIUS,
+                                ROLL_Z), 0.016, SWEEP_HALF_WIDTH * 2 + 0.52,
+                   flat_material("Roll bar", (0.6, 0.6, 0.6, 1.0), 0.3, metallic=1.0), 20)
+    bar.rotation_euler = (0.0, math.radians(90), 0.0)
+
+
+def softbox():
+    """The key, built as the thing that makes it: a black housing, a diffusion
+    panel, and the area light sitting on that panel so what you see in frame and
+    what lights the set are the same object."""
+    cx, cy, cz = SOFTBOX_CENTRE
+    yaw, pitch = math.radians(SOFTBOX_YAW_DEG), math.radians(SOFTBOX_PITCH_DEG)
+    rot = Matrix.Rotation(yaw, 4, "Z") @ Matrix.Rotation(pitch, 4, "X")
+
+    fw, fh = SOFTBOX_FACE
+    housing = box("Softbox housing", (0, 0, 0), (fw * 1.02, SOFTBOX_DEPTH, fh * 1.02),
+                  flat_material("Softbox skin", (0.004, 0.004, 0.005, 1.0), 0.94), 0.012)
+    housing.matrix_world = Matrix.Translation((cx, cy, cz)) @ rot @ housing.matrix_world
+
+    panel = box("Softbox diffusion", (0, -SOFTBOX_DEPTH / 2 - 0.012, 0), (fw, 0.02, fh),
+                flat_material("Diffusion", (0.88, 0.86, 0.82, 1.0), 0.62))
+    panel.matrix_world = Matrix.Translation((cx, cy, cz)) @ rot @ panel.matrix_world
+
+    # The stand under it, and a sandbag on the leg facing us.
+    paint = flat_material("Softbox stand", STAND_PAINT, STAND_PAINT_ROUGHNESS)
+    cylinder("Softbox riser", (cx, cy + 0.12, (cz - fh / 2) / 2), 0.019, cz - fh / 2, paint)
+    for a_deg in (210, 330, 90):
+        a, tilt, length = math.radians(a_deg), math.radians(74), 0.46
+        half = length / 2
+        leg = cylinder("Softbox leg", (
+            cx + half * math.sin(tilt) * math.cos(a),
+            cy + 0.12 + half * math.sin(tilt) * math.sin(a),
+            0.03 + half * math.cos(tilt),
+        ), 0.013, length, paint, 16)
+        leg.rotation_euler = (0.0, tilt, a)
+
+    return Vector((cx, cy, cz)), rot
+
+
+def cable():
+    """A cable snaking away from the stand and ending in a coil. Seen from a
+    metre up with a down angle it reads as cable; the previous attempt put it
+    under a 170 mm lens where it collapsed into a flat ellipse."""
+    rubber = flat_material("Cable", (0.006, 0.006, 0.007, 1.0), 0.78)
+    for (x0, y0), (x1, y1) in zip(CABLE_RUN, CABLE_RUN[1:]):
+        dx, dy = x1 - x0, y1 - y0
+        length = math.hypot(dx, dy)
+        seg = cylinder("Cable run", ((x0 + x1) / 2, (y0 + y1) / 2, CABLE_THICKNESS),
+                       CABLE_THICKNESS, length, rubber, 14)
+        seg.rotation_euler = (0.0, math.radians(90), math.atan2(dy, dx))
+    for i in range(CABLE_TURNS):
+        bpy.ops.mesh.primitive_torus_add(
+            major_radius=CABLE_RADIUS - i * 0.045,
+            minor_radius=CABLE_THICKNESS,
+            major_segments=56, minor_segments=12,
+            location=(CABLE_CENTRE[0] + i * 0.015, CABLE_CENTRE[1] - i * 0.012,
+                      CABLE_THICKNESS),
+        )
+        coil = bpy.context.object
+        coil.name = "Cable coil"
+        coil.data.materials.append(rubber)
+        smooth(coil)
+
+
 def studio():
     """The hardware that says this is a set and not a photograph of a garden:
     a second stand back left, a flag on an arm cutting into the top corner,
@@ -653,32 +847,22 @@ def studio():
         ), 0.010, length, paint, 16)
         leg.rotation_euler = (0.0, tilt, a)
 
-    arm = cylinder("Flag arm", (ARM_X + ARM_LENGTH / 2, ARM_Y, ARM_Z),
+
+def flag_rig():
+    """The arm and flag, on the near plane. They hang three metres in front of
+    the backdrop, so moving them at the backdrop's rate would flatten exactly
+    the depth the layers exist to create."""
+    paint = flat_material("Arm paint", STAND_PAINT, STAND_PAINT_ROUGHNESS)
+    chrome = flat_material("Arm chrome", (0.8, 0.8, 0.8, 1.0), 0.25, metallic=1.0)
+    arm = cylinder("Flag arm", (ARM_X + ARM_DIR * ARM_LENGTH / 2, ARM_Y, ARM_Z),
                    0.011, ARM_LENGTH, chrome, 16)
     arm.rotation_euler = (0.0, math.radians(90), 0.0)
     cylinder("Flag knuckle", (ARM_X, ARM_Y, ARM_Z), 0.030, 0.07, paint, 20)
-    flag = box("Flag panel", (ARM_X + ARM_LENGTH, ARM_Y, ARM_Z - FLAG_PANEL[1] / 2 - 0.02),
+    flag = box("Flag panel", (ARM_X + ARM_DIR * ARM_LENGTH, ARM_Y,
+                              ARM_Z - FLAG_PANEL[1] / 2 - 0.02),
                (FLAG_PANEL[0], 0.012, FLAG_PANEL[1]),
                flat_material("Flag fabric", (0.008, 0.008, 0.008, 1.0), 0.95))
     flag.rotation_euler = (0.0, 0.0, math.radians(FLAG_PANEL_TILT_DEG))
-
-    # The coil: a torus per turn, lying flat, each slightly offset the way a
-    # cable never coils twice on the same circle.
-    rubber = flat_material("Cable", (0.014, 0.014, 0.015, 1.0), 0.6)
-    for i in range(CABLE_TURNS):
-        bpy.ops.mesh.primitive_torus_add(
-            # The turns have to be a clear gap apart or the coil renders as a
-            # solid disc, which reads as a frisbee on the floor.
-            major_radius=CABLE_RADIUS - i * 0.048,
-            minor_radius=CABLE_THICKNESS,
-            major_segments=56, minor_segments=12,
-            location=(CABLE_CENTRE[0] + i * 0.016, CABLE_CENTRE[1] - i * 0.012,
-                      CABLE_THICKNESS + i * 0.0015),
-        )
-        coil = bpy.context.object
-        coil.name = "Cable coil"
-        coil.data.materials.append(rubber)
-        smooth(coil)
 
 
 def world():
@@ -701,24 +885,35 @@ def world():
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
-def key():
-    bpy.ops.object.light_add(type="AREA", location=KEY_LOCATION)
+def key(box_origin, box_rot):
+    """The key sits ON the softbox's diffusion panel, so the light in the
+    picture and the light doing the work are one object. It used to be an
+    invisible area light somewhere off to the left, which is exactly the kind
+    of lighting that leaves a set looking like a photograph of a garden.
+
+    The separate top flag is gone with it: the softbox is now inside the frame
+    and below the top of the wall, so it no longer spills onto the backdrop the
+    way a lamp hung above the frame line did."""
+    panel = box_origin + box_rot @ Vector((0.0, -SOFTBOX_DEPTH / 2 - 0.03, 0.0))
+    bpy.ops.object.light_add(type="AREA", location=panel)
     k = bpy.context.object
     k.name = "Key softbox"
     k.data.shape = "RECTANGLE"
-    k.data.size, k.data.size_y = KEY_SIZE
+    k.data.size, k.data.size_y = SOFTBOX_FACE
     k.data.energy = KEY_POWER_W
     k.data.spread = math.radians(KEY_SPREAD_DEG)
     k.data.color = KEY_COLOUR
-    k.rotation_euler = (Vector(KEY_TARGET) - Vector(KEY_LOCATION)).to_track_quat("-Z", "Y").to_euler()
+    k.rotation_euler = (Vector(KEY_TARGET) - panel).to_track_quat("-Z", "Y").to_euler()
 
-    flag_mat = flat_material("Flag", (0.01, 0.01, 0.01, 1.0), 0.9)
-    bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-0.2, FLAG_Y, FLAG_BOTTOM_Z + FLAG_SIZE[1] / 2))
-    flag = bpy.context.object
-    flag.name = "Top flag"
-    flag.scale = (FLAG_SIZE[0], FLAG_SIZE[1], 1.0)
-    flag.rotation_euler = (math.radians(90.0), 0.0, 0.0)
-    flag.data.materials.append(flag_mat)
+    bpy.ops.object.light_add(type="AREA", location=FILL_LOCATION)
+    f = bpy.context.object
+    f.name = "Fill"
+    f.data.shape = "RECTANGLE"
+    f.data.size, f.data.size_y = FILL_SIZE
+    f.data.energy = FILL_POWER_W
+    f.data.spread = math.radians(110.0)
+    f.data.color = FILL_COLOUR
+    f.rotation_euler = (Vector(FILL_TARGET) - Vector(FILL_LOCATION)).to_track_quat("-Z", "Y").to_euler()
 
     bpy.ops.object.light_add(type="SPOT", location=POOL_LOCATION)
     p = bpy.context.object
@@ -828,8 +1023,13 @@ def main():
     tag("fore", spill, sources)
     tag("fore", stand)
     tag("back", studio)
+    tag("back", room)
+    tag("back", paper_roll)
+    box_origin, box_rot = tag("mid", softbox)
+    tag("fore", flag_rig)
+    tag("fore", cable)
     world()
-    key()
+    key(box_origin, box_rot)
     camera()
     isolate(args.layer)
     render(args)

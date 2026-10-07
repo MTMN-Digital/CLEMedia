@@ -9,6 +9,7 @@ same plate.
 usage: python3 grain.py in.png out.png [--amount 2.2]
 """
 import argparse
+import math
 import numpy as np
 from PIL import Image, ImageFilter
 
@@ -17,6 +18,11 @@ p.add_argument("src")
 p.add_argument("dst")
 p.add_argument("--amount", type=float, default=2.2, help="grain sigma in 8 bit steps at mid grey")
 p.add_argument("--seed", type=int, default=1911)
+p.add_argument("--vignette", type=float, default=0.0,
+               help="corner falloff, 0 to 1. The seamless paper renders as an even "
+                    "wash because the fill is large and square on, and an even wash "
+                    "is what reads as a flat backdrop. A little falloff gives the "
+                    "frame corners somewhere to go.")
 a = p.parse_args()
 
 im = Image.open(a.src).convert("RGB")
@@ -29,6 +35,17 @@ noise = (noise - 128.0) / 40.0
 # Weight: full in shadows, fading to a quarter in highlights.
 weight = (1.0 - lum) * 0.75 + 0.25
 grain = noise * weight * a.amount
-out = (arr + grain[..., None]).clip(0, 255).astype(np.uint8)
+out = arr + grain[..., None]
+
+if a.vignette > 0:
+    h, w = lum.shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Normalised distance from centre, 1.0 at the middle of each edge.
+    rx = (xx - (w - 1) / 2) / ((w - 1) / 2)
+    ry = (yy - (h - 1) / 2) / ((h - 1) / 2)
+    r = np.sqrt(rx ** 2 + ry ** 2) / math.sqrt(2.0)
+    out *= (1.0 - a.vignette * np.clip(r, 0.0, 1.0) ** 2.2)[..., None]
+
+out = out.clip(0, 255).astype(np.uint8)
 Image.fromarray(out).save(a.dst, optimize=True)
 print("grain applied", a.src, "->", a.dst)

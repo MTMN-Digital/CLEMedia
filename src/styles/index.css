@@ -1349,11 +1349,14 @@ body > * { position: relative; z-index: 1; }
   --w: 0;
 }
 
-/* The planes. Each one is positioned to bleed past the frame, because a plane
-   that scales up from a frame-sized box runs out of picture at its edges. */
+/* The planes. Each starts exactly frame sized, because every transform here
+   only ever grows: at --p 0 the whole plate is on screen, edges of the paper
+   and all, and the move pushes in from there. The old -8% inset cropped seven
+   percent off every side at rest, which threw away precisely the set edges,
+   the roll and the rigging that the plate was rebuilt to show. */
 .plane {
   position: absolute;
-  inset: -8%;
+  inset: 0;
   background-repeat: no-repeat;
   background-position: 50% 100%;
   background-size: cover;
@@ -1394,6 +1397,9 @@ body > * { position: relative; z-index: 1; }
    off the floor, so there is barely any floor in shot to put anything on. */
 .plane-fore {
   z-index: 3;
+  /* The one plane that needs margin: it travels 5vh down as well as scaling,
+     so without it the top edge of the strip would walk into frame. */
+  inset: -7% 0 0 0;
   transform: scale(calc(1 + 0.34 * var(--p))) translateY(calc(var(--p) * 5vh));
   background-image: url("/brand/hero-fore-2560.webp");
 }
@@ -1407,15 +1413,18 @@ body > * { position: relative; z-index: 1; }
   position: absolute;
   z-index: 2;
   left: 50%;
-  top: 14%;
-  width: min(38vh, 44vw, 31rem);
+  top: 12%;
+  /* Bigger. At min(38vh, 44vw, 31rem) the mark was 313px on a 1440 screen,
+     about a fifth of the frame, and the set around it had more presence than
+     the brand hanging in it. */
+  width: min(54vh, 52vw, 42rem);
   /* It starts centred and walks left as it settles, because the copy arrives
      into the right of the frame and the two were landing in the same band:
      the headline was unreadable across the lion. The horizontal move is also
      the strongest part of the parallax, since it is the only element that
      changes its position rather than just its size. */
   transform:
-    translateX(calc(-50% - var(--p) * 17%))
+    translateX(calc(-50% - var(--p) * 30%))
     translateY(calc((1 - var(--p)) * 5vh))
     scale(calc(0.86 + 0.14 * var(--p)))
     rotateY(calc(var(--p) * 7deg))
@@ -1436,18 +1445,22 @@ body > * { position: relative; z-index: 1; }
      the frame, which put the headline across the leaves: dark type on busy
      foliage, unreadable and accidental looking. The set is now built with a
      quiet right side and the words land on it. */
-  top: 24%;
-  max-width: 31rem;
+  top: 20%;
+  max-width: 36rem;
   opacity: var(--w);
   transform: translateX(calc((1 - var(--w)) * 2.5rem));
   pointer-events: none;
 }
 .shot-copy :where(a) { pointer-events: auto; }
 .shot-copy .hero-head {
-  /* Smaller than the centred version this replaces: the block now has half
-     the frame rather than all of it, and the line must not wrap. */
-  font-size: clamp(1.9rem, 3.5vw, 3.6rem);
+  /* The line must not wrap: the headline casts a raked shadow along the floor
+     of the set, and a two line version of that shadow reads as a printing
+     error rather than as light. So the size is capped by how much room the
+     block has, and the block's left edge and the mark's drift were both moved
+     to give it more. */
+  font-size: clamp(2.1rem, 4.2vw, 3.9rem);
 }
+.shot-copy .hero-lead { font-size: clamp(1rem, 1.35vw, 1.2rem); }
 
 .shot-cue {
   position: absolute;
@@ -1510,7 +1523,7 @@ body > * { position: relative; z-index: 1; }
     padding: var(--band) 0 9vh;
     perspective: none;
     background: var(--color-raised);
-    --band: 46vh;
+    --band: 51vh;
     --p: 1;
     --w: 1;
   }
@@ -1537,10 +1550,10 @@ body > * { position: relative; z-index: 1; }
   .shot-mark {
     position: absolute;
     z-index: 2;
-    top: 7vh;
+    top: 6vh;
     left: 50%;
     margin: 0;
-    width: min(52vw, 15rem);
+    width: min(64vw, 18.5rem);
     transform: translateX(-50%) !important;
   }
   .shot-copy {
@@ -1559,7 +1572,7 @@ body > * { position: relative; z-index: 1; }
     transform: none;
     text-align: center;
   }
-  .shot-copy .hero-head { font-size: clamp(1.8rem, 8.5vw, 2.6rem); white-space: normal; }
+  .shot-copy .hero-head { font-size: clamp(2rem, 9.4vw, 3rem); white-space: normal; }
   .shot-copy .hero-lead { margin-inline: auto; }
   .shot-copy > div { justify-content: center; }
   .shot-cue { display: none; }
