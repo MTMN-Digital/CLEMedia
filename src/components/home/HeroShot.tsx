@@ -5,47 +5,51 @@ import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
-   The hero: a multiplane.
+   The hero: a set, in two planes.
 
-   THE SHAPE OF IT. The reader lands on the mark hanging in a room, seen from
-   low down with the garden close to the lens. The first scroll holds the page
-   and pushes in: the planes scale and rise at different rates, which is a
-   camera move, the mark grows and tilts on its strings, and the headline, the
-   lead and the buttons arrive to the right of centre. Then it settles and the
-   page carries on.
+   THE SHAPE OF IT. The reader lands on a small raised garden standing on a
+   painted cyc in a dark studio, photographed from a high tripod tilted down at
+   it, with the felted mark hanging over the garden from above the frame. The
+   first scroll holds the page: the set tilts down onto the garden and pushes
+   in, the garden growing faster than the room because it is nearer, while the
+   mark settles on its ropes and the headline, the lead and the buttons slide
+   in beside it on the lit floor. Then it is still, and the page carries on.
 
-   WHY A MULTIPLANE AND NOT A RENDERER. This hero was a live WebGL scene for
+   WHY A PHOTOGRAPH AND NOT A RENDERER. This hero was a live WebGL scene for
    several days. It was rejected repeatedly and the last version was laggy,
-   which is what settled it: fifteen hundred alpha-tested instances and a
-   shadow map on a full-viewport canvas is not something to put in front of a
-   parent on a phone. So the room is a photograph, rendered once in Cycles,
-   and cut into depth planes. Scaling three images at different rates is the
-   oldest trick in animation and the browser does it on the compositor: no
+   which is what settled it: a thousand alpha-tested plants and a shadow map on
+   a full-viewport canvas is not something to put in front of a parent on a
+   phone. So the set is rendered once in Cycles and cut into two depth planes,
+   and scaling two images at different rates is done by the compositor: no
    renderer runs, nothing is uploaded per frame, and the quality ceiling is a
    path tracer rather than sixteen milliseconds.
 
-   WHAT EACH PLANE DOES. The room barely moves because it is a room. The bed
-   moves more, and it is scaled about the line where its board meets the paper,
-   so it grows out of the floor rather than sliding across it. That difference
-   in rate IS the depth; one rate would be a zoom.
+   WHAT EACH PLANE DOES. Both planes take the same tilt, so the garden never
+   slides against the floor it stands on. The room barely grows because it is
+   a room; the garden grows three times as much. That difference in rate IS
+   the depth; one rate would be a zoom.
 
    THE MARK stays in the DOM rather than being baked into the plate: it is the
    brand asset, it has to be crisp at any pixel ratio, it carries the alt
-   text, and it is the one thing that tilts.
+   text, and it is locked to the viewport while the set moves under it, which
+   is what a thing hung from the grid in front of the lens does.
    ========================================================================== */
 
 /** Length of the hold, in viewport heights, on top of the sticky screen. */
-const TRAVEL = 1.0;
-/** Where the move has finished, as a fraction of the hold.
+const TRAVEL = 1.2;
+/** Where the move has finished, as a fraction of the eased hold.
  *
  *  Everything used to arrive exactly as the pin let go, so the push in stopped
  *  and the page started scrolling in the same frame: the handover read as a
- *  lurch. Finishing at 0.85 leaves a short stretch at the end where the frame
- *  is simply settled and still, and the page then carries it away. */
-const SETTLE_AT = 0.85;
+ *  lurch. Finishing early leaves a stretch at the end where the frame is
+ *  settled and still before the page carries it away. The ease already has
+ *  zero velocity at the end, so this does not need to be far from 1: at 0.85
+ *  the set was frozen for the last third of the scroll, measured, which is a
+ *  dead stretch, not a settle. */
+const SETTLE_AT = 0.96;
 /** Where in the move the words start arriving, and where they have landed. */
-const WORDS_IN = 0.45;
-const WORDS_SET = 0.9;
+const WORDS_IN = 0.3;
+const WORDS_SET = 0.88;
 
 function clamp01(n: number) {
   return n < 0 ? 0 : n > 1 ? 1 : n;
@@ -111,12 +115,12 @@ export function HeroShot() {
   return (
     <div ref={pin} className="shot-pin" style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
       <div ref={screen} className="shot-screen">
-        {/* Two planes, not three. `back` is opaque and carries the room, the
-            paper and everything standing on it; `mid` is the bed, cut out of
-            the same photograph with alpha, and it is the only thing that moves
-            against the room. A third plane held the spill on the floor and had
-            to go: litter resting on a floor that travels at a different rate
-            slides off its own shadow. */}
+        {/* Two planes, not three. `back` is opaque and carries the studio, the
+            cyc and everything standing on the floor; `mid` is the garden, cut
+            out of the same photograph with alpha, and it is the only thing
+            that moves against the room. A third plane held litter on the floor
+            and had to go: anything resting on a floor that travels at a
+            different rate slides off its own shadow. */}
         <div aria-hidden="true" className="plane plane-back" />
         <div aria-hidden="true" className="plane plane-mid" />
 

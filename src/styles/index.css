@@ -1314,27 +1314,29 @@ body > * { position: relative; z-index: 1; }
 }
 
 /* ---------------------------------------------------------------------------
-   The rebuilt hero: one shot, with the room inside the canvas.
+   The hero: a set, photographed from a high tripod, in two planes.
 
-   Everything the camera moves through is in the WebGL scene, so this file has
-   almost nothing to do. It sizes the frame, places the words over it, and
-   says what happens when there is no WebGL. The old `.hero-*` set, with its
-   CSS sweep, floor, gobo and leaves, is still used by the hero on the live
-   home page and is untouched; this block is additive while the three
-   directions are being compared.
---------------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------------
-   The hero: a multiplane.
+   The picture is a small raised garden standing on a painted cyc in a dark
+   studio, seen from above and clearly tilted down: all four of its low timber
+   walls are in frame with paper floor around them, the cyc's top edge and the
+   lighting pipe above it run across the top, a lamp stand holds the left edge
+   and a C-stand with a bounce board the right. The felted mark is NOT in that
+   photograph. It is this DOM element, hanging over the garden from above the
+   frame, locked to the viewport the way a thing hung from the grid in front of
+   the lens would be, and the words sit beside it on the lit floor.
 
-   Three planes of one rendered photograph, scaled and raised at different
-   rates by a single --p the scroll handler writes, with the mark tilting
-   between two of them and the copy arriving to the right of centre. Nothing
-   renders at runtime: these are images on the compositor. See HeroShot for
-   why the live WebGL version was taken out.
+   THE SCROLL. One hold. The set starts tilted a little up (more ceiling, more
+   rig) and the first scroll tilts it down onto the garden and pushes in, the
+   garden growing faster than the room because it is nearer. The mark does not
+   travel with the set: it settles on its ropes (a degree of swing, a few
+   percent of size) and the headline, the lead and the buttons slide in from
+   the right into the space the set was built to leave for them. Then the frame
+   is still, and the page carries it away.
 
-   Every transform here is driven by --p (0 at rest, 1 settled) and --w (the
-   copy's own arrival, which runs across the back half of the move). No JS
-   touches a style except those two numbers.
+   Every transform here is driven by three numbers the scroll handler writes:
+   --p (raw eased progress), --s (the set's progress, reaching 1 before the pin
+   releases so the frame is settled before the handover) and --w (the copy's
+   own arrival). No JS touches a style except those three.
 --------------------------------------------------------------------------- */
 .shot-pin { position: relative; }
 .shot-screen {
@@ -1346,40 +1348,37 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-paper-1);
   perspective: 1400px;
   --p: 0;
-  /* --s is the set's progress and it reaches 1 before --p does, so the picture
-     is already settled and still when the pin lets go. --w is the copy's own
-     arrival. */
   --s: 0;
   --w: 0;
 }
 
-/* The planes. Each starts exactly frame sized, because every transform here
-   only ever grows: at --p 0 the whole plate is on screen, edges of the paper
-   and all, and the move pushes in from there. The old -8% inset cropped seven
-   percent off every side at rest, which threw away precisely the set edges,
-   the roll and the rigging that the plate was rebuilt to show. */
+/* The planes. Each is EIGHT PERCENT TALLER than the screen (four above, four
+   below) so the tilt has room to move through: a plane exactly frame sized
+   would show its own edge the moment it was translated. The plate is rendered
+   16:10 so that it fills this taller box edge to edge on a laptop with no
+   side crop, and composed so that nothing that matters sits in the outer
+   four percent. */
 .plane {
   position: absolute;
-  inset: 0;
+  inset: -4% 0;
   background-repeat: no-repeat;
-  background-position: 50% 100%;
+  background-position: 50% 50%;
   background-size: cover;
-  /* The bed's contact line, not the middle of the picture. Scaling about the
-     line where the board meets the paper keeps that join fixed, so the bed
-     grows out of the floor instead of sliding across it. */
-  transform-origin: 50% 82%;
-  /* The foot of the photograph dissolves instead of being cut off by the
-     bottom of the screen. The screen's own ground is the page's ground, so
-     the paper floor of the set runs on into the page rather than ending at a
-     ruled line, and the band below carries its litter a little further. */
+  /* The garden's contact line with the floor, not the middle of the picture.
+     Scaling about the line where the timber meets the paper keeps that join
+     fixed, so the garden grows out of the floor instead of sliding across
+     it. Both planes share the origin AND the translate: a garden that moved
+     against the floor it stands on is the float the client kept seeing. */
+  transform-origin: 50% 81%;
   will-change: transform;
 }
 
-/* The sweep. Almost still: it is a wall, and a wall that moves is a wall the
-   eye stops believing. */
+/* The studio: the cyc, the dark band and the pipe above it, both stands, and
+   everything resting on the paper. It tilts with the camera and barely grows,
+   because it is far away. */
 .plane-back {
   z-index: 0;
-  transform: scale(calc(1 + 0.05 * var(--s)));
+  transform: translateY(calc((1 - var(--s)) * 4%)) scale(calc(1 + 0.04 * var(--s)));
   background-image: image-set(
     url("/brand/hero-back-2560.avif") type("image/avif"),
     url("/brand/hero-back-2560.webp") type("image/webp"),
@@ -1387,81 +1386,59 @@ body > * { position: relative; z-index: 1; }
   );
 }
 
-/* The garden bed and the board it stands on, cut out of the room with alpha.
-   This is the plane that carries the move: it is the only thing in frame with
-   a near edge and a far edge, so its rate is what the eye measures the others
-   against.
+/* The garden, cut out of the same photograph with alpha. It takes the same
+   tilt as the room and three times the growth, which is what makes the move a
+   camera move rather than a zoom: depth is the difference in rate.
 
    WebP only. A cut-out needs alpha, which rules out JPEG, and no AVIF encoder
    available to this build can write an alpha plane. A browser without WebP
-   paints the back plate alone, which still holds this layer's shadow and reads
-   as a quieter version of the same room. */
+   paints the back plate alone, which still holds this layer's shadow. */
 .plane-mid {
   z-index: 1;
-  /* Scale only. The translateY that used to ride along moved the bed 13px down
-     against the floor it stands on, which is the same slide that made the old
-     near plane float, just smaller. Scaling about the contact line is the whole
-     move. */
-  transform: scale(calc(1 + 0.16 * var(--s)));
+  transform: translateY(calc((1 - var(--s)) * 4%)) scale(calc(1 + 0.12 * var(--s)));
   background-image: url("/brand/hero-mid-2560.webp");
 }
 
-/* THERE IS NO NEAR PLANE. There was, carrying the spilled soil and leaf
-   litter, and it floated: that debris RESTS ON the paper floor, and the floor
-   is part of the room, so running the two at different rates slid the litter
-   off its own shadows and left the closest shrubs hanging unattached to
-   anything. Everything that stands on the floor now travels with the floor,
-   and the only thing that moves against it is the bed, which is the one object
-   in the picture with its own front and back edges. */
+/* The mark. Dominant: it is the subject, the set is what it hangs in. Its
+   centre sits over the garden, left of the frame's middle, and it stays
+   there: the thing is locked to the camera and the set moves under it. What
+   it does during the hold is settle on its ropes, a small swing damping to
+   rest and a few percent of growth, and nothing else.
 
-/* The mark, between the garden and the foreground, growing and tilting as the
-   move settles. The tilt is a positive rotateY, which swings the RIGHT edge
-   away from the reader: the first build had it negative and the left edge
-   went back, which reads as the object leaning into the camera rather than
-   turning on its strings. */
+   `top` is negative so the ropes leave the top of the frame rather than
+   beginning in mid air: the thing hangs from the pipe overhead, which is
+   above the picture. It was at -20% and the client said it was raised too
+   much; at -11% the wordmark hangs over the planting and clear of the front
+   timber, which is what a dangling object over a garden looks like. */
 .shot-mark {
   position: absolute;
   z-index: 2;
-  left: 50%;
-  /* Negative, so the strings leave the top of the frame rather than beginning
-     in mid air. The thing hangs from the lighting grid overhead, which is
-     above the picture. */
-  top: -20%;
-  /* Dominant. The mark is the subject; the set is what it hangs in. Square
-     artwork, so height is the binding constraint on a laptop, not width. */
+  left: calc(31% - var(--s) * 4.5%);
+  top: -11%;
+  /* Square artwork, so height is the binding constraint on a laptop. */
   width: min(87vh, 50vw, 46rem);
-  /* It starts centred and walks left as it settles, because the copy arrives
-     into the right of the frame and the two were landing in the same band:
-     the headline was unreadable across the lion. The horizontal move is also
-     the strongest part of the parallax, since it is the only element that
-     changes its position rather than just its size. */
   transform:
-    translateX(calc(-50% - var(--s) * 45%))
-    translateY(calc((1 - var(--s)) * 5vh))
-    scale(calc(0.86 + 0.14 * var(--s)))
-    rotateY(calc(var(--s) * 7deg))
-    rotateZ(calc(var(--s) * -1.1deg));
+    translateX(-50%)
+    translateY(calc((1 - var(--s)) * 3vh))
+    scale(calc(0.94 + 0.06 * var(--s)))
+    rotateY(calc(var(--s) * 5deg))
+    rotateZ(calc(1.4deg - var(--s) * 1.4deg));
   transform-style: preserve-3d;
   will-change: transform;
 }
 
-/* The copy arrives to the right of centre, not under the mark. It is set left
-   aligned because a centred block pinned to the right half reads as a mistake
-   rather than a decision. */
+/* The copy, beside the mark and level with its letters, on the lit floor to
+   the right of the garden. The set was built with that part of the floor left
+   quiet: the apple boxes sit below it, the C-stand stands beyond its right
+   edge, and the pool on the cyc is aimed behind it so the ground under the
+   words is the brightest paper in the picture. Left aligned, because a
+   centred block pinned to the right half reads as a mistake. */
 .shot-copy {
   position: absolute;
   z-index: 4;
-  left: 58%;
+  left: 53%;
   right: var(--gutter);
-  /* On the sweep, not on the planting. The copy used to sit at the bottom of
-     the frame, which put the headline across the leaves: dark type on busy
-     foliage, unreadable and accidental looking. The set is now built with a
-     quiet right side and the words land on it. */
-  /* Level with the mark, not above it: the two read as one band across the
-     frame, the mark on the left and the words beside it. Both were lifted
-     together to get here: at 38 percent the second button sat on the leaves of
-     the right hand clump, where its outline all but disappeared. */
-  top: 32%;
+  top: 46%;
   max-width: 36rem;
   opacity: var(--w);
   transform: translateY(-50%) translateX(calc((1 - var(--w)) * 2.5rem));
@@ -1469,12 +1446,11 @@ body > * { position: relative; z-index: 1; }
 }
 .shot-copy :where(a) { pointer-events: auto; }
 .shot-copy .hero-head {
-  /* The line must not wrap: the headline casts a raked shadow along the floor
-     of the set, and a two line version of that shadow reads as a printing
-     error rather than as light. So the size is capped by how much room the
-     block has, and the block's left edge and the mark's drift were both moved
-     to give it more. */
-  font-size: clamp(2.1rem, 4.2vw, 3.9rem);
+  /* One line. The headline throws a raked shadow along the floor and a two
+     line version of that shadow reads as a printing error, so the size is
+     capped by the width the block has between the mark's right edge and the
+     C-stand at the right of frame. */
+  font-size: clamp(2.1rem, 4vw, 3.6rem);
 }
 .shot-copy .hero-lead { font-size: clamp(1rem, 1.35vw, 1.2rem); }
 
@@ -1547,9 +1523,13 @@ body > * { position: relative; z-index: 1; }
     inset: 0 0 auto 0;
     height: var(--band);
     transform: none !important;
+    /* A portrait band through a landscape plate shows a little over half of
+       its width, so it is aimed at the garden, which stands left of the
+       plate's centre, rather than at the bare floor right of it. */
+    background-position: 18% 50%;
   }
-  /* All three planes still stack here, they simply do not move. Compositing
-     them is what rebuilds the room: the back plate alone is an empty studio,
+  /* Both planes still stack here, they simply do not move. Compositing them
+     is what rebuilds the set: the back plate alone is an empty studio,
      because the garden was lifted out of it so it could parallax. */
   .plane-back {
     background-image: image-set(
