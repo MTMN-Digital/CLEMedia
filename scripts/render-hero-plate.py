@@ -47,9 +47,12 @@ FRAME_ASPECT = 16 / 9
 # anything. A wider lens further back shows where the set finishes, which is
 # what makes it read as a built set rather than as a photograph of a garden.
 CAMERA_DISTANCE = 6.3           # metres back from the board centre
-CAMERA_HEIGHT = 0.98            # metres above the floor
-CAMERA_PITCH_DEG = -3.4         # negative looks down
-CAMERA_LENS_MM = 50.0
+CAMERA_HEIGHT = 2.40            # metres above the floor
+CAMERA_PITCH_DEG = -17.0         # negative looks down
+# 65 rather than 50. From 2.4 m a wide lens sweeps a long run of bare floor
+# into the bottom of the frame; a longer one at the same height and framing
+# shows about 0.75 m of floor in front of the bed instead of 1.8 m.
+CAMERA_LENS_MM = 65.0
 CAMERA_SENSOR_MM = 36.0
 # Stopped down from 2.8. At this distance a wide aperture would hold nothing
 # anyway, and the point of the shot is now that you can see the whole thing.
@@ -63,7 +66,7 @@ CAMERA_FOCUS_Y = 0.0            # focus on the board centre line
 # shrank to a hanging banner with black either side. 2.90 m puts its cut edges
 # just inside the frame at the wall while the floor runs off the sides, which
 # is what a roll of paper actually looks like from in front of it.
-SWEEP_HALF_WIDTH = 2.90
+SWEEP_HALF_WIDTH = 2.05
 SWEEP_FLOOR_FRONT_Y = -3.2
 SWEEP_COVE_START_Y = 1.6
 SWEEP_COVE_RADIUS = 0.9
@@ -146,13 +149,28 @@ BANK_PROFILE = 1.7              # how abruptly the bank climbs out of the dip
 # The centre is actively held DOWN, not merely left unraised. The mark hangs
 # into this gap, and a bank that only rises at the edges still runs level
 # underneath it, which is the hedge the first version of this was.
-BANK_CENTRE_DROP = 0.42         # scale at dead centre, easing back to 1 at the dip edge
+# Shallower than it was. Seen from the old low lens the dip was a graceful
+# saddle for the mark to hang into; seen from 2.4 m up it became a bare patch
+# of soil between two clumps.
+BANK_CENTRE_DROP = 0.80         # scale at dead centre, easing back to 1 at the dip edge
 BANK_BREAK = 0.22               # slow variation along the bank, so the top is not an arc
+# A low carpet across the whole bed, placed evenly and NOT scaled by the bank.
+# Holding the centre and the right side down left bare board showing between
+# two clumps, and the bed read as two separate plantings rather than one.
+GROUND_COVER_COUNT = 460
+GROUND_COVER_SCALE = (0.34, 0.60)
 # Asymmetry. The copy arrives right of centre, so the right side stays lower
 # and sparser and the weight sits left. Nothing here is a scrim behind the
 # words: the words land on a part of the set that was built to be quiet.
-PLANT_LEFT_BIAS = 0.34          # share of plants pushed toward the left half
-RIGHT_DROP = 0.22               # how much shorter the right side runs
+PLANT_LEFT_BIAS = 0.45          # share of plants pushed toward the left half
+# The copy lands on the right, and at 0.22 the planting came up to 38 percent
+# of the frame and put the lead and the second button on top of leaves. At 0.50
+# it went the other way and the bed ramped down from left to right like a
+# slide. The drop also EASES OFF toward the far right edge, so the bed rises
+# again at its end: tall left, dip for the mark, quiet middle right for the
+# words, and a corner that closes the composition instead of trailing away.
+RIGHT_DROP = 0.44               # how much shorter the right side runs
+RIGHT_DROP_RECOVER = 0.45       # fraction of the drop given back at the far edge
 
 # The spill: what fell off the model onto the clean floor.
 # The foreground is its own parallax plane, so it needs enough on it to read
@@ -631,7 +649,7 @@ def plant_garden(sources, soil_top):
         deliberately thin so the mark has air under it, and the left carries
         more than the right because the copy lands on the right."""
         u = rng.random()
-        edge = 1.0 - (1.0 - u) ** 1.9          # pushed outward
+        edge = 1.0 - (1.0 - u) ** 1.35         # pushed outward
         x = edge * hw * (1 if rng.random() > 0.5 else -1)
         if x > 0 and rng.random() < PLANT_LEFT_BIAS:
             x = -x
@@ -648,7 +666,19 @@ def plant_garden(sources, soil_top):
         else:
             m = 1.0 + BANK_RISE * ((t - BANK_DIP) / (1.0 - BANK_DIP)) ** BANK_PROFILE
         m *= 1.0 + BANK_BREAK * math.sin(x * 7.3 + 1.1)
-        return m * (1.0 - RIGHT_DROP) if x > 0 else m
+        if x <= 0:
+            return m
+        # The drop is full across the middle right and eases off toward the
+        # edge, so the bed closes rather than ramping away off the frame.
+        return m * (1.0 - RIGHT_DROP * (1.0 - RIGHT_DROP_RECOVER * t ** 2.4))
+
+    # The carpet goes down first, so the taller planting sits into it rather
+    # than on top of it. It takes no bank multiplier: its whole job is to make
+    # sure no patch of board is ever bare, including where the bank is held
+    # down for the mark and for the copy.
+    for _ in range(GROUND_COVER_COUNT):
+        place(sources, "grass", rng, (rng.uniform(-hw, hw), y_pick(), soil_top - 0.002),
+              rng.uniform(*GROUND_COVER_SCALE), rng.uniform(0, math.tau))
 
     for kind, count, scale in (
         ("boulder", BOULDER_COUNT, BOULDER_SCALE),
@@ -1020,14 +1050,14 @@ def main():
     soil_top = tag("mid", build_board)
     sources = import_kits()
     tag("mid", plant_garden, sources, soil_top)
-    tag("fore", spill, sources)
-    tag("fore", stand)
+    tag("back", spill, sources)
+    tag("back", stand)
     tag("back", studio)
     tag("back", room)
     tag("back", paper_roll)
-    box_origin, box_rot = tag("mid", softbox)
-    tag("fore", flag_rig)
-    tag("fore", cable)
+    box_origin, box_rot = tag("back", softbox)
+    tag("back", flag_rig)
+    tag("back", cable)
     world()
     key(box_origin, box_rot)
     camera()

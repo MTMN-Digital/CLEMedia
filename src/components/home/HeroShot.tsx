@@ -24,9 +24,10 @@ import { SITE } from "@/lib/site";
    renderer runs, nothing is uploaded per frame, and the quality ceiling is a
    path tracer rather than sixteen milliseconds.
 
-   WHAT EACH PLANE DOES. The sweep barely moves because it is a wall. The
-   garden moves more. The nearest things move most and leave the frame. That
-   difference in rate IS the depth; one rate would be a zoom.
+   WHAT EACH PLANE DOES. The room barely moves because it is a room. The bed
+   moves more, and it is scaled about the line where its board meets the paper,
+   so it grows out of the floor rather than sliding across it. That difference
+   in rate IS the depth; one rate would be a zoom.
 
    THE MARK stays in the DOM rather than being baked into the plate: it is the
    brand asset, it has to be crisp at any pixel ratio, it carries the alt
@@ -101,17 +102,18 @@ export function HeroShot() {
   return (
     <div ref={pin} className="shot-pin" style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
       <div ref={screen} className="shot-screen">
-        {/* The planes. Each is one rendered layer of the same photograph, and
-            each moves at its own rate. `back` is opaque and carries the room;
-            the others are cut out of it with alpha. */}
+        {/* Two planes, not three. `back` is opaque and carries the room, the
+            paper and everything standing on it; `mid` is the bed, cut out of
+            the same photograph with alpha, and it is the only thing that moves
+            against the room. A third plane held the spill on the floor and had
+            to go: litter resting on a floor that travels at a different rate
+            slides off its own shadow. */}
         <div aria-hidden="true" className="plane plane-back" />
         <div aria-hidden="true" className="plane plane-mid" />
 
         <div className="shot-mark">
-          <HeroMark sizes="(min-width: 1280px) 600px, 62vw" />
+          <HeroMark sizes="(min-width: 1280px) 760px, 76vw" />
         </div>
-
-        <div aria-hidden="true" className="plane plane-fore" />
 
         <div className="shot-copy">
           <h1 className="hero-head">
