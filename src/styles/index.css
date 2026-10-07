@@ -1551,9 +1551,27 @@ body > * { position: relative; z-index: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No move: the settled frame, with everything already placed. */
-  .shot-pin { height: auto !important; }
-  .shot-screen { position: relative; top: 0; height: auto; padding: 6vh 0 9vh; --p: 1; --w: 1; }
   .plane, .shot-mark, .shot-copy { transition: none; }
+}
+
+/* No move: the settled frame, held still. Phone width is excluded because the
+   phone layout is already a still, and it builds its height out of padding
+   that this would overwrite.
+
+   THE SCREEN NEEDS A REAL HEIGHT HERE. The mark and the copy are both
+   absolutely positioned, so `height: auto` had nothing in flow to measure and
+   collapsed the hero to 135px, leaving the mark and the headline hanging
+   outside it across the section below. */
+@media (prefers-reduced-motion: reduce) and (min-width: 821px) {
+  .shot-pin { height: auto !important; }
+  .shot-screen {
+    position: relative;
+    top: 0;
+    height: min(86svh, 54rem);
+    min-height: 34rem;
+    padding: 0;
+    --p: 1;
+    --w: 1;
+  }
 }
 

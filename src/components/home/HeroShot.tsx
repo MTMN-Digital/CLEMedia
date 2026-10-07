@@ -67,7 +67,14 @@ export function HeroShot() {
     const read = () => {
       frame = 0;
       const span = host.offsetHeight - inner.offsetHeight;
-      const raw = span > 0 ? clamp01((window.scrollY - host.offsetTop) / span) : 0;
+      /* No travel means the hero is not pinned: the phone layout and the
+         reduced-motion layout both collapse the pin to the height of one
+         screen. In that case the correct state is the SETTLED one, not the
+         opening one. Reading 0 here wrote `--p: 0` and `--w: 0` as inline
+         styles, which beat the stylesheet rules that set them to 1, and the
+         headline, the lead and both buttons rendered at opacity 0: laid out at
+         the right coordinates, and invisible. */
+      const raw = span > 0 ? clamp01((window.scrollY - host.offsetTop) / span) : 1;
       const p = ease(raw);
       inner.style.setProperty("--p", p.toFixed(4));
       inner.style.setProperty("--w", clamp01((p - WORDS_IN) / (WORDS_SET - WORDS_IN)).toFixed(4));
