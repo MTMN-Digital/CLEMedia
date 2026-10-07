@@ -27,7 +27,14 @@ from PIL import Image, features
 
 
 ROOT = Path(__file__).resolve().parent.parent
-OUTPUT_DIRECTORY = ROOT / "public" / "brand"
+# src/assets, NOT public/brand. Files in public are copied to the deploy
+# verbatim with no content hash, and vercel.json caches /brand for a day with
+# stale-while-revalidate for a week. The plate filenames never change, so every
+# re-render shipped to a URL the browser and the CDN edge already held: the
+# client spent days looking at a plate from the first camera setup while each
+# new render landed invisibly behind it. From src/assets Vite fingerprints the
+# filename from the content, so new bytes are always a new URL.
+OUTPUT_DIRECTORY = ROOT / "src" / "assets" / "hero"
 WIDTHS = (1280, 1920, 2560)
 MAX_BYTES = 400 * 1024
 JPEG_QUALITIES = range(90, 34, -5)

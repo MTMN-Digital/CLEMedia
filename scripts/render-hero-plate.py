@@ -139,12 +139,18 @@ ROOM_ALBEDO = (0.030, 0.028, 0.026, 1.0)
 # a strip, and a strip is what the previous trough was.
 GARDEN_SIZE = (2.6, 1.6)        # along x, along y, outside the walls
 GARDEN_CENTRE = (-1.05, 0.10)
-GARDEN_YAW_DEG = -11.0
-WALL_HEIGHT = 0.17              # low: a boundary, not a box
+# Turned further, so you read the long front wall, the near END wall and a
+# little of the far side: three walls, which is what makes it a container
+# rather than a line of timber behind some leaves.
+GARDEN_YAW_DEG = -27.0
+WALL_HEIGHT = 0.30              # still a boundary, but tall enough to contain
 WALL_THICKNESS = 0.045
 POST_SIZE = 0.065
 POST_RISE = 0.03
-SOIL_DROP = 0.05                # soil surface below the top of the walls
+# More timber standing above the soil. At 0.05 the walls were a thin rim the
+# planting sat on top of; the client kept saying the box did not surround the
+# planting, and it did not.
+SOIL_DROP = 0.115               # soil surface below the top of the walls
 TIMBER_BEVEL = 0.0025
 TIMBER_ALBEDO = (0.042, 0.026, 0.014, 1.0)   # linear; a weathered mid brown softwood
 TIMBER_GRAIN = (0.022, 0.013, 0.006, 1.0)    # the darker streaks in it
@@ -171,7 +177,10 @@ STONE_COUNT = 3
 STONE_SCALE = (0.045, 0.065)
 STONE_VALUE = 0.55              # the scan is a pale sandstone; darken it to a garden stone
 STONE_SATURATION = 0.6
-PLANT_MARGIN = 0.03             # how close to the walls the planting goes
+# The planting stops well short of the walls. At 0.03 it grew right up to the
+# timber and spilled over it, burying the rim on the far sides so only the
+# front wall was ever visible.
+PLANT_MARGIN = 0.17             # how close to the walls the planting goes
 # Height across the depth of the bed: short at the front, tall at the back.
 DEPTH_RISE = (0.72, 1.32)
 END_RISE = 0.22                 # the two ends run a little taller than the middle
