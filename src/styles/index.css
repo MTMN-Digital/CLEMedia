@@ -1478,6 +1478,21 @@ body > * { position: relative; z-index: 1; }
 
    There is also no pinned scroll here: holding a phone screen for two swipes
    before the page will start is a cost a reader did not agree to. */
+/* Between the phone and a large desktop, the 1920 plates. A 1440 laptop was
+   pulling the 2560 set, which is 338 KB of hero for a screen that cannot
+   resolve it; the 1920 set is 161 KB and is still over 1x on that screen. */
+@media (min-width: 821px) and (max-width: 1600px) {
+  .plane-back {
+    background-image: image-set(
+      url("/brand/hero-back-1920.avif") type("image/avif"),
+      url("/brand/hero-back-1920.webp") type("image/webp"),
+      url("/brand/hero-back-1920.jpg") type("image/jpeg")
+    );
+  }
+  .plane-mid { background-image: url("/brand/hero-mid-1920.webp"); }
+  .plane-fore { background-image: url("/brand/hero-fore-1920.webp"); }
+}
+
 @media (max-width: 820px) {
   .shot-pin { height: auto !important; }
   .shot-screen {
