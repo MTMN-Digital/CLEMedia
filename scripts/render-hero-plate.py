@@ -46,9 +46,16 @@ FRAME_ASPECT = 16 / 9
 # nowhere for the picture to stop: no board end, no floor beyond, no edge of
 # anything. A wider lens further back shows where the set finishes, which is
 # what makes it read as a built set rather than as a photograph of a garden.
+# 30 degrees down, looking INTO the bed rather than across it.
+#
+# The height follows from the angle, it is not a free choice. For the lens to
+# stay pointed at the bed, tan(pitch) = (height - bed top) / distance, so 30
+# degrees at 6.3 m back puts the camera at 3.84 m. Tilting to 30 and leaving
+# the camera at 2.4 m would aim the axis at the floor two metres IN FRONT of
+# the bed and shove the set up into the top of the frame.
 CAMERA_DISTANCE = 6.3           # metres back from the board centre
-CAMERA_HEIGHT = 2.40            # metres above the floor
-CAMERA_PITCH_DEG = -17.0         # negative looks down
+CAMERA_HEIGHT = 3.84            # metres above the floor
+CAMERA_PITCH_DEG = -30.0        # negative looks down
 # 65 rather than 50. From 2.4 m a wide lens sweeps a long run of bare floor
 # into the bottom of the frame; a longer one at the same height and framing
 # shows about 0.75 m of floor in front of the bed instead of 1.8 m.
@@ -101,16 +108,34 @@ SOFTBOX_PITCH_DEG = 22.0        # tipped down toward it
 
 # A cable from the softbox stand, down and away across the paper.
 CABLE_THICKNESS = 0.011
-CABLE_RUN = [(-1.38, -0.44), (-1.46, -0.95), (-1.26, -1.38), (-0.88, -1.56)]
+# The cable now crosses the whole floor, left to right. With the bed pushed
+# left, the right half of the picture is bare paper, and a studio floor is not
+# bare: it has the gear on it. This keeps that half dressed without putting
+# anything leafy where the headline lands.
+CABLE_RUN = [(-1.38, -0.44), (-1.48, -0.80), (-1.30, -1.15), (-0.75, -1.32),
+             (0.10, -1.24), (0.80, -1.34), (1.70, -1.28)]
 CABLE_TURNS = 2
-CABLE_CENTRE = (-0.54, -1.64)
+CABLE_CENTRE = (1.15, -1.40)
 CABLE_RADIUS = 0.17
 SWEEP_ALBEDO = (0.63, 0.51, 0.30, 1.0)   # linear; roughly sRGB 0.87 0.81 0.61
 SWEEP_ROUGHNESS = 0.85
 SWEEP_TOOTH = 0.04                        # paper grain bump strength
 
 # The garden board: a model base, plywood, standing on the floor.
-BOARD_WIDTH = 2.6
+# Shorter, and left of the axis. At 2.6 m wide and centred the bed ran to 76
+# percent of the frame, so the headline had nowhere to land that was not
+# leaves. At 2.0 m sitting left, both ends of the board are in shot and the
+# right half of the picture is bare paper.
+BOARD_WIDTH = 2.4
+# The bed sits left of the lens axis. Looking 30 degrees down, the planting
+# spreads across the whole frame and there is nowhere clean left for the
+# headline; shifting the set left opens the right of the picture as bare paper,
+# which is where the words land. Everything positioned relative to the bed adds
+# this: the planting, the spill, the soil.
+# Far enough left that the bed runs out of the left of the picture and its
+# RIGHT end is the one you see. That is the end that matters: it is where the
+# set stops, and everything to the right of it is bare paper for the words.
+BOARD_X = -1.45
 BOARD_DEPTH = 1.15              # a bed with rows behind rows, not a trough
 BOARD_THICKNESS = 0.036
 BOARD_BEVEL = 0.002
@@ -162,7 +187,7 @@ GROUND_COVER_SCALE = (0.34, 0.60)
 # Asymmetry. The copy arrives right of centre, so the right side stays lower
 # and sparser and the weight sits left. Nothing here is a scrim behind the
 # words: the words land on a part of the set that was built to be quiet.
-PLANT_LEFT_BIAS = 0.45          # share of plants pushed toward the left half
+PLANT_LEFT_BIAS = 0.25          # share of plants pushed toward the left half
 # The copy lands on the right, and at 0.22 the planting came up to 38 percent
 # of the frame and put the lead and the second button on top of leaves. At 0.50
 # it went the other way and the bed ramped down from left to right like a
@@ -182,7 +207,11 @@ SPILL_GRASS_SCALE = (0.26, 0.44)
 SPILL_TWIG_COUNT = 15            # dry twigs lying on the paper read as debris at once
 SPILL_TWIG_SCALE = (0.07, 0.13)
 SPILL_FROND_COUNT = 8
-SPILL_DEPTH = 0.85              # how far in front of the board edge it reaches
+SPILL_DEPTH = 0.85
+# The litter spreads well past the right end of the board, out across the
+# clean floor. Everything in the spill is placed relative to the bed, so this
+# range is in bed coordinates and BOARD_X is added when it is placed.
+SPILL_SPREAD = (-1.25, 2.75)              # how far in front of the board edge it reaches
 SPILL_CRUMB_COUNT = 170
 SPILL_CRUMB_RADIUS = (0.003, 0.007)
 SPILL_SPECK_COUNT = 430         # fine soil dust close to the edge
@@ -285,6 +314,17 @@ KICK_TARGET = (0.0, -0.3, 0.05)
 KICK_SIZE = 0.15
 KICK_POWER_W = 150.0
 KICK_KELVIN = 4000.0
+# A soft wash across the RIGHT of the backdrop, which is the part of the set
+# the headline lands on. Measured off the painted pixels, the paper there was
+# #a09075, and the red word of the headline sat on it at 2.76:1 against the
+# 3.0 that large text needs. The words are not going to be recoloured to suit
+# the set; the set is lit so the words can sit on it.
+BACKWASH_LOCATION = (2.6, -1.2, 2.9)
+BACKWASH_TARGET = (1.15, 2.5, 1.15)
+BACKWASH_SIZE = (1.8, 1.4)
+BACKWASH_POWER_W = 900.0
+BACKWASH_COLOUR = (1.0, 0.97, 0.90)
+
 # The real key: large, far enough back to be even across the whole bed, and out
 # of shot behind the camera's left shoulder.
 FILL_LOCATION = (-2.2, -3.4, 2.5)
@@ -302,7 +342,7 @@ VIEW_LOOK = "AgX - Punchy"
 # Down a stop and a bit. The sweep is a large, light, diffuse surface, so it
 # acts as a bounce for everything else: cutting the lamps individually barely
 # moved the picture, because most of what lights the set is the paper.
-EXPOSURE = -0.5
+EXPOSURE = -0.60
 CPU_THREADS = 12
 
 ROOT = Path("/home/david/Documents/GitHub/clients/cle-media")
@@ -527,7 +567,7 @@ def build_sweep():
 def build_board():
     face = plywood_face_material()
     edge = plywood_edge_material()
-    board = box("Board", (0, 0, BOARD_THICKNESS / 2), (BOARD_WIDTH, BOARD_DEPTH, BOARD_THICKNESS), face, BOARD_BEVEL)
+    board = box("Board", (BOARD_X, 0, BOARD_THICKNESS / 2), (BOARD_WIDTH, BOARD_DEPTH, BOARD_THICKNESS), face, BOARD_BEVEL)
     board.data.materials.append(edge)
     for poly in board.data.polygons:
         if abs(poly.normal.z) < 0.5:
@@ -535,7 +575,7 @@ def build_board():
     soil_top = BOARD_THICKNESS + SOIL_THICKNESS
     soil = box(
         "Soil",
-        (0, 0, BOARD_THICKNESS + SOIL_THICKNESS / 2),
+        (BOARD_X, 0, BOARD_THICKNESS + SOIL_THICKNESS / 2),
         (BOARD_WIDTH - 2 * SOIL_INSET, BOARD_DEPTH - 2 * SOIL_INSET, SOIL_THICKNESS),
         soil_material(),
         0.003,
@@ -677,7 +717,7 @@ def plant_garden(sources, soil_top):
     # sure no patch of board is ever bare, including where the bank is held
     # down for the mark and for the copy.
     for _ in range(GROUND_COVER_COUNT):
-        place(sources, "grass", rng, (rng.uniform(-hw, hw), y_pick(), soil_top - 0.002),
+        place(sources, "grass", rng, (rng.uniform(-hw, hw) + BOARD_X, y_pick(), soil_top - 0.002),
               rng.uniform(*GROUND_COVER_SCALE), rng.uniform(0, math.tau))
 
     for kind, count, scale in (
@@ -688,11 +728,14 @@ def plant_garden(sources, soil_top):
         ("grass", GRASS_COUNT, GRASS_SCALE),
     ):
         for _ in range(count):
+            # x is local to the bed, because bank() and the left/right bias are
+            # both defined across the bed. BOARD_X is added only when the thing
+            # is actually placed in the room.
             x = x_pick()
             y = y_pick()
             z = soil_top - (0.01 if kind == "boulder" else 0.002)
             size = rng.uniform(*scale) * (1.0 if kind == "boulder" else bank(x))
-            place(sources, kind, rng, (x, y, z), size, rng.uniform(0, math.tau))
+            place(sources, kind, rng, (x + BOARD_X, y, z), size, rng.uniform(0, math.tau))
 
 
 def spill(sources):
@@ -701,7 +744,7 @@ def spill(sources):
     crumb = flat_material("Crumb", SOIL_ALBEDO, 0.95)
     for _ in range(SPILL_GRASS_COUNT):
         d = rng.random() ** 0.8 * SPILL_DEPTH
-        x = rng.uniform(-1.35, 1.35)
+        x = rng.uniform(*SPILL_SPREAD) + BOARD_X
         y = edge_y - 0.01 - d
         # Lying flat on the floor, blades pointing away from where they fell.
         place(
@@ -714,13 +757,13 @@ def spill(sources):
             tilt=(math.radians(rng.uniform(78, 92)), 0.0),
         )
     if SPILL_FROND:
-        place(sources, "fern", rng, (-0.35, edge_y - 0.09, 0.004), 0.17, math.radians(200), tilt=(math.radians(88), 0.0))
+        place(sources, "fern", rng, (-0.35 + BOARD_X, edge_y - 0.09, 0.004), 0.17, math.radians(200), tilt=(math.radians(88), 0.0))
         for _ in range(SPILL_FROND_COUNT - 1):
             place(
                 sources,
                 "fern",
                 rng,
-                (rng.uniform(-1.0, 1.0), edge_y - 0.02 - rng.random() ** 2 * SPILL_DEPTH, 0.004),
+                (rng.uniform(*SPILL_SPREAD) + BOARD_X, edge_y - 0.02 - rng.random() ** 2 * SPILL_DEPTH, 0.004),
                 rng.uniform(0.16, 0.24),
                 rng.uniform(0, math.tau),
                 tilt=(math.radians(rng.uniform(80, 90)), 0.0),
@@ -730,7 +773,7 @@ def spill(sources):
             sources,
             "branch",
             rng,
-            (rng.uniform(-1.2, 1.2), edge_y - 0.02 - rng.random() ** 1.5 * SPILL_DEPTH, 0.002),
+            (rng.uniform(*SPILL_SPREAD) + BOARD_X, edge_y - 0.02 - rng.random() ** 1.5 * SPILL_DEPTH, 0.002),
             rng.uniform(*SPILL_TWIG_SCALE),
             rng.uniform(0, math.tau),
         )
@@ -740,7 +783,7 @@ def spill(sources):
     ):
         for _ in range(count):
             d = rng.random() ** reach_power * SPILL_DEPTH
-            x = rng.uniform(-1.25, 1.25)
+            x = rng.uniform(*SPILL_SPREAD) + BOARD_X
             r = rng.uniform(*radius)
             bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=r, location=(x, edge_y - 0.004 - d, r * 0.8))
             o = bpy.context.object
@@ -944,6 +987,16 @@ def key(box_origin, box_rot):
     f.data.spread = math.radians(110.0)
     f.data.color = FILL_COLOUR
     f.rotation_euler = (Vector(FILL_TARGET) - Vector(FILL_LOCATION)).to_track_quat("-Z", "Y").to_euler()
+
+    bpy.ops.object.light_add(type="AREA", location=BACKWASH_LOCATION)
+    bw = bpy.context.object
+    bw.name = "Backdrop wash"
+    bw.data.shape = "RECTANGLE"
+    bw.data.size, bw.data.size_y = BACKWASH_SIZE
+    bw.data.energy = BACKWASH_POWER_W
+    bw.data.spread = math.radians(95.0)
+    bw.data.color = BACKWASH_COLOUR
+    bw.rotation_euler = (Vector(BACKWASH_TARGET) - Vector(BACKWASH_LOCATION)).to_track_quat("-Z", "Y").to_euler()
 
     bpy.ops.object.light_add(type="SPOT", location=POOL_LOCATION)
     p = bpy.context.object

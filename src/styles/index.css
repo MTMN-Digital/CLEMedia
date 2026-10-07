@@ -1346,6 +1346,10 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-paper-1);
   perspective: 1400px;
   --p: 0;
+  /* --s is the set's progress and it reaches 1 before --p does, so the picture
+     is already settled and still when the pin lets go. --w is the copy's own
+     arrival. */
+  --s: 0;
   --w: 0;
 }
 
@@ -1364,6 +1368,15 @@ body > * { position: relative; z-index: 1; }
      line where the board meets the paper keeps that join fixed, so the bed
      grows out of the floor instead of sliding across it. */
   transform-origin: 50% 82%;
+  /* The foot of the photograph dissolves instead of being cut off by the
+     bottom of the screen. The screen's own ground is the page's ground, so
+     the paper floor of the set runs on into the page rather than ending at a
+     ruled line, and the band below carries its litter a little further. */
+  /* Finishes at 97, not 100. The planes are scaled, and the mask scales with
+     them, so a fade that only reached nothing at the plane's own bottom edge
+     was still faintly painting at the screen's bottom edge and left a step
+     where the hero met the band. */
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 97%);
   will-change: transform;
 }
 
@@ -1371,7 +1384,7 @@ body > * { position: relative; z-index: 1; }
    eye stops believing. */
 .plane-back {
   z-index: 0;
-  transform: scale(calc(1 + 0.05 * var(--p)));
+  transform: scale(calc(1 + 0.05 * var(--s)));
   background-image: image-set(
     url("/brand/hero-back-2560.avif") type("image/avif"),
     url("/brand/hero-back-2560.webp") type("image/webp"),
@@ -1394,8 +1407,21 @@ body > * { position: relative; z-index: 1; }
      against the floor it stands on, which is the same slide that made the old
      near plane float, just smaller. Scaling about the contact line is the whole
      move. */
-  transform: scale(calc(1 + 0.16 * var(--p)));
+  transform: scale(calc(1 + 0.16 * var(--s)));
   background-image: url("/brand/hero-mid-2560.webp");
+}
+
+/* The floor, continuing past the hero. A strip cut from the bottom of the
+   same render, soft at both ends: it melts out of the hero's own floor and
+   melts into the page, carrying the scatter of soil and leaf litter with it.
+   Nothing here is a divider or a decoration; it is the same piece of paper. */
+.hero-floor {
+  height: clamp(58px, 7vw, 118px);
+  margin-top: -1px;          /* no hairline where two cream surfaces meet */
+  background-image: url("/brand/hero-floor-1920.webp");
+  background-size: cover;
+  background-position: 50% 0;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
 }
 
 /* THERE IS NO NEAR PLANE. There was, carrying the spilled soil and leaf
@@ -1428,11 +1454,11 @@ body > * { position: relative; z-index: 1; }
      the strongest part of the parallax, since it is the only element that
      changes its position rather than just its size. */
   transform:
-    translateX(calc(-50% - var(--p) * 45%))
-    translateY(calc((1 - var(--p)) * 5vh))
-    scale(calc(0.86 + 0.14 * var(--p)))
-    rotateY(calc(var(--p) * 7deg))
-    rotateZ(calc(var(--p) * -1.1deg));
+    translateX(calc(-50% - var(--s) * 45%))
+    translateY(calc((1 - var(--s)) * 5vh))
+    scale(calc(0.86 + 0.14 * var(--s)))
+    rotateY(calc(var(--s) * 7deg))
+    rotateZ(calc(var(--s) * -1.1deg));
   transform-style: preserve-3d;
   will-change: transform;
 }
@@ -1532,6 +1558,7 @@ body > * { position: relative; z-index: 1; }
     background: var(--color-raised);
     --band: 51vh;
     --p: 1;
+    --s: 1;
     --w: 1;
   }
   .plane {
@@ -1605,6 +1632,7 @@ body > * { position: relative; z-index: 1; }
     min-height: 34rem;
     padding: 0;
     --p: 1;
+    --s: 1;
     --w: 1;
   }
 }

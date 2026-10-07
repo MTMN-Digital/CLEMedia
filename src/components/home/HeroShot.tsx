@@ -35,7 +35,14 @@ import { SITE } from "@/lib/site";
    ========================================================================== */
 
 /** Length of the hold, in viewport heights, on top of the sticky screen. */
-const TRAVEL = 0.9;
+const TRAVEL = 1.0;
+/** Where the move has finished, as a fraction of the hold.
+ *
+ *  Everything used to arrive exactly as the pin let go, so the push in stopped
+ *  and the page started scrolling in the same frame: the handover read as a
+ *  lurch. Finishing at 0.85 leaves a short stretch at the end where the frame
+ *  is simply settled and still, and the page then carries it away. */
+const SETTLE_AT = 0.85;
 /** Where in the move the words start arriving, and where they have landed. */
 const WORDS_IN = 0.45;
 const WORDS_SET = 0.9;
@@ -78,6 +85,8 @@ export function HeroShot() {
       const raw = span > 0 ? clamp01((window.scrollY - host.offsetTop) / span) : 1;
       const p = ease(raw);
       inner.style.setProperty("--p", p.toFixed(4));
+      /* The set's own progress, which reaches 1 before the pin releases. */
+      inner.style.setProperty("--s", clamp01(p / SETTLE_AT).toFixed(4));
       inner.style.setProperty("--w", clamp01((p - WORDS_IN) / (WORDS_SET - WORDS_IN)).toFixed(4));
     };
     const onScroll = () => {
