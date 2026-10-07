@@ -48,14 +48,57 @@ const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: "domcontentloaded", timeout: 40000 });
 await page.waitForTimeout(2200);
 
-/* Past the end of the move, so the frame is settled and still. The pin is
-   taller than one screen, so the hero is still stuck to the top here. */
-await page.evaluate(() => {
+/* JUST BEFORE the end of the move, not past it.
+ *
+ * This was `+ 60` past the release point, on the assumption that the hero
+ * stays stuck for the whole pin. It does not: the sticky screen stops sticking
+ * once the pin's bottom reaches the viewport bottom, so 60px later the hero has
+ * slid up by 60px and the section below is showing. That is not merely an odd
+ * screenshot. The copy slides up with it, and text measured where it overlaps
+ * the next section is measured against the wrong ground entirely.
+ *
+ * So: stop a few pixels short, then ASSERT the hero is still pinned, and fail
+ * loudly rather than quietly reporting a number from the wrong frame. */
+const settled = await page.evaluate(() => {
   const pin = document.querySelector(".shot-pin");
   const screen = document.querySelector(".shot-screen");
-  window.scrollTo(0, pin && screen ? pin.offsetTop + (pin.offsetHeight - screen.offsetHeight) + 60 : 900);
+  if (!pin || !screen) return { ok: false, why: "no .shot-pin or .shot-screen" };
+  /* The screen latches at `top: var(--header-h)`, so it starts sticking when
+     the pin's top reaches that line and releases exactly `span` later. The
+     header height cancels out of the release point, which is why adding
+     `pin.offsetTop` to it overshot by a whole header. */
+  const header = document.querySelector("header");
+  const headerH = header ? header.getBoundingClientRect().height : 0;
+  const span = pin.offsetHeight - screen.offsetHeight;
+  window.scrollTo(0, pin.offsetTop - headerH + span - 8);
+  return { ok: true };
 });
+if (!settled.ok) {
+  console.log(`hero: ${settled.why}`);
+  process.exit(1);
+}
 await page.waitForTimeout(1100);
+
+const pinned = await page.evaluate(() => {
+  const screen = document.querySelector(".shot-screen");
+  const top = Math.round(screen.getBoundingClientRect().top);
+  const header = document.querySelector("header");
+  const want = header ? Math.round(header.getBoundingClientRect().height) : 0;
+  const p = screen.style.getPropertyValue("--p");
+  return { top, want, p: Number(p || 0) };
+});
+if (Math.abs(pinned.top - pinned.want) > 4) {
+  console.log(
+    `hero: NOT the settled frame. The screen sits at top ${pinned.top} but the ` +
+    `header is ${pinned.want} tall, so the hero has already come unstuck and ` +
+    `every sample would be taken against the wrong ground.`,
+  );
+  process.exit(1);
+}
+if (pinned.p < 0.97) {
+  console.log(`hero: the move has not finished, --p is ${pinned.p}`);
+  process.exit(1);
+}
 
 const items = await page.evaluate(() => {
   const cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });

@@ -86,7 +86,17 @@ export function HeroShot() {
          styles, which beat the stylesheet rules that set them to 1, and the
          headline, the lead and both buttons rendered at opacity 0: laid out at
          the right coordinates, and invisible. */
-      const raw = span > 0 ? clamp01((window.scrollY - host.offsetTop) / span) : 1;
+      /* The move begins when the screen STARTS sticking, not when the pin's top
+         passes the viewport top. The screen sticks at `top: var(--header-h)`,
+         so it latches as soon as the pin's top reaches that line, which is
+         `host.offsetTop - headerH` in scroll terms, and it lets go exactly
+         `span` later. Measuring from `host.offsetTop` ran the whole animation
+         one header height late: the last of it played after the hero had
+         already come unstuck and was sliding up the page. */
+      const header = document.querySelector("header");
+      const headerH = header ? header.getBoundingClientRect().height : 0;
+      const start = host.offsetTop - headerH;
+      const raw = span > 0 ? clamp01((window.scrollY - start) / span) : 1;
       const p = ease(raw);
       inner.style.setProperty("--p", p.toFixed(4));
       /* The set's own progress, which reaches 1 before the pin releases. */
