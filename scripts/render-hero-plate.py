@@ -75,8 +75,8 @@ FRAME_ASPECT = 16 / 10
 # the lower middle of the frame, the floor running to the bottom edge, and the
 # cyc top with the dark band above it across the top.
 CAMERA_DISTANCE = 4.3           # metres back from the garden's centre line
-CAMERA_HEIGHT = 3.1             # metres above the floor
-CAMERA_PITCH_DEG = -27.0        # negative looks down
+CAMERA_HEIGHT = 1.35            # metres above the floor
+CAMERA_PITCH_DEG = -16.0        # negative looks down
 CAMERA_LENS_MM = 28.0
 CAMERA_SENSOR_MM = 36.0
 # Stopped down. The whole point of the shot is that you can see the whole set;
@@ -137,14 +137,15 @@ ROOM_ALBEDO = (0.030, 0.028, 0.026, 1.0)
 # the headline has the right of the frame. It is turned a few degrees so the
 # camera sees two sides and a near corner: square to the lens a box reads as
 # a strip, and a strip is what the previous trough was.
-GARDEN_SIZE = (2.6, 1.6)        # along x, along y, outside the walls
-GARDEN_CENTRE = (-1.05, 0.10)
+GARDEN_SIZE = (2.9, 2.0)        # along x, along y, outside the walls
+GARDEN_CENTRE = (-1.35, -0.62)
 # Turned further, so you read the long front wall, the near END wall and a
 # little of the far side: three walls, which is what makes it a container
 # rather than a line of timber behind some leaves.
-GARDEN_YAW_DEG = -27.0
+GARDEN_YAW_DEG = -17.0
 WALL_HEIGHT = 0.30              # still a boundary, but tall enough to contain
 WALL_THICKNESS = 0.045
+WALL_BOARDS = 2                 # boards per side, with a shadow line between
 POST_SIZE = 0.065
 POST_RISE = 0.03
 # More timber standing above the soil. At 0.05 the walls were a thin rim the
@@ -163,12 +164,12 @@ SOIL_ALBEDO = (0.045, 0.028, 0.015, 1.0)
 # grass everywhere so no soil shows as bare board, ferns for mass, the tall
 # things toward the back and the ends so the near edge stays low and the
 # timber reads. A couple of flat stones are set in near the front.
-GROUND_COVER_COUNT = 420
+GROUND_COVER_COUNT = 900
 GROUND_COVER_SCALE = (0.34, 0.60)
-GRASS_COUNT = 950
+GRASS_COUNT = 1850
 GRASS_SCALE = (0.66, 1.08)
-FERN_COUNT = 72
-FERN_SCALE = (0.40, 0.72)
+FERN_COUNT = 210
+FERN_SCALE = (0.62, 1.10)
 CELANDINE_COUNT = 16
 CELANDINE_SCALE = (0.55, 0.92)
 BRANCH_COUNT = 7
@@ -180,7 +181,7 @@ STONE_SATURATION = 0.6
 # The planting stops well short of the walls. At 0.03 it grew right up to the
 # timber and spilled over it, burying the rim on the far sides so only the
 # front wall was ever visible.
-PLANT_MARGIN = 0.17             # how close to the walls the planting goes
+PLANT_MARGIN = 0.13             # how close to the walls the planting goes
 # Height across the depth of the bed: short at the front, tall at the back.
 DEPTH_RISE = (0.72, 1.32)
 END_RISE = 0.22                 # the two ends run a little taller than the middle
@@ -584,11 +585,19 @@ def build_garden():
         return box(name, centre, dims, wood, TIMBER_BEVEL)
 
     timber("Garden floor", (0, 0, 0.012), (w, d, 0.024))
-    # Front and back run the full width; the ends sit between them.
-    timber("Garden wall front", (0, -hd + t / 2, h / 2), (w, t, h))
-    timber("Garden wall back", (0, hd - t / 2, h / 2), (w, t, h))
-    for side in (-1, 1):
-        timber("Garden wall end", (side * (hw - t / 2), 0, h / 2), (t, d - 2 * t, h))
+
+    # Each wall is BOARDS, not one slab. Seen almost in elevation from a low
+    # lens, a single 3.3m x 0.3m panel is a featureless plank of colour and it
+    # is the main reason the bed read as cheap; two boards with a shadow line
+    # between them read as something built out of timber.
+    gap = 0.012
+    board_h = (h - gap * (WALL_BOARDS - 1)) / WALL_BOARDS
+    for i in range(WALL_BOARDS):
+        z = board_h / 2 + i * (board_h + gap)
+        timber("Garden wall front", (0, -hd + t / 2, z), (w, t, board_h))
+        timber("Garden wall back", (0, hd - t / 2, z), (w, t, board_h))
+        for side in (-1, 1):
+            timber("Garden wall end", (side * (hw - t / 2), 0, z), (t, d - 2 * t, board_h))
     for sx in (-1, 1):
         for sy in (-1, 1):
             timber("Garden post",
