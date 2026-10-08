@@ -1,17 +1,33 @@
 import { Settle } from "@/components/Settle";
+import { Stage } from "@/components/render";
 import type { Strand } from "@/components/journal/data";
 
 /* ============================================================================
-   The contents.
+   The contents, as the file it is.
 
-   Four strands, each set as a row: the name large on the left, what it is for
-   and its status on the right, the same left heading and right body shape the
-   Story page uses. Four boxes would say "four features"; rows with a rule
-   between them say "a publication with sections", which is the true statement.
+   WHAT THIS REPLACED. Four strands set as four text rows with a hairline
+   between them and a mono ordinal in the margin. It was honest and it was
+   completely flat, on a page that otherwise had no object on it at all: the
+   journal was the one page where a reader met nothing but type.
 
-   The status never carries a date or a count the client has not got: an empty
-   strand reads "In preparation", a filled one reads the real number of
-   published pieces, counted from the CMS.
+   WHY CARDS, and why these cards. A journal's strands are its sections, and
+   sections in a studio live on tabbed dividers in a file. The tab is not
+   decoration, it is the thing that tells you where one section starts, and it
+   lets the four read as one object with four parts rather than four separate
+   boxes. `card-stock` and `card-tab` already existed for exactly this and were
+   used once, on a single note elsewhere on the page.
+
+   THE ORDINALS ARE GONE. `01 / THE RESEARCH` above a strand is the numbered
+   mono eyebrow the house retired: it was the escape from the default until it
+   became the default. The strands have no order anyway, which is the giveaway
+   that the number was carrying nothing. The tab carries the name instead,
+   which is what a tab is for.
+
+   HAND-PLACED, NOT GENERATED. Each card has its own lean, its own tab
+   position and its own depth off the surface, so the file reads as something
+   somebody put down rather than a grid with a rotation function applied. The
+   values are written out for that reason, and a fifth strand gets its own
+   line rather than a modulo.
    ========================================================================== */
 
 export interface ContentsRow extends Strand {
@@ -19,29 +35,56 @@ export interface ContentsRow extends Strand {
   count: number;
 }
 
+/* lean: degrees of roll. tab: where the divider's tab sits along the top edge.
+   lift: how far off the surface, which drives the shadow. */
+const PLACED = [
+  { lean: -0.55, tab: "1.75rem", lift: 0.42 },
+  { lean: 0.42, tab: "7.5rem", lift: 0.55 },
+  { lean: -0.3, tab: "3.25rem", lift: 0.48 },
+  { lean: 0.6, tab: "9rem", lift: 0.6 },
+];
+
 export function Contents({ rows }: { rows: ContentsRow[] }) {
   return (
-    <Settle as="ol" className="border-t border-rule">
+    <Settle
+      as="ol"
+      /* Two up on a desk, one on a phone. Never four across: a 46ch blurb at a
+         quarter of 1440 is four words a line. */
+      className="grid gap-x-10 gap-y-14 sm:gap-y-16 lg:grid-cols-2 lg:gap-x-14"
+    >
       {rows.map((row, i) => {
+        const place = PLACED[i % PLACED.length];
         const status =
           row.count > 0 ? `${row.count} ${row.count === 1 ? "piece" : "pieces"}` : "In preparation";
         return (
           <li
             key={row.slug}
-            className="grid gap-x-12 gap-y-4 border-b border-rule py-9 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+            /* The second column sits lower, the way a second row of cards laid
+               on a desk never lines up with the first. */
+            className={i % 2 === 1 ? "lg:mt-12" : undefined}
           >
-            <div className="flex items-baseline gap-5">
-              <span className="tnum font-mono text-[13px] text-muted" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="font-display text-[clamp(1.75rem,1.2rem+2.2vw,3.25rem)] leading-[1.04] tracking-[-0.01em] text-ink">
-                {row.name}
-              </h3>
-            </div>
-            <div className="min-w-0 pl-0 sm:pl-[2.2rem] lg:pl-0">
-              {row.blurb && <p className="t-lead max-w-[46ch] text-ink">{row.blurb}</p>}
-              <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.14em] text-body">{status}</p>
-            </div>
+            <Stage
+              roll={place.lean}
+              tilt={2.2}
+              depth={place.lift}
+              light={-32}
+              lift
+              radius="var(--radius-md)"
+              className="h-full"
+            >
+              <article className="card-stock relative h-full px-6 pb-7 pt-9 sm:px-8 sm:pb-9 sm:pt-11">
+                {/* The tab carries the STATE, not the name. A tab repeating
+                    the heading two lines below it is the same stutter twice;
+                    a job bag in a studio carries where the work has got to. */}
+                <span className="card-tab uppercase" style={{ left: place.tab }}>
+                  {status}
+                </span>
+                <h3 className="font-display text-[clamp(1.5rem,1.15rem+1.4vw,2.1rem)] leading-[1.08] tracking-[-0.01em] text-ink">
+                  {row.name}
+                </h3>
+                {row.blurb && <p className="t-prose mt-4 max-w-[44ch] text-body">{row.blurb}</p>}
+              </article>
+            </Stage>
           </li>
         );
       })}
