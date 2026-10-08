@@ -1,11 +1,13 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import {
   PupsPlayerWalkthrough,
+  STAGES,
   type AppEpisode,
+  type Stage,
 } from "@/components/app/PupsPlayerWalkthrough";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconBell, IconExternal } from "@/components/icons";
@@ -24,21 +26,14 @@ import type { AssetKey } from "@/lib/brand";
    HTML and CSS inside a tablet frame, carrying the four real episode plates and
    their real runtimes, and a reader can step it through Watch, Play and Learn.
 
-   SHAPE, set 2026-10-06. The device is the page and the page is built around
-   it: the headline shares the top with the ledger of what already exists, then
-   the device gets a room of its own, a wall band a stop deeper than the ground
-   with one lit object standing on it, and everything after it is flat paper.
-   Two things that were below that level came up to meet it. The commitments,
-   which were a wall of rows in the right-hand two thirds of a section, are now
-   a three-column spread with the heading holding its own column. The reviewers,
-   who were a card in a narrow measure at the bottom of the page, are now a
-   credits block with their faces at a size you can actually read.
-
-   With the text blurred this page is: a dense two-column head, one deep band
-   with a single large object in it, a three-column ledger, a short credits
-   block, and the navy foot. /ethical-ai is a chain down the middle of a much
-   taller band, and /story is a margin against a measure. No two of them read
-   as the same page.
+   SHAPE, reset 2026-10-08 to the Story pattern. The device is a centrepiece
+   with air around it rather than the thing the page is built out of: the
+   headline shares the top with the ledger of what already exists, the device
+   stands alone on a wall band with open padding, a garden frame takes the
+   page edge to edge, and then Watch, Play and Learn carry the rest as three
+   rows, each with the stage in the left column and its planned features on
+   the right. Surfaces alternate paper, wall, paper, wall, and the page closes
+   on the one deep band.
 
    Nothing is claimed that the page did not already claim. No launch date, no
    store links, no price, no device requirements, no numbers. Where a fact is
@@ -66,34 +61,43 @@ const EPISODES: AppEpisode[] = [
    substance. They were the page's own claims about the plan and they stay its
    only claims: nothing has been added. Grouped by where each one lands, on
    the screen or off it, because that split is the model. */
-const ON_SCREEN = [
-  {
+/* STAGE_ROWS regroup the six commitments by the stage of Watch, Play, Learn
+   each one belongs to. Nothing is reworded except one sentence, which has moved
+   out of "Built for small hands" and into the pull statement under the Watch
+   row (it still appears once, word for word). The stage lines come from the
+   walkthrough, so the page and the device always say the same thing. */
+const ITEMS: Record<string, { title: string; body: string }> = {
+  adFree: {
     title: "Every episode, ad free",
     body: "The full run of The Pawsitive Pugs & Pals in one place, with nothing competing for a child's attention around it. No autoplay into something nobody chose.",
   },
-  {
+  follows: {
     title: "Play that follows the story",
     body: "Each episode has activities built from what just happened in it, so the play reinforces the idea rather than sitting beside it as a separate game.",
   },
-  {
+  hands: {
     title: "Built for small hands",
-    body: "Large targets, simple navigation and no dark patterns. A young child can find their way around it, and cannot accidentally find their way out of it.",
+    body: "Large targets, simple navigation and no dark patterns.",
   },
-];
-const OFF_SCREEN = [
-  {
+  printables: {
     title: "Printables for the table",
     body: "Colouring, puzzles and activity sheets to print and take away from the screen, because not all of this should happen on one.",
   },
-  {
+  control: {
     title: "Parents stay in control",
     body: "Clear settings, no surprise purchases inside the app, and no advertising to children anywhere in it.",
   },
-  {
+  grounded: {
     title: "Grounded in the learning",
     body: "Every activity maps back to the early years objective behind its episode, reviewed by the same people who review the episodes.",
   },
-];
+};
+const STAGE_ITEMS: Record<Stage, string[]> = {
+  watch: ["adFree", "hands", "control"],
+  play: ["follows"],
+  learn: ["printables", "grounded"],
+};
+const STAGE_BY_ID = Object.fromEntries(STAGES.map((s) => [s.id, s])) as Record<Stage, (typeof STAGES)[number]>;
 
 /* The people who check what goes into the app, as the client supplied them.
    The same three review stages the episodes pass: educational review, and
@@ -164,19 +168,44 @@ function NotifyForm() {
   );
 }
 
-function Commitments({ heading, items }: { heading: string; items: { title: string; body: string }[] }) {
+/* The Story page's margin grid: heading column left, body right, a hairline
+   down the inside edge of the body. Stacked and capped under 1024px. */
+function Spread({ margin, children }: { margin: ReactNode; children: ReactNode }) {
   return (
-    <div>
-      <p className="eyebrow eyebrow-sm  pb-4">{heading}</p>
-      <ul>
-        {items.map((it) => (
-          <li key={it.title} className="hairline py-6">
-            <h3 className="t-h3">{it.title}</h3>
-            <p className="t-body mt-2.5 text-body">{it.body}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
+      <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
+        <div className="max-w-[56ch]">{children}</div>
+      </div>
+    </Settle>
+  );
+}
+
+function StageRow({ stage, surface }: { stage: Stage; surface?: "wall" }) {
+  const s = STAGE_BY_ID[stage];
+  return (
+    <Section labelledBy={`${stage}-h`} pad="tight" className={surface === "wall" ? "wall" : ""}>
+      <Container>
+        <Spread
+          margin={
+            <>
+              <h2 id={`${stage}-h`} className="t-h2">{s.title}</h2>
+              <p className="eyebrow eyebrow-sm mt-3">Planned, not yet available</p>
+              <p className="t-sm mt-4 max-w-[30ch] text-body">{s.line}</p>
+            </>
+          }
+        >
+          <ul>
+            {STAGE_ITEMS[stage].map((k) => (
+              <li key={k} className="hairline py-6 first:border-t-0 first:pt-0">
+                <h3 className="t-h3">{ITEMS[k].title}</h3>
+                <p className="t-body mt-2.5 text-body">{ITEMS[k].body}</p>
+              </li>
+            ))}
+          </ul>
+        </Spread>
+      </Container>
+    </Section>
   );
 }
 
@@ -195,7 +224,7 @@ export default function AppPage() {
           measure and the ledger of released episodes takes the margin, so the
           first screen of a page about an unreleased product carries the four
           things that are real today rather than a headline and air. ═══ */}
-      <Section labelledBy="app-h" className="!pb-12 sm:!pb-16">
+      <Section labelledBy="app-h" pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
             <div>
@@ -265,7 +294,7 @@ export default function AppPage() {
           object and the three stages of the model driving it. This is the one
           thing on the page worth looking at before reading anything, so it
           gets the one change of ground. ═══ */}
-      <Section labelledBy="walk-h" className="wall">
+      <Section labelledBy="walk-h" pad="open" className="wall">
         <Container width="wide">
           <Settle className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
             {/* Not "Watch, play and learn": that is the h1 a screen above,
@@ -281,37 +310,61 @@ export default function AppPage() {
             </p>
           </Settle>
 
-          <Wipe className="mt-12 sm:mt-14">
+          <Wipe className="mt-14 sm:mt-20">
             <PupsPlayerWalkthrough episodes={EPISODES} />
           </Wipe>
         </Container>
       </Section>
 
-      {/* ═══ 3. WHAT IT WILL DO. Three columns: the heading holds its own,
-          then the commitments split by where each one lands, on the screen or
-          off it. That split is the model, so it is the grid. ═══ */}
-      <Section labelledBy="will-h">
+      {/* ═══ IMAGE MOMENT. The garden the series is set in, edge to edge, so
+          the page leaves the drawn interface and shows something that exists.
+          Captioned as what it is, a frame from the show. ═══ */}
+      <Section pad="none" as="div">
+        <Wipe>
+          <figure>
+            <div className="h-[clamp(260px,38vw,520px)] overflow-hidden">
+              <Figure asset="home.characters" fill rounded="rounded-none" position="center 48%" sizes="100vw" />
+            </div>
+            <Container width="wide">
+              <figcaption className="max-w-[58ch] pb-2 pt-4">
+                <p className="font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
+                  Finn, Fia and the hen. A frame from The Pawsitive Pugs &amp; Pals&reg;, which is
+                  what the player holds.
+                </p>
+              </figcaption>
+            </Container>
+          </figure>
+        </Wipe>
+      </Section>
+
+      {/* ═══ 3. THE THREE STAGES, one row each. Watch, Play, Learn is the spine
+          of the company, so it is the spine of the page: the stage in the
+          left column, the planned features that belong to it on the right.
+          Paper, wall, paper. ═══ */}
+      <StageRow stage="watch" />
+
+      {/* A plain statement at display size between two rules, the same
+          sentence the plan already makes about small hands, pulled out of the
+          list above so it can be read from across a room. */}
+      <Section pad={["none", "tight"]} as="div">
         <Container width="wide">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)_minmax(0,1fr)] lg:gap-14 xl:gap-20">
-            <Settle className="lg:pt-1">
-              <h2 id="will-h" className="t-h2 max-w-[12ch]">What it will do</h2>
-              <p className="t-body mt-5 max-w-[34ch] text-body">
-                Planned features. Each one is what we are building towards rather than something you
-                can use today.
-              </p>
-            </Settle>
-            <Commitments heading="On the screen" items={ON_SCREEN} />
-            <Commitments heading="Off the screen" items={OFF_SCREEN} />
-          </div>
+          <Wipe>
+            <p className="t-h1 max-w-[26ch] border-y border-rule py-10 font-display text-ink sm:py-14">
+              A young child can find their way around it, and cannot accidentally find their way out of it.
+            </p>
+          </Wipe>
         </Container>
       </Section>
+
+      <StageRow stage="play" surface="wall" />
+      <StageRow stage="learn" />
 
       {/* ═══ 4. WHO CHECKS IT. A credits block: three faces at a size you can
           read, over the three lines of what each of them actually does. It
           used to be a card in a narrow measure with the portraits at 64px,
           which made the one section on the page that carries named human
           accountability the quietest thing on it. ═══ */}
-      <Section labelledBy="check-h" className="!pt-4 sm:!pt-6">
+      <Section labelledBy="check-h" className="wall">
         <Container width="default">
           <Settle className="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-12">
             {/* A cream keyline on each portrait rather than a ring in the
@@ -362,7 +415,7 @@ export default function AppPage() {
           edge between them. Its bottom padding is cut back accordingly: at the
           full section rhythm the two together read as 900px of unbroken navy. */}
       <div id="notify" className="scroll-mt-24">
-      <Section deep labelledBy="next-h" className="!pb-14 sm:!pb-16">
+      <Section deep labelledBy="next-h" pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-20">
             <div>

@@ -147,21 +147,23 @@ export default function Home() {
           page turns on being straight about how the work is made cannot put an
           uncaptioned rendered image at the top of its home page. It is also
           the page's first use of the registered mark. */}
-      <div className="h-[clamp(260px,44vw,620px)] overflow-hidden">
-        <Figure
-          asset="home.hero"
-          fill
-          rounded="rounded-none"
-          position="center 46%"
-          priority
-          sizes="100vw"
-        />
-      </div>
-      <Container width="wide">
-        <p className="mt-3.5 text-right font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
-          A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
-        </p>
-      </Container>
+      <Section as="div" pad="none">
+        <div className="h-[clamp(260px,44vw,620px)] overflow-hidden">
+          <Figure
+            asset="home.hero"
+            fill
+            rounded="rounded-none"
+            position="center 46%"
+            priority
+            sizes="100vw"
+          />
+        </div>
+        <Container width="wide">
+          <p className="pb-8 pt-3.5 text-right font-mono text-[11px] uppercase tracking-[0.16em] text-muted sm:pb-10">
+            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
+          </p>
+        </Container>
+      </Section>
 
       {/* ═══ 2. THE ARGUMENT, on the wall.
 
@@ -178,8 +180,7 @@ export default function Home() {
           The wall is a stop deeper than the paper and no deeper: measured, the
           first version of this surface put body copy at 3.2:1. See index.css.
           ═══ */}
-      <div className="wall">
-        <Section labelledBy="thesis-h" className="!pb-0">
+      <Section labelledBy="thesis-h" pad={["normal", "none"]} className="wall">
           <Container width="wide">
             <Wipe>
               <Kicker>What we believe</Kicker>
@@ -206,18 +207,18 @@ export default function Home() {
                 watching rather than what they take away from it. Attention is what gets measured,
                 so attention is what gets designed for.
               </p>
-              <p className="border-l-2 border-[var(--color-red)] pl-5 font-display text-[clamp(1.125rem,0.95rem+0.6vw,1.4rem)] leading-snug text-ink">
+              <p className="border-l-2 border-red pl-5 font-display text-[clamp(1.125rem,0.95rem+0.6vw,1.4rem)] leading-snug text-ink">
                 We would rather make the episode the beginning of the thing than the whole of it.
               </p>
             </Settle>
           </Container>
-        </Section>
+      </Section>
 
         {/* ═══ 2b. THE MODEL, still on the wall. Three panels of one sheet,
             divided by hairlines, with the figures set large in mono. Not three
             cards: a card on a wall reads as something stuck to it, and these
             three words are the company's proposition, not three features. ═══ */}
-        <Section labelledBy="model-h" className="!pt-20 sm:!pt-24">
+      <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
           <Container width="wide">
             <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
               <h2 id="model-h" className="t-h2 max-w-[14ch]">One episode, three stages</h2>
@@ -259,8 +260,7 @@ export default function Home() {
               ))}
             </Settle>
           </Container>
-        </Section>
-      </div>
+      </Section>
 
       {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the
           trade. The felted show wordmark is a photograph of a real object on a
@@ -271,7 +271,7 @@ export default function Home() {
           The strip then runs off the right edge of the page. Boxed inside the
           container it stopped dead at a hard vertical edge mid-slate, which
           reads as a clipping bug rather than as film continuing. ═══ */}
-      <Section labelledBy="series-h" className="!pb-16 sm:!pb-20">
+      <Section labelledBy="series-h" pad={["normal", "tight"]}>
         <Container width="wide">
           {/* The wordmark beside the heading rather than above it: stacked, the
               header block was four hundred pixels tall before a slate arrived.
@@ -325,7 +325,7 @@ export default function Home() {
 
       {/* ═══ 4. WHO MAKES IT, AND WHO CHECKS IT. One list, not two: see
           CallSheet for what it replaced and why. ═══ */}
-      <Section labelledBy="people-h">
+      <Section labelledBy="people-h" pad={["tight", "normal"]}>
         <Container width="wide">
           <CallSheet headingId="people-h" />
         </Container>

@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
+import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import type { MediaItem } from "@/lib/types";
 
 /* ============================================================================
-   Press and appearances, rebuilt 2026-10-06.
-
-   WHAT WAS WRONG. Three identical cards headed Interviews, Podcasts and
-   Press, each describing a category that contains nothing, then a note box
-   saying the first appearances are still to come. A page that tells a
-   journalist what an interview is.
+   Press and appearances, rebuilt 2026-10-06, recomposed against /story.
 
    WHAT A PRESS PAGE IS FOR. One reader: somebody writing about the company
    who needs to get the facts right and reach a person. So the page is built
@@ -27,9 +23,15 @@ import type { MediaItem } from "@/lib/types";
    THE EMPTY STATE IS THE PAGE. One real fact exists: a UK podcast appearance
    booked for December, with more to follow around the app launch. It is not
    padded out with logos of publications that have not written anything, with
-   a "featured in" strip, or with invented quotes. The index carries the one
-   booking and a visibly pending row, and the rest of the page is useful on
-   its own.
+   a "featured in" strip, or with invented quotes. The honesty is the subject
+   of the display statement under the index, and the empty slot is drawn as a
+   slot, so a page with little on it reads as composed rather than unfinished.
+
+   SHAPE, borrowed from /story: a left heading column and a right body column
+   on the paper sections, a captioned full-bleed frame from the show, one
+   statement at display size, and the notes to editors raised onto the wall as
+   a slip of card, which is the page's best object and now carries the weight.
+   Paper, wall, paper, one deep band.
 
    Entries come from `media_items`, which Conor fills from the admin panel.
    The moment a row exists it takes over from the standing rows below, so
@@ -141,111 +143,135 @@ export default function Media() {
         path="/media"
       />
 
-      {/* ═══ OPENING. The heading on the left, the one real fact on the right,
-          set as the next entry in the index rather than buried in a note box
-          at the bottom of the page. ═══ */}
+      {/* ═══ OPENING. Heading column left, the one real fact on the right as a
+          ruled block under the lead. The fact is the next entry in the index
+          and is set at a size that makes it the first thing the eye finds. ═══ */}
       <Section pad={["normal", "tight"]}>
-        <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-20">
-            <div>
+        <Container>
+          <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
+            <div className="lg:pt-3">
               <Kicker>Press</Kicker>
-              <h1 className="t-display mt-6 max-w-[12ch]">Press and appearances</h1>
+              <p className="mt-4 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
+                For anyone writing about the company or the series.
+              </p>
+            </div>
+            <div className="lg:border-l lg:border-rule-soft lg:pl-12">
+              <h1 className="t-display max-w-[12ch]">Press and appearances</h1>
               <Lead className="mt-7 max-w-[46ch]">
                 Interviews, podcast appearances and coverage of the company and the series.
                 Everything links straight out to the original. There is not much of it yet, and
                 this page would rather be short than padded.
               </Lead>
-            </div>
 
-            <div className="border-t border-rule pt-6 lg:pb-2">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Next</p>
-              <p className="mt-4 text-[22px] leading-[1.3] text-ink sm:text-[25px]">
-                A UK podcast appearance is booked for December, with more to follow around the app
-                launch.
-              </p>
-              <p className="mt-4 max-w-[40ch] text-[15px] leading-[1.65] text-body">
-                It appears in the index below, with the show and the link, on the day it goes out.
-              </p>
+              <div className="mt-12 max-w-[44rem] border-t border-rule pt-7">
+                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Next</p>
+                <p className="mt-4 font-display text-[26px] leading-[1.22] text-ink sm:text-[32px]">
+                  A UK podcast appearance is booked for December, with more to follow around the
+                  app launch.
+                </p>
+                <p className="mt-4 max-w-[44ch] text-[15px] leading-[1.65] text-body">
+                  It appears in the index below, with the show and the link, on the day it goes out.
+                </p>
+              </div>
             </div>
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ THE INDEX. A listings column: date on the left, the entry beside
-          it, the link out on the right. It is the same shape whether it holds
-          one standing row or forty real ones. ═══ */}
-      <Section labelledBy="index-h" pad={["none", "normal"]}>
-        <Container width="wide">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-            <h2 id="index-h" className="t-h2">The index</h2>
-            <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
-              {items ? `${items.length} ${items.length === 1 ? "entry" : "entries"}` : "Nothing published yet"}
-            </p>
-          </div>
+      {/* ═══ THE INDEX. A listings column in the right-hand body column. The
+          empty state is drawn as a slot: a dashed frame the first real entry
+          will drop into, carrying the honest line. ═══ */}
+      <Section labelledBy="index-h" pad="tight">
+        <Container>
+          <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 id="index-h" className="t-h2">The index</h2>
+              <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
+                {items ? `${items.length} ${items.length === 1 ? "entry" : "entries"}` : "Nothing published yet"}
+              </p>
+            </div>
 
-          <ol className="mt-9 border-t border-rule">
-            {items
-              ? items.map((m) => (
-                  <li key={m.id} className="border-b border-rule">
-                    <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[12rem_minmax(0,1fr)_auto]">
-                      <p className="tnum font-mono text-[13px] leading-[1.6] text-muted">
-                        {monthYear(m.published_on)}
-                        {m.outlet && <span className="block normal-case tracking-normal text-body">{m.outlet}</span>}
-                      </p>
-                      <div>
-                        <h3 className="t-h3">{m.title}</h3>
-                        {m.description && (
-                          <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">
-                            {m.description}
+            <div className="lg:border-l lg:border-rule-soft lg:pl-12">
+              <ol className="border-t border-rule">
+                {items
+                  ? items.map((m) => (
+                      <li key={m.id} className="border-b border-rule">
+                        <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[10rem_minmax(0,1fr)_auto]">
+                          <p className="tnum font-mono text-[13px] leading-[1.6] text-muted">
+                            {monthYear(m.published_on)}
+                            {m.outlet && <span className="block normal-case tracking-normal text-body">{m.outlet}</span>}
                           </p>
-                        )}
-                      </div>
-                      {m.link && (
-                        <p className="md:pt-1">
-                          <TextLink href={m.link}>
-                            Open
-                            <IconExternal size={14} />
-                          </TextLink>
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))
-              : STANDING.map((s) => (
-                  <li
-                    key={s.what}
-                    className={s.pending ? "border-b border-dashed border-rule" : "border-b border-rule"}
-                  >
-                    <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[12rem_minmax(0,1fr)_auto]">
-                      <p className="tnum font-mono text-[13px] uppercase tracking-[0.08em] text-muted">
-                        {s.when}
-                      </p>
-                      <div>
-                        <h3 className={`t-h3 ${s.pending ? "text-muted" : ""}`}>{s.what}</h3>
-                        <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">{s.detail}</p>
-                      </div>
-                      <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted md:pt-2 md:text-right">
-                        {s.pending ? "Expected" : "Booked"}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-          </ol>
+                          <div>
+                            <h3 className="t-h3">{m.title}</h3>
+                            {m.description && (
+                              <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">
+                                {m.description}
+                              </p>
+                            )}
+                          </div>
+                          {m.link && (
+                            <p className="md:pt-1">
+                              <TextLink href={m.link}>
+                                Open
+                                <IconExternal size={14} />
+                              </TextLink>
+                            </p>
+                          )}
+                        </div>
+                      </li>
+                    ))
+                  : STANDING.map((s) => (
+                      <li
+                        key={s.what}
+                        className={s.pending ? "border-b border-dashed border-rule" : "border-b border-rule"}
+                      >
+                        <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[10rem_minmax(0,1fr)_auto]">
+                          <p className="tnum font-mono text-[13px] uppercase tracking-[0.08em] text-muted">
+                            {s.when}
+                          </p>
+                          <div>
+                            <h3 className={`t-h3 ${s.pending ? "text-muted" : ""}`}>{s.what}</h3>
+                            <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">{s.detail}</p>
+                          </div>
+                          <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted md:pt-2 md:text-right">
+                            {s.pending ? "Expected" : "Booked"}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+              </ol>
 
-          {!items && (
-            <p className="mt-7 max-w-[62ch] text-[15.5px] leading-[1.7] text-body">
-              No coverage has run yet, so there is none on this page. There is no logo strip of
-              publications that have not written about us, and no quote nobody said.
+              {!items && (
+                <div className="mt-6 rounded-[var(--radius-md)] border border-dashed border-rule px-6 py-8 sm:px-8">
+                  <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">The next slot</p>
+                  <p className="mt-3 max-w-[46ch] text-[16px] leading-[1.7] text-body">
+                    No coverage has run yet, so there is none on this page. The first piece to run
+                    takes this place, with its outlet, its date and a link to the original.
+                  </p>
+                </div>
+              )}
+            </div>
+          </Settle>
+        </Container>
+
+        {/* The statement. The page's honesty at display size, between two
+            rules, the way /story sets its one quote. It is the company's own
+            line about itself, not a quotation from anyone else. */}
+        <Container width="wide" className="mt-14 sm:mt-20">
+          <Wipe>
+            <p className="t-h1 max-w-[26ch] border-y border-rule py-10 font-display text-ink sm:py-14">
+              No logo strip of publications that have not written about us, and no quote nobody
+              said.
             </p>
-          )}
+          </Wipe>
         </Container>
       </Section>
 
-      {/* ═══ WHAT WE ARE GLAD TO BE ASKED. Rows, each pointing at the page
-          that already sets out the position, so a journalist can read the
-          source first. ═══ */}
-      <Section labelledBy="subjects-h" className="well">
-        <Container width="wide">
+      {/* ═══ WHAT WE ARE GLAD TO BE ASKED. Heading column left, rows right, on
+          paper. Each row points at the page that already sets out the
+          position, so a journalist can read the source first. ═══ */}
+      <Section labelledBy="subjects-h" pad="tight">
+        <Container>
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20 xl:gap-28">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <h2 id="subjects-h" className="t-h1 max-w-[13ch]">What we are glad to be asked about</h2>
@@ -277,43 +303,22 @@ export default function Media() {
         </Container>
       </Section>
 
-      {/* ═══ NOTES TO EDITORS. The sheet. Set in mono on a raised surface at a
-          narrow measure, because it is a document, not a section: the thing a
-          journalist copies names and marks out of ten minutes before filing.
-          It breaks the page's measure deliberately, the way /story's pull
-          quote does, by being narrower than everything around it. ═══ */}
-      <Section labelledBy="notes-h" pad={["normal", "tight"]}>
-        <Container width="text">
-          <Settle>
-            {/* card-still: the house card surface, with the hover lift turned
-                off. A document does not rise when a cursor crosses it. */}
-            <div className="card card-still rounded-[var(--radius-lg)] px-6 py-9 sm:px-10 sm:py-12">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-rule pb-5">
-                <h2 id="notes-h" className="font-mono text-[13px] uppercase tracking-[0.16em] text-ink">
-                  Notes to editors
-                </h2>
-                <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
-                  CLÉ Family Media
-                </p>
-              </div>
-
-              <dl className="mt-7">
-                {NOTES.map((n) => (
-                  <div
-                    key={n.k}
-                    className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-rule-soft py-4 sm:grid-cols-[8rem_minmax(0,1fr)]"
-                  >
-                    <dt className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
-                    <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
-                  </div>
-                ))}
-              </dl>
-
-              <p className="mt-7 text-[16px] leading-[1.7] text-body">
+      {/* ═══ NOTES TO EDITORS, on the wall. The sheet is a slip of card laid on
+          the changed ground, tabbed and a fraction off true, in a room of its
+          own with the route to a person beside it. It is the thing a
+          journalist copies names and marks out of ten minutes before filing,
+          so it gets the weight, not a narrow strip at the bottom. Raised
+          paper, so muted is safe on the card; everything on the wall itself is
+          body or ink. ═══ */}
+      <Section labelledBy="notes-h" className="wall">
+        <Container width="wide">
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 id="notes-h" className="t-h1 max-w-[12ch]">Notes to editors</h2>
+              <p className="t-lead mt-7 max-w-[34ch] text-ink">
                 Interview requests, artwork and anything you need checked before you file go
                 through the press route on the contact page. It reaches the team directly.
               </p>
-
               <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <TextLink to="/contact">
                   Press enquiries
@@ -324,8 +329,22 @@ export default function Media() {
                   <IconExternal size={14} />
                 </TextLink>
               </div>
+            </div>
 
-              <p className="mt-9 font-mono text-[12px] uppercase tracking-[0.2em] text-muted">Ends</p>
+            <div className="card-stock tilt-b relative self-start px-6 pb-8 pt-10 sm:px-10 sm:pb-10 sm:pt-12">
+              <span className="card-tab uppercase">CLÉ Family Media</span>
+              <dl>
+                {NOTES.map((n) => (
+                  <div
+                    key={n.k}
+                    className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
+                  >
+                    <dt className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
+                    <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-7 font-mono text-[12px] uppercase tracking-[0.2em] text-muted">Ends</p>
             </div>
           </Settle>
         </Container>

@@ -1,40 +1,27 @@
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Wipe } from "@/components/Wipe";
 import { Button, Container, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { Contents, type ContentsRow } from "@/components/journal/Contents";
-import { FrontPage } from "@/components/journal/FrontPage";
 import { formatDate, resolveStrands, useJournal } from "@/components/journal/data";
 
 /* ============================================================================
    The journal index.
 
-   WHAT THIS PAGE HAS TO DO. There are no posts. There will not be any for a
-   while. The previous version answered that with an eyebrow, a two line
-   heading, four filter pills and four identical rounded cards that each said
-   "First post arriving shortly", which is the single most recognisable
-   AI generated layout there is and, worse, made an empty journal look like a
-   broken one.
+   There are no posts, so the page is honestly empty and says so, in the order
+   a reader needs it: what the journal is and who writes it (masthead and
+   opening), a slip of card that states where things stand, the four strands as
+   the main content, then the standing rules on the one deep band.
 
-   So this is not a blog index with nothing in it. It is a publication's own
-   front matter: a masthead, a plain statement of what the journal is for, the
-   front page standing on the bench with its lead slot honestly empty, and the
-   four strands set as a contents page. A reader who lands here learns what we
-   are going to write about and why, and is told in words that nothing is
-   published yet. Nothing is faked: no dates, no authors, no reading times, no
-   sample headlines.
+   THE DRAWN FRONT PAGE IS GONE. It was a picture of content that does not
+   exist, set at 26rem with 9px labels. Its real information (the masthead name
+   and the four strand names) is now set at reading size, and the "lead slot is
+   empty" statement is a card in plain type. Nothing here looks like an article:
+   no titles, authors, dates or excerpts are invented.
 
-   IT IS ALSO THE LIVE INDEX. Publish a piece and the masthead rail, the front
-   page's lead slot, the contents counts and the published list all fill in
-   from the CMS. The written copy is the state the page is in today, not a
-   placeholder for a build that comes later.
-
-   THE FILTER PILLS ARE GONE. Filtering four strands that contain nothing is
-   four controls that do nothing, and when pieces do exist the strand is on
-   every row of the list. They come back the day there is enough here to need
-   them, which is not a decision to take before the first ten pieces.
+   IT IS STILL THE LIVE INDEX. Publish a piece and the masthead rail, the
+   contents counts and the published list fill in from the CMS.
    ========================================================================== */
 
 export default function Journal() {
@@ -64,7 +51,7 @@ export default function Journal() {
           paper, and set at the width of the page rather than in a column half
           the frame wide, because a masthead that does not span the sheet is
           not a masthead. The one use of the hero face on this page. ═══ */}
-      <Section className="wall" labelledBy="journal-h">
+      <Section className="wall" labelledBy="journal-h" pad="tight">
         <Container width="wide">
           <Settle>
             {/* Stacked below sm. Side by side, the two halves of the rail each
@@ -89,50 +76,36 @@ export default function Journal() {
             >
               Notes from the studio
             </h1>
-            <div className="mt-6 border-t border-rule pt-3">
-              <ul className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11px] uppercase tracking-[0.18em] text-body">
-                <li>Four strands</li>
-                <li>One piece a week, once we start</li>
-                <li>Free to read</li>
-              </ul>
+            <div className="mt-8 grid gap-6 border-t border-rule pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
+              <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-body">
+                Four strands. One piece a week, once we start. Free to read.
+              </p>
+              <p className="t-lead max-w-[44ch] text-ink">
+                A journal written by the people who make <em>The Pawsitive Pugs &amp; Pals</em>&reg;,
+                about the research behind it, how an episode is made, and what building a
+                children's media company in Ireland is really like.
+              </p>
             </div>
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ WHY IT EXISTS, beside the object. The prose keeps a reading
-          measure and the front page takes the half of the frame that used to
-          be empty paper. ═══ */}
-      <Section className="!pb-16 sm:!pb-20">
-        {/* The narrow measure of the three. The masthead above and the contents
-            below both run at the 1560 cap; this one does not, because a block
-            of prose beside one object does not need the width and taking it
-            left a lane of empty paper between the two. */}
+      {/* ═══ WHY IT EXISTS, on paper, in the narrow measure. Prose left, one
+          slip of card right that states where things stand in type you can
+          read. ═══ */}
+      <Section labelledBy="why-h" pad="tight">
         <Container>
-          {/* The right column is sized to the object, not to a fraction of the
-              page. At `0.98fr` the sheet sat right aligned inside a column half
-              again its own width and opened a hole of empty paper between the
-              prose and the render, which is the fault this page is being
-              rebuilt to fix. */}
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14">
-            <Settle className="lg:pt-2">
-              <h2 className="t-h2 max-w-[18ch]">Why a children's media company keeps a journal</h2>
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
+            <Settle>
+              <h2 id="why-h" className="t-h2 max-w-[18ch]">Why a children's media company keeps a journal</h2>
               <div className="mt-7 max-w-[58ch] space-y-5 text-[17px] leading-[1.72] text-body">
                 <p>
                   A company that asks parents, educators and broadcasters to trust it should be
                   willing to show its working. That is the whole of the reason this exists.
                 </p>
                 <p>
-                  It is not a content strategy and it is not written for a search engine. Four
-                  strands: the research the model rests on, how an episode of{" "}
-                  <em>The Pawsitive Pugs &amp; Pals</em>&reg; is actually made, what we have
-                  learned as parents, and what building a children's media company in Ireland is
-                  really like.
-                </p>
-                <p className="text-ink">
-                  Nothing is published yet. The first piece is being written. When it goes up it
-                  appears here, newest first, and the contents below fill in from the top. We
-                  would rather start late than start with filler.
+                  It is not a content strategy and it is not written for a search engine. We would
+                  rather start late than start with filler.
                 </p>
               </div>
               <div className="mt-8">
@@ -143,13 +116,24 @@ export default function Journal() {
               </div>
             </Settle>
 
-            <Wipe>
-              <FrontPage
-                latest={latest}
-                latestStrand={latest ? strandName(latest.category_id) : null}
-                className="mx-auto w-full max-w-[26rem] lg:mr-0"
-              />
-            </Wipe>
+            <Settle className="self-start">
+              <div className="card-stock card-still relative px-6 pb-7 pt-9 sm:px-8">
+                <span className="card-tab uppercase">Where it stands</span>
+                {latest ? (
+                  <p className="font-display text-[1.5rem] leading-[1.15] text-ink">
+                    {posts.length} {posts.length === 1 ? "piece" : "pieces"} published.
+                  </p>
+                ) : (
+                  <p className="font-display text-[1.5rem] leading-[1.15] text-ink">
+                    Nothing is published yet.
+                  </p>
+                )}
+                <p className="t-body mt-3 text-body">
+                  The first piece is being written. When it goes up it appears here, newest first,
+                  and the strands below fill in from the top.
+                </p>
+              </div>
+            </Settle>
           </div>
         </Container>
       </Section>
@@ -159,7 +143,7 @@ export default function Journal() {
           cards: a date, a strand, a headline and a standfirst is what a
           contents listing is, and it stays readable at four or forty. ═══ */}
       {posts.length > 0 && (
-        <Section className="!pt-0" labelledBy="published-h">
+        <Section pad={["none", "normal"]} labelledBy="published-h">
           <Container width="wide">
             <h2 id="published-h" className="t-h2">
               Published
@@ -198,29 +182,20 @@ export default function Journal() {
         </Section>
       )}
 
-      {/* ═══ THE CONTENTS. On card stock with its own tab, the way a running
-          order is pinned up in a production office: the same object the home
-          page uses for the six review stages, so the two pages read as one
-          site. ═══ */}
-      <Section className="!pt-0" labelledBy="strands-h">
+      {/* ═══ THE FOUR STRANDS. The main content of an empty journal, on the
+          wall, at the full width: each one named large with what it is for. ═══ */}
+      <Section className="wall" labelledBy="strands-h">
         <Container width="wide">
-          <div className="card-stock card-still px-5 pb-6 pt-9 sm:px-10 sm:pt-10 lg:px-14">
-            <span className="card-tab" aria-hidden="true">
-              CONTENTS
-            </span>
-            <div className="max-w-[46ch]">
-              <h2 id="strands-h" className="t-h2">
-                The four strands
-              </h2>
-              <p className="t-body mt-4 text-body">
-                What each one is for, and what is in it. The right hand column is the honest
-                answer to the second half of that.
-              </p>
-            </div>
-            <Contents rows={rows} />
-            <p className="mt-6 font-mono text-[11.5px] uppercase tracking-[0.14em] text-muted">
-              Working names, set from the admin panel
+          <div className="max-w-[46ch]">
+            <h2 id="strands-h" className="t-h2">
+              The four strands
+            </h2>
+            <p className="t-body mt-4 text-body">
+              What each one is for. The status beside it is the honest answer to what is in it.
             </p>
+          </div>
+          <div className="mt-10 sm:mt-14">
+            <Contents rows={rows} />
           </div>
         </Container>
       </Section>

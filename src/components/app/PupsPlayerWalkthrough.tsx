@@ -405,6 +405,10 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
                     <div
                       key={s.id}
                       aria-hidden={!on}
+                      /* inert takes an inactive screen out of the tab order and
+                         the accessibility tree. React 18 only forwards it as a
+                         string attribute, hence the spread. */
+                      {...(on ? {} : { inert: "" })}
                       className={`absolute inset-0 flex flex-col p-[1.5em] transition-opacity duration-700 ease-[var(--ease-out)] ${
                         on ? "opacity-100" : "pointer-events-none opacity-0"
                       }`}

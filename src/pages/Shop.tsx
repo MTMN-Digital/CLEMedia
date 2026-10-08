@@ -4,6 +4,7 @@ import { Settle } from "@/components/Settle";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
+import { EmptyShelf } from "@/components/shop/EmptyShelf";
 import { SheetBench } from "@/components/shop/PrintedSheet";
 import { formatPrice, useProducts } from "@/components/shop/catalogue";
 import { SITE } from "@/lib/site";
@@ -174,110 +175,110 @@ export default function Shop() {
         </Container>
       </Section>
 
-      {/* ═══ THE SHELF. The index of what is on sale, beside the docket that
-          states the terms of a purchase. Empty today, and it says so in one
-          line rather than in a centred card with a reassuring heading. ═══ */}
-      {/* The one section that is not full width. The hero and the ledger are
-          wide because they are the page talking; the shelf is a list of
-          things, and a list set across 1560px is a spreadsheet. */}
-      <Section labelledBy="shelf-h">
-        <Container>
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.75fr)] lg:gap-16">
-            <div>
-              <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-                <h2 id="shelf-h" className="t-h2">On the shelf</h2>
-                <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
-                  {products.state === "ready"
-                    ? `${products.data.length} ${products.data.length === 1 ? "file" : "files"}`
-                    : "Nothing on sale yet"}
+      {/* ═══ THE SHELF. Paper again after the well above it. Empty today, and
+          drawn empty on purpose: three blank sheets on a board, one per kind
+          of thing being prepared, with no artwork, title or price because none
+          exists. Once a product is published the list takes its place. ═══ */}
+      <Section labelledBy="shelf-h" pad={["normal", "open"]}>
+        <Container width="wide">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+            <h2 id="shelf-h" className="t-h1">On the shelf</h2>
+            <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
+              {products.state === "ready"
+                ? `${products.data.length} ${products.data.length === 1 ? "file" : "files"}`
+                : "Nothing on sale yet"}
+            </p>
+          </div>
+
+          {products.state === "ready" ? (
+            <ul className="mx-auto mt-10 max-w-[62rem] border-t border-rule">
+              {products.data.map((p) => (
+                <li key={p.id} className="border-b border-rule">
+                  <Link
+                    to={`/shop/${p.slug}`}
+                    className="group flex items-center gap-5 py-5 sm:gap-7 sm:py-6"
+                  >
+                    <span className="w-[64px] shrink-0 sm:w-[84px]">
+                      {p.thumbnail ? (
+                        <img
+                          src={p.thumbnail}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          className="aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised object-cover"
+                        />
+                      ) : (
+                        <span className="block aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised" />
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[17px] font-semibold text-ink">{p.title}</span>
+                      {p.description && (
+                        <span className="mt-1.5 block max-w-[52ch] text-[15px] leading-[1.6] text-body">
+                          {p.description.split("\n")[0]}
+                        </span>
+                      )}
+                    </span>
+                    <span className="tnum shrink-0 text-[17px] font-semibold text-ink">
+                      {formatPrice(p.price_cents, p.currency)}
+                    </span>
+                    <span className="shrink-0 text-red-deep transition-transform duration-300 group-hover:translate-x-1">
+                      <IconArrow size={17} />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Settle className="mt-10">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+                <p className="t-lead max-w-[40ch] text-ink">
+                  The first files are being made. Nothing is on sale yet, and nothing is being held
+                  back behind a sign-up in the meantime.
+                </p>
+                <p className="max-w-[46ch] text-[16px] leading-[1.7] text-body lg:pt-2">
+                  Each one will appear here with its artwork, what is in it and what it costs, on
+                  its own page. These are the kinds of thing being prepared.
                 </p>
               </div>
-
-              {products.state === "ready" ? (
-                <ul className="mt-9 border-t border-rule">
-                  {products.data.map((p) => (
-                    <li key={p.id} className="border-b border-rule">
-                      <Link
-                        to={`/shop/${p.slug}`}
-                        className="group flex items-center gap-5 py-5 sm:gap-7 sm:py-6"
-                      >
-                        <span className="w-[64px] shrink-0 sm:w-[84px]">
-                          {p.thumbnail ? (
-                            <img
-                              src={p.thumbnail}
-                              alt=""
-                              loading="lazy"
-                              decoding="async"
-                              className="aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised object-cover"
-                            />
-                          ) : (
-                            <span className="block aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised" />
-                          )}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[17px] font-semibold text-ink">{p.title}</span>
-                          {p.description && (
-                            <span className="mt-1.5 block max-w-[52ch] text-[15px] leading-[1.6] text-body">
-                              {p.description.split("\n")[0]}
-                            </span>
-                          )}
-                        </span>
-                        <span className="tnum shrink-0 text-[17px] font-semibold text-ink">
-                          {formatPrice(p.price_cents, p.currency)}
-                        </span>
-                        <span className="shrink-0 text-red-deep transition-transform duration-300 group-hover:translate-x-1">
-                          <IconArrow size={17} />
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="mt-9">
-                  <p className="t-lead max-w-[48ch] text-ink">
-                    The first files are being made. Nothing is on sale yet, and nothing is being
-                    held back behind a sign-up in the meantime.
-                  </p>
-                  <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.7] text-body">
-                    Each one will appear here with its artwork, what is in it and what it costs,
-                    on its own page. These are the kinds of thing being prepared.
-                  </p>
-
-                  <dl className="mt-9 border-t border-rule">
-                    {KINDS.map((k) => (
-                      <div
-                        key={k.kind}
-                        className="grid grid-cols-1 gap-x-10 gap-y-1 border-b border-rule py-5 sm:grid-cols-[13rem_minmax(0,1fr)]"
-                      >
-                        <dt className="text-[16px] font-semibold text-ink">{k.kind}</dt>
-                        <dd className="max-w-[46ch] text-[15.5px] leading-[1.65] text-body">{k.line}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              )}
-            </div>
-
-            <Settle className="lg:pt-2">
-              <Docket
-                label="What a purchase is"
-                rows={[
-                  { k: "Choose a file", v: "its own page" },
-                  { k: "Pay by card", v: "Stripe" },
-                  { k: "Download", v: "straight away" },
-                  { k: "Link valid for", v: "24 hours", strong: true },
-                  { k: "Downloads allowed", v: "5", strong: true },
-                  { k: "Account created", v: "none" },
-                ]}
-                foot={
-                  <>
-                    Save the file when it arrives. We do not keep a copy for you to come back to,
-                    because coming back would mean an account.
-                  </>
-                }
-              />
+              <div className="mt-14">
+                <EmptyShelf kinds={KINDS} />
+              </div>
             </Settle>
-          </div>
+          )}
+        </Container>
+      </Section>
+
+      {/* ═══ THE TERMS. A different room: the wall, and the narrow column.
+          The docket is a receipt, so it is set the width of one. ═══ */}
+      <Section labelledBy="terms-h" className="wall">
+        <Container>
+          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
+            <div>
+              <h2 id="terms-h" className="t-h2 max-w-[14ch]">What a purchase is</h2>
+              <p className="t-lead mt-6 max-w-[38ch] text-ink">
+                These terms are true before the first file is uploaded, so they are stated before
+                you have anything to buy.
+              </p>
+            </div>
+            <Docket
+              label="What a purchase is"
+              rows={[
+                { k: "Choose a file", v: "its own page" },
+                { k: "Pay by card", v: "Stripe" },
+                { k: "Download", v: "straight away" },
+                { k: "Link valid for", v: "24 hours", strong: true },
+                { k: "Downloads allowed", v: "5", strong: true },
+                { k: "Account created", v: "none" },
+              ]}
+              foot={
+                <>
+                  Save the file when it arrives. We do not keep a copy for you to come back to,
+                  because coming back would mean an account.
+                </>
+              }
+            />
+          </Settle>
         </Container>
       </Section>
 
