@@ -246,9 +246,27 @@ export function HeroFilm() {
           </div>
         </div>
 
+        {/* THE THREE WORDS ARRIVE IN ORDER, because they ARE an order: watch,
+            then play, then learn is the company's whole model, and a headline
+            that states a sequence and appears all at once throws that away.
+
+            Each word rises and settles on the house easing, a tenth of a
+            second apart. It runs once, on load, and it is the page's one
+            orchestrated entrance. CSS, not a motion library: the words carry
+            their own index and the stagger is a `calc` on the delay, so there
+            is no inline opacity for a screenshot to catch mid-flight and the
+            whole thing collapses to the final frame under reduced motion. */}
         <h1 id="hero-h" className="hero-head film-head">
-          <span className="hero-head-face">
-            Watch. <span className="hero-head-2">Play.</span> Learn.
+          <span className="hero-head-face words-in">
+            <span className="word" style={{ "--w": 0 } as React.CSSProperties}>
+              Watch.
+            </span>{" "}
+            <span className="hero-head-2 word" style={{ "--w": 1 } as React.CSSProperties}>
+              Play.
+            </span>{" "}
+            <span className="word" style={{ "--w": 2 } as React.CSSProperties}>
+              Learn.
+            </span>
           </span>
         </h1>
 

@@ -1120,3 +1120,32 @@ body > * { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .rk-seq__spine { transition: none; transform: scaleY(1); }
 }
+
+/* ─── One headline, arriving in order ─────────────────────────────────────
+   Used once, on the hero. The words of "Watch. Play. Learn." are a sequence,
+   so they land as one: each rises a little and settles, a tenth of a second
+   after the one before it.
+
+   Why not a motion library for this: framer-motion writes the opacity inline,
+   and the contrast sweep cannot force an inline style to its final frame, so
+   the hero would photograph mid-fade and report failures that do not exist.
+   A class-driven stagger lands instantly when the sweep zeroes durations. */
+.words-in .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.38em);
+  animation: word-in 0.72s var(--ease-out) forwards;
+  animation-delay: calc(0.12s + var(--w, 0) * 0.1s);
+  /* A clipped descender is worse than a late word. */
+  padding-bottom: 0.06em;
+}
+@keyframes word-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .words-in .word {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
