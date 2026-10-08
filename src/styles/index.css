@@ -229,6 +229,7 @@ body > * { position: relative; z-index: 1; }
   /* A smaller eyebrow, for a role line under a name. It was `!text-[11px]`
      bolted onto `.eyebrow` in six places. */
   .eyebrow-sm { font-size: 11px; }
+  .eyebrow-xs { font-size: 10px; letter-spacing: 0.2em; }
 
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain
@@ -329,7 +330,11 @@ body > * { position: relative; z-index: 1; }
      page of the site, was very close to invisible and nowhere near the 4.5:1
      an AA body link needs. Cream on the same navy is 11.9:1. The underline
      draws from currentColor, so it follows without a second rule. */
-  .deep :where(.link-draw) { color: #fdf8ed; }
+  /* `.deep .link-draw`, NOT `.deep :where(.link-draw)`. `:where()` contributes
+     zero specificity, so this tied with the `.text-red-deep` utility that
+     TextLink hard-codes and lost on source order, leaving a dark red link on
+     the navy band at about 1.46:1. Two shards found it independently. */
+  .deep .link-draw { color: var(--color-raised); }
 
   .deep .btn-quiet {
     border-color: rgba(253, 248, 237, 0.35);

@@ -57,7 +57,7 @@ export function Dossier({
         <div className="mt-5">
           <StageKey stages={stages} />
         </div>
-        <div className="mt-6 border-t border-[var(--color-rule)] pt-5">
+        <div className="mt-6 border-t border-rule pt-5">
           <StageMarksLegend />
         </div>
       </div>
@@ -93,7 +93,7 @@ export function Dossier({
         {advisers.length > 0 && (
           <tbody>
             <tr>
-              <td colSpan={stages.length + 1} className="border-t-2 border-[var(--color-body)] px-4 pb-1 pt-9">
+              <td colSpan={stages.length + 1} className="border-t-2 border-body px-4 pb-1 pt-9">
                 <p className="eyebrow">Strategic adviser</p>
                 <p className="t-body mt-2.5 max-w-[72ch] text-body">
                   Advisers are not employees, and advisory input sits outside the six review

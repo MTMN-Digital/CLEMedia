@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Figure } from "@/components/Figure";
+import { Card } from "@/components/ui";
 import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
@@ -186,8 +187,8 @@ function Marker({ s, innerRef }: { s: Station; innerRef: (el: HTMLDivElement | n
     return (
       <div ref={innerRef} className={`${MARK} -space-x-5 sm:-space-x-4`}>
         {s.faces.map((a) => (
-          <div key={a} className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-sunken ring-2 ring-[var(--color-raised)] sm:h-14 sm:w-14">
-            <Figure asset={a} rounded="rounded-full" className="aspect-square" sizes="56px" />
+          <div key={a} className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] bg-sunken ring-2 ring-raised sm:h-14 sm:w-14">
+            <Figure asset={a} rounded="rounded-[var(--radius-md)]" className="aspect-square" sizes="56px" />
           </div>
         ))}
       </div>
@@ -263,7 +264,7 @@ function Lines({ g }: { g: Geometry }) {
      JS, reduced motion and crawlers never see .is-armed, so they get the
      finished drawing with no transition to wait for. */
   const draw =
-    "transition-[clip-path] delay-[450ms] duration-[1400ms] ease-[var(--ease-out)] " +
+    "transition-[clip-path] delay-[450ms] duration-[1400ms] ease-out " +
     "[.is-armed_&]:[clip-path:inset(100%_-4px_-4px_-4px)] [.is-armed.is-in_&]:[clip-path:inset(-4px)]";
   const fade =
     "transition-opacity delay-[1750ms] duration-500 [.is-armed_&]:opacity-0 [.is-armed.is-in_&]:opacity-100";
@@ -313,7 +314,7 @@ function ToolCard({ s }: { s: Station }) {
     /* card-still: this sheet is half a metre tall and carries no link, so the
        3px lift the house card does on approach reads as the page twitching
        rather than as a surface being picked up. */
-    <div className="card card-still rounded-[var(--radius-lg)] p-5 sm:p-7 lg:p-8">
+    <Card className="card-still p-5 sm:p-7 lg:p-8">
       <Account s={s} />
 
       {/* One column, not a label column and a description column. Measured at
@@ -341,7 +342,7 @@ function ToolCard({ s }: { s: Station }) {
         how they align with our standards on intellectual property, consent and responsible
         production.
       </p>
-    </div>
+    </Card>
   );
 }
 
@@ -362,13 +363,13 @@ function ToolAside() {
   return (
     <div>
       <figure>
-        <div className="card card-still overflow-hidden rounded-[var(--radius-lg)] p-2.5">
+        <Card className="card-still overflow-hidden p-2.5">
           <Figure
             asset="home.characters"
             rounded="rounded-[var(--radius-md)]"
             sizes="(min-width: 1024px) 38vw, 90vw"
           />
-        </div>
+        </Card>
         <figcaption className="t-sm mt-4 max-w-[46ch] text-body">
           Finn and Fia, a frame from <em>The Pawsitive Pugs &amp; Pals®</em>. The visuals are produced
           with Runway, to a story, script and direction set by people, and are reviewed by the team

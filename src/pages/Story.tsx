@@ -368,7 +368,7 @@ export default function Story() {
                       </div>
                       <div>
                         <p className="text-[14px] font-semibold leading-tight text-ink">{p.name}</p>
-                        <Note className="mt-0.5 !text-[11px]">{p.role}</Note>
+                        <Note className="mt-0.5 text-[11px]">{p.role}</Note>
                       </div>
                     </li>
                   ))}

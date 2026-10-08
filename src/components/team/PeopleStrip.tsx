@@ -42,7 +42,7 @@ export function PeopleStrip({ people }: { people: Member[] }) {
             sizes="(min-width: 1024px) 200px, 38vw"
           />
           <p className="t-sm mt-3 font-bold leading-tight text-ink">{p.name}</p>
-          <p className="eyebrow mt-1 !text-[10px]">{p.role}</p>
+          <p className="eyebrow eyebrow-xs mt-1">{p.role}</p>
         </li>
       ))}
     </ul>

@@ -95,5 +95,19 @@ for f in "${FILES[@]}"; do
   fails=1
 done
 
+# --- house: Tailwind !important escapes ------------------------------------
+# DONE-WHEN items 3 and 5: rhythm comes from <Section pad>, and no literal may
+# restate a token. Both were being broken by `!py-*`, `!text-[11px]` and the
+# like, and the gate only caught them when a human read the diff.
+for f in "$@"; do
+  [ -f "$f" ] || continue
+  if grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" >/dev/null 2>&1; then
+    grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" \
+      | sed "s|^|FAIL $f: Tailwind !important escape, use the contract instead: |"
+    fails=1
+  fi
+done
+
 [ $fails -eq 0 ] && echo "shard-lint: clean (${#FILES[@]} files)"
+
 exit $fails

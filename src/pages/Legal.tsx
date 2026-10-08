@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Container, Kicker, Section } from "@/components/ui";
+import { Container, Kicker, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -244,6 +244,47 @@ function Contents({
   );
 }
 
+/** The house disclosure, as on the Responsible AI page: grid-rows 0fr to 1fr, a
+ *  real button with aria-expanded and aria-controls, and a closed panel that is
+ *  invisible to assistive tech and out of the tab order. */
+function MobileContents({ sections, active }: { sections: { h: string }[]; active: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-y border-rule lg:hidden">
+      <div>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="legal-contents"
+          className="flex w-full items-center justify-between gap-4 py-3.5 text-left font-mono text-[12px] uppercase tracking-[0.14em] text-ink"
+        >
+          Contents
+          <span className="flex items-center gap-3">
+            <span className="tnum text-muted">{sections.length} sections</span>
+            <span
+              aria-hidden="true"
+              className={`text-red-deep transition-transform duration-300 ease-out ${open ? "rotate-90" : ""}`}
+            >
+              <IconArrow size={15} />
+            </span>
+          </span>
+        </button>
+      </div>
+      <div
+        id="legal-contents"
+        className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+      >
+        <div className={`overflow-hidden ${open ? "visible" : "invisible"}`}>
+          <div className="pb-4">
+            <Contents sections={sections} active={active} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Legal({ doc }: { doc: DocId }) {
   const d = DOCS[doc];
   const [active, setActive] = useState("");
@@ -304,7 +345,7 @@ export default function Legal({ doc }: { doc: DocId }) {
           own facts hard against the right edge. This is the one place the page
           uses the whole width; the document itself never does, because a
           clause set 1,400px wide is a clause nobody finishes. ═══ */}
-      <Section className="!pb-0">
+      <Section pad={["normal", "none"]}>
         <Container width="wide">
           <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16">
             <div>
@@ -330,7 +371,7 @@ export default function Legal({ doc }: { doc: DocId }) {
           container, not the wide one: the index and a 68ch measure are all
           that belongs on it, and padding either side of a document is how a
           document is meant to look. ═══ */}
-      <Section className="!pt-10 sm:!pt-12">
+      <Section pad={["none", "normal"]}>
         <Container width="wide">
           {/* 70rem, not the 5xl container and not the wide one. A 64rem sheet
               under a 97rem header read as a column dropped into the middle of
@@ -342,7 +383,7 @@ export default function Legal({ doc }: { doc: DocId }) {
               inside the title above it and the two read as unrelated objects.
               Aligned, the sheet is the document the page is about and the air
               is on the right, which is where a document keeps its margin. */}
-          <div className="relative max-w-[70rem]">
+          <div className="relative max-w-[70rem] pt-10 sm:pt-12">
             <nav aria-label="Legal documents" className="flex gap-1 pl-5 sm:pl-7">
               {ORDER.map((id) => {
                 const on = id === doc;
@@ -376,15 +417,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                     <Contents sections={d.sections} active={active} />
                   </div>
 
-                  <details className="border-y border-rule lg:hidden">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-3.5 font-mono text-[12px] uppercase tracking-[0.14em] text-ink marker:hidden">
-                      Contents
-                      <span className="tnum text-muted">{d.sections.length} sections</span>
-                    </summary>
-                    <div className="pb-4">
-                      <Contents sections={d.sections} active={active} />
-                    </div>
-                  </details>
+                  <MobileContents sections={d.sections} active={active} />
                 </div>
 
                 <div ref={body} className="max-w-[68ch]">
@@ -443,7 +476,7 @@ export default function Legal({ doc }: { doc: DocId }) {
           The three documents are one set and a reader checking a company
           usually wants more than the one they landed on. Hairline rows, the
           one in hand marked rather than linked. ═══ */}
-      <Section className="!pt-0" labelledBy="shelf-h">
+      <Section pad={["none", "normal"]} labelledBy="shelf-h">
         <Container width="wide">
           <div className="hairline pt-12 sm:pt-14">
             <h2 id="shelf-h" className="t-h2 max-w-[20ch]">The documents</h2>
@@ -498,9 +531,7 @@ export default function Legal({ doc }: { doc: DocId }) {
             <p className="mt-9 max-w-[58ch] text-[15px] leading-relaxed text-body">
               Anything in these documents you want put differently, or a question about what we
               hold:{" "}
-              <Link to="/contact" className="link-draw font-semibold text-red-deep">
-                write to us
-              </Link>
+              <TextLink to="/contact">write to us</TextLink>
               .
             </p>
           </div>

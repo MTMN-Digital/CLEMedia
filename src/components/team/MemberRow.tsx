@@ -81,7 +81,7 @@ export function MemberRows({
         {outside ? (
           <td
             colSpan={stages.length}
-            className="hairline hidden border-l border-[var(--color-rule)] px-4 align-middle lg:table-cell"
+            className="hairline hidden border-l border-rule px-4 align-middle lg:table-cell"
           >
             <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-body">
               Outside the six review stages
@@ -95,7 +95,7 @@ export function MemberRows({
               <td
                 key={s.n}
                 className={`hairline hidden px-3 text-center align-middle lg:table-cell ${
-                  i === 0 ? "border-l border-[var(--color-rule)]" : ""
+                  i === 0 ? "border-l border-rule" : ""
                 }`}
               >
                 <Mark state={state} />

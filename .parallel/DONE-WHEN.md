@@ -6,7 +6,11 @@ prompt. The gate may fail a shard only on an item in this list or on a
 no score.
 
 1. `npm run typecheck` exits 0 and `npm run build` exits 0.
-2. `bash .parallel/shard-lint.sh <exportName> <exportPath> <owned files>` exits 0.
+2. `bash .parallel/shard-lint.sh <ExportName> <path/to/Page.tsx> <every owned .tsx>`
+   exits 0. Pass FILES, never a directory: the second argument is the module
+   whose export is checked, and a directory there makes the export check fail
+   open, so earlier shards reported "clean" on files the lint never read. Glob
+   your component folder: `src/components/x/*.tsx`.
 3. Every section's rhythm comes from `<Section pad=...>`. No `!py-*`, `!pt-*`
    or `!pb-*` anywhere in the owned files.
 4. Every button is `<Button>` with `variant` of `primary` or `quiet`. No

@@ -80,8 +80,8 @@ const ROUTES: { id: RouteId; label: string; blurb: string }[] = [
    stage, he is an advisor and /team deliberately places him outside the six
    stages.
 
-   Mansi has no portrait and gets no disc, no initial and no frame, which is
-   the /team rule: an empty circle on a page about named people reads as a
+   Mansi has no portrait and gets no tile, no initial and no frame, which is
+   the /team rule: an empty frame on a page about named people reads as a
    missing person. Her row is simply a different shape. */
 const FACES: { name: string; role: string; asset: AssetKey }[] = [
   { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor" },
@@ -205,7 +205,7 @@ export default function Contact() {
           decision the sender makes is part of the opening statement, and a
           selected route is shown by a red rule along the top of its column.
           Outside the <form> on purpose: see the header comment. ═══ */}
-      <Section className="!pb-0">
+      <Section pad={["normal", "none"]}>
         <Container width="wide">
           <Settle>
             <Kicker>Contact</Kicker>
@@ -260,7 +260,7 @@ export default function Contact() {
           Form on the left, directly on the paper. The receipt on the right
           updates as the sender types and stays in view on a desktop. On a
           phone it follows the form, as a summary of what was written. ═══ */}
-      <Section className="!pt-14 sm:!pt-16" labelledBy="form-h">
+      <Section pad={["tight", "normal"]} labelledBy="form-h">
         <Container width="wide">
           <div className="grid gap-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20 xl:gap-28">
             <div>
@@ -372,7 +372,7 @@ export default function Contact() {
           width. Rows rather than cards on purpose: four boxes with four little
           icons is the shape this whole pass exists to remove, and an index is
           what a reader scanning for their own description actually wants. ═══ */}
-      <Section className="!pt-4 sm:!pt-6" labelledBy="else-h">
+      <Section pad={["none", "normal"]} labelledBy="else-h">
         <Container width="wide">
           <div className="hairline pt-14 sm:pt-16">
             <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
@@ -434,7 +434,7 @@ export default function Contact() {
           named people", so the page where a stranger writes to the company
           should show them, and the lead over each group has to be true of
           everyone under it. ═══ */}
-      <Section className="!pt-0" labelledBy="people-h">
+      <Section pad={["none", "normal"]} labelledBy="people-h">
         <Container width="wide">
           <div className="hairline pt-14 sm:pt-16">
             <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
@@ -452,7 +452,7 @@ export default function Contact() {
               {FACES.map((p) => (
                 <li key={p.name}>
                   <div className="w-[clamp(72px,100%,124px)]">
-                    <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="124px" />
+                    <Figure asset={p.asset} rounded="rounded-[var(--radius-md)]" className="aspect-square" sizes="124px" />
                   </div>
                   <h3 className="mt-4 text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
                   <p className="eyebrow eyebrow-sm mt-1.5  leading-snug">{p.role}</p>
@@ -466,12 +466,12 @@ export default function Contact() {
                   key={p.name}
                   className="hairline grid gap-y-3 py-7 sm:grid-cols-[72px_minmax(0,16rem)_minmax(0,1fr)] sm:items-start sm:gap-x-8"
                 >
-                  {/* No portrait, no disc: the identity moves into the
+                  {/* No portrait, no frame: the identity moves into the
                       portrait's place and the remit stays on its own axis,
                       the /team rule. */}
                   {p.asset && (
                     <div className="w-[72px]">
-                      <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="72px" />
+                      <Figure asset={p.asset} rounded="rounded-[var(--radius-md)]" className="aspect-square" sizes="72px" />
                     </div>
                   )}
                   <div className={p.asset ? "" : "sm:col-span-2"}>
@@ -530,7 +530,7 @@ export default function Contact() {
                   <dd className="t-body opacity-90">
                     The company number and registered office are not published yet. They go here,
                     and at the foot of the{" "}
-                    <Link to="/privacy" className="link-draw font-semibold">privacy policy</Link>,
+                    <TextLink to="/privacy">privacy policy</TextLink>,
                     as soon as registration is confirmed.
                   </dd>
                 </div>

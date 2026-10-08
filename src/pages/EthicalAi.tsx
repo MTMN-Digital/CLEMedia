@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
 import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
-import { Button, Container, Kicker, Lead, Section } from "@/components/ui";
+import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -100,7 +99,7 @@ function Question({ id, q, a, open, onToggle }: { id: string; q: string; a: stri
           <span className="t-h3">{q}</span>
           <span
             aria-hidden="true"
-            className={`mt-0.5 shrink-0 text-red-deep transition-transform duration-300 ease-[var(--ease-out)] ${open ? "rotate-90" : ""}`}
+            className={`mt-0.5 shrink-0 text-red-deep transition-transform duration-300 ease-out ${open ? "rotate-90" : ""}`}
           >
             <IconArrow size={18} />
           </span>
@@ -109,7 +108,7 @@ function Question({ id, q, a, open, onToggle }: { id: string; q: string; a: stri
       <div
         id={id}
         aria-hidden={!open}
-        className={`grid transition-[grid-template-rows] duration-500 ease-[var(--ease-out)] ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
       >
         <div className="overflow-hidden">
           <p className="t-body max-w-[62ch] pb-7 text-body">{a}</p>
@@ -320,9 +319,9 @@ export default function EthicalAi() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Button to="/contact">Get in touch<IconArrow size={16} /></Button>
-                <Link to="/team" className="link-draw inline-flex items-center gap-1.5 text-[15px] font-semibold">
+                <TextLink to="/team">
                   The people in the sequence<IconArrow size={15} />
-                </Link>
+                </TextLink>
               </div>
             </div>
           </Settle>

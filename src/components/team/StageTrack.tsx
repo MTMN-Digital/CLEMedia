@@ -41,7 +41,7 @@ export function StageHeadRow({ stages }: { stages: Stage[] }) {
         <th
           key={s.n}
           scope="col"
-          className={`w-[11.66%] bg-sunken px-3 pb-5 pt-6 text-left align-top ${i === 0 ? "border-l border-[var(--color-rule)]" : ""}`}
+          className={`w-[11.66%] bg-sunken px-3 pb-5 pt-6 text-left align-top ${i === 0 ? "border-l border-rule" : ""}`}
         >
           <span className="tnum block font-mono text-[12px] tracking-[0.14em] text-body" aria-hidden="true">
             {s.n}
@@ -50,7 +50,7 @@ export function StageHeadRow({ stages }: { stages: Stage[] }) {
             <span className="sr-only">Stage {Number(s.n)}. </span>
             {s.stage}
           </span>
-          <span className="eyebrow mt-2 block !text-[10px] !tracking-[0.1em]">{s.who}</span>
+          <span className="eyebrow eyebrow-xs mt-2 block">{s.who}</span>
           <span className="mt-2.5 block text-[12px] leading-[1.5] text-body">{s.checks}</span>
           {s.hold && (
             <span className="mt-2.5 flex items-start gap-1.5 font-mono text-[10px] uppercase leading-[1.4] tracking-[0.1em] text-red-deep">
@@ -80,7 +80,7 @@ export function StageKey({ stages }: { stages: Stage[] }) {
               <span className="sr-only">Stage {Number(s.n)}. </span>
               {s.stage}
             </span>
-            <span className="eyebrow mt-1.5 block !text-[10px]">{s.who}</span>
+            <span className="eyebrow eyebrow-xs mt-1.5 block">{s.who}</span>
             <span className="mt-2 block text-[13px] leading-[1.55] text-body">{s.checks}</span>
             {s.hold && (
               <span className="mt-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-red-deep">

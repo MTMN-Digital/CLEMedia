@@ -27,6 +27,8 @@
    which is what makes a held slot read as discipline instead of an omission.
    ========================================================================== */
 
+import { Card } from "@/components/ui";
+
 export interface Case {
   /** The episode, as the show numbers it. "002", not "the second one". */
   episode: string;
@@ -105,7 +107,7 @@ export function CaseStudy() {
   );
 
   return (
-    <dl className="card rounded-[var(--radius-lg)] px-6 py-2 sm:px-7">
+    <Card as="dl" className="px-6 py-2 sm:px-7">
       {rows.map(([label, value]) => (
         <div
           key={label}
@@ -115,6 +117,6 @@ export function CaseStudy() {
           <dd className="t-body text-ink">{value}</dd>
         </div>
       ))}
-    </dl>
+    </Card>
   );
 }

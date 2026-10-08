@@ -83,7 +83,7 @@ export default function Team() {
                   in the review sequence an episode passes through before a child sees it, and any
                   stage can hold a release back.
                 </Lead>
-                <p className="mt-6 max-w-[44ch] border-t border-[var(--color-rule)] pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em] text-body">
+                <p className="mt-6 max-w-[44ch] border-t border-rule pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em] text-body">
                   Everything below is one table. The six stages run across it, the people run down
                   it, and a mark where they meet is the company's own account of who is answerable
                   there. Two of the stages are taken by the team as a whole, so they carry a team
