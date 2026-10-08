@@ -226,15 +226,6 @@ body > * { position: relative; z-index: 1; }
   .t-sm      { font-size: 0.875rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
 
-  /* Aliases for the pages still on the pre-reskin markup (Story, App, Journal
-     post, Shop product, Download, Legal, 404). Those files ask for
-     `display-page` and `display-section`, which this stylesheet never defined,
-     so every heading on seven pages was rendering at body size. Kept as
-     aliases rather than renamed in place: the rename is a seven-file sweep for
-     no visual difference, and these cost two lines. */
-  .display-page    { font-size: clamp(2rem, 1.5rem + 2.2vw, 3rem); }
-  .display-section { font-size: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); }
-
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain
      functional language, at most one per two sections. */
@@ -280,13 +271,8 @@ body > * { position: relative; z-index: 1; }
 
   /* Images inside a card push in very slightly, inside their own radius. */
   .card picture,
-  .card .zoom-wrap { overflow: hidden; }
   .card picture img,
-  .card .zoom-wrap img {
-    transition: transform 0.7s var(--ease-out);
-  }
   .card:hover picture img,
-  .card:hover .zoom-wrap img { transform: scale(1.035); }
   /* A tile sits INSIDE a card, so it goes a step warmer and darker rather than
      being another sheet of the same white. */
   .tile {
@@ -410,32 +396,6 @@ body > * { position: relative; z-index: 1; }
    Graphic animation. All of it is CSS, so the global reduced-motion block
    above switches every one of these off in a single place.
 --------------------------------------------------------------------------- */
-@keyframes node-in {
-  from { opacity: 0; transform: translateY(10px) scale(0.985); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes gate-turn {
-  0%, 62%, 100% { transform: rotate(0deg); }
-  78% { transform: rotate(-180deg); }
-}
-@keyframes orbit-spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes pip-pulse {
-  0%, 100% { opacity: 0.95; transform: scale(1); transform-origin: center; }
-  50% { opacity: 0.6; transform: scale(1.12); }
-}
-@keyframes link-draw {
-  0%, 100% { stroke-dasharray: 2 10; stroke-dashoffset: 0; opacity: 0.55; }
-  50% { stroke-dasharray: 12 0; stroke-dashoffset: 0; opacity: 1; }
-}
-@keyframes drift {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
-}
-.drift { animation: drift 9s ease-in-out infinite; }
-.drift-slow { animation: drift 13s ease-in-out infinite; }
-
 /* ---------------------------------------------------------------------------
    Reveals: clip-path wipes, not fades.
 
@@ -480,13 +440,6 @@ body > * { position: relative; z-index: 1; }
    slates between them. The holes are one repeating radial gradient rather than
    markup, so the count adapts to the width for free.
 --------------------------------------------------------------------------- */
-.filmstrip {
-  background: #1a1614;
-  border-radius: var(--radius-md);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 26px 50px -34px rgba(40, 30, 18, 0.7);
-}
 .sprockets {
   display: block;
   height: 20px;
@@ -547,14 +500,8 @@ body > * { position: relative; z-index: 1; }
    different kind of flat.
 --------------------------------------------------------------------------- */
 /* Lets an object cross the boundary between two bands. */
-.bleed-up { margin-top: clamp(-7rem, -6vw, -3rem); }
-.bleed-down { margin-bottom: clamp(-7rem, -6vw, -3rem); }
 /* Pushes a block off the centre axis the rest of the page sits on. */
-.off-left { margin-right: auto; margin-left: 0; }
-.off-right { margin-left: auto; margin-right: 0; }
 @media (min-width: 1024px) {
-  .off-left { transform: translateX(-3.5%); }
-  .off-right { transform: translateX(3.5%); }
 }
 /* Placed by hand, not by a grid. */
 .tilt-a { transform: rotate(-0.8deg); }
@@ -633,20 +580,7 @@ body > * { position: relative; z-index: 1; }
    floor behind them, away from the lamp, the same direction and the same
    softness as the objects' floor shadow. This is what makes the words part of
    the set rather than a caption typed over a picture of it. */
-.hero-head-shadow {
-  position: absolute;
-  inset: 0 0 auto 0;
-  display: block;
-  color: var(--color-ink);
-  /* Light enough that the red word still measures 3:1 standing in it. */
-  opacity: 0.17;
-  transform-origin: 50% 100%;
-  transform: translate(2.5%, 0) skewX(-34deg) scaleY(0.3);
-  filter: blur(4px);
-}
 .hero-head-2 { color: var(--color-red-deep); }
-.hero-lead { color: var(--color-body); }
-
 /* ---------------------------------------------------------------------------
    The room, applied to the page.
 
