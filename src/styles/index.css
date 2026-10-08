@@ -88,6 +88,16 @@
   --color-raised: #fdf8ed;
   --color-sunken: #d8c4a2;
 
+  /* THE MIDDLE OF THE RANGE, which this palette did not have.
+     Measured 2026-10-08: every ground the site uses for a section sat between
+     0.94 and 0.57 relative luminance and then jumped to navy at 0.033. The
+     entire middle was empty, so a page went light, slightly less light,
+     slightly less light, dark band, and read as one tone however many objects
+     were put on it. This is the bench: warm umber at 0.137, cream type on it
+     at 5.3:1, far enough from navy in hue and value that a page can carry
+     both without them reading as the same band twice. */
+  --color-bench: #6b5840;
+
   /* ─── Ink ramp, derived along the clay hue ──────────────────────────── */
   --color-ink:   #1a1614;
   --color-body:  #4a352a;
@@ -300,13 +310,69 @@ body > * { position: relative; z-index: 1; }
     background: var(--color-navy);
     color: #fdf8ed;
   }
+
+  /* The bench: the mid band, a warm room rather than a cool close.
+     It is not a second `.deep`. `.deep` is where a page ENDS, and it is cool
+     and flat and final; the bench is where a page WORKS, warm, lit from the
+     same lamp as every object on this site, and it comes before the close.
+     A page may carry one of each. */
+  .bench {
+    position: relative;
+    isolation: isolate;
+    color: #fdf8ed;
+    /* The lamp is DELIBERATELY faint and warm rather than cream.
+       Every percent of lift costs luminance fast: at a 17% cream radial the
+       brightest corner of this band measured 4.29:1 against cream body copy,
+       under AA, and the lift is largest exactly where the heading sits. A warm
+       lift of a few percent reads as a lamp and leaves the band dark enough to
+       carry cream type everywhere on it. */
+    background:
+      radial-gradient(
+        112% 82% at 16% -10%,
+        color-mix(in srgb, var(--color-paper-3) 7%, transparent),
+        transparent 62%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-bench) 97%, var(--color-paper-3)),
+        var(--color-bench) 46%,
+        color-mix(in srgb, var(--color-bench) 88%, #1a1614)
+      );
+  }
   /* Every page closes on a deep CTA band and then on the deep footer, so the
      two run together into one navy slab a thousand pixels tall with the
      wordmark floating somewhere in the middle of it. One hairline is enough to
      say they are two things. Against cream, at 14%, it is invisible. */
   footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.14); }
-  .deep h1, .deep h2, .deep h3, .deep h4 { color: #fdf8ed; }
-  .deep .eyebrow { color: rgba(253, 248, 237, 0.66); }
+  .deep h1, .deep h2, .deep h3, .deep h4,
+  .bench h1, .bench h2, .bench h3, .bench h4 { color: #fdf8ed; }
+  .deep .eyebrow,
+  .bench .eyebrow { color: rgba(253, 248, 237, 0.72); }
+
+  /* A LIGHT SURFACE INSIDE A DARK BAND KEEPS ITS OWN INK.
+     The inverted rules above are descendant selectors, so the moment a card
+     sits on the bench its heading turned cream on cream paper and the four
+     strand titles disappeared completely. Real classes, not `:where()`, so
+     these outrank `.bench h3` instead of tying with it and losing on source
+     order, which is the same trap `.deep .link-draw` was written to escape. */
+  .deep .card, .deep .card-stock, .deep .tile, .deep .well,
+  .bench .card, .bench .card-stock, .bench .tile, .bench .well {
+    color: var(--color-body);
+  }
+  .deep .card h1, .deep .card h2, .deep .card h3, .deep .card h4,
+  .deep .card-stock h1, .deep .card-stock h2, .deep .card-stock h3, .deep .card-stock h4,
+  .bench .card h1, .bench .card h2, .bench .card h3, .bench .card h4,
+  .bench .card-stock h1, .bench .card-stock h2, .bench .card-stock h3, .bench .card-stock h4 {
+    color: var(--color-ink);
+  }
+  .deep .card .eyebrow, .deep .card-stock .eyebrow,
+  .bench .card .eyebrow, .bench .card-stock .eyebrow {
+    color: var(--color-red-deep);
+  }
+  .deep .card .link-draw, .deep .card-stock .link-draw,
+  .bench .card .link-draw, .bench .card-stock .link-draw {
+    color: var(--color-red-deep);
+  }
 
   /* ─── Actions ────────────────────────────────────────────────────────── */
   .btn {
@@ -338,13 +404,16 @@ body > * { position: relative; z-index: 1; }
      zero specificity, so this tied with the `.text-red-deep` utility that
      TextLink hard-codes and lost on source order, leaving a dark red link on
      the navy band at about 1.46:1. Two shards found it independently. */
-  .deep .link-draw { color: var(--color-raised); }
+  .deep .link-draw,
+  .bench .link-draw { color: var(--color-raised); }
 
-  .deep .btn-quiet {
+  .deep .btn-quiet,
+  .bench .btn-quiet {
     border-color: rgba(253, 248, 237, 0.35);
     color: var(--color-raised);
   }
-  .deep .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.6); }
+  .deep .btn-quiet:hover,
+  .bench .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.6); }
 
   /* The house link: a rule that draws from the left. The only hover motion. */
   .link-draw {

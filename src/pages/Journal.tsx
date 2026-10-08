@@ -188,13 +188,15 @@ export default function Journal() {
 
       {/* ═══ THE FOUR STRANDS. The main content of an empty journal, on the
           wall, at the full width: each one named large with what it is for. ═══ */}
-      <Section className="wall" labelledBy="strands-h">
+      <Section className="bench" pad="open" labelledBy="strands-h">
         <Container width="wide">
           <div className="max-w-[46ch]">
             <h2 id="strands-h" className="t-h2">
               The four strands
             </h2>
-            <p className="t-body mt-4 text-body">
+            {/* Full strength, not opacity-85: dimmed cream measured 3.60:1 on
+                the bench. The bench is darker than the navy band is forgiving. */}
+            <p className="t-body mt-4">
               What each one is for. The status beside it is the honest answer to what is in it.
             </p>
           </div>

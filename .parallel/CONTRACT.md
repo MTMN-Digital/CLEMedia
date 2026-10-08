@@ -10,8 +10,10 @@ abstract idea of good. What it does, and what to copy:
 
 - A left heading column and a right body column, repeated down the page, so the
   eye has one consistent place to find "what is this section".
-- Surfaces alternate: paper, then `.wall`, then paper, closing on one `deep`
-  band. One deep band per page, and it is the last section before the footer.
+- Surfaces travel through the VALUE RANGE, they do not alternate within a
+  sliver of it. See "The surfaces" below: this rule used to read "paper, then
+  `.wall`, then paper, closing on one `deep` band", and following it produced
+  nine pages that measured as one tone.
 - One full-bleed image moment, captioned.
 - One pull-quote moment at display size.
 - One card moment, a table or a panel set into the column.
@@ -99,3 +101,38 @@ unless you can name which of those three it is and no other page already uses it
 that way. `story.garden` belongs to `/story`, `home.characters` to `/app`,
 `home.hero` to `/`. A page without an image finds its change of pace in a card,
 a quote, or a change of surface instead.
+
+
+## The surfaces, and the flatness this fixes (2026-10-08)
+
+Measured across the palette: every ground the site used for a section sat
+between **0.94 and 0.57** relative luminance, and then jumped to navy at
+**0.033**. The whole middle of the range was empty. A page went light, a
+shade less light, a shade less light, then one dark band at the end, which is
+why adding objects to pages kept failing to make them less flat. The objects
+were cream on tan, so they had nowhere to stand out from.
+
+| Surface | Luminance | What it is for |
+|---|---|---|
+| `card-stock` / `.card` | 0.94 | an object ON a ground, never a ground itself |
+| paper (default) | 0.84 | reading |
+| `.wall` | 0.64 to 0.57 | a change of room, still light |
+| **`.bench`** | **0.11** | **where a page WORKS: objects lit against dark** |
+| `.deep` | 0.03 | where a page ENDS, cool and final |
+
+**A page may carry one `.bench` and one `.deep`.** They are not two dark bands
+doing the same job: the bench is warm and lit from the same lamp as every
+staged object, the close is cool and flat. Put the page's objects on the bench,
+because that is the only ground on this site they can be lit against.
+
+**A light surface inside a dark band keeps its own ink.** `.bench h3` and
+`.deep h3` are descendant selectors, so a card on the bench had cream headings
+on cream paper and its titles vanished. `index.css` carries explicit
+`.bench .card-stock h3` style rules to put the ink back; they use real classes
+rather than `:where()` so they outrank the inverted rule instead of tying with
+it and losing on source order.
+
+**Cream on the bench is 5.3:1 and the margin is thin.** Do not dim it with
+`opacity`, and do not brighten the bench's lamp: at a 17% cream radial the
+brightest corner measured 4.29:1, which is a fail, and the lift is largest
+exactly where a heading sits.
