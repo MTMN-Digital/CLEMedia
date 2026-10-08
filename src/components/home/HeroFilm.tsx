@@ -176,40 +176,58 @@ export function HeroFilm() {
 
       <span aria-hidden="true" className="film-scrim" />
 
-      <div className="film-controls">
-        <button type="button" onClick={toggleSound} className="film-btn">
-          {sound ? "Mute" : "Sound on"}
-          <span className="sr-only">
-            {sound ? " for the mission film" : ", and play the mission film from the start"}
-          </span>
-        </button>
-      </div>
-
-      <button type="button" onClick={restart} className="film-restart">
-        <IconRestart size={17} />
-        <span className="sr-only">Play the mission film again from the start</span>
-      </button>
         </div>
 
+      {/* The copy sits in the FOUR CORNERS of the frame rather than clustered
+          in one of them. Measured off consulting.ie, which is the reference
+          the client gave: an identifier top left, a positioning line top
+          right, the headline bottom left at about 59px on a 1440 screen, and
+          the supporting paragraph with its buttons bottom right, right
+          aligned. Clustering it all bottom left, which is what this was,
+          leaves three quarters of the picture doing nothing. */}
       <div className="film-copy">
-        <h1 id="hero-h" className="hero-head">
+        <p className="film-eyebrow">
+          Children&rsquo;s edutainment
+          <span>Ireland</span>
+        </p>
+
+        <div className="film-aside">
+          <p className="film-note">Built on research. Made by people.</p>
+          <div className="film-controls">
+            <button type="button" onClick={toggleSound} className="film-btn">
+              {sound ? "Mute" : "Sound on"}
+              <span className="sr-only">
+                {sound ? " for the mission film" : ", and play the mission film from the start"}
+              </span>
+            </button>
+            <button type="button" onClick={restart} className="film-restart">
+              <IconRestart size={16} />
+              <span className="sr-only">Play the mission film again from the start</span>
+            </button>
+          </div>
+        </div>
+
+        <h1 id="hero-h" className="hero-head film-head">
           <span className="hero-head-face">
             Watch. <span className="hero-head-2">Play.</span> Learn.
           </span>
         </h1>
-        <p className="t-lead film-lead mt-4 max-w-[42ch]">
-          Calm stories for young children, and the activities that take them off the screen
-          afterwards.
-        </p>
-        <div className="mt-7 flex flex-wrap items-center gap-4">
-          <Button to="/ethical-ai">
-            How we make it
-            <IconArrow size={16} />
-          </Button>
-          <Button href={SITE.showUrl} variant="quiet">
-            Visit the show
-            <IconExternal size={15} />
-          </Button>
+
+        <div className="film-support">
+          <p className="film-lead">
+            Calm stories for young children, and the activities that take them off the screen
+            afterwards.
+          </p>
+          <div className="film-actions">
+            <Button to="/ethical-ai">
+              How we make it
+              <IconArrow size={16} />
+            </Button>
+            <Button href={SITE.showUrl} variant="quiet">
+              Visit the show
+              <IconExternal size={15} />
+            </Button>
+          </div>
         </div>
       </div>
       </div>

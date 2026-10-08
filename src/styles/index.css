@@ -756,25 +756,29 @@ body > * { position: relative; z-index: 1; }
 --------------------------------------------------------------------------- */
 .film-hero {
   position: relative;
-  /* Its own gutter, matching the page container, so the film's edges line up
-     with the body copy of every section below it. `--gutter` is defined on
-     .filmstrip-root further up rather than globally, which is why referencing
-     it here once resolved to nothing and dropped the declarations using it. */
-  --film-gutter: calc((100% - min(100%, 97.5rem)) / 2 + 1.25rem);
-  padding: clamp(0.75rem, 1.6vw, 1.5rem) var(--film-gutter) 0;
-  background: var(--color-raised);
+  /* 16px at 1440, which is what the reference uses: the frame is very nearly
+     the whole window, held off the edge just enough to read as a thing placed
+     on the page. Not the page container's gutter, which was four times this
+     and made the film look like a section rather than a hero. */
+  --film-gutter: clamp(10px, 1.1vw, 16px);
+  padding: var(--film-gutter);
+  /* Ink, not paper. The frame's corners are cut out of this, so whatever is
+     behind them is the colour you see in the gaps, and cream gaps around a
+     dark film read as a mistake. */
+  background: var(--color-ink);
 }
 
-/* Inset, with corners. The film used to bleed to all four edges; held off them
-   it reads as a thing placed on the page rather than as the page itself, which
-   is the whole difference between a hero and a wallpaper. */
 .film-frame {
   position: relative;
-  height: calc(100svh - var(--header-h, 76px) - clamp(1.5rem, 3.2vw, 3rem));
-  min-height: 28rem;
+  /* The window, less the header and the gutter above and below it. The
+     reference runs its frame at 0.95 of the viewport with the nav floating
+     over the top of it; this site has a real header in flow, so the frame
+     takes what is left. */
+  height: calc(100svh - var(--header-h, 76px) - var(--film-gutter) * 2);
+  min-height: 30rem;
   overflow: hidden;
   isolation: isolate;
-  border-radius: clamp(var(--radius-lg), 2.2vw, 34px);
+  border-radius: clamp(20px, 2.2vw, 32px);
   background: var(--color-ink);
 }
 .film-stage { position: absolute; inset: 0; }
@@ -790,55 +794,116 @@ body > * { position: relative; z-index: 1; }
 .film-media:focus-visible { outline: 3px solid var(--color-raised); outline-offset: -6px; }
 
 /* The scrim. Type over a moving picture is only readable if the picture is
-   darkened under it: strongest at the bottom left where the copy sits, gone by
-   halfway up. Measured against the brightest frame of the film by
+   darkened under it, and this film is a bright sunrise, not the dark interior
+   the reference uses, so all four corners need holding down rather than just
+   the bottom. Measured against eight frames of the film by
    scripts/qa/hero.mjs, not against the poster. */
 .film-scrim {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(to top, rgba(14, 11, 9, 0.84) 0%, rgba(14, 11, 9, 0.58) 28%,
-                    rgba(14, 11, 9, 0.14) 56%, rgba(14, 11, 9, 0) 74%),
-    linear-gradient(to right, rgba(14, 11, 9, 0.52) 0%, rgba(14, 11, 9, 0) 60%);
+    linear-gradient(to top, rgba(14, 11, 9, 0.82) 0%, rgba(14, 11, 9, 0.44) 30%,
+                    rgba(14, 11, 9, 0) 56%),
+    /* The top corners carry text too, and this film's top half is a sunrise
+       that goes very nearly white: at 0.62 the eyebrow measured 3.26:1 and
+       the note 2.26:1 against the brightest frame. */
+    linear-gradient(to bottom, rgba(14, 11, 9, 0.80) 0%, rgba(14, 11, 9, 0.42) 16%,
+                    rgba(14, 11, 9, 0) 34%),
+    linear-gradient(to right, rgba(14, 11, 9, 0.34) 0%, rgba(14, 11, 9, 0) 46%);
 }
 
+/* The four corners. */
 .film-copy {
   position: absolute;
-  left: clamp(1.5rem, 3.4vw, 3.5rem);
-  right: clamp(1.5rem, 3.4vw, 3.5rem);
-  bottom: clamp(2rem, 5vh, 3.75rem);
-  max-width: 46rem;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 2.8vw, 2.75rem);
+  color: var(--color-raised);
+  pointer-events: none;
+}
+.film-copy :where(a, button) { pointer-events: auto; }
+
+.film-eyebrow {
+  grid-area: 1 / 1;
+  align-self: start;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.7;
+  color: rgba(253, 248, 237, 0.88);
+}
+.film-eyebrow span { display: block; color: rgba(253, 248, 237, 0.92); }
+
+.film-aside {
+  grid-area: 1 / 2;
+  align-self: start;
+  justify-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.9rem;
+  text-align: right;
+}
+.film-note {
+  max-width: 17ch;
+  font-size: 14px;
+  line-height: 1.4;
+  /* Full strength, and it sits ABOVE the control pills rather than below
+     them: it carries no background of its own, so it has to be in the
+     darkest part of the scrim. Below the pills it was 27% down the frame,
+     where the scrim has faded out, and measured 3.62:1. */
   color: var(--color-raised);
 }
-.film-copy .hero-head { color: var(--color-raised); font-size: clamp(2.6rem, 6.2vw, 5.6rem); }
-.film-copy .hero-head-2 { color: #ffb9bb; }
+
+.film-head {
+  grid-area: 3 / 1;
+  align-self: end;
+  color: var(--color-raised);
+  /* 59px at 1440 on the reference. This was capped at 5.6rem, which is 90px:
+     half as big again as the thing it was copying. */
+  font-size: clamp(2.2rem, 4.2vw, 4.2rem);
+  line-height: 0.95;
+}
+/* Light, not the brand's deep red. On paper --color-red-deep is the right
+   mark; over a dark film it is 1.46:1, which is a word nobody can read. This
+   override existed, and I dropped it rewriting this block. */
+.film-head .hero-head-2 { color: #ffb9bb; }
+
+.film-support {
+  grid-area: 3 / 2;
+  align-self: end;
+  justify-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.4rem;
+  max-width: 30rem;
+  text-align: right;
+}
 .film-lead {
-  color: rgba(253, 248, 237, 0.94);
-  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
-  max-width: 34ch;
+  font-size: clamp(0.95rem, 1.15vw, 1.1rem);
+  line-height: 1.5;
+  color: rgba(253, 248, 237, 0.84);
 }
-.film-copy .btn {
-  padding: 1rem 1.9rem;
-  font-size: 15px;
-}
-.film-copy .btn-quiet {
+.film-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; }
+.film-support .btn-quiet {
   color: var(--color-raised);
   border-color: rgba(253, 248, 237, 0.45);
   background: rgba(253, 248, 237, 0.10);
   backdrop-filter: blur(3px);
 }
-.film-copy .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.8); }
+.film-support .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.8); }
 
-.film-controls {
-  position: absolute;
-  top: clamp(1rem, 2.4vh, 1.6rem);
-  right: clamp(1rem, 2.4vw, 1.75rem);
-}
+.film-controls { display: flex; align-items: center; gap: 0.5rem; }
 .film-btn {
   border: 1px solid rgba(253, 248, 237, 0.42);
   border-radius: 999px;
-  padding: 0.6rem 1.15rem;
+  padding: 0.55rem 1.05rem;
   /* 0.72, not 0.52. These sit on a film that runs from a dark wood to a nearly
      white sunrise: at 0.52 the label measured 4.36:1 against the brightest
      frame, forty seconds in. A control over moving pictures carries its own
@@ -847,23 +912,18 @@ body > * { position: relative; z-index: 1; }
   backdrop-filter: blur(6px);
   color: var(--color-raised);
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 220ms var(--ease-out), background 220ms var(--ease-out);
 }
 .film-btn:hover { border-color: rgba(253, 248, 237, 0.85); background: rgba(14, 11, 9, 0.85); }
-
-/* Bottom right: play it again from the top. */
 .film-restart {
-  position: absolute;
-  right: clamp(1rem, 2.4vw, 1.75rem);
-  bottom: clamp(1rem, 2.4vh, 1.6rem);
   display: grid;
   place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.35rem;
+  height: 2.35rem;
   border: 1px solid rgba(253, 248, 237, 0.42);
   border-radius: 999px;
   background: rgba(14, 11, 9, 0.72);
@@ -875,33 +935,53 @@ body > * { position: relative; z-index: 1; }
 .film-restart:hover { border-color: rgba(253, 248, 237, 0.85); background: rgba(14, 11, 9, 0.85); }
 
 @media (max-width: 820px) {
-  .film-hero { padding-top: 0.75rem; }
-  /* The film keeps its own shape on a phone and the copy sits under it on
-     paper: a 16:9 film cropped to a tall screen is a close-up of whatever
-     happens to be in the middle of the frame. */
-  .film-frame { height: auto; min-height: 0; }
-  .film-media { position: relative; height: auto; aspect-ratio: 16 / 9; }
+  /* Paper, because the copy leaves the picture here and sits under it: left on
+     ink it was dark ink text on a dark ink panel, and the headline was simply
+     not there. The corners collapse into one ordinary column. */
+  .film-hero { background: var(--color-raised); padding: var(--film-gutter) var(--film-gutter) 0; }
+  .film-frame { height: auto; min-height: 0; overflow: visible; background: transparent; border-radius: 0; }
+  .film-stage { position: relative; inset: auto; }
+  .film-media { position: relative; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); }
   .film-scrim { display: none; }
   .film-copy {
-    position: relative;
+    /* STATIC, not relative. The control pills are positioned against the
+       frame so they stay on the picture; making this a positioned ancestor
+       anchored them to the copy block instead and dropped them onto the
+       paper, on top of the eyebrow. */
+    position: static;
     inset: auto;
-    max-width: none;
-    padding: 5vh 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.1rem;
+    padding: 5vh 0.5rem 0;
     color: var(--color-ink);
   }
-  .film-copy .hero-head { color: var(--color-ink); font-size: clamp(2.1rem, 9.6vw, 3.2rem); }
-  .film-copy .hero-head-2 { color: var(--color-red-deep); }
+  /* The corner placement is a grid concern. In this column it only survives
+     as `align-self: end`, which in a column flex means the RIGHT edge, and it
+     was pushing the headline and the lead off to the side. */
+  .film-copy > * { align-self: stretch; justify-self: stretch; }
+  .film-eyebrow { color: var(--color-muted); }
+  .film-eyebrow span { color: var(--color-muted); opacity: 0.75; }
+  .film-aside {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    align-self: auto;
+    /* The pills stay on the picture; the note does not fit beside them. */
+    gap: 0;
+  }
+  .film-note { display: none; }
+  .film-head .hero-head-2 { color: var(--color-red-deep); }
+  .film-head { color: var(--color-ink); font-size: clamp(2.1rem, 9.6vw, 3.2rem); }
+  .film-support { align-items: stretch; justify-self: stretch; max-width: none; text-align: left; }
   .film-lead { color: var(--color-body); font-size: 1.05rem; }
-  .film-copy .btn-quiet {
+  .film-actions { justify-content: flex-start; }
+  .film-support .btn-quiet {
     color: var(--color-body);
     border-color: rgba(74, 53, 42, 0.22);
     background: transparent;
   }
-  /* The copy is on paper here, so the frame must not clip it, and the stage
-     goes back into the flow so the picture and its buttons move together. */
-  .film-frame { overflow: visible; background: transparent; border-radius: 0; }
-  .film-stage { position: relative; inset: auto; }
-  .film-media { border-radius: var(--radius-lg); }
-  .film-restart { right: 0.75rem; bottom: 0.75rem; }
 }
 
