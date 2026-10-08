@@ -84,7 +84,7 @@ function BackRail() {
 function MarginItem({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
-      <dt className="eyebrow !text-[11px]">{label}</dt>
+      <dt className="eyebrow eyebrow-sm">{label}</dt>
       <dd className="mt-1.5 text-[14.5px] leading-[1.5] text-ink">{value}</dd>
     </div>
   );
@@ -154,7 +154,7 @@ function Article({
           1560px cap left the right third of the frame as empty paper, which is
           exactly the fault the rest of this pass is fixing. The piece is a
           block of a fixed size, so it is centred as one. */}
-      <Section className="!pb-0">
+      <Section pad={["normal", "none"]}>
         <Container>
           <BackRail />
           <Settle className="mt-10 sm:mt-14">
@@ -186,7 +186,7 @@ function Article({
           caption as well as the alternative text, because a caption a reader
           can see is worth more than one only a screen reader hears. ═══ */}
       {post.hero_image && (
-        <Section className="!py-0" as="div">
+        <Section pad="none" as="div">
           <Wipe className="mt-12 sm:mt-16">
             <figure>
               <img
@@ -209,7 +209,7 @@ function Article({
       )}
 
       {/* ═══ THE PIECE. ═══ */}
-      <Section className="!pt-14 sm:!pt-16">
+      <Section pad={["tight", "normal"]}>
         <Container>
           <Spread margin={margin}>
             {post.body ? (

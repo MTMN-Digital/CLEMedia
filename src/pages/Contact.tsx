@@ -388,7 +388,7 @@ export default function Contact() {
                 const icon = e.href ? <IconExternal size={16} /> : <IconArrow size={16} />;
                 const inner = (
                   <>
-                    <span className="eyebrow !text-[11px] leading-snug">{e.who}</span>
+                    <span className="eyebrow eyebrow-sm  leading-snug">{e.who}</span>
                     {/* The arrow rides with the title on a phone and moves to
                         the far edge of the row on a desktop. A single arrow in
                         the last column dropped onto a line of its own once the
@@ -455,7 +455,7 @@ export default function Contact() {
                     <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="124px" />
                   </div>
                   <h3 className="mt-4 text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
-                  <p className="eyebrow mt-1.5 !text-[11px] leading-snug">{p.role}</p>
+                  <p className="eyebrow eyebrow-sm mt-1.5  leading-snug">{p.role}</p>
                 </li>
               ))}
             </Settle>
@@ -476,7 +476,7 @@ export default function Contact() {
                   )}
                   <div className={p.asset ? "" : "sm:col-span-2"}>
                     <h3 className="text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
-                    <p className="eyebrow mt-1.5 !text-[11px] leading-snug">{p.role}</p>
+                    <p className="eyebrow eyebrow-sm mt-1.5  leading-snug">{p.role}</p>
                   </div>
                   <p className="t-body max-w-[58ch] text-body">{p.remit}</p>
                 </li>
@@ -515,18 +515,18 @@ export default function Contact() {
 
               <dl className="mt-10 border-t border-white/20">
                 <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
-                  <dt className="eyebrow !text-[11px]">Company</dt>
+                  <dt className="eyebrow eyebrow-sm ">Company</dt>
                   <dd className="text-[16px] font-semibold">CLÉ Family Media</dd>
                 </div>
                 <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
-                  <dt className="eyebrow !text-[11px]">Trade marks</dt>
+                  <dt className="eyebrow eyebrow-sm ">Trade marks</dt>
                   <dd className="t-body opacity-90">
                     <em>The Pawsitive Pugs &amp; Pals</em>&reg; and PupsPlayer&trade;, both of CLÉ
                     Family Media.
                   </dd>
                 </div>
                 <div className="grid gap-y-1.5 border-b border-white/20 py-5 sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-x-10">
-                  <dt className="eyebrow !text-[11px]">Registered details</dt>
+                  <dt className="eyebrow eyebrow-sm ">Registered details</dt>
                   <dd className="t-body opacity-90">
                     The company number and registered office are not published yet. They go here,
                     and at the foot of the{" "}

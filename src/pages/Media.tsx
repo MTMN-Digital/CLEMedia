@@ -144,7 +144,7 @@ export default function Media() {
       {/* ═══ OPENING. The heading on the left, the one real fact on the right,
           set as the next entry in the index rather than buried in a note box
           at the bottom of the page. ═══ */}
-      <Section className="!pb-10 sm:!pb-14">
+      <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-20">
             <div>
@@ -174,7 +174,7 @@ export default function Media() {
       {/* ═══ THE INDEX. A listings column: date on the left, the entry beside
           it, the link out on the right. It is the same shape whether it holds
           one standing row or forty real ones. ═══ */}
-      <Section labelledBy="index-h" className="!pt-4">
+      <Section labelledBy="index-h" pad={["none", "normal"]}>
         <Container width="wide">
           <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
             <h2 id="index-h" className="t-h2">The index</h2>
@@ -282,7 +282,7 @@ export default function Media() {
           journalist copies names and marks out of ten minutes before filing.
           It breaks the page's measure deliberately, the way /story's pull
           quote does, by being narrower than everything around it. ═══ */}
-      <Section labelledBy="notes-h" className="!pb-16">
+      <Section labelledBy="notes-h" pad={["normal", "tight"]}>
         <Container width="text">
           <Settle>
             {/* card-still: the house card surface, with the hover lift turned

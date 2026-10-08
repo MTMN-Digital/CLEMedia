@@ -42,15 +42,7 @@ export function Section({
   className = "",
   as: Tag = "section",
   labelledBy,
-  /** Deprecated props from earlier passes, kept so the pages not yet rewritten
-   *  still compile. Nothing new may use them. */
-  tone,
-  zone,
-  surface,
-  texture,
-  material,
-  pinned,
-  flush,
+  pad = "normal",
 }: {
   children: ReactNode;
   /** The one navy band per page. */
@@ -58,18 +50,22 @@ export function Section({
   className?: string;
   as?: "section" | "div" | "footer";
   labelledBy?: string;
-  tone?: string;
-  zone?: number;
-  surface?: string;
-  texture?: string;
-  material?: string;
-  pinned?: boolean;
-  flush?: boolean;
+  /** The spacing contract. Every page used to reach for `!py-*` instead: there
+   *  were eleven of those across five pages and no two agreed, which is why
+   *  the rhythm wandered from page to page. Four named steps, and anything
+   *  that needs a fifth is a contract gap, not a className. */
+  pad?: Step | [Step, Step];
 }) {
-  void tone; void zone; void surface; void texture; void material; void pinned;
-  const pad = flush ? "" : "py-20 sm:py-24 lg:py-28";
+  /* A pair when the two sides differ, which is how a section says "I butt
+     against the one next to me". Sixteen inline `!pt-`/`!pb-` escapes were
+     doing this, no two alike. */
+  const TOP = { normal: "pt-20 sm:pt-24 lg:pt-28", tight: "pt-14 sm:pt-16 lg:pt-20",
+                open: "pt-24 sm:pt-32 lg:pt-40", none: "" } as const;
+  const BOTTOM = { normal: "pb-20 sm:pb-24 lg:pb-28", tight: "pb-14 sm:pb-16 lg:pb-20",
+                   open: "pb-24 sm:pb-32 lg:pb-40", none: "" } as const;
+  const [top, bottom] = Array.isArray(pad) ? pad : [pad, pad];
   return (
-    <Tag aria-labelledby={labelledBy} className={`${deep ? "deep" : ""} ${pad} ${className}`}>
+    <Tag aria-labelledby={labelledBy} className={`${deep ? "deep" : ""} ${TOP[top]} ${BOTTOM[bottom]} ${className}`}>
       {children}
     </Tag>
   );
@@ -182,7 +178,7 @@ export function ArchCard({ person, className = "" }: { person: ArchPerson; class
         <div className="well aspect-square w-[76%] overflow-hidden rounded-full">{person.portrait}</div>
       )}
       <h3 className="t-h3 mt-6">{person.name}</h3>
-      <p className="eyebrow mt-2.5 !text-[11px]">{person.role}</p>
+      <p className="eyebrow eyebrow-sm mt-2.5 ">{person.role}</p>
       {person.body && <p className="t-sm mt-4 max-w-[34ch] leading-relaxed text-body">{person.body}</p>}
     </article>
   );
@@ -210,7 +206,7 @@ export function Rail({ items, className = "" }: { items: RailItem[]; className?:
           {it.index && <span className="tnum font-mono text-[13px] text-muted" aria-hidden="true">{it.index}</span>}
           <div>
             <h3 className="t-h3">{it.title}</h3>
-            {it.attribution && <p className="eyebrow mt-2 !text-[11px]">{it.attribution}</p>}
+            {it.attribution && <p className="eyebrow eyebrow-sm mt-2 ">{it.attribution}</p>}
           </div>
           <div className="t-body text-body">{it.body}</div>
         </li>
@@ -223,11 +219,22 @@ export function Rail({ items, className = "" }: { items: RailItem[]; className?:
    Actions.
 --------------------------------------------------------------------------- */
 
+/** The four steps of the spacing contract. */
+type Step = "normal" | "tight" | "open" | "none";
+
 type ButtonProps = {
   children: ReactNode;
   to?: string;
   href?: string;
-  variant?: "primary" | "quiet" | "secondary" | "light" | "outline";
+  /* Two names, because there are two treatments. There used to be five, and
+     `secondary`, `light` and `outline` all silently rendered as `quiet`, so a
+     page asking for one of them got something other than it named and nobody
+     could see the difference. */
+  variant?: "primary" | "quiet";
+  /** A bigger primary for a page whose whole job is one action: the download
+   *  and the buy button. It was two different sets of inline `!px-* !py-*
+   *  !text-*` escapes that did not agree with each other. */
+  size?: "normal" | "large";
   type?: "button" | "submit";
   onClick?: () => void;
   disabled?: boolean;
@@ -235,9 +242,11 @@ type ButtonProps = {
 };
 
 export function Button({
-  children, to, href, variant = "primary", type = "button", onClick, disabled, className = "",
+  children, to, href, variant = "primary", size = "normal", type = "button", onClick, disabled,
+  className = "",
 }: ButtonProps) {
-  const cls = `btn ${variant === "primary" ? "btn-primary" : "btn-quiet"} ${className}`;
+  const big = size === "large" ? "px-8 py-5 text-[17px]" : "";
+  const cls = `btn ${variant === "primary" ? "btn-primary" : "btn-quiet"} ${big} ${className}`;
   if (to) return <Link to={to} className={cls}>{children}</Link>;
   if (href)
     return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>;

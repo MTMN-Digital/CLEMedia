@@ -146,7 +146,7 @@ export default function Story() {
           of the letter is set to. Before this the masthead ran edge to edge in
           the wide container while the letter ran in the default one, so the
           page had two different left edges in its first two screens. ═══ */}
-      <Section className="!pb-0 !pt-14 sm:!pt-16">
+      <Section pad={["tight", "none"]}>
         <Container>
           <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-end lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
             <div>
@@ -158,7 +158,7 @@ export default function Story() {
                 </div>
                 <div className="lg:mt-5">
                   <p className="text-[16px] font-semibold text-ink">Conor Sexton</p>
-                  <p className="eyebrow mt-1.5 !text-[11px]">Founder and CEO</p>
+                  <p className="eyebrow eyebrow-sm mt-1.5">Founder and CEO</p>
                 </div>
               </div>
               <Note className="mt-5 lg:max-w-[26ch]">
@@ -180,7 +180,7 @@ export default function Story() {
       {/* ═══ THE LETTER. Three movements and the pull quote, in ONE section
           rather than three, because three sections meant three lots of 112px
           of padding doing nothing between four paragraphs of prose. ═══ */}
-      <Section labelledBy="saw-h" className="!pt-12 !pb-16 sm:!pt-16 sm:!pb-20">
+      <Section labelledBy="saw-h" pad="tight">
         <Container>
           <Spread
             margin={
@@ -255,7 +255,7 @@ export default function Story() {
           620px: at 760 it filled a 900px laptop screen on its own and the page
           lost the caption and the band under it in one scroll. Captioned as what
           it is, a frame from the show and not a photograph. ═══ */}
-      <Section className="!py-0" as="div">
+      <Section pad="none" as="div">
         <Wipe>
           <figure>
             <div className="h-[clamp(300px,46vw,620px)] overflow-hidden">
@@ -292,7 +292,7 @@ export default function Story() {
           the band itself is body or ink; the card is raised paper, where muted
           is safe again. Added from the client's own biography; every line is
           his. ═══ */}
-      <Section labelledBy="here-h" className="well !py-16 sm:!py-20">
+      <Section labelledBy="here-h" className="well">
         <Container width="wide">
           {/* The card column is wide on purpose. At 27rem every ledger line
               wrapped to two and the sheet ran 640px tall beside 600px of
@@ -354,7 +354,7 @@ export default function Story() {
           it. It is now the ONLY list in the margin on this page. The characters
           appear once, small, as a placed object beside the paragraph that
           introduces them: supporting cast, on this site. ═══ */}
-      <Section labelledBy="build-h" className="!py-16 sm:!py-20">
+      <Section labelledBy="build-h" pad="tight">
         <Container>
           <Spread
             margin={
@@ -423,7 +423,7 @@ export default function Story() {
           774px tall and left the page with a single enormous rectangle and
           nothing beside it. At 1030px it is still the largest thing on the
           page and its notes have somewhere to be. ═══ */}
-      <Section labelledBy="film-h" className="wall !py-16 sm:!py-20">
+      <Section labelledBy="film-h" className="wall">
         <Container width="wide">
           <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-14">
             <div>
@@ -445,7 +445,7 @@ export default function Story() {
       </Section>
 
       {/* ═══ HOW IT REACHES YOU ═══ */}
-      <Section labelledBy="reach-h" className="!py-16 sm:!py-20">
+      <Section labelledBy="reach-h" pad="tight">
         <Container>
           <Spread
             margin={
@@ -484,7 +484,7 @@ export default function Story() {
       {/* ═══ THE SIGN-OFF, on the one deep band. A letter ends with a name and
           an address, so this one does: his, and three places the reader can
           go to check what he has said. Rows, not cards. ═══ */}
-      <Section deep labelledBy="next-h" className="!py-16 sm:!py-20">
+      <Section deep labelledBy="next-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
@@ -494,7 +494,7 @@ export default function Story() {
                 </div>
                 <div>
                   <p className="text-[16px] font-semibold">Conor Sexton</p>
-                  <p className="eyebrow mt-1 !text-[11px]">Founder and CEO</p>
+                  <p className="eyebrow eyebrow-sm mt-1">Founder and CEO</p>
                 </div>
               </div>
               <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">If you are weighing up the company</h2>

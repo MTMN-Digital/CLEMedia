@@ -25,7 +25,7 @@ export default function PreviewC() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button to="/story">The founders' story</Button>
-              <Button href={SITE.showUrl} variant="secondary">Visit the show site</Button>
+              <Button href={SITE.showUrl} variant="quiet">Visit the show site</Button>
             </div>
           </div>
           <div className="lg:col-span-5">

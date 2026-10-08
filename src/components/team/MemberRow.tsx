@@ -68,7 +68,7 @@ export function MemberRows({
             </div>
             <div className="min-w-0">
               <span className="t-h3 block font-bold leading-[1.25] text-ink">{m.name}</span>
-              <span className="eyebrow mt-1.5 block !text-[11px]">{m.role}</span>
+              <span className="eyebrow eyebrow-sm mt-1.5 block">{m.role}</span>
               {!outside && (
                 <div className="mt-4 lg:hidden">
                   <StageMarks named={m.named} team={m.team} stages={stages} />

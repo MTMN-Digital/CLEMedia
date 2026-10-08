@@ -64,7 +64,7 @@ export default function Journal() {
           paper, and set at the width of the page rather than in a column half
           the frame wide, because a masthead that does not span the sheet is
           not a masthead. The one use of the hero face on this page. ═══ */}
-      <Section className="wall !py-14 sm:!py-16" labelledBy="journal-h">
+      <Section className="wall" labelledBy="journal-h">
         <Container width="wide">
           <Settle>
             {/* Stacked below sm. Side by side, the two halves of the rail each

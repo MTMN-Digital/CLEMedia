@@ -176,7 +176,7 @@ export default function Download() {
                 </Lead>
 
                 <div className="mt-10">
-                  <Button href={state.url} className="!px-8 !py-5 !text-[17px]">
+                  <Button href={state.url} size="large">
                     Download {state.title}
                     <IconDownload size={19} />
                   </Button>
@@ -241,7 +241,7 @@ export default function Download() {
                     Send us your receipt
                     <IconArrow size={16} />
                   </Button>
-                  <Button to="/shop" variant="secondary">
+                  <Button to="/shop" variant="quiet">
                     Back to the shop
                   </Button>
                 </div>
@@ -278,11 +278,11 @@ export default function Download() {
                   {state.code === "server_error" && (
                     <Button onClick={() => void fetchLink()}>Try again</Button>
                   )}
-                  <Button to="/contact" variant={state.code === "server_error" ? "secondary" : "primary"}>
+                  <Button to="/contact" variant={state.code === "server_error" ? "quiet" : "primary"}>
                     Get in touch
                     <IconArrow size={16} />
                   </Button>
-                  <Button to="/shop" variant="secondary">
+                  <Button to="/shop" variant="quiet">
                     Back to the shop
                   </Button>
                 </div>

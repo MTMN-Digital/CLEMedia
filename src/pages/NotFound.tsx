@@ -112,7 +112,7 @@ export default function NotFound() {
     <>
       <Seo title="Page not found" description="That page doesn't exist." path="/404" noIndex />
 
-      <Section className="!py-16 sm:!py-20">
+      <Section pad="tight">
         <Container width="wide">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:gap-20">
             <Settle>

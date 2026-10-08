@@ -123,11 +123,11 @@
      other ten files at once, and a rename across eleven files buys nothing a
      reader can see. The aliases are the deprecated spellings. Nothing new
      should use them. */
-  --color-slate:    #4a352a; /* = body */
-  --color-deep:     #6b4e3a; /* = muted */
-  --color-clay:     #e0cfb0; /* = paper-3 */
-  --color-cream:    #fdf8ed; /* = raised */
-  --color-hairline: rgba(74, 53, 42, 0.13); /* = rule */
+  --color-slate:    var(--color-body); /* = body */
+  --color-deep:     var(--color-muted); /* = muted */
+  --color-clay:     var(--color-paper-3); /* = paper-3 */
+  --color-cream:    var(--color-raised); /* = raised */
+  --color-hairline: var(--color-rule); /* = rule */
 
   --font-display: "Calistoga", Georgia, serif;
   --font-hero:    "Fraunces", "Calistoga", Georgia, serif;
@@ -225,6 +225,10 @@ body > * { position: relative; z-index: 1; }
   .t-body    { font-size: 0.96875rem; line-height: 1.68; }
   .t-sm      { font-size: 0.875rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
+
+  /* A smaller eyebrow, for a role line under a name. It was `!text-[11px]`
+     bolted onto `.eyebrow` in six places. */
+  .eyebrow-sm { font-size: 11px; }
 
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain

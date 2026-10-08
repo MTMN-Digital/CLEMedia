@@ -213,7 +213,7 @@ export function CallSheet({ headingId }: { headingId: string }) {
 
             <div className="col-span-2 sm:col-span-1">
               <h3 className="t-h3">{m.name}</h3>
-              <p className="eyebrow mt-2 !text-[11px]">{m.role}</p>
+              <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
               <p className="t-body mt-3 max-w-[52ch] text-body">{m.line}</p>
             </div>
           </li>

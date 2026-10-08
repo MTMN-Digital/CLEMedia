@@ -133,7 +133,7 @@ export default function EthicalAi() {
       {/* ═══ 1. THE POSITION, as the headline. The client's own line, which the
           home page already carries as a section heading, is the whole page in
           twelve words, so it is the h1 and nothing paraphrases it. ═══ */}
-      <Section className="!pb-12 sm:!pb-16">
+      <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle>
             <Kicker>Responsible AI</Kicker>
@@ -236,7 +236,7 @@ export default function EthicalAi() {
           rows, not six icon cards: a principle is a sentence a reader holds
           the company to, and it is easier to hold someone to a sentence than
           to a pictogram. ═══ */}
-      <Section labelledBy="lines-h" className="!pt-6 sm:!pt-8 !pb-14 sm:!pb-16">
+      <Section labelledBy="lines-h" pad={["none", "tight"]}>
         <Container width="default">
           {/* The line sits on the heading's baseline immediately after it, not
               flung to the far edge of the column: at 1440 a right-aligned
@@ -267,7 +267,7 @@ export default function EthicalAi() {
           rows, and two of those in a row is exactly the sameness this pass is
           for. A sheet with a tab reads as a document handed over, which is
           what a set of answers to standing questions is. ═══ */}
-      <Section labelledBy="faq-h" className="!pt-14 sm:!pt-16">
+      <Section labelledBy="faq-h" pad={["tight", "normal"]}>
         <Container width="default">
           <Settle>
             <h2 id="faq-h" className="t-h2 max-w-[18ch]">The questions we are asked most</h2>
@@ -297,7 +297,7 @@ export default function EthicalAi() {
           edge between them. Its bottom padding is cut back accordingly: at the
           full section rhythm the two together read as 900px of unbroken navy
           with a hundred words in it. */}
-      <Section deep labelledBy="commit-h" className="!pb-14 sm:!pb-16">
+      <Section deep labelledBy="commit-h" pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div>

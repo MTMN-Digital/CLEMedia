@@ -126,7 +126,7 @@ export default function ShopProduct() {
                     See what is on sale
                     <IconArrow size={16} />
                   </Button>
-                  <Button to="/contact" variant="secondary">
+                  <Button to="/contact" variant="quiet">
                     Get in touch
                   </Button>
                 </div>
@@ -153,7 +153,7 @@ export default function ShopProduct() {
         path={`/shop/${p.slug}`}
       />
 
-      <Section className="!pb-14">
+      <Section pad={["normal", "tight"]}>
         <Container width="wide">
           {/* A plain Link rather than TextLink: the breadcrumb is mono and
               muted, and overriding four of TextLink's own classes to get
@@ -233,7 +233,7 @@ export default function ShopProduct() {
               )}
 
               <div className="mt-9">
-                <Button onClick={() => void buy()} disabled={busy} className="!px-7 !py-4 !text-[16px]">
+                <Button onClick={() => void buy()} disabled={busy} size="large">
                   {busy ? "Opening Stripe…" : `Buy for ${formatPrice(p.price_cents, p.currency)}`}
                   <IconDownload size={17} />
                 </Button>

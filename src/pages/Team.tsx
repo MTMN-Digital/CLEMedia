@@ -54,7 +54,7 @@ export default function Team() {
           something laid out on a table rather than more of the same page. The
           wall's own floor is --color-sunken, where body ink is 6.7:1 and the
           red eyebrow 5.1:1, both AA. ═══ */}
-      <Section className="wall !py-14 sm:!py-16 lg:!py-20">
+      <Section className="wall">
         <Container width="wide">
           {/* A spread, not a heading with a note parked at the far right. The
               first build put the lead under the h1 and the mono note in a 21rem
@@ -100,7 +100,7 @@ export default function Team() {
       </Section>
 
       {/* ═══ 2. THE DOSSIER. The page. ═══ */}
-      <Section labelledBy="dossier-h" className="!py-14 sm:!py-16 lg:!py-20">
+      <Section labelledBy="dossier-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-5 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-10">
             <h2 id="dossier-h" className="t-h2 max-w-[20ch]">
@@ -116,7 +116,7 @@ export default function Team() {
       </Section>
 
       {/* ═══ 3. CLOSE, the one deep band ═══ */}
-      <Section deep labelledBy="team-cta-h" className="!py-16 sm:!py-20">
+      <Section deep labelledBy="team-cta-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div>
@@ -136,7 +136,7 @@ export default function Team() {
                 How we make it
                 <IconArrow size={16} />
               </Button>
-              <Button to="/contact" variant="quiet" className="!border-raised/35 !text-raised">
+              <Button to="/contact" variant="quiet">
                 Partnership enquiries
                 <IconArrow size={16} />
               </Button>

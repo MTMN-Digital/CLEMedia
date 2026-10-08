@@ -167,7 +167,7 @@ function NotifyForm() {
 function Commitments({ heading, items }: { heading: string; items: { title: string; body: string }[] }) {
   return (
     <div>
-      <p className="eyebrow !text-[11px] pb-4">{heading}</p>
+      <p className="eyebrow eyebrow-sm  pb-4">{heading}</p>
       <ul>
         {items.map((it) => (
           <li key={it.title} className="hairline py-6">
@@ -234,7 +234,7 @@ export default function AppPage() {
                 yet, which is exactly the wrong place for the only hard facts
                 on the page. */}
             <div className="card rounded-[var(--radius-lg)] px-5 py-1 sm:px-6 lg:mb-1.5">
-              <p className="eyebrow !text-[11px] pt-5">Released so far</p>
+              <p className="eyebrow eyebrow-sm  pt-5">Released so far</p>
               <ul className="mt-2">
                 {EPISODES.map((ep) => (
                   <li key={ep.n} className="hairline">
@@ -343,7 +343,7 @@ export default function AppPage() {
             {REVIEWERS.map((p) => (
               <li key={p.name} className="hairline pt-5">
                 <h3 className="t-h3">{p.name}</h3>
-                <p className="eyebrow mt-1.5 !text-[11px]">{p.role}</p>
+                <p className="eyebrow eyebrow-sm mt-1.5 ">{p.role}</p>
                 <p className="t-sm mt-3 leading-relaxed text-body">{p.line}</p>
               </li>
             ))}

@@ -45,7 +45,7 @@ export default function PreviewB() {
             </p>
             <div className="mt-9 flex flex-wrap justify-center gap-3">
               <Button to="/story">Our story</Button>
-              <Button href={SITE.showUrl} variant="secondary">The show</Button>
+              <Button href={SITE.showUrl} variant="quiet">The show</Button>
             </div>
           </div>
 

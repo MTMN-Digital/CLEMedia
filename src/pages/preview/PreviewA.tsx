@@ -39,7 +39,7 @@ export default function PreviewA() {
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
               <Button to="/story">The founders' story</Button>
-              <Button href={SITE.showUrl} variant="secondary">The show site</Button>
+              <Button href={SITE.showUrl} variant="quiet">The show site</Button>
             </div>
           </div>
         </div>

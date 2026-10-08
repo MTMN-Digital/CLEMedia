@@ -94,7 +94,7 @@ export default function Shop() {
           standing on a bench, with the prose beside it rather than above a
           row of cards. The right half of the frame is the point: the old page
           left it empty on every breakpoint over 1100px. ═══ */}
-      <Section className="!pb-12 sm:!pb-16">
+      <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-16 xl:gap-24">
             <div>
