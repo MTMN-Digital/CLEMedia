@@ -70,7 +70,7 @@ function Spread({ margin, children }: { margin: ReactNode; children: ReactNode }
 function BackRail() {
   return (
     <div className="flex items-center justify-between gap-6 border-b border-rule pb-5">
-      <TextLink to="/journal" className="!text-[13px] uppercase tracking-[0.14em]">
+      <TextLink to="/journal" className="uppercase tracking-[0.14em]">
         <IconArrow size={14} className="rotate-180" />
         The journal
       </TextLink>
@@ -120,19 +120,11 @@ function Article({
   };
 
   const margin = (
-    <>
-      <dl className="space-y-5">
-        {strand && <MarginItem label="Strand" value={strand} />}
-        {date && <MarginItem label="Published" value={<span className="tnum">{date}</span>} />}
-        {post.author && <MarginItem label="Written by" value={post.author} />}
-      </dl>
-      <div className="mt-8 hidden lg:block">
-        <TextLink to="/journal" className="!text-[14px]">
-          <IconArrow size={14} className="rotate-180" />
-          All pieces
-        </TextLink>
-      </div>
-    </>
+    <dl className="space-y-5">
+      {strand && <MarginItem label="Strand" value={strand} />}
+      {date && <MarginItem label="Published" value={<span className="tnum">{date}</span>} />}
+      {post.author && <MarginItem label="Written by" value={post.author} />}
+    </dl>
   );
 
   return (
@@ -167,7 +159,7 @@ function Article({
                 )
               }
             >
-              <h1 className="max-w-[20ch] font-hero text-[clamp(2.25rem,1.3rem+3.6vw,4.25rem)] font-normal leading-[1.02] tracking-[-0.02em] text-ink">
+              <h1 className="t-display max-w-[20ch]">
                 {post.title}
               </h1>
               {post.excerpt && (
@@ -215,7 +207,7 @@ function Article({
             {post.body ? (
               <PostBody body={post.body} className="max-w-[67ch]" />
             ) : (
-              <p className="max-w-[67ch] text-[17.5px] leading-[1.75] text-body">
+              <p className="max-w-[67ch] t-prose text-body">
                 {post.excerpt ?? "This piece has no body text yet."}
               </p>
             )}
@@ -234,7 +226,7 @@ function Article({
           holds something else. An empty "related pieces" heading is worse
           than no heading. ═══ */}
       {siblings.length > 0 && (
-        <Section className="!pt-0" labelledBy="more-h">
+        <Section pad={["none", "normal"]} labelledBy="more-h">
           <Container>
             <h2 id="more-h" className="t-h2">
               More in {strand ?? "the journal"}
@@ -327,7 +319,7 @@ function Missing({ slug }: { slug?: string }) {
               one thing it could usefully do, which is say what will be here. */}
           <div className="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] lg:gap-16">
             <Settle className="max-w-[52ch]">
-              <h1 className="font-hero text-[clamp(2rem,1.3rem+2.6vw,3.25rem)] font-normal leading-[1.04] tracking-[-0.02em] text-ink">
+              <h1 className="t-h1">
                 We couldn&rsquo;t find that piece
               </h1>
               <p className="t-lead mt-6 text-body">

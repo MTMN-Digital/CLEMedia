@@ -151,10 +151,10 @@ export default function Download() {
     <>
       <Seo title="Your download" description="Download your purchase." path={`/download/${token ?? ""}`} noIndex />
 
-      <Section className="!pb-14">
+      <Section pad={["normal", "tight"]}>
         <Container width="wide">
           {state.k === "loading" && (
-            <div className="max-w-[46ch]">
+            <div className="max-w-[46ch]" role="status" aria-live="polite">
               <Kicker>Payment received</Kicker>
               <h1 className="t-h1 mt-6">Getting your file ready</h1>
               <p className="t-lead mt-6 text-body">One moment. Do not close this page.</p>
@@ -270,10 +270,10 @@ export default function Download() {
           {/* ─── The three ways a link can fail, plus the server fault. ─── */}
           {state.k === "error" && (
             <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-20 xl:gap-28">
-              <div>
+              <div role="alert">
                 <Kicker>Download</Kicker>
-                <h1 className="t-h1 mt-6 max-w-[18ch]">{MESSAGES[state.code].h}</h1>
-                <p className="t-lead mt-6 max-w-[46ch] text-body">{MESSAGES[state.code].p}</p>
+                <h1 className="t-display mt-6 max-w-[16ch]">{MESSAGES[state.code].h}</h1>
+                <Lead className="mt-7 max-w-[46ch]">{MESSAGES[state.code].p}</Lead>
                 <div className="mt-9 flex flex-wrap gap-3">
                   {state.code === "server_error" && (
                     <Button onClick={() => void fetchLink()}>Try again</Button>

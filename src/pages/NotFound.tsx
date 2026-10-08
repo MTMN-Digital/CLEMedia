@@ -117,7 +117,7 @@ export default function NotFound() {
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:gap-20">
             <Settle>
               <Kicker>404, page not found</Kicker>
-              <h1 className="t-h1 mt-5 max-w-[14ch]">That page has wandered off</h1>
+              <h1 className="t-display mt-5 max-w-[12ch]">That page has wandered off</h1>
               <p className="t-lead mt-5 max-w-[42ch] text-body">
                 The link may be old, or we may have moved something. Everything below is still
                 where it should be.

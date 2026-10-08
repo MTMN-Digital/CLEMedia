@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconDownload } from "@/components/icons";
+import { Settle } from "@/components/Settle";
 import { Docket } from "@/components/shop/Docket";
 import { SheetBench } from "@/components/shop/PrintedSheet";
 import { formatPrice, paragraphs, useProduct } from "@/components/shop/catalogue";
@@ -155,16 +156,9 @@ export default function ShopProduct() {
 
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
-          {/* A plain Link rather than TextLink: the breadcrumb is mono and
-              muted, and overriding four of TextLink's own classes to get
-              there is how a component ends up meaning nothing. */}
-          <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
-            <Link to="/shop" className="link-draw text-muted">
-              Shop
-            </Link>
-            <span className="px-2" aria-hidden="true">
-              /
-            </span>
+          <p className="flex flex-wrap items-center gap-x-2 font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+            <TextLink to="/shop">Shop</TextLink>
+            <span aria-hidden="true">/</span>
             <span className="text-ink">{p.title}</span>
           </p>
 
@@ -189,30 +183,12 @@ export default function ShopProduct() {
                   No artwork has been uploaded for this file yet.
                 </p>
               )}
-
-              {/* The cross-links live under the artwork rather than at the
-                  foot of the right-hand column: the sticky image column is
-                  the shorter of the two, and a page that ends in half a
-                  screen of empty paper reads as unfinished. */}
-              <div className="mx-auto mt-12 max-w-[42ch] border-t border-rule pt-7">
-                <p className="text-[15px] leading-[1.7] text-body">
-                  Printables are drawn from <em>The Pawsitive Pugs &amp; Pals&reg;</em>. Free
-                  activities live on the show's own site, and the interactive ones are part of
-                  PupsPlayer&trade;.
-                </p>
-                <p className="mt-4">
-                  <TextLink to="/shop">
-                    Everything else on the shelf
-                    <IconArrow size={15} />
-                  </TextLink>
-                </p>
-              </div>
             </div>
 
             {/* ─── The decision. ─── */}
             <div>
               {cancelled && (
-                <p className="mb-8 border-l-[3px] border-red bg-raised px-5 py-4 text-[15.5px] leading-[1.6] text-ink">
+                <p className="mb-8 border border-rule bg-raised px-5 py-4 text-[15.5px] leading-[1.6] text-ink">
                   Checkout was cancelled and nothing was charged. The file is still here whenever
                   you want it.
                 </p>
@@ -225,7 +201,7 @@ export default function ShopProduct() {
               </p>
 
               {body.length > 0 && (
-                <div className="mt-7 max-w-[54ch] space-y-5 text-[17px] leading-[1.72] text-body">
+                <div className="mt-7 max-w-[54ch] space-y-5 t-prose text-body">
                   {body.map((para) => (
                     <p key={para.slice(0, 40)}>{para}</p>
                   ))}
@@ -247,21 +223,40 @@ export default function ShopProduct() {
                   </p>
                 )}
               </div>
-
-              <Docket
-                className="mt-11 max-w-[26rem]"
-                label="What you get"
-                rows={TERMS}
-                foot={
-                  <>
-                    Save the file as soon as it downloads. There is no account here, so there is
-                    nowhere to come back to it, and the link stops working after a day.
-                  </>
-                }
-              />
-
             </div>
           </div>
+        </Container>
+      </Section>
+
+      {/* The terms, on the wall as a receipt, the same room /shop puts them in. */}
+      <Section labelledBy="terms-h" pad="tight" className="wall">
+        <Container>
+          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
+            <div>
+              <h2 id="terms-h" className="t-h2 max-w-[14ch]">What you get</h2>
+              <p className="t-body mt-6 max-w-[44ch] text-body">
+                Printables are drawn from <em>The Pawsitive Pugs &amp; Pals&reg;</em>. Free
+                activities live on the show's own site, and the interactive ones are part of
+                PupsPlayer&trade;.
+              </p>
+              <p className="mt-5">
+                <TextLink to="/shop">
+                  Everything else on the shelf
+                  <IconArrow size={15} />
+                </TextLink>
+              </p>
+            </div>
+            <Docket
+              label="What a purchase is"
+              rows={TERMS}
+              foot={
+                <>
+                  Save the file as soon as it downloads. There is no account here, so there is
+                  nowhere to come back to it, and the link stops working after a day.
+                </>
+              }
+            />
+          </Settle>
         </Container>
       </Section>
     </>

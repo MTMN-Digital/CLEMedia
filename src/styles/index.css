@@ -223,6 +223,10 @@ body > * { position: relative; z-index: 1; }
   .t-h3      { font-size: 1.1875rem; }
   .t-lead    { font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem); line-height: 1.62; }
   .t-body    { font-size: 0.96875rem; line-height: 1.68; }
+  /* Long-form reading, the measure a page is read down rather than scanned.
+     It was written out as a literal in seven places and had drifted into two
+     sizes, 17/1.72 on the story and the shop, 17.5/1.75 in the journal. */
+  .t-prose   { font-size: 1.0625rem; line-height: 1.72; }
   .t-sm      { font-size: 0.875rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
 

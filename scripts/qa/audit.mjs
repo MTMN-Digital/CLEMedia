@@ -65,6 +65,62 @@ const PAGES = [
   ["/cookies", "cookies"], ["/nope", "404"],
 ];
 
+/* The three dynamic routes render their empty state without data, so their real
+   state was never measured. `--stub` fulfils the Supabase REST calls in the
+   browser with obviously synthetic rows, so the fixture lives here and can
+   never reach the repo. The copy says so in its own text, because a fixture
+   that reads like content eventually gets believed. */
+const STUB = process.argv.includes("--stub");
+for (const spec of (arg("also", "") || "").split(",").filter(Boolean)) {
+  const [path, name] = spec.split("|");
+  PAGES.push([path, name || path.replace(/\W+/g, "-").replace(/^-|-$/g, "")]);
+}
+
+const FIX_POST = {
+  id: "fix-post", title: "QA fixture piece, not real content", slug: "qa-fixture",
+  category_id: "fix-cat",
+  excerpt: "A synthetic row served only to the contrast and overflow sweep.",
+  body: "Synthetic body paragraph one, long enough to set a real measure across the column and give the sampler a run of body text to read.\n\nSynthetic body paragraph two, so the spread has more than one block in it.",
+  hero_image: null, hero_alt: null, status: "published",
+  published_at: "2026-01-01T09:00:00Z", author: "QA fixture",
+};
+const FIX_CAT = { id: "fix-cat", name: "Research", slug: "research", description: "Synthetic strand row.", sort_order: 1 };
+const FIX_PRODUCT = {
+  id: "fix-prod", title: "QA fixture printable, not a real product", slug: "qa-fixture",
+  description: "Synthetic description paragraph one.\n\nSynthetic description paragraph two.",
+  price_cents: 350, currency: "eur", thumbnail: null, file_path: "fixture.pdf", active: true,
+};
+
+async function installStubs(page) {
+  await page.route("**/rest/v1/**", async (route) => {
+    const u = new URL(route.request().url());
+    const table = u.pathname.split("/rest/v1/")[1]?.split("?")[0];
+    /* supabase-js does not expose maybeSingle in the Accept header through the
+       interceptor, so the shape is read off the query instead: every list query
+       here carries `order`, every single-row one does not. */
+    const one = !u.searchParams.has("order");
+    const row = table === "products" ? FIX_PRODUCT : table === "categories" ? FIX_CAT : FIX_POST;
+    const body = one ? row : table === "posts" ? [FIX_POST, { ...FIX_POST, id: "fix-2", slug: "qa-fixture-2", title: "Second QA fixture piece" }] : [row];
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
+  });
+  await page.route("**/auth/v1/**", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: "{}" }),
+  );
+  await page.route("**/api/download**", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        url: "https://example.invalid/fixture.pdf",
+        title: "QA fixture printable, not a real product",
+        expiresAt: new Date(Date.now() + 86400000).toISOString(),
+        downloadsUsed: 1,
+        downloadsAllowed: 5,
+      }),
+    }),
+  );
+}
+
 /* Headless Chromium renders WebGL through SwiftShader, which Chrome flags as a
    major performance caveat. Production refuses that, rightly, so the flag is
    stripped in the page for the capture only. */
@@ -78,6 +134,7 @@ const browser = await chromium.launch({
   executablePath: "/home/david/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome",
 });
 
+let broken = 0;
 let overflow = 0;
 let contrast = 0;
 const calibration = [];
@@ -86,6 +143,7 @@ for (const [path, name] of PAGES) {
   if (ONLY && ONLY !== name) continue;
   const page = await browser.newPage({ viewport: { width: W, height: H } });
   await page.addInitScript(UNCAVEAT);
+  if (STUB) await installStubs(page);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message.slice(0, 120)));
 
@@ -245,11 +303,15 @@ for (const [path, name] of PAGES) {
     }
   } catch (e) {
     console.log(`${name} FAILED ${String(e).slice(0, 90)}`);
+    broken += 1;
   }
   await page.close();
 }
 
-console.log(`\noverflow: ${overflow}   contrast failures: ${contrast}`);
+console.log(`\noverflow: ${overflow}   contrast failures: ${contrast}   pages that never loaded: ${broken}`);
+/* A page that never loaded is measured as zero findings, so a wrong --port used
+   to print a clean sweep. Nothing green may come out of nothing read. */
+if (broken > 0 || overflow > 0 || contrast > 0) process.exitCode = 1;
 await browser.close();
 
 if (CALIBRATE) {

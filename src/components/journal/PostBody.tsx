@@ -184,7 +184,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
   const blocks = parseBody(body);
 
   return (
-    <div className={`text-[17.5px] leading-[1.75] text-body ${className}`}>
+    <div className={`t-prose text-body ${className}`}>
       {blocks.map((b, i) => {
         const key = `b${i}`;
         switch (b.kind) {

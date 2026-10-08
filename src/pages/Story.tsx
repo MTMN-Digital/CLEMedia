@@ -116,7 +116,7 @@ function Spread({
             unit is the width of a zero, which in Hanken is wider than the
             average letter, so 62ch was setting 77 characters to the line and
             anything past about 75 reads cheap. 56ch lands at 69. */}
-        <div className="max-w-[56ch] space-y-5 text-[17px] leading-[1.72] text-body">{children}</div>
+        <div className="max-w-[56ch] space-y-5 t-prose text-body">{children}</div>
       </div>
     </Settle>
   );
@@ -307,7 +307,7 @@ export default function Story() {
                 head butcher. It is not the background anyone expects behind a children's media
                 company, and I would not trade it.
               </p>
-              <div className="mt-5 max-w-[56ch] space-y-4 text-[17px] leading-[1.72] text-body">
+              <div className="mt-5 max-w-[56ch] space-y-4 t-prose text-body">
                 <p>
                   You learn quickly what people actually want when they are standing in front of
                   you, and you learn to run a counter that does not fall apart on a Saturday.

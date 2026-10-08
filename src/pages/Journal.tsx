@@ -98,7 +98,7 @@ export default function Journal() {
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
             <Settle>
               <h2 id="why-h" className="t-h2 max-w-[18ch]">Why a children's media company keeps a journal</h2>
-              <div className="mt-7 max-w-[58ch] space-y-5 text-[17px] leading-[1.72] text-body">
+              <div className="mt-7 max-w-[58ch] space-y-5 t-prose text-body">
                 <p>
                   A company that asks parents, educators and broadcasters to trust it should be
                   willing to show its working. That is the whole of the reason this exists.

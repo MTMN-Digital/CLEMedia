@@ -107,7 +107,7 @@ export default function Shop() {
                 classroom. You buy a file, you download it, and it is yours to print as often as
                 you like.
               </Lead>
-              <p className="mt-6 max-w-[46ch] text-[17px] leading-[1.72] text-body">
+              <p className="mt-6 max-w-[46ch] t-prose text-body">
                 What you do not do is make an account, hand over an email address to get a free
                 sample, or end up on a list.
               </p>

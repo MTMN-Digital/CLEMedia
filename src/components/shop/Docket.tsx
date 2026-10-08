@@ -62,7 +62,10 @@ export function Docket({
                 aria-hidden="true"
                 className="min-w-4 flex-1 translate-y-[-3px] border-b border-dotted border-rule"
               />
-              <dd className={`tnum shrink-0 text-right ${r.strong ? "text-[15px] font-semibold text-ink" : "text-ink"}`}>
+              <dd /* Not `shrink-0`: a product title is one of these values and a long
+                   one pushed the row 26px past a 390 screen. It still takes its
+                   natural width while there is room, and breaks when there is not. */
+                className={`tnum min-w-0 break-words text-right ${r.strong ? "text-[15px] font-semibold text-ink" : "text-ink"}`}>
                 {r.v}
               </dd>
             </div>
