@@ -86,6 +86,14 @@ export const IconArrow = (p: IconProps) => (
   </Svg>
 );
 
+/** A circular arrow: play the film again from the start. */
+export const IconRestart = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M20 12a8 8 0 1 1-2.6-5.9" />
+    <path d="M20 4.2V10h-5.8" />
+  </Svg>
+);
+
 export const IconExternal = (p: IconProps) => (
   <Svg {...p}>
     <path d="M14 4.5h5.5V10" />

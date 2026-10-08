@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
-import { IconArrow, IconExternal } from "@/components/icons";
+import { IconArrow, IconExternal, IconRestart } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import { pickRendition } from "@/components/MissionVideo";
 
@@ -19,15 +19,16 @@ import { pickRendition } from "@/components/MissionVideo";
    beginning and stops the loop: this is a narrated piece with a first line,
    not wallpaper, so dropping somebody into the middle of Conor's sentence
    with the sound suddenly on would be worse than not offering sound at all.
+   A restart sits bottom right for when somebody wants it from the top again.
 
-   ACCESSIBILITY, and why there are two controls rather than one. Content that
-   moves for more than five seconds and starts on its own needs a way to stop
-   it (WCAG 2.2.2), and sound needs its own control; a single "unmute" button
-   answers neither properly. So there is a play/pause and a sound toggle, both
-   real buttons, both keyboard reachable, both labelled with what they will do
-   next. The captions track carries the narration for when the sound is on
-   (1.2.2), and `prefers-reduced-motion` means it never starts by itself:
-   poster, controls, and the visitor decides.
+   ACCESSIBILITY. Content that moves for more than five seconds and starts on
+   its own needs a mechanism to stop it (WCAG 2.2.2), and the brief commits to
+   AA. The client asked for one visible pill, so the pause is the film itself:
+   it is focusable and labelled, and a click or a key press stops and starts
+   it. Nothing extra is drawn, and the requirement is still met. The captions
+   track carries the narration when the sound is on (1.2.2), and
+   `prefers-reduced-motion` means it never starts by itself: poster, controls,
+   and the visitor decides.
 
    The copy sits bottom left over a scrim rather than beside the film. Type on
    a moving picture is only readable if the picture is darkened under it, and
@@ -109,6 +110,13 @@ export function HeroFilm() {
     if (track) track.mode = on ? "showing" : "hidden";
   };
 
+  const restart = () => {
+    const el = video.current;
+    if (!el) return;
+    el.currentTime = 0;
+    el.play().then(() => setPlaying(true)).catch(() => {});
+  };
+
   const toggleSound = () => {
     const el = video.current;
     if (!el) return;
@@ -130,6 +138,13 @@ export function HeroFilm() {
 
   return (
     <section className="film-hero" aria-labelledby="hero-h">
+      <div className="film-frame">
+        {/* The stage is the picture and the things that sit on the picture.
+            The copy is a sibling, not a child, because on a phone it leaves
+            the picture and sits under it on paper. Without this the restart
+            button had to be positioned from viewport maths and ended up
+            hanging off the bottom edge of the film. */}
+        <div className="film-stage">
       <video
         ref={video}
         className="film-media"
@@ -139,7 +154,18 @@ export function HeroFilm() {
         playsInline
         preload="metadata"
         /* Not `aria-hidden`: it is the content of the hero, not decoration. */
-        aria-label="The CLÉ Family Media mission film"
+        /* Focusable and labelled, so the film is its own pause control: see
+           the accessibility note above. */
+        tabIndex={0}
+        role="button"
+        aria-label={`${playing ? "Pause" : "Play"} the CLÉ Family Media mission film`}
+        onClick={togglePlay}
+        onKeyDown={(e) => {
+          if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            togglePlay();
+          }
+        }}
       >
         {/* Not `default`: a default track is SHOWING from the first frame, so
             the narration printed itself across the hero while the film was
@@ -151,10 +177,6 @@ export function HeroFilm() {
       <span aria-hidden="true" className="film-scrim" />
 
       <div className="film-controls">
-        <button type="button" onClick={togglePlay} className="film-btn">
-          {playing ? "Pause" : "Play"}
-          <span className="sr-only"> the mission film</span>
-        </button>
         <button type="button" onClick={toggleSound} className="film-btn">
           {sound ? "Mute" : "Sound on"}
           <span className="sr-only">
@@ -162,6 +184,12 @@ export function HeroFilm() {
           </span>
         </button>
       </div>
+
+      <button type="button" onClick={restart} className="film-restart">
+        <IconRestart size={17} />
+        <span className="sr-only">Play the mission film again from the start</span>
+      </button>
+        </div>
 
       <div className="film-copy">
         <h1 id="hero-h" className="hero-head">
@@ -183,6 +211,7 @@ export function HeroFilm() {
             <IconExternal size={15} />
           </Button>
         </div>
+      </div>
       </div>
     </section>
   );

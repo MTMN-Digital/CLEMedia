@@ -47,7 +47,7 @@ function Header() {
             alt=""
             width={420}
             height={176}
-            className="h-[34px] w-auto sm:h-[38px]"
+            className="h-[46px] w-auto sm:h-[56px]"
           />
         </Link>
 
