@@ -488,3 +488,117 @@
     transform: none !important;
   }
 }
+
+/* ─── Relief: the felted mark with its height map lit by a moving lamp ─────
+   The lit pass is the height map run through an SVG lighting filter, masked
+   to the mark's own alpha and blended back over the colour art. `soft-light`
+   rather than `overlay`: overlay crushes the wool's mid tones to black where
+   the mane is already dark, soft-light keeps them. */
+.rk-relief {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  /* The lit pass blends with the ART, not with whatever the mark is standing
+     on. Without this the soft-light reaches the navy band underneath and the
+     mark grows a square halo. */
+  isolation: isolate;
+}
+.rk-relief__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.rk-relief__art,
+.rk-relief__lit {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.rk-relief__lit {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: soft-light;
+  /* The mask is the colour art's own alpha, so the lighting stops exactly at
+     the silhouette instead of shading the box it sits in. */
+  mask-mode: alpha;
+  -webkit-mask-mode: alpha;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  opacity: 0.95;
+}
+
+/* A browser without SVG filter support paints the raw height map over the art,
+   which would be a grey slab. If the filter cannot run, the pass is dropped. */
+@supports not (filter: url("#x")) {
+  .rk-relief__lit { display: none; }
+}
+
+/* ─── The three letters, hanging ──────────────────────────────────────────
+   Every letter swings about the top of its own frame, which is where the art
+   puts the rope's anchor. Transform only, so the sway is compositor work and
+   the main thread never sees it. */
+.rk-hang {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* The row never exceeds its column. Each frame takes an equal share of what
+     is available, so three objects on a 390 screen shrink together instead of
+     pushing the page sideways. */
+  max-width: min(100%, var(--rk-hang-max, 500px));
+}
+.rk-hang__line {
+  flex: 1 1 0;
+  min-width: 0;
+}
+/* Each frame carries a wide transparent margin around its object, so laid out
+   edge to edge three small animals end up at the far corners of a very large
+   box. They are pulled back together into one lockup hung on three ropes.
+   A negative MARGIN, because `gap` cannot be negative and silently did
+   nothing when it was asked to be. */
+.rk-hang__line + .rk-hang__line {
+  margin-left: var(--rk-hang-gap, -30px);
+  /* clamped so the overlap cannot swallow a letter on a narrow screen */
+  margin-left: max(var(--rk-hang-gap, -30px), -16vw);
+}
+.rk-hang__line {
+  transform-origin: 50% 0%;
+  margin-top: var(--drop, 0px);
+  will-change: transform;
+  /* The arrival, then the rest of its life. `hang-settle` runs once and damps;
+     `hang-drift` takes over and never stops, at a period per letter so the
+     row does not pulse in unison. */
+  animation:
+    hang-settle 1.9s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both,
+    hang-drift var(--period, 7s) ease-in-out calc(var(--delay, 0s) + 1.9s) infinite;
+}
+.rk-hang__line > * {
+  /* The letters overlap slightly at small sizes; each keeps its own box. */
+  max-width: none;
+}
+
+@keyframes hang-settle {
+  /* Hung, not faded in: it comes down the rope and swings out of true before
+     it comes to rest. */
+  0%   { transform: translateY(-14%) rotate(calc(var(--lean, 1deg) * -4)); opacity: 0; }
+  28%  { opacity: 1; }
+  52%  { transform: translateY(0) rotate(calc(var(--lean, 1deg) * 2.1)); opacity: 1; }
+  78%  { transform: translateY(0) rotate(calc(var(--lean, 1deg) * -0.8)); }
+  100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes hang-drift {
+  0%, 100% { transform: rotate(calc(var(--lean, 1deg) * -0.5)); }
+  50%      { transform: rotate(calc(var(--lean, 1deg) * 0.5)); }
+}
+
+/* Asked for stillness: the row is composed, lit and completely static. The
+   resting pose is the one the design is judged on anyway. */
+@media (prefers-reduced-motion: reduce) {
+  .rk-hang__line {
+    animation: none;
+    transform: none;
+  }
+}

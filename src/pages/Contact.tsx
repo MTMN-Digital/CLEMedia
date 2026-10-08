@@ -2,8 +2,9 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
+import { HangingMarks } from "@/components/render";
 import { Settle } from "@/components/Settle";
-import { Button, Card, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
+import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal, IconMail } from "@/components/icons";
 import { Receipt, type Draft, type RouteId } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
@@ -537,13 +538,19 @@ export default function Contact() {
               </dl>
             </div>
 
-            {/* The mark itself, framed rather than cut out: it is a photograph
-                of a needle-felted object, and a cut-out object on a flat navy
-                field loses the one thing that makes it worth showing. */}
-            <div className="w-[clamp(200px,58%,320px)] lg:justify-self-end">
-              <Card className="card-still tilt-a overflow-hidden p-2">
-                <Figure asset="brand.cle" rounded="rounded-[var(--radius-md)]" sizes="320px" />
-              </Card>
+            {/* The mark, LIT rather than framed.
+                
+                This was a flat cut-out in a card, with a comment explaining
+                that a cut-out on a navy field loses what makes the object
+                worth showing. True of a flat one. The height map that was
+                generated for this mark and never used puts the relief back,
+                and the lamp crosses it as the band comes up the screen, so
+                the wool catches the light the way the real object does. */}
+            {/* Pulled up so the ropes leave the top of the band rather than
+                beginning in mid air, which is the difference between objects
+                hung from the ceiling and objects floating. */}
+            <div className="-mt-6 lg:-mt-24 lg:justify-self-end">
+              <HangingMarks size={228} />
             </div>
           </Settle>
         </Container>
