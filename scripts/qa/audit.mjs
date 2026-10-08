@@ -158,20 +158,65 @@ for (const [path, name] of PAGES) {
       });
       document.querySelectorAll("video").forEach((v) => v.pause());
 
-      /* Land every reveal on its FINAL frame before anything is measured.
+      /* Land every reveal on its FINAL frame before anything is measured, and
+         KEEP it there for the rest of the run.
+
          Adding `is-in` starts the animation; it does not finish it, and a
          staggered list is a row of elements at every opacity between 0 and 1
          for as long as the stagger runs. Measuring there reported a resting
-         4.7:1 label as 4.12:1 because it was caught at 0.63 opacity. Zeroing
-         the durations and delays snaps them to where they come to rest. */
+         4.7:1 label as 4.12:1 because it was caught at 0.63 opacity.
+
+         TWO MECHANISMS, AND NOT A THIRD. Durations and delays are zeroed, so
+         any reveal that fires lands instantly, and an observer re-marks
+         anything that arms later in the scroll, because the capture scrolls
+         the page after this runs and more reveals arm as they come into view.
+
+         What is deliberately NOT done is forcing `opacity: 1` on everything.
+         That was tried: it also un-hides elements that are hidden ON PURPOSE.
+         The app page stacks three device screens and switches them with
+         `opacity-0`, so forcing them visible stacked all three over each other
+         and over the artwork behind, and the sweep reported three contrast
+         failures for text that nobody can see. A hidden element must stay
+         hidden, which is also what lets the ancestor-opacity check below do
+         its job. */
       const settle = document.createElement("style");
       settle.textContent =
         "*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important;" +
         "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}";
       document.head.appendChild(settle);
+
+      const land = () =>
+        document.querySelectorAll(".settle,.wipe,.is-armed").forEach((e) => e.classList.add("is-in"));
+      land();
+      /* An interval, not a MutationObserver. The observer re-queried the whole
+         document on every class change, React changes classes constantly, and
+         the page locked up hard enough that the audit never returned. A cheap
+         sweep six times a second is plenty to catch a reveal that arms during
+         the capture scroll. */
+      window.__settleTimer = setInterval(land, 160);
+
+      /* EVERY IMAGE EAGER, BEFORE ANYTHING IS MEASURED.
+         A lazy image loads as the capture scrolls past it, which reflows
+         everything below and leaves the element coordinates collected earlier
+         pointing at the wrong pixels. That is why `/shop` reported four
+         contrast failures inside a full sweep and none at all when audited on
+         its own: in the long run the labels' recorded boxes had slid onto the
+         drawn shelf beneath them. */
+      document.querySelectorAll("img[loading='lazy']").forEach((i) => {
+        i.loading = "eager";
+      });
     });
+    /* Wait for the images to actually arrive, so the layout the metrics are
+       taken from is the layout the screenshots show. */
+    await page
+      .waitForFunction(
+        () => Array.from(document.images).every((i) => i.complete),
+        null,
+        { timeout: 15000 },
+      )
+      .catch(() => {});
     /* One frame for the zeroed transitions to commit. */
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(220);
     if (CALIBRATE) {
       await page.evaluate((cal) => {
         const box = document.createElement("div");
@@ -302,7 +347,25 @@ for (const [path, name] of PAGES) {
     const shot = join(OUT, `${name}.png`);
     const slices = [];
     for (let y = 0, i = 0; y < info.height; y += H, i++) {
-      await page.evaluate((top) => window.scrollTo(0, top), y);
+      /* LAND THE SCROLL BEFORE PHOTOGRAPHING IT.
+         This page runs Lenis, so `window.scrollTo` is smoothed: the old fixed
+         220ms wait regularly photographed a slice mid-flight, the stitched
+         image came out offset from the coordinates the metrics were taken at,
+         and the sampler read the drawn shelf behind a label instead of the
+         label's own ground. That is what made a full sweep report four
+         contrast failures on /shop that an isolated audit of the same page
+         could never reproduce. */
+      await page.evaluate((top) => {
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollTo(0, top);
+      }, y);
+      await page
+        .waitForFunction(
+          (top) => Math.abs(window.scrollY - top) <= 1 || window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 1,
+          y,
+          { timeout: 4000 },
+        )
+        .catch(() => {});
       await page.waitForTimeout(220);
       const slice = join(OUT, `.${name}-${String(i).padStart(2, "0")}.png`);
       await page.screenshot({ path: slice, animations: "disabled", timeout: 90000 });

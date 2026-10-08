@@ -4,7 +4,8 @@ import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { ADVISORS, STAGES, TEAM } from "@/components/team/people";
-import { Dossier } from "@/components/team/Dossier";
+import { StageSequence } from "@/components/team/StageSequence";
+import { Roster } from "@/components/team/Roster";
 import { PeopleStrip } from "@/components/team/PeopleStrip";
 
 /* ============================================================================
@@ -54,7 +55,12 @@ export default function Team() {
           something laid out on a table rather than more of the same page. The
           wall's own floor is --color-sunken, where body ink is 6.7:1 and the
           red eyebrow 5.1:1, both AA. ═══ */}
-      <Section className="wall">
+      {/* THE BENCH, not the wall. This band ends on the six faces, and `.wall`
+          is within a few percent of the paper above it, so mounted portraits
+          with real shadows had nothing to stand out from: the shadows fell on
+          a ground the same value as the thing casting them. On the bench the
+          faces are lit. */}
+      <Section className="bench" pad="open">
         <Container width="wide">
           {/* A spread, not a heading with a note parked at the far right. The
               first build put the lead under the h1 and the mono note in a 21rem
@@ -83,7 +89,7 @@ export default function Team() {
                   in the review sequence an episode passes through before a child sees it, and any
                   stage can hold a release back.
                 </Lead>
-                <p className="mt-6 max-w-[44ch] border-t border-rule pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em] text-body">
+                <p className="mt-6 max-w-[44ch] border-t border-rule pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
                   Everything below is one table. The six stages run across it, the people run down
                   it, and a mark where they meet is the company's own account of who is answerable
                   there. Two of the stages are taken by the team as a whole, so they carry a team
@@ -99,19 +105,51 @@ export default function Team() {
         </Container>
       </Section>
 
-      {/* ═══ 2. THE DOSSIER. The page. ═══ */}
+      {/* ═══ 2. THE SEQUENCE, read in order. ═══ */}
       <Section labelledBy="dossier-h" pad="tight">
         <Container width="wide">
-          <Settle className="grid gap-5 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-10">
+          <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
             <h2 id="dossier-h" className="t-h2 max-w-[20ch]">
               Six stages, and who stands at each
             </h2>
-            <p className="t-body text-body">
+            <p className="t-body">
+              In the order an episode passes through them. Every stage names the people answerable
+              there, and the last one can send the work back.
+            </p>
+          </Settle>
+          {/* A measure, not the full 1560: a step is a line of prose and a
+              couple of faces, and stretched across a wide container it reads
+              as one item lost on a shelf. */}
+          <div className="max-w-[56rem]">
+            <StageSequence stages={STAGES} />
+          </div>
+        </Container>
+      </Section>
+
+      {/* ═══ 3. THE PEOPLE. The same fact from the other side: what each
+          person is answerable for, written out, with their own biography. ═══ */}
+      <Section labelledBy="people-h" pad="tight">
+        <Container width="wide">
+          <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
+            <h2 id="people-h" className="t-h2 max-w-[20ch]">
+              The people, and what each answers for
+            </h2>
+            <p className="t-body">
               The biographies are the team's own, cut down and never added to. Where the company's
               account does not name a person at a stage, nothing is claimed for them there.
             </p>
           </Settle>
-          <Dossier team={TEAM} advisers={ADVISORS} stages={STAGES} />
+          <Roster people={TEAM} stages={STAGES} />
+          <div className="mt-16 border-t border-rule pt-10 lg:mt-20 lg:pt-14">
+            <p className="eyebrow">Strategic adviser</p>
+            <p className="t-body mt-3 max-w-[62ch]">
+              Advisers are not employees, and advisory input sits outside the six review stages.
+              Each adviser is described only as they have approved it.
+            </p>
+            <div className="mt-10">
+              <Roster people={ADVISORS} stages={STAGES} outside />
+            </div>
+          </div>
         </Container>
       </Section>
 

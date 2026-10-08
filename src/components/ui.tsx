@@ -81,7 +81,12 @@ export function Kicker({ children, className = "" }: { children: ReactNode; clas
 }
 
 export function Lead({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <p className={`t-lead max-w-[58ch] text-body ${className}`}>{children}</p>;
+  /* No `text-body`. `html` already sets exactly that colour, so naming it here
+     changed nothing on paper and made the component unusable on any dark band:
+     a Lead on the bench measured 1.68:1. Pages worked around it by hand
+     rolling `t-lead` instead of using the primitive, which is how a shared
+     component quietly stops being shared. */
+  return <p className={`t-lead max-w-[58ch] ${className}`}>{children}</p>;
 }
 
 /* ---------------------------------------------------------------------------

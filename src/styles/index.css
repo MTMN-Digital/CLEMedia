@@ -346,8 +346,10 @@ body > * { position: relative; z-index: 1; }
   footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.14); }
   .deep h1, .deep h2, .deep h3, .deep h4,
   .bench h1, .bench h2, .bench h3, .bench h4 { color: #fdf8ed; }
-  .deep .eyebrow,
-  .bench .eyebrow { color: rgba(253, 248, 237, 0.72); }
+  .deep .eyebrow { color: rgba(253, 248, 237, 0.66); }
+  /* The bench is lighter than the navy band, so the same dimmed cream that
+     passes on navy does not pass here: 0.72 measured 4.06:1. */
+  .bench .eyebrow { color: rgba(253, 248, 237, 0.88); }
 
   /* A LIGHT SURFACE INSIDE A DARK BAND KEEPS ITS OWN INK.
      The inverted rules above are descendant selectors, so the moment a card
@@ -1005,3 +1007,116 @@ body > * { position: relative; z-index: 1; }
   }
 }
 
+
+/* ─── The review sequence: six stages, in order, with a line that draws ────
+   Replaces the stage matrix. Nothing here is encoded in a shape: the state a
+   square used to carry is written out, so the block needs no key. */
+.rk-seq {
+  --seq-rail: 2.75rem;
+  display: grid;
+  gap: 0;
+}
+.rk-seq__step {
+  position: relative;
+  display: grid;
+  /* Marker, then the stage, then the faces in their own column on a wide
+     screen. Stacked under 900 the faces fall back under the text. */
+  grid-template-columns: var(--seq-rail) minmax(0, 1fr);
+  column-gap: clamp(1rem, 2.4vw, 2rem);
+  padding-bottom: clamp(2.25rem, 4vw, 3.5rem);
+}
+/* The faces stay WITH the name they belong to. Tried in their own right-hand
+   column: at 1440 they ended up 600px from the person they identify, and the
+   grid row they created opened a hole in the middle of every step. */
+.rk-seq__step:last-child { padding-bottom: 0; }
+
+/* The spine runs from this marker to the next one. The last step has none,
+   because a line leaving the final stage would promise a seventh. */
+.rk-seq__spine {
+  position: absolute;
+  left: calc(var(--seq-rail) / 2);
+  top: 2.75rem;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, var(--color-red-deep), var(--color-rule));
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  transition: transform 0.9s var(--ease-out);
+}
+.rk-seq__step:last-child .rk-seq__spine { display: none; }
+.rk-seq__step.is-in .rk-seq__spine { transform: scaleY(1); }
+
+.rk-seq__marker {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--seq-rail);
+  height: var(--seq-rail);
+  border-radius: 50%;
+  background: var(--color-red-deep);
+  color: var(--color-raised);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.rk-seq__body { padding-top: 0.35rem; }
+.rk-seq__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.85rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+.rk-seq__who {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.75rem;
+}
+.rk-seq__wholabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* The token at full strength, never dimmed inherited ink. At `opacity: 0.75`
+     this measured 4.03 to 4.41:1 across the four paper tones it sits on, under
+     AA on every one of them. `--color-muted` is the documented floor that
+     still carries text on paper. */
+  color: var(--color-muted);
+}
+.rk-seq__whoname { font-size: 1.0625rem; font-weight: 600; }
+.rk-seq__faces {
+  margin-top: 0.9rem;
+  display: flex;
+  gap: 0.6rem;
+}
+.rk-seq__faces > li { width: 56px; }
+
+.rk-seq__checks {
+  margin-top: 0.9rem;
+  max-width: 52ch;
+  font-size: 1.0625rem;
+  line-height: 1.68;
+}
+/* The one fact the matrix buried in its legend. */
+.rk-seq__hold {
+  margin-top: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rk-seq__spine { transition: none; transform: scaleY(1); }
+}

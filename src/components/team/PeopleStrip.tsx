@@ -77,7 +77,11 @@ export function PeopleStrip({ people }: { people: Member[] }) {
               sizes="(min-width: 1024px) 200px, 38vw"
             />
           </Stage>
-          <p className="t-sm mt-4 font-bold leading-tight text-ink">{p.name}</p>
+          {/* No hard-coded `text-ink`. The strip now sits on the bench, where
+              ink measured 2.17:1, and a component that names its own colour
+              cannot follow the surface it is put on. Inherited, it is ink on
+              paper and cream on the bench. */}
+          <p className="t-sm mt-4 font-bold leading-tight">{p.name}</p>
           <p className="eyebrow eyebrow-xs mt-1">{p.role}</p>
         </li>
         );

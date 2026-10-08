@@ -56,9 +56,13 @@ await page.waitForTimeout(2500);
    still in flight. The hero's own entrance is staggered. */
 await page.evaluate(() => {
   const settle = document.createElement("style");
+  /* Declared, not toggled: the sweep's one-shot version let reveals that armed
+     later re-enter mid-fade and made the result non-deterministic. */
   settle.textContent =
     "*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important;" +
-    "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}";
+    "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}" +
+    ".settle,.wipe,.is-armed,.settle *,.wipe *,.is-armed *{" +
+    "opacity:1 !important;transform:none !important;clip-path:none !important;filter:none !important}";
   document.head.appendChild(settle);
 });
 await page.waitForTimeout(120);

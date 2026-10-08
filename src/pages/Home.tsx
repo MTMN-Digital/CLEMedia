@@ -232,7 +232,11 @@ export default function Home() {
           The strip then runs off the right edge of the page. Boxed inside the
           container it stopped dead at a hard vertical edge mid-slate, which
           reads as a clipping bug rather than as film continuing. ═══ */}
-      <Section labelledBy="series-h" pad={["normal", "tight"]}>
+      {/* ON THE BENCH. Perforated film on a dark warm ground is a light table,
+          which is where film is actually looked at, and the one place on this
+          page where the slates and the staged wordmark have something to be
+          lit against. On paper the whole band was tan objects on tan. */}
+      <Section labelledBy="series-h" pad={["open", "normal"]} className="bench">
         <Container width="wide">
           {/* The wordmark beside the heading rather than above it: stacked, the
               header block was four hundred pixels tall before a slate arrived.

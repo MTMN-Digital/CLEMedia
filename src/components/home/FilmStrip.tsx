@@ -121,10 +121,15 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
           gutter is theirs alone: the strip below bleeds off the page edge, and
           a button hard against that edge reads as clipped. */}
       <div className="filmstrip-head mb-6 flex items-center gap-4">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-deep">
+        {/* Nothing in this header names a colour any more. `text-deep` was a
+            deprecated alias for muted and measured 1.10:1 once the band went
+            onto the bench; the rule and the buttons were drawn in a hairline
+            mixed for paper and vanished on it. All three now take the surface's
+            own colour, so the strip works on either ground. */}
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em]">
           {episodes.length} episodes
         </p>
-        <span className="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
+        <span className="h-px flex-1 bg-current opacity-20" aria-hidden="true" />
         <div className="flex gap-2">
           {([-1, 1] as const).map((d) => (
             <button
@@ -133,7 +138,7 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
               onClick={() => step(d)}
               disabled={d === -1 ? atStart : atEnd}
               aria-label={d === -1 ? "Previous episodes" : "Next episodes"}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-rule)] text-ink transition-opacity disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-current/25 transition-opacity disabled:opacity-30"
             >
               <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
                 <path
