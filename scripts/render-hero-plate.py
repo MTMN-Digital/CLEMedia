@@ -97,7 +97,7 @@ CYC_COVE_RADIUS = 0.9
 # Low enough that its TOP EDGE is in frame with a band of dark studio over it.
 # A backdrop that runs out of the top of the picture is a wall; one you can
 # see the end of is a set.
-CYC_WALL_HEIGHT = 1.30
+CYC_WALL_HEIGHT = 2.15
 CYC_SCUFF_HEIGHT = 0.14
 CYC_SCUFF = (0.21, 0.17, 0.10, 1.0)
 CYC_ALBEDO = (0.63, 0.51, 0.30, 1.0)   # linear; roughly sRGB 0.87 0.81 0.61
@@ -116,8 +116,11 @@ ROLL_COLOUR = (0.055, 0.075, 0.050, 1.0)
 # hung off it. This is the rigging the mark's ropes conceptually hang from,
 # and it is what turns the dark band above the wall from "nothing" into
 # "studio ceiling".
-PIPE_Z = 1.76
-PIPE_Y = 2.35
+PIPE_Z = 1.72
+# Over the BED, not up against the cyc. At y = 2.35 the pipe sat level with the
+# cove, so the heads read as fixtures on the backdrop rather than as a rig
+# hanging in front of the set and lighting it.
+PIPE_Y = -0.35
 PIPE_RADIUS = 0.021
 # Scaffold grey with a sheen, not stand black: black pipe against the dark
 # band above the cyc vanished and left the heads hanging from nothing.
@@ -138,11 +141,12 @@ ROOM_ALBEDO = (0.030, 0.028, 0.026, 1.0)
 # camera sees two sides and a near corner: square to the lens a box reads as
 # a strip, and a strip is what the previous trough was.
 GARDEN_SIZE = (2.9, 2.0)        # along x, along y, outside the walls
-GARDEN_CENTRE = (-1.35, -0.62)
+GARDEN_CENTRE = (-0.55, -1.05)
 # Turned further, so you read the long front wall, the near END wall and a
 # little of the far side: three walls, which is what makes it a container
 # rather than a line of timber behind some leaves.
-GARDEN_YAW_DEG = -17.0
+# Square to the world. The turn is the camera's job now, not the bed's.
+GARDEN_YAW_DEG = 0.0
 WALL_HEIGHT = 0.30              # still a boundary, but tall enough to contain
 WALL_THICKNESS = 0.045
 WALL_BOARDS = 2                 # boards per side, with a shadow line between
@@ -206,7 +210,7 @@ BOUNCE_YAW_DEG = 32.0
 BOUNCE_PITCH_DEG = -18.0
 
 # Floor dressing, all in the back layer because it all rests on the paper.
-APPLE_BOX = (1.86, -1.12, 26.0)          # x, y, yaw
+APPLE_BOX = (2.28, -0.72, 26.0)          # x, y, yaw
 APPLE_BOX_SIZE = (0.51, 0.30, 0.20)      # a full apple box
 HALF_BOX_OFFSET = (0.06, -0.02, 14.0)    # the half box stacked on it, turned a little
 HALF_BOX_SIZE = (0.51, 0.30, 0.10)
@@ -219,6 +223,14 @@ POTS = [
 ]
 TERRACOTTA = (0.28, 0.11, 0.055, 1.0)
 WATERING_CAN = (0.62, -1.08, 150.0)      # x, y, yaw of the spout
+# More of the ordinary clutter a set collects: a sack of compost slumped
+# against nothing in particular, a bucket, a stack of seed trays, a broom
+# leaning out of frame, a trug. None of it near the headline.
+COMPOST_SACK = (2.55, 0.35, 0.56, 0.30, 0.22, -18.0)   # x, y, length, width, height, yaw
+BUCKET = (1.98, -1.52, 0.145, 0.26)                     # x, y, radius, height
+SEED_TRAYS = (-2.05, -1.42, 0.36, 0.24, 0.035, 4, 9.0)  # x, y, w, d, each, count, yaw
+BROOM = (2.92, -0.55, 1.42, 24.0)                       # x, y, handle length, lean
+TRUG = (-1.95, 1.05, 0.34, 0.22, 0.14, -24.0)           # x, y, w, d, h, yaw
 CAN_RADIUS = 0.105
 CAN_HEIGHT = 0.23
 STAND_PAINT = (0.012, 0.012, 0.012, 1.0)
@@ -305,6 +317,15 @@ def cli() -> argparse.Namespace:
     p.add_argument("--width", type=int, default=2560)
     p.add_argument("--samples", type=int, default=256)
     p.add_argument("--layer", choices=("all", "back", "mid"), default="all")
+    p.add_argument("--track", type=float, default=0.0,
+                   help="metres to track the camera sideways, which carries the "
+                        "set left across the frame. The orbit alone swung the bed "
+                        "right, into the half of the picture the headline needs.")
+    p.add_argument("--orbit", type=float, default=0.0,
+                   help="degrees to swing the camera around the garden. The hero "
+                        "renders this scene three times, at 0, 10 and 20, and "
+                        "cross-fades between them as the page scrolls, so the "
+                        "shot orbits instead of the bed appearing pre-turned.")
     return p.parse_args(argv)
 
 
@@ -877,6 +898,42 @@ def c_stand():
     clamp.matrix_world = Matrix.Translation((bx, by, bz)) @ rot @ Matrix.Translation((bw / 2 - 0.03, 0.02, 0))
 
 
+def clutter():
+    """The ordinary gear that collects on a set. Deliberately plain shapes in
+    plain materials: the job is to stop the floor reading as empty paper, not
+    to be looked at. Everything sits away from the half of the frame the
+    headline lands in."""
+    ply = plywood_face_material()
+    sack_mat = flat_material("Compost sack", (0.030, 0.029, 0.027, 1.0), 0.72)
+    galv = flat_material("Galvanised", (0.26, 0.26, 0.25, 1.0), 0.34, metallic=1.0)
+    black = flat_material("Tray", (0.016, 0.016, 0.017, 1.0), 0.66)
+
+    x, y, L, W, H, yaw = COMPOST_SACK
+    sack = box("Compost sack", (0, 0, 0), (L, W, H), sack_mat, H * 0.42)
+    sack.matrix_world = Matrix.Translation((x, y, H / 2)) @ Matrix.Rotation(math.radians(yaw), 4, "Z")
+
+    bx, by, br, bh = BUCKET
+    bucket = cylinder("Bucket", (bx, by, bh / 2), br, bh, galv, 26)
+    bucket.scale = (1.0, 1.0, 1.0)
+
+    tx, ty, tw, td, th, n, tyaw = SEED_TRAYS
+    for i in range(n):
+        tray = box("Seed tray", (0, 0, 0), (tw, td, th), black, 0.004)
+        tray.matrix_world = (
+            Matrix.Translation((tx, ty, th / 2 + i * th))
+            @ Matrix.Rotation(math.radians(tyaw + i * 3.5), 4, "Z")
+        )
+
+    hx, hy, hl, lean = BROOM
+    handle = cylinder("Broom handle", (hx, hy, hl / 2), 0.016, hl, ply, 12)
+    handle.rotation_euler = (0.0, math.radians(lean), math.radians(-30))
+    box("Broom head", (hx + 0.28, hy - 0.16, 0.035), (0.30, 0.075, 0.07), black, 0.008)
+
+    gx, gy, gw, gd, gh, gyaw = TRUG
+    trug = box("Trug", (0, 0, 0), (gw, gd, gh), ply, 0.02)
+    trug.matrix_world = Matrix.Translation((gx, gy, gh / 2)) @ Matrix.Rotation(math.radians(gyaw), 4, "Z")
+
+
 def dressing(sources):
     """What stands on the paper besides the garden: apple boxes with tape on
     them, pots with plants in them, a watering can, cable runs, tape marks.
@@ -1017,15 +1074,30 @@ def lights():
     blackbody(kick, KICK_KELVIN)
 
 
-def camera():
-    loc = Vector((0.0, -CAMERA_DISTANCE, CAMERA_HEIGHT))
+def camera(orbit_deg=0.0, track=0.0):
+    """The lens, swung `orbit_deg` around the garden.
+
+    The bed itself is square to the world now. It used to be built pre-turned,
+    which is what made it look like a prop that had been set down at an angle;
+    swinging the CAMERA instead means the whole room turns with it, which is
+    what a camera move actually does."""
+    a = math.radians(orbit_deg)
+    pivot = Vector((GARDEN_CENTRE[0], GARDEN_CENTRE[1], 0.0))
+    # `track` is the camera's own sideways axis: before the orbit it looks
+    # along +Y, so its right is +X. Tracking right carries the subject left.
+    rel = Vector((track, -CAMERA_DISTANCE, CAMERA_HEIGHT))
+    loc = pivot + Vector((
+        rel.x * math.cos(a) - rel.y * math.sin(a),
+        rel.x * math.sin(a) + rel.y * math.cos(a),
+        rel.z,
+    ))
     bpy.ops.object.camera_add(location=loc)
     cam = bpy.context.object
     cam.name = "Camera"
     cam.data.lens = CAMERA_LENS_MM
     cam.data.sensor_width = CAMERA_SENSOR_MM
     cam.data.sensor_fit = "HORIZONTAL"
-    cam.rotation_euler = (math.radians(90.0 + CAMERA_PITCH_DEG), 0.0, 0.0)
+    cam.rotation_euler = (math.radians(90.0 + CAMERA_PITCH_DEG), 0.0, a)
     cam.data.dof.use_dof = True
     cam.data.dof.focus_distance = (Vector(CAMERA_FOCUS) - loc).length
     cam.data.dof.aperture_fstop = CAMERA_F_STOP
@@ -1096,9 +1168,10 @@ def main():
     tag("back", lamp_stand)
     tag("back", c_stand)
     tag("back", dressing, sources)
+    tag("back", clutter)
     world()
     lights()
-    camera()
+    camera(args.orbit, args.track)
     isolate(args.layer)
     render(args)
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out.with_suffix(".blend")))

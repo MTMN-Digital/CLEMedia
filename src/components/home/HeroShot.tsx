@@ -125,14 +125,13 @@ export function HeroShot() {
   return (
     <div ref={pin} className="shot-pin" style={{ height: `calc(100svh + ${TRAVEL * 100}svh)` }}>
       <div ref={screen} className="shot-screen">
-        {/* Two planes, not three. `back` is opaque and carries the studio, the
-            cyc and everything standing on the floor; `mid` is the garden, cut
-            out of the same photograph with alpha, and it is the only thing
-            that moves against the room. A third plane held litter on the floor
-            and had to go: anything resting on a floor that travels at a
-            different rate slides off its own shadow. */}
-        <div aria-hidden="true" className="plane plane-back" />
-        <div aria-hidden="true" className="plane plane-mid" />
+        {/* THE ORBIT: three renders of the same set, the camera swung 0, 10 and
+            20 degrees around the garden, cross-faded by --s. The bed is square
+            to the world in all three; it is the camera that turns, so the
+            whole room turns with it. See index.css. */}
+        <div aria-hidden="true" className="plane plane-o0" />
+        <div aria-hidden="true" className="plane plane-o1" />
+        <div aria-hidden="true" className="plane plane-o2" />
 
         <div className="shot-mark">
           <HeroMark sizes="(min-width: 1280px) 760px, 76vw" />
