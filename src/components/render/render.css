@@ -268,7 +268,12 @@
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  /* INK, not muted. The rail prints onto the wall's own gradient, which runs
+     from #beb29b down to #95876f, and muted measured 3.61:1 at the light end
+     and 2.15:1 at the dark one. `--color-muted` is the floor on PAPER; this
+     surface is not paper. Nothing caught it for the life of the component
+     because the component was never mounted on a page. */
+  color: var(--color-ink);
 }
 .rk-head-rule {
   flex: 1;

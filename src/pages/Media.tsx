@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
+import { StudioWall } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
@@ -194,6 +195,32 @@ export default function Media() {
               </div>
             </div>
           </Settle>
+        </Container>
+      </Section>
+
+      {/* ═══ THE STILLS, on the studio wall.
+      
+          A press page exists to hand somebody a picture, and this one had not
+          a single object on it: a column of listings, a kit of text, and a
+          statement. The four title slates are the show's own artwork and the
+          thing a journalist actually wants, so they stand here as what they
+          are, boards under one lamp on the bench they were made on.
+      
+          `StudioWall` was built for this and mounted nowhere. It is kept off
+          the home page on purpose, because the same four plates cannot stand
+          twice on one page and the filmstrip there already has them. ═══ */}
+      <Section labelledBy="stills-h" pad={["tight", "normal"]} className="wall">
+        <Container width="wide">
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
+            <h2 id="stills-h" className="t-h2 max-w-[18ch]">The title slates, if you need art</h2>
+            <p className="max-w-[40ch] text-[15px] leading-[1.65] text-body">
+              Every title is made in wool and photographed, not set in a typeface. Ask and we will
+              send them at print resolution.
+            </p>
+          </div>
+          <div className="mt-12 lg:mt-16">
+            <StudioWall label="Title slates" meta="Series one" />
+          </div>
         </Container>
       </Section>
 
