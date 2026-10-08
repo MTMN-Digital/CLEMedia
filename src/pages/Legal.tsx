@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Container, Kicker, Section, TextLink } from "@/components/ui";
+import { Container, DisclosurePanel, Kicker, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -244,9 +244,8 @@ function Contents({
   );
 }
 
-/** The house disclosure, as on the Responsible AI page: grid-rows 0fr to 1fr, a
- *  real button with aria-expanded and aria-controls, and a closed panel that is
- *  invisible to assistive tech and out of the tab order. */
+/** The contents list on a phone, behind the shared `DisclosurePanel`. The
+ *  closed panel holds real links, so being out of the tab order matters here. */
 function MobileContents({ sections, active }: { sections: { h: string }[]; active: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -271,16 +270,11 @@ function MobileContents({ sections, active }: { sections: { h: string }[]; activ
           </span>
         </button>
       </div>
-      <div
-        id="legal-contents"
-        className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-      >
-        <div className={`overflow-hidden ${open ? "visible" : "invisible"}`}>
-          <div className="pb-4">
-            <Contents sections={sections} active={active} />
-          </div>
+      <DisclosurePanel id="legal-contents" open={open}>
+        <div className="pb-4">
+          <Contents sections={sections} active={active} />
         </div>
-      </div>
+      </DisclosurePanel>
     </div>
   );
 }

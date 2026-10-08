@@ -84,36 +84,6 @@ export function Lead({ children, className = "" }: { children: ReactNode; classN
   return <p className={`t-lead max-w-[58ch] text-body ${className}`}>{children}</p>;
 }
 
-export function SectionHeading({
-  kicker,
-  title,
-  lead,
-  id,
-  size = "h2",
-  align = "start",
-  className = "",
-}: {
-  kicker?: string;
-  title: ReactNode;
-  lead?: ReactNode;
-  id?: string;
-  size?: "h1" | "h2";
-  align?: "start" | "center";
-  className?: string;
-}) {
-  const H = (size === "h1" ? "h1" : "h2") as ElementType;
-  const centred = align === "center";
-  return (
-    <div className={`${centred ? "mx-auto text-center" : ""} ${className}`}>
-      {kicker && <Kicker className="mb-4">{kicker}</Kicker>}
-      <H id={id} className={`t-${size} ${centred ? "mx-auto" : ""} max-w-[22ch]`}>
-        {title}
-      </H>
-      {lead && <Lead className={`mt-5 ${centred ? "mx-auto" : ""}`}>{lead}</Lead>}
-    </div>
-  );
-}
-
 /* ---------------------------------------------------------------------------
    Surfaces.
 --------------------------------------------------------------------------- */
@@ -128,91 +98,6 @@ export function Card({
   as?: ElementType;
 }) {
   return <Tag className={`card rounded-[var(--radius-lg)] ${className}`}>{children}</Tag>;
-}
-
-/** Sits inside a card. Warmer and darker than it, never another sheet of white. */
-export function Tile({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`tile rounded-[var(--radius-md)] ${className}`}>{children}</div>;
-}
-
-/** Sits below the ground. Note: muted and red are AA-large only on this fill,
- *  so body copy in a well uses --color-body or --color-ink. */
-export function Well({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`well rounded-[var(--radius-lg)] ${className}`}>{children}</div>;
-}
-
-/** Deprecated alias kept so the not-yet-rewritten pages compile. */
-export function Panel({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-  variant?: string;
-  tone?: string;
-}) {
-  return <Card className={className}>{children}</Card>;
-}
-
-/* ---------------------------------------------------------------------------
-   The people card.
-
-   An arch, which is the shape pawsitivepugs.com already uses for a person on
-   its creative-team section. The one silhouette worth carrying over.
---------------------------------------------------------------------------- */
-
-export interface ArchPerson {
-  name: string;
-  role: string;
-  body?: ReactNode;
-  portrait?: ReactNode;
-}
-
-export function ArchCard({ person, className = "" }: { person: ArchPerson; className?: string }) {
-  return (
-    <article
-      className={`card flex h-full flex-col items-center px-6 pb-8 pt-6 text-center ${className}`}
-      style={{ borderRadius: "9999px 9999px var(--radius-md) var(--radius-md)" }}
-    >
-      {person.portrait && (
-        <div className="well aspect-square w-[76%] overflow-hidden rounded-full">{person.portrait}</div>
-      )}
-      <h3 className="t-h3 mt-6">{person.name}</h3>
-      <p className="eyebrow eyebrow-sm mt-2.5 ">{person.role}</p>
-      {person.body && <p className="t-sm mt-4 max-w-[34ch] leading-relaxed text-body">{person.body}</p>}
-    </article>
-  );
-}
-
-/* ---------------------------------------------------------------------------
-   The rail. Hairline rows: stage, the person answerable, what happens there.
---------------------------------------------------------------------------- */
-
-export interface RailItem {
-  index?: string;
-  title: string;
-  attribution?: string;
-  body: ReactNode;
-}
-
-export function Rail({ items, className = "" }: { items: RailItem[]; className?: string }) {
-  const cols = items.some((i) => i.attribution)
-    ? "md:grid-cols-[3rem_minmax(0,0.8fr)_minmax(0,1.2fr)]"
-    : "md:grid-cols-[3rem_minmax(0,0.4fr)_minmax(0,1.6fr)]";
-  return (
-    <ol className={className}>
-      {items.map((it) => (
-        <li key={it.title} className={`hairline grid grid-cols-1 items-start gap-x-8 gap-y-2 py-7 ${cols}`}>
-          {it.index && <span className="tnum font-mono text-[13px] text-muted" aria-hidden="true">{it.index}</span>}
-          <div>
-            <h3 className="t-h3">{it.title}</h3>
-            {it.attribution && <p className="eyebrow eyebrow-sm mt-2 ">{it.attribution}</p>}
-          </div>
-          <div className="t-body text-body">{it.body}</div>
-        </li>
-      ))}
-    </ol>
-  );
 }
 
 /* ---------------------------------------------------------------------------
@@ -232,8 +117,8 @@ type ButtonProps = {
      could see the difference. */
   variant?: "primary" | "quiet";
   /** A bigger primary for a page whose whole job is one action: the download
-   *  and the buy button. It was two different sets of inline `!px-* !py-*
-   *  !text-*` escapes that did not agree with each other. */
+   *  and the buy button. It was two different sets of inline
+   *  `!px-* !py-* !text-*` escapes that did not agree with each other. */
   size?: "normal" | "large";
   type?: "button" | "submit";
   onClick?: () => void;
@@ -266,16 +151,36 @@ export function TextLink({
   return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>;
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+/* ----------------------------------------------------------------------------
+   The house disclosure panel.
+
+   grid-rows 0fr to 1fr, so the height animates without anything measuring it.
+   Closed, it is out of the accessibility tree AND out of the tab order: the
+   two hand-written copies on the site each had one of those halves and not the
+   other, which is exactly the kind of thing that stops being noticed once it
+   is written twice.
+
+   The button that controls it stays with the page. One of them is a question
+   inside a heading, the other is a labelled bar carrying a section count, and
+   a prop that covers both would be longer than either.
+   -------------------------------------------------------------------------- */
+export function DisclosurePanel({
+  id,
+  open,
+  children,
+}: {
+  id: string;
+  open: boolean;
+  children: ReactNode;
+}) {
   return (
-    <div className="well rounded-[var(--radius-lg)] px-6 py-12 text-center">
-      <p className="t-h3 font-display">{title}</p>
-      <p className="t-sm mx-auto mt-3 max-w-[46ch] text-body">{body}</p>
+    <div
+      id={id}
+      aria-hidden={!open}
+      className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+    >
+      <div className={`overflow-hidden ${open ? "visible" : "invisible"}`}>{children}</div>
     </div>
   );
 }
 
-/** Deprecated, from the chassis pass. */
-export function Capsule({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <Card className={className}>{children}</Card>;
-}

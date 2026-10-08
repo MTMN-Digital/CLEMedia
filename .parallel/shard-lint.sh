@@ -101,9 +101,12 @@ done
 # like, and the gate only caught them when a human read the diff.
 for f in "$@"; do
   [ -f "$f" ] || continue
-  if grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" >/dev/null 2>&1; then
-    grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" \
-      | sed "s|^|FAIL $f: Tailwind !important escape, use the contract instead: |"
+  # A backticked `!py-*` is prose ABOUT the escape, not an escape: the file that
+  # defines the spacing contract documents the thing it replaced, and a check
+  # that fails its own documentation gets switched off rather than obeyed.
+  hits=$(grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" | grep -vE '`!(py|pt|pb|px|text|border|tracking)-')
+  if [ -n "$hits" ]; then
+    printf '%s\n' "$hits" | sed "s|^|FAIL $f: Tailwind !important escape, use the contract instead: |"
     fails=1
   fi
 done

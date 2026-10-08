@@ -32,7 +32,7 @@ export function AssetPlaceholder({
   tone = "clay",
   rounded = "rounded-[var(--radius-lg)]",
 }: Props) {
-  const fill = tone === "clay" ? "bg-clay" : "bg-cream";
+  const fill = tone === "clay" ? "bg-paper-3" : "bg-raised";
   return (
     <div
       role="img"

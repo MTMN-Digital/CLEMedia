@@ -4,7 +4,7 @@ import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
 import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
+import { Button, Container, DisclosurePanel, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -83,8 +83,9 @@ const QUESTIONS = [
   },
 ];
 
-/** The house disclosure: grid-rows 0fr to 1fr, so the panel's height animates
- *  without measuring it. Closed panels are also hidden from assistive tech. */
+/** One question. The panel is the shared `DisclosurePanel`; the button is here
+ *  because it is a heading, and the open state belongs to the list so that
+ *  opening one answer closes the last. */
 function Question({ id, q, a, open, onToggle }: { id: string; q: string; a: string; open: boolean; onToggle: () => void }) {
   return (
     <li className="hairline">
@@ -105,15 +106,9 @@ function Question({ id, q, a, open, onToggle }: { id: string; q: string; a: stri
           </span>
         </button>
       </h3>
-      <div
-        id={id}
-        aria-hidden={!open}
-        className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-      >
-        <div className="overflow-hidden">
-          <p className="t-body max-w-[62ch] pb-7 text-body">{a}</p>
-        </div>
-      </div>
+      <DisclosurePanel id={id} open={open}>
+        <p className="t-body max-w-[62ch] pb-7 text-body">{a}</p>
+      </DisclosurePanel>
     </li>
   );
 }

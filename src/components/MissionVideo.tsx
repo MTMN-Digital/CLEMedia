@@ -144,7 +144,7 @@ export function MissionVideo({
         <button
           type="button"
           onClick={turnSoundOn}
-          className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink/85 px-4 py-2 font-mono text-[11px] tracking-[0.12em] text-cream uppercase backdrop-blur-sm transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+          className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink/85 px-4 py-2 font-mono text-[11px] tracking-[0.12em] text-raised uppercase backdrop-blur-sm transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-raised"
         >
           <SpeakerOff />
           Sound on

@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
+import { NotifyForm } from "@/components/NotifyForm";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { HeroFilm } from "@/components/home/HeroFilm";
@@ -81,45 +81,6 @@ const EPISODES: Episode[] = [
     line: "Finn and Fia go on a new adventure and meet a cuckoo who has travelled a very long way to get back to the garden." },
 ];
 
-function NotifyForm() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true); setError(null);
-    try {
-      const r = await fetch("/api/contact", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ route: "notify", email }),
-      });
-      if (!r.ok) {
-        const d = await r.json().catch(() => ({}));
-        setError(d.error ?? "Could not sign you up. Please try again.");
-      } else setSent(true);
-    } catch { setError("Could not sign you up. Please check your connection."); }
-    finally { setBusy(false); }
-  }
-
-  if (sent) return <p role="status" className="t-sm mt-6">Thank you. We will be in touch when there is something worth sending.</p>;
-
-  return (
-    <form className="mt-6 flex flex-col gap-3 sm:flex-row" onSubmit={submit}>
-      <div className="flex-1">
-        <label htmlFor="notify-email" className="sr-only">Email address</label>
-        <input
-          id="notify-email" name="email" type="email" required value={email}
-          onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-          className="w-full rounded-full border border-white/25 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/50"
-        />
-      </div>
-      <Button type="submit" disabled={busy}>{busy ? "Signing up" : "Sign up"}<IconMail size={16} /></Button>
-      {error && <p role="alert" className="t-sm sm:basis-full">{error}</p>}
-    </form>
-  );
-}
 
 export default function Home() {
 
@@ -392,7 +353,7 @@ export default function Home() {
               <p className="t-body mt-3 max-w-[40ch] opacity-80">
                 Production notes and company news, for adults. Infrequent, and easy to leave.
               </p>
-              <NotifyForm />
+              <NotifyForm cta="Sign up" icon={<IconMail size={16} />} done="Thank you. We will be in touch when there is something worth sending." />
             </div>
           </Settle>
         </Container>

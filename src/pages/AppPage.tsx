@@ -1,4 +1,5 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { NotifyForm } from "@/components/NotifyForm";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
@@ -108,65 +109,6 @@ const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[]
   { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
 ];
 
-/* Posts to /api/contact with route "notify", unchanged from the previous page.
-   Only the presentation moved, into the deep band. */
-function NotifyForm() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const r = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ route: "notify", email }),
-      });
-      if (!r.ok) {
-        const d = await r.json().catch(() => ({}));
-        setError(d.error ?? "Could not sign you up. Please try again.");
-      } else {
-        setSent(true);
-      }
-    } catch {
-      setError("Could not sign you up. Please check your connection.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  if (sent) {
-    return (
-      <p role="status" className="t-body mt-6">
-        Thanks. We will email you once, when it is live, and not for anything else.
-      </p>
-    );
-  }
-
-  return (
-    <form className="mt-6 flex flex-col gap-3 sm:flex-row" onSubmit={submit}>
-      <div className="flex-1">
-        <label htmlFor="notify-email" className="sr-only">Email address</label>
-        <input
-          id="notify-email"
-          name="email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className="w-full rounded-full border border-white/25 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/60"
-        />
-      </div>
-      <Button type="submit" disabled={busy}>{busy ? "Signing up" : "Notify me"}<IconBell size={16} /></Button>
-      {error && <p role="alert" className="t-sm sm:basis-full">{error}</p>}
-    </form>
-  );
-}
 
 /* The Story page's margin grid: heading column left, body right, a hairline
    down the inside edge of the body. Stacked and capped under 1024px. */
@@ -367,16 +309,23 @@ export default function AppPage() {
       <Section labelledBy="check-h" className="wall">
         <Container width="default">
           <Settle className="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-12">
-            {/* A cream keyline on each portrait rather than a ring in the
-                ground colour: the ground is a gradient, so a ring matched to
-                it at one scroll position shows as a halo at another. */}
-            <div className="flex items-center">
-              {REVIEWERS.map((p, i) => (
+            {/* Rounded squares, the same shape the same six faces take on
+                /team, rather than the overlapping circles this was. A cream
+                keyline on each rather than a ring in the ground colour: the
+                ground is a gradient, so a ring matched to it at one scroll
+                position shows as a halo at another. */}
+            <div className="flex items-center gap-3">
+              {REVIEWERS.map((p) => (
                 <div
                   key={p.name}
-                  className={`w-[84px] shrink-0 overflow-hidden rounded-full ring-[3px] ring-[var(--color-raised)] sm:w-[104px] ${i ? "-ml-6" : ""}`}
+                  className="w-[84px] shrink-0 overflow-hidden rounded-[var(--radius-md)] ring-[3px] ring-[var(--color-raised)] sm:w-[104px]"
                 >
-                  <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="104px" />
+                  <Figure
+                    asset={p.asset}
+                    rounded="rounded-[var(--radius-md)]"
+                    className="aspect-square"
+                    sizes="104px"
+                  />
                 </div>
               ))}
             </div>
@@ -445,7 +394,7 @@ export default function AppPage() {
                 One email when it is available. No list, no marketing, and we do not share it with
                 anyone.
               </p>
-              <NotifyForm />
+              <NotifyForm cta="Notify me" icon={<IconBell size={16} />} done="Thanks. We will email you once, when it is live, and not for anything else." />
             </div>
           </Settle>
         </Container>

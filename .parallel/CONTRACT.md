@@ -60,7 +60,14 @@ quiet button on the navy band.
 ## Shared primitives, use before building
 
 `Container` (`width="wide" | "text"`) · `Section` · `Button` · `TextLink` ·
-`Card` · `Kicker` · `Lead` · `Note` · `Figure` · `Settle` · `Wipe`
+`Card` · `Kicker` · `Lead` · `Note` · `Figure` · `Settle` · `Wipe` ·
+`DisclosurePanel` · `NotifyForm`
+
+Eight chassis primitives were deleted at integration: `SectionHeading`, `Tile`,
+`Well`, `Panel`, `ArchCard`, `Rail`, `EmptyState` and `Capsule`. None had a
+consumer, two were aliases of `Card`, and `ArchCard` drew a circular portrait,
+which this contract forbids. `.tile`, `.well` and `.hairline` remain as classes
+and are used directly.
 
 ## Non-negotiables
 
