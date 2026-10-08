@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { NAV, SITE } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
@@ -197,8 +197,28 @@ function Footer() {
 
 export function Layout() {
   const { pathname } = useLocation();
+  const main = useRef<HTMLElement>(null);
+  const first = useRef(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    /* Move focus to the new page.
+     *
+     * A router swaps the document under the user without a navigation, so the
+     * link that was focused is removed and focus falls back to the body: a
+     * keyboard user lands at the top of a page with nothing focused, and a
+     * screen reader is told nothing happened at all. Focusing `<main>`, which
+     * is already `tabIndex={-1}` for the skip link, puts the next Tab in the
+     * new content and gives the page a thing to announce.
+     *
+     * Not on first paint, where focus is already where the browser put it and
+     * stealing it would skip past the skip link. */
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    main.current?.focus();
   }, [pathname]);
 
   return (
@@ -214,7 +234,7 @@ export function Layout() {
       </a>
       <Header />
       {/* flex-1 pushes the footer to the bottom on short pages (legal, 404). */}
-      <main id="main" tabIndex={-1} className="flex-1">
+      <main id="main" ref={main} tabIndex={-1} className="flex-1 focus:outline-none">
         <Outlet />
       </main>
       <Footer />

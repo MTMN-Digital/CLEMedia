@@ -101,6 +101,42 @@ export default function ShopProduct() {
     );
   }
 
+  /* ── The shop did not answer ───────────────────────────────────────────── */
+  if (q.state === "failed") {
+    return (
+      <>
+        <Seo
+          title="Could not load this file"
+          description="This page could not be loaded."
+          path={`/shop/${slug ?? ""}`}
+          noIndex
+        />
+        <Section>
+          <Container width="wide">
+            <div className="max-w-[46ch]">
+              <Kicker>Shop</Kicker>
+              <h1 className="t-display mt-6 max-w-[16ch]">We could not load this one</h1>
+              {/* NOT "not on the shelf". A request that failed has established
+                  nothing about whether this file exists, and telling somebody
+                  their link is wrong when the database simply did not answer
+                  sends them away from a product that is on sale. */}
+              <Lead className="mt-7">
+                Something went wrong at our end, not yours. Reload the page, and if it keeps
+                happening tell us and we will look at it.
+              </Lead>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Button onClick={() => window.location.reload()}>Try again</Button>
+                <Button to="/shop" variant="quiet">
+                  Back to the shop
+                </Button>
+              </div>
+            </div>
+          </Container>
+        </Section>
+      </>
+    );
+  }
+
   /* ── Not found, or taken off sale ──────────────────────────────────────── */
   if (q.state === "empty") {
     return (

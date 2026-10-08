@@ -32,7 +32,21 @@ export async function POST(request: Request) {
     return new Response("Invalid signature", { status: 400 });
   }
 
-  if (event.type !== "checkout.session.completed") {
+  /* Two events can mean "this is paid, fulfil it".
+   *
+   * `checkout.session.completed` fires when the session finishes, and for a
+   * card that is the end of it. A delayed method settles later and announces
+   * itself with `async_payment_succeeded`, with `completed` having arrived
+   * earlier carrying `payment_status: "unpaid"`. Handling only the first meant
+   * such a payment was taken and no order, token or file ever followed.
+   *
+   * Checkout is not pinned to immediate methods anywhere in this codebase, and
+   * which methods are live is a Stripe Dashboard setting this repository
+   * cannot see, so the safe assumption is that one can arrive. Both events
+   * land in the same idempotent path below, which is keyed on the session id,
+   * so a session that produces both is still fulfilled exactly once. */
+  const FULFIL = ["checkout.session.completed", "checkout.session.async_payment_succeeded"];
+  if (!FULFIL.includes(event.type)) {
     return json({ received: true });
   }
 

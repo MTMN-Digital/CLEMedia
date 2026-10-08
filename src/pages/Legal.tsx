@@ -152,8 +152,16 @@ const DOCS: Record<DocId, Doc> = {
       { h: "Payments", p: [
         "When you buy something, Stripe sets its own cookies to process the payment and prevent fraud. Those are governed by Stripe's privacy policy.",
       ]},
+      /* Present tense removed. This said "We measure how the site is used in
+         aggregate", and nothing in this application measures anything: there
+         is no analytics package, no script and no endpoint. A privacy notice
+         that claims a collection which does not happen is as wrong as one that
+         hides a collection that does, and it is the easier of the two to
+         check. The commitment stays; only the claim to be doing it already
+         goes. */
       { h: "Analytics", p: [
-        "We measure how the site is used in aggregate so we know which pages are worth improving. Our preference is a privacy first, cookieless tool that collects no personal data and needs no consent banner. If that changes, this page changes first and a consent banner appears with it.",
+        "We do not measure how the site is used. There is no analytics on this site at all, so there is nothing to tell you about and nothing to consent to.",
+        "If that changes, the tool will be a privacy first, cookieless one that collects no personal data, this page will change before it is switched on, and a consent banner will appear with it if one is needed.",
       ]},
       { h: "Managing cookies", p: [
         "You can clear or block cookies in your browser settings at any time. Blocking the strictly necessary ones may stop parts of the site working, but nothing on the public site depends on them.",

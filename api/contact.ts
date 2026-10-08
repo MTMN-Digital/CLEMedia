@@ -3,6 +3,10 @@ import { adminClient, json } from "./_lib/admin";
 const ROUTES = ["general", "partnership", "educator", "press", "notify"] as const;
 type Route = (typeof ROUTES)[number];
 
+/** How many submissions one address may make, and over what period. */
+const MAX_PER_WINDOW = 5;
+const WINDOW_MINUTES = 10;
+
 /**
  * Receives a contact or notify-me submission, stores it and sends a
  * notification. Validated server side. Client-side validation is a courtesy
@@ -34,6 +38,33 @@ export async function POST(request: Request) {
 
   try {
     const supabase = adminClient();
+
+    /* A throttle, keyed on the address the sender gave.
+     *
+     * This endpoint holds the service-role key and calls an email provider, so
+     * an unthrottled POST loop is an unbounded write to `enquiries` and an
+     * unbounded spend at Resend. It is keyed on email and not on IP because
+     * the privacy notice lists exactly what an enquiry collects, and an IP is
+     * not on that list; adding one is a change to client-facing legal copy,
+     * not a thing to slip into a patch.
+     *
+     * ponytail: per-address only, so it stops a flood from one sender and not
+     * a script rotating addresses. Network-level limiting belongs in front of
+     * the function, and is logged for the deploy in QUESTIONS.md.
+     */
+    const since = new Date(Date.now() - WINDOW_MINUTES * 60_000).toISOString();
+    const { count } = await supabase
+      .from("enquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("email", email)
+      .gte("created_at", since);
+    if ((count ?? 0) >= MAX_PER_WINDOW) {
+      return json(
+        { error: "That is a few messages in a short time. Give it a few minutes and try again." },
+        429,
+      );
+    }
+
     const { error } = await supabase.from("enquiries").insert({
       route,
       name: name || null,
@@ -56,7 +87,15 @@ export async function POST(request: Request) {
 async function notify(e: { route: string; name: string; email: string; organisation: string; message: string }) {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.ENQUIRY_NOTIFY_TO;
-  if (!key || !to) return;
+  /* The sender was hardcoded to `notifications@example.com`, a domain nobody
+     controls and Resend will never have verified, so with credentials present
+     every send was rejected and the rejection was thrown away: the API said
+     `ok`, the enquiry sat in the table, and nobody was told it had arrived. */
+  const from = process.env.ENQUIRY_NOTIFY_FROM;
+  if (!key || !to || !from) {
+    if (key && to && !from) console.error("ENQUIRY_NOTIFY_FROM is not configured, no notification sent");
+    return;
+  }
 
   const subject =
     e.route === "partnership"
@@ -64,11 +103,11 @@ async function notify(e: { route: string; name: string; email: string; organisat
       : `${e.route} enquiry from ${e.name || e.email}`;
 
   try {
-    await fetch("https://api.resend.com/emails", {
+    const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "CLÉ Family Media <notifications@example.com>",
+        from,
         to: [to],
         reply_to: e.email,
         subject,
@@ -82,6 +121,12 @@ async function notify(e: { route: string; name: string; email: string; organisat
         ].join("\n"),
       }),
     });
+    /* A non-2xx is a silent failure unless it is read. The enquiry is already
+       stored, so this does not fail the request, but it must be visible in the
+       function logs rather than swallowed. */
+    if (!r.ok) {
+      console.error("Enquiry stored but Resend rejected the notification", r.status, await r.text().catch(() => ""));
+    }
   } catch (err) {
     console.error("Enquiry stored but notification failed", err);
   }

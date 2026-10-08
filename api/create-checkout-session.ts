@@ -22,11 +22,22 @@ export async function POST(request: Request) {
       .eq("slug", slug)
       .single();
 
-    if (error || !product) return json({ error: "Product not found." }, 404);
+    /* A query that errored has established nothing about whether the product
+       exists. Collapsing the two answered a Supabase outage with "Product not
+       found", which sends a buyer away from a file that is on sale and gives
+       the page no reason to offer a retry. */
+    if (error) {
+      console.error("product lookup failed", error);
+      return json({ error: "Could not reach the shop just now. Please try again." }, 503);
+    }
+    if (!product) return json({ error: "Product not found." }, 404);
     if (!product.active) return json({ error: "This product is not on sale." }, 409);
 
     const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"));
-    const site = process.env.VITE_SITE_URL ?? new URL(request.url).origin;
+    /* `?? origin` only catches an UNSET variable. Set but blank passed through,
+       and Stripe was handed relative success and cancel URLs, which it
+       rejects, so checkout failed for every buyer with no clue why. */
+    const site = process.env.VITE_SITE_URL?.trim() || new URL(request.url).origin;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",

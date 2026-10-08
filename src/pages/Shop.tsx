@@ -183,10 +183,16 @@ export default function Shop() {
         <Container width="wide">
           <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
             <h2 id="shelf-h" className="t-h1">On the shelf</h2>
+            {/* Four states. "Nothing on sale yet" is a claim about stock and
+                is only made once the catalogue has actually answered. */}
             <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
               {products.state === "ready"
                 ? `${products.data.length} ${products.data.length === 1 ? "file" : "files"}`
-                : "Nothing on sale yet"}
+                : products.state === "loading"
+                  ? "Loading the shelf"
+                  : products.state === "failed"
+                    ? "Could not load the shelf"
+                    : "Nothing on sale yet"}
             </p>
           </div>
 
@@ -233,17 +239,26 @@ export default function Shop() {
             <Settle className="mt-10">
               <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
                 <p className="t-lead max-w-[40ch] text-ink">
-                  The first files are being made. Nothing is on sale yet, and nothing is being held
-                  back behind a sign-up in the meantime.
+                  {products.state === "failed"
+                    ? "We could not load the shelf just now. That is a fault at our end, not a statement about what is on sale."
+                    : products.state === "loading"
+                      ? "Loading what is on the shelf."
+                      : "The first files are being made. Nothing is on sale yet, and nothing is being held back behind a sign-up in the meantime."}
                 </p>
                 <p className="max-w-[46ch] text-[16px] leading-[1.7] text-body lg:pt-2">
-                  Each one will appear here with its artwork, what is in it and what it costs, on
-                  its own page. These are the kinds of thing being prepared.
+                  {products.state === "failed"
+                    ? "Reload the page, and if it keeps happening tell us and we will look at it."
+                    : "Each one will appear here with its artwork, what is in it and what it costs, on its own page. These are the kinds of thing being prepared."}
                 </p>
               </div>
-              <div className="mt-14">
-                <EmptyShelf kinds={KINDS} />
-              </div>
+              {/* The drawn shelf illustrates an empty shop. It is not shown
+                  over a failure, where it would illustrate a claim we have not
+                  established. */}
+              {products.state === "empty" && (
+                <div className="mt-14">
+                  <EmptyShelf kinds={KINDS} />
+                </div>
+              )}
             </Settle>
           )}
         </Container>

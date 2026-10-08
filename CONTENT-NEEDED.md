@@ -557,3 +557,76 @@ should not read as.
 Mansi has no portrait at all. Her row in the dossier carries her name and her
 biography and the strip simply leaves her out, because an empty frame in a row
 of faces reads as a missing person. One photograph closes that.
+
+## The AI imagery claim, PULLED from the press kit (2026-10-08)
+
+`/media`'s notes to editors carried a row reading **"No AI-generated imagery is
+used on this site. Artwork and stills come through the press route."** The first
+sentence has been removed. The second stands.
+
+**Why it was pulled.** This repository's own asset manifest contradicts it.
+`src/lib/brand.ts` records that the stage 1 audit of the BRAND TOOL KIT found
+the kit "almost entirely AI-generated, including every file in PEOPLE/", and
+the manifest names the live hero as "the strongest generated image on this
+site". The three filled image slots, `home.hero`, `home.characters` and
+`story.garden`, come from that kit. A press sheet cannot publish a claim that
+the codebase behind it calls false, least of all on a company whose central
+argument is honest, disclosed use of AI.
+
+Nothing else moved. The Responsible AI page already discloses Runway for visual
+production and ElevenLabs for voice, inside a human-led process, so the site's
+substantive position is unchanged and remains accurate.
+
+**What is needed from Conor:**
+
+1. A straight answer on provenance for the three live images. Are they frames
+   from the animated series as `brand.ts` states, and was any AI tool used in
+   producing them? Runway is already named on the Responsible AI page as part
+   of visual production, so the honest answer may well be yes.
+2. If AI tooling was involved, the wording he wants in its place. The strongest
+   version says what IS true rather than what is not: which tools touch imagery,
+   at which stage, and who approves the result before it ships. That is the
+   same argument the Responsible AI page already makes and wins.
+3. If no AI tooling was involved at any stage, say so and the original line can
+   go back, with `brand.ts`'s comments corrected to match.
+
+Until one of those lands, the press sheet makes no claim about imagery either
+way, which is the only position that cannot be wrong.
+
+## The Open Graph card, now absent rather than broken (2026-10-08)
+
+Every page except a journal post with its own hero image was publishing
+`/brand/og-default.png` as its `og:image` and `twitter:image`. That file has
+never existed in `public/brand/`. Anything shared on LinkedIn, WhatsApp, Slack
+or Twitter fetched it, got a 404, and rendered a blank card, which is the one
+place this site is seen before anybody decides whether to open it.
+
+The fallback is removed. A page with no real image now emits no image tag and
+a `summary` card, so platforms use their own fallback rather than a broken URL.
+
+**What is needed:** one 1200x630 image at `public/brand/og-default.png`. It is
+the `social.og` slot in `src/lib/brand.ts`, where it has been marked "Blocked
+on the CLÉ mark" since the manifest was written. The marks themselves are now
+in `public/brand/` (`cle-logo`, `cle-mark`, `mark-word`), so this is no longer
+blocked on an asset, only on a decision about what the card should show. The
+useful version is the wordmark on the warm ground with the one-line
+description, not a frame from the series, because the card is the company
+introducing itself rather than the show.
+
+## The analytics claim, corrected (2026-10-08)
+
+The cookie notice said, in the present tense, "We measure how the site is used
+in aggregate so we know which pages are worth improving." Nothing in this
+application measures anything. There is no analytics package in
+`package.json`, no script in `index.html`, and no endpoint. The sentence was
+simply not true.
+
+It now says there is no analytics, and keeps the commitment that if that
+changes the page changes first. No new claim was substituted.
+
+**For Conor, when analytics is wanted:** a cookieless tool such as Plausible or
+Fathom collects no personal data and needs no consent banner, which is what the
+notice already promises. It is a paid service, roughly 9 to 14 euro a month at
+this size. Vercel's own Web Analytics is another option and is included on the
+plan this site is hosted on. Either way the notice goes back to the present
+tense on the day it is switched on, not before.

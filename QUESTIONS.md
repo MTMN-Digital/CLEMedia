@@ -386,3 +386,25 @@ they are personal photographs rather than editorial ones and would not raise the
 page they sat on, and publishing a child's face needs that child's parents to
 have agreed to it in writing on a site whose whole argument is child wellbeing.
 Held, not deleted. Say the word if any is wanted and the consent exists.
+
+## For the deploy, not for Conor (2026-10-08)
+
+**`/api/contact` needs rate limiting in front of the function.** The code now
+throttles five submissions per email address per ten minutes, which stops a
+flood from one sender. It does not stop a script that rotates addresses, and it
+cannot: the function holds the service-role key and calls Resend, so every
+request is a database write and an email spend.
+
+The limit was deliberately keyed on email rather than IP. The privacy notice at
+`/privacy` lists exactly what an enquiry collects, and an IP address is not on
+that list. Storing one to count against would be a change to client-facing
+legal copy, which is not a thing to add quietly in a patch.
+
+Network-level limiting belongs in Vercel's firewall, configured at deploy. If
+instead we want IP-based limiting in the application, the privacy notice has to
+say so first, and that wording is Conor's to approve.
+
+**`ENQUIRY_NOTIFY_FROM` is a new required environment variable.** Without it no
+enquiry notification is sent at all, and the function logs that it was not
+configured. It has to be an address on a domain verified in Resend. Until it is
+set, enquiries are still stored and still safe, but nobody is told they arrived.

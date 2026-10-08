@@ -157,7 +157,21 @@ for (const [path, name] of PAGES) {
         if (getComputedStyle(e).position === "sticky") e.style.position = "static";
       });
       document.querySelectorAll("video").forEach((v) => v.pause());
+
+      /* Land every reveal on its FINAL frame before anything is measured.
+         Adding `is-in` starts the animation; it does not finish it, and a
+         staggered list is a row of elements at every opacity between 0 and 1
+         for as long as the stagger runs. Measuring there reported a resting
+         4.7:1 label as 4.12:1 because it was caught at 0.63 opacity. Zeroing
+         the durations and delays snaps them to where they come to rest. */
+      const settle = document.createElement("style");
+      settle.textContent =
+        "*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important;" +
+        "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}";
+      document.head.appendChild(settle);
     });
+    /* One frame for the zeroed transitions to commit. */
+    await page.waitForTimeout(120);
     if (CALIBRATE) {
       await page.evaluate((cal) => {
         const box = document.createElement("div");
@@ -214,12 +228,23 @@ for (const [path, name] of PAGES) {
          The app page switches the three device screens with `opacity-0` on
          their wrapper, and every label inside an invisible screen still
          computes its own opacity as 1. Measuring those read a cream button
-         label against the cream of the screen that is actually showing. */
-      const shown = (el) => {
+         label against the cream of the screen that is actually showing.
+
+         It is FOLDED INTO THE COLOUR, not used as a skip test. This returned
+         `o > 0.95` and dropped everything below it, which made the sweep blind
+         in exactly the place contrast fails: a hero eyebrow at `opacity: 0.75`
+         composites to 3.66:1 on paper and was reported clean three times,
+         because the tool refused to look at it. Only genuinely invisible text
+         is skipped now; anything painted is measured at the alpha it is
+         painted with. */
+      const alphaOf = (el) => {
         let o = 1;
         for (let p = el; p; p = p.parentElement) o *= Number(getComputedStyle(p).opacity);
-        return o > 0.95;
+        return o;
       };
+      /* The element's own and its ancestors' `opacity` multiply the colour's
+         own alpha: both reach the painted pixel the same way. */
+      const withAlpha = (rgba, a) => [rgba[0], rgba[1], rgba[2], rgba[3] * a];
       const visibleRect = (el) => {
         let r = el.getBoundingClientRect();
         for (let p = el.parentElement; p; p = p.parentElement) {
@@ -248,7 +273,9 @@ for (const [path, name] of PAGES) {
         const text = (el.textContent || "").trim();
         if (!text || el.children.length > 0) return;
         const cs = getComputedStyle(el);
-        if (cs.visibility === "hidden" || cs.display === "none" || !shown(el)) return;
+        if (cs.visibility === "hidden" || cs.display === "none") return;
+        const alpha = alphaOf(el);
+        if (alpha < 0.05) return;
         const r = visibleRect(el);
         if (!r || r.width < 10 || r.height < 8) return;
         /* A pinned section cannot be stitched: it is one sticky screen whose
@@ -258,7 +285,7 @@ for (const [path, name] of PAGES) {
         if (el.closest(".shot-pin")) return;
         out.push({
           x: Math.round(r.left + window.scrollX), y: Math.round(r.top + window.scrollY),
-          w: Math.round(r.width), h: Math.round(r.height), rgba: resolve(cs.color),
+          w: Math.round(r.width), h: Math.round(r.height), rgba: withAlpha(resolve(cs.color), alpha),
           px: Math.round(parseFloat(cs.fontSize)), bold: parseInt(cs.fontWeight) >= 700,
           t: text.slice(0, 36),
         });

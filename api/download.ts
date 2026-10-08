@@ -1,6 +1,33 @@
-import { adminClient, json } from "./_lib/admin";
+import Stripe from "stripe";
+import { adminClient, json, requireEnv } from "./_lib/admin";
 
-const SIGNED_URL_SECONDS = 120;
+/* The link is handed over as soon as the page loads, and the allowance is
+   spent at that moment, so this has to outlive a person who opens the page and
+   comes back to it. At 120 seconds a two-minute pause left them holding a dead
+   URL and one fewer download, with no way to tell the difference between the
+   two. Fifteen minutes is still short enough that a shared link is worthless. */
+const SIGNED_URL_SECONDS = 900;
+
+/**
+ * Did Stripe actually take money for this session?
+ *
+ * A network or credential failure answers `true`: the alternative is telling a
+ * buyer whose webhook is merely slow that their purchase does not exist, and
+ * they still reach no file either way, because the order row is what issues it.
+ */
+async function sessionIsPaid(id: string): Promise<boolean> {
+  try {
+    const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"));
+    const s = await stripe.checkout.sessions.retrieve(id);
+    return s.payment_status === "paid" || s.payment_status === "no_payment_required";
+  } catch (err) {
+    const code = (err as { type?: string }).type;
+    // A malformed or unknown id is a definite no; anything else is unknown.
+    if (code === "StripeInvalidRequestError") return false;
+    console.error("stripe session lookup failed", err);
+    return true;
+  }
+}
 
 /**
  * Exchanges a download token for a short-lived signed URL.
@@ -35,18 +62,32 @@ export async function GET(request: Request) {
        writes it is asynchronous and the buyer's redirect regularly beats it.
        Saying "not found" there would tell somebody who has just been charged
        that their purchase does not exist, so the pending case is its own
-       answer and the page retries. A token with no order IS missing. */
-    if (!order && session) return json({ error: "pending" }, 202);
+       answer and the page retries. A token with no order IS missing.
+
+       STRIPE IS ASKED FIRST. Without this, any string at all in `session_id`
+       produced the same 202, and the page went on to tell whoever typed it
+       "Thank you. Your payment went through." A session id nobody paid for is
+       not pending, it is not found. */
+    if (!order && session) {
+      const paid = await sessionIsPaid(session);
+      return paid
+        ? json({ error: "pending" }, 202)
+        : json({ error: "not_found" }, 404);
+    }
     if (!order) return json({ error: "not_found" }, 404);
     if (new Date(order.expires_at) < new Date()) return json({ error: "expired" }, 410);
     if (order.download_count >= order.max_downloads) return json({ error: "exhausted" }, 429);
 
-    const { data: product } = await supabase
+    const { data: product, error: productErr } = await supabase
       .from("products")
       .select("title, file_path")
       .eq("id", order.product_id)
       .single();
 
+    /* A failed lookup is not a missing product. Ignoring the error told
+       somebody who had paid that their file does not exist, on the strength of
+       a database that did not answer, and the page offers no retry for that. */
+    if (productErr) throw productErr;
     if (!product) return json({ error: "not_found" }, 404);
 
     const { data: signed, error: signErr } = await supabase.storage
@@ -55,11 +96,22 @@ export async function GET(request: Request) {
 
     if (signErr || !signed) throw signErr ?? new Error("Could not sign URL");
 
-    // Counted only once the URL has actually been issued.
-    await supabase
+    /* Counted only once the URL has actually been issued, and counted with the
+       value we read as a condition.
+       
+       A plain `update(count + 1)` loses a concurrent request: two tabs on the
+       last allowance both read 4, both pass the check above, both sign a URL,
+       and both write 5, so the cap of five delivers six files. Matching on the
+       count we read means the second write finds no row, and that request is
+       the one that gets turned away. */
+    const { data: counted } = await supabase
       .from("orders")
       .update({ download_count: order.download_count + 1 })
-      .eq("id", order.id);
+      .eq("id", order.id)
+      .eq("download_count", order.download_count)
+      .select("id");
+
+    if (!counted?.length) return json({ error: "exhausted" }, 429);
 
     return json({
       url: signed.signedUrl,

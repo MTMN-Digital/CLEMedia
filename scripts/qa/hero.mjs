@@ -52,6 +52,17 @@ const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: "domcontentloaded", timeout: 40000 });
 await page.waitForTimeout(2500);
 
+/* Same reason as the sweep: measure the resting frame, never a reveal that is
+   still in flight. The hero's own entrance is staggered. */
+await page.evaluate(() => {
+  const settle = document.createElement("style");
+  settle.textContent =
+    "*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important;" +
+    "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}";
+  document.head.appendChild(settle);
+});
+await page.waitForTimeout(120);
+
 const ready = await page.evaluate(async () => {
   const v = document.querySelector(".film-media");
   if (!v) return { ok: false, why: "no .film-media in the hero" };
@@ -93,15 +104,19 @@ const items = await page.evaluate(() => {
     if (!text || !ownsText(el)) return;
     const cs = getComputedStyle(el);
     if (cs.visibility === "hidden" || cs.display === "none") return;
+    /* Folded into the colour, never used as a skip test. `< 0.95 return`
+       dropped the hero's own `opacity: 0.75` eyebrow, which is 3.66:1 on the
+       mobile paper ground, and reported the hero clean for it. */
     let opacity = 1;
     for (let p = el; p; p = p.parentElement) opacity *= Number(getComputedStyle(p).opacity);
-    if (opacity < 0.95) return;
+    if (opacity < 0.05) return;
     const r = el.getBoundingClientRect();
     if (r.width < 10 || r.height < 8) return;
     out.push({
       x: Math.round(r.left), y: Math.round(r.top),
       w: Math.round(r.width), h: Math.round(r.height),
-      rgba: resolve(cs.color), px: Math.round(parseFloat(cs.fontSize)),
+      rgba: (([r, g, b, a]) => [r, g, b, a * opacity])(resolve(cs.color)),
+      px: Math.round(parseFloat(cs.fontSize)),
       bold: parseInt(cs.fontWeight) >= 700, t: text.slice(0, 36),
     });
   });

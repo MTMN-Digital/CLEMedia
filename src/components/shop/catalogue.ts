@@ -28,7 +28,17 @@ import type { Product } from "@/lib/types";
 /** The columns the public site reads. Matches `Product` in src/lib/types.ts. */
 const COLUMNS = "id, title, slug, description, price_cents, currency, thumbnail, file_path, active";
 
-type Query<T> = { state: "loading" } | { state: "ready"; data: T } | { state: "empty" };
+/**
+ * `empty` means the shop answered and has nothing. `failed` means it did not
+ * answer. Collapsing the two told visitors "Nothing on sale yet" whenever
+ * Supabase was slow or down, which is a shop telling its customers it has no
+ * stock on the strength of a network error.
+ */
+type Query<T> =
+  | { state: "loading" }
+  | { state: "ready"; data: T }
+  | { state: "empty" }
+  | { state: "failed" };
 
 /** EUR 3.50, in the reader's own locale, from integer cents. Never a float. */
 export function formatPrice(cents: number, currency: string): string {
@@ -64,9 +74,11 @@ export function useProducts(): Query<Product[]> {
         .eq("active", true)
         .order("created_at", { ascending: false });
       if (!live) return;
-      setQ(error || !data?.length ? { state: "empty" } : { state: "ready", data: data as Product[] });
+      setQ(
+        error ? { state: "failed" } : !data?.length ? { state: "empty" } : { state: "ready", data: data as Product[] },
+      );
     })().catch(() => {
-      if (live) setQ({ state: "empty" });
+      if (live) setQ({ state: "failed" });
     });
     return () => {
       live = false;
@@ -101,9 +113,9 @@ export function useProduct(slug: string | undefined): Query<Product> {
         .eq("active", true)
         .maybeSingle();
       if (!live) return;
-      setQ(error || !data ? { state: "empty" } : { state: "ready", data: data as Product });
+      setQ(error ? { state: "failed" } : !data ? { state: "empty" } : { state: "ready", data: data as Product });
     })().catch(() => {
-      if (live) setQ({ state: "empty" });
+      if (live) setQ({ state: "failed" });
     });
     return () => {
       live = false;

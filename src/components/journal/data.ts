@@ -79,6 +79,15 @@ async function client() {
 export interface JournalData {
   posts: Post[];
   categories: Category[];
+  /**
+   * `settled` is false until the posts query has actually answered.
+   *
+   * Without it an empty `posts` array means two different things, "there is
+   * nothing published" and "we have not asked yet, or the ask failed", and the
+   * page asserted the first in both cases. A live journal with a slow query
+   * told its readers in display type that nothing was published.
+   */
+  settled: boolean;
 }
 
 /**
@@ -90,13 +99,15 @@ export interface JournalData {
  * being down must never blank a page on this site.
  */
 export function useJournal(): JournalData {
-  const [data, setData] = useState<JournalData>({ posts: [], categories: [] });
+  const [data, setData] = useState<JournalData>({ posts: [], categories: [], settled: false });
 
   useEffect(() => {
     let live = true;
     (async () => {
       const sb = await client();
-      if (!sb) return;
+      /* No Supabase configured is a settled answer: the review build genuinely
+         has nothing published, and saying so is true there. */
+      if (!sb) return live && setData((d) => ({ ...d, settled: true }));
       const [p, c] = await Promise.all([
         sb
           .from("posts")
@@ -109,9 +120,12 @@ export function useJournal(): JournalData {
       setData({
         posts: (p.data as Post[] | null) ?? [],
         categories: (c.data as Category[] | null) ?? [],
+        /* A query that errored has not settled anything. */
+        settled: !p.error,
       });
     })().catch(() => {
-      /* Handled by leaving the written copy in place. */
+      /* Handled by leaving the written copy in place, and by never claiming
+         the journal is empty on the strength of a failed request. */
     });
     return () => {
       live = false;
@@ -190,7 +204,16 @@ export function usePost(slug: string | undefined): PostResult {
         category: (c.data as Category | null) ?? null,
         siblings: (s.data as Post[] | null) ?? [],
       });
-    })().catch(miss);
+    })().catch((err) => {
+      /* Only a failure BEFORE the article was found can mean "missing". Once
+         `setResult({ state: "found" })` has run, a throw from the strand or
+         siblings queries must not replace a published article the reader is
+         already looking at with a not-found page. The margin simply stays
+         empty, which is what those queries are allowed to fail to. */
+      if (!live) return;
+      console.error("journal post load failed", err);
+      setResult((r) => (r.state === "found" ? r : { state: "missing", post: null, category: null, siblings: [] }));
+    });
 
     return () => {
       live = false;

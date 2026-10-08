@@ -14,7 +14,12 @@ interface Props {
 export function Seo({ title, description, path, image, type = "website", jsonLd, noIndex }: Props) {
   const url = `${SITE.url}${path}`;
   const full = path === "/" ? `${SITE.name} · ${SITE.tagline}` : `${title} · ${SITE.name}`;
-  const img = image ?? `${SITE.url}/brand/og-default.png`;
+  /* No fabricated default. This fell back to `/brand/og-default.png`, which
+     has never existed in `public/brand/`, so every page without its own image
+     published a 404 as its Open Graph and Twitter card. A missing tag degrades
+     to the platform's own fallback; a broken URL degrades to a blank card.
+     The real asset is logged in CONTENT-NEEDED.md as `social.og`. */
+  const img = image;
 
   return (
     <Helmet>
@@ -28,13 +33,13 @@ export function Seo({ title, description, path, image, type = "website", jsonLd,
       <meta property="og:title" content={full} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
-      <meta property="og:image" content={img} />
+      {img && <meta property="og:image" content={img} />}
       <meta property="og:locale" content="en_IE" />
 
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={img ? "summary_large_image" : "summary"} />
       <meta name="twitter:title" content={full} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={img} />
+      {img && <meta name="twitter:image" content={img} />}
 
       {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>

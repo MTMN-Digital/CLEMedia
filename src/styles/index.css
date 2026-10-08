@@ -908,8 +908,12 @@ body > * { position: relative; z-index: 1; }
      as `align-self: end`, which in a column flex means the RIGHT edge, and it
      was pushing the headline and the lead off to the side. */
   .film-copy > * { align-self: stretch; justify-self: stretch; }
-  .film-eyebrow { color: var(--color-muted); }
-  .film-eyebrow span { color: var(--color-muted); opacity: 0.75; }
+  /* On a phone the hero copy sits on paper, not on the film, so the second
+     word cannot be dimmed to hold it back: muted at `opacity: 0.75` composites
+     to 3.80:1 on this ground. The hierarchy comes from the two tokens instead,
+     both of which carry text at full strength. */
+  .film-eyebrow { color: var(--color-body); }
+  .film-eyebrow span { color: var(--color-muted); }
   .film-aside {
     position: absolute;
     top: 0.75rem;

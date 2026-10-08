@@ -77,7 +77,11 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
     if (!el) return;
     const card = el.querySelector("li");
     const by = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
-    el.scrollBy({ left: by * dir, behavior: "smooth" });
+    /* `behavior: "smooth"` is animated motion and is one of the things a
+       reduced-motion preference is asking not to see. The jump still happens,
+       it just happens at once. */
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: by * dir, behavior: still ? "auto" : "smooth" });
   };
 
   /* Drag to scroll. `moved` is the click guard: without it, releasing a drag

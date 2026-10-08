@@ -95,11 +95,27 @@ const NOTES: { k: string; v: string }[] = [
   { k: "Founder", v: "Conor Sexton, Founder and CEO." },
   { k: "Characters", v: "Finn, the fawn pug. Fia, the black pug." },
   { k: "Episodes", v: "Series one, four episodes, free to watch. The show's own site carries them." },
-  { k: "Imagery", v: "No AI-generated imagery is used on this site. Artwork and stills come through the press route." },
+  /* The imagery row is DELIBERATELY ABSENT. It read "No AI-generated imagery
+     is used on this site", which this site's own asset manifest contradicts:
+     `src/lib/brand.ts` records that the stage 1 audit found the brand kit
+     almost entirely AI-generated, and names the live hero as generated. A
+     press sheet on a company whose argument is disclosed AI use cannot carry
+     a line its own repository calls false. Replacement wording is Conor's to
+     give, and is logged in CONTENT-NEEDED.md. */
+  { k: "Imagery", v: "Artwork and stills come through the press route." },
 ];
 
-function useMediaItems(): MediaItem[] | null {
+/**
+ * The press index, plus whether the question has actually been answered.
+ *
+ * `settled` exists because `null` meant two things, "there is nothing" and
+ * "we have not heard back", and the page printed "Nothing published yet" for
+ * both. The standing rows below are a written fallback and are correct either
+ * way; the COUNT is a claim and waits.
+ */
+function useMediaItems(): { items: MediaItem[] | null; settled: boolean } {
   const [items, setItems] = useState<MediaItem[] | null>(null);
+  const [settled, setSettled] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -107,22 +123,25 @@ function useMediaItems(): MediaItem[] | null {
       // Dynamic, like the shop's catalogue: the Supabase client stays out of
       // the bundle every other page downloads.
       const { supabase } = await import("@/lib/supabase");
-      if (!supabase) return;
+      if (!supabase) return live && setSettled(true);
       const { data } = await supabase
         .from("media_items")
         .select("id, title, outlet, published_on, description, thumbnail, link, embed_url, sort_order")
         .order("sort_order", { ascending: true })
         .order("published_on", { ascending: false });
-      if (live && data?.length) setItems(data as MediaItem[]);
+      if (!live) return;
+      if (data?.length) setItems(data as MediaItem[]);
+      setSettled(true);
     })().catch(() => {
-      /* A press index that fails to load shows the standing rows. */
+      /* A press index that fails to load shows the standing rows, and never
+         claims a count it did not get. `settled` stays false. */
     });
     return () => {
       live = false;
     };
   }, []);
 
-  return items;
+  return { items, settled };
 }
 
 function monthYear(iso: string | null): string {
@@ -133,7 +152,7 @@ function monthYear(iso: string | null): string {
 }
 
 export default function Media() {
-  const items = useMediaItems();
+  const { items, settled } = useMediaItems();
 
   return (
     <>
@@ -187,7 +206,11 @@ export default function Media() {
             <div className="lg:sticky lg:top-28 lg:self-start">
               <h2 id="index-h" className="t-h2">The index</h2>
               <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
-                {items ? `${items.length} ${items.length === 1 ? "entry" : "entries"}` : "Nothing published yet"}
+                {items
+                  ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
+                  : settled
+                    ? "Nothing published yet"
+                    : "Loading the index"}
               </p>
             </div>
 

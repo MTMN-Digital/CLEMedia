@@ -88,9 +88,13 @@ currently uses circles for the same six faces, which is the same people rendered
 two ways on one site. Wave 1 showed two shards independently reaching for the
 same image because nothing said which; this says it.
 
-**There are three real photographs on this entire site**: `home.hero`,
-`home.characters` and `story.garden`. Everything else in `src/lib/brand.ts` with
-`base: null` is an unfilled placeholder. Do NOT add a full-bleed image moment
+**Three image slots on this entire site are filled**: `home.hero`,
+`home.characters` and `story.garden`. They are FRAMES FROM THE ANIMATED SHOW,
+not photographs, and `src/lib/brand.ts` says so at the top of the file. Never
+caption one as a photograph. This contract said "three real photographs" for
+two waves, which was wrong, and a cold review caught it by reading brand.ts.
+Everything else in `src/lib/brand.ts` with `base: null` is an unfilled
+placeholder. Do NOT add a full-bleed image moment
 unless you can name which of those three it is and no other page already uses it
 that way. `story.garden` belongs to `/story`, `home.characters` to `/app`,
 `home.hero` to `/`. A page without an image finds its change of pace in a card,

@@ -25,7 +25,7 @@ import { formatDate, resolveStrands, useJournal } from "@/components/journal/dat
    ========================================================================== */
 
 export default function Journal() {
-  const { posts, categories } = useJournal();
+  const { posts, categories, settled } = useJournal();
 
   const strands = resolveStrands(categories);
   const rows: ContentsRow[] = strands.map((s) => ({
@@ -119,18 +119,22 @@ export default function Journal() {
             <Settle className="self-start">
               <div className="card-stock card-still relative px-6 pb-7 pt-9 sm:px-8">
                 <span className="card-tab uppercase">Where it stands</span>
-                {latest ? (
-                  <p className="font-display text-[1.5rem] leading-[1.15] text-ink">
-                    {posts.length} {posts.length === 1 ? "piece" : "pieces"} published.
-                  </p>
-                ) : (
-                  <p className="font-display text-[1.5rem] leading-[1.15] text-ink">
-                    Nothing is published yet.
-                  </p>
-                )}
+                {/* Three states, not two. While the query is in flight, or if
+                    it failed, the card says what it is doing instead of
+                    announcing an emptiness it has not established. */}
+                <p className="font-display text-[1.5rem] leading-[1.15] text-ink">
+                  {!settled
+                    ? "Loading the journal."
+                    : latest
+                      ? `${posts.length} ${posts.length === 1 ? "piece" : "pieces"} published.`
+                      : "Nothing is published yet."}
+                </p>
                 <p className="t-body mt-3 text-body">
-                  The first piece is being written. When it goes up it appears here, newest first,
-                  and the strands below fill in from the top.
+                  {!settled
+                    ? "One moment. The index below fills in as soon as it answers."
+                    : latest
+                      ? "Newest first, with the strands below filling in from the top."
+                      : "The first piece is being written. When it goes up it appears here, newest first, and the strands below fill in from the top."}
                 </p>
               </div>
             </Settle>

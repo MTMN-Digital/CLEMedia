@@ -99,15 +99,28 @@ export function HeroFilm() {
     };
   }, [start.autoplay]);
 
-  /* A film nobody is looking at should not be decoding. */
+  /* A film nobody is looking at should not be decoding.
+
+     THE OBSERVER MUST REMEMBER THAT IT WAS THE ONE WHO PAUSED. Its `pause()`
+     fires the same `pause` event a viewer's press does, which set `playing`
+     to false; the effect then re-ran with that false captured, and scrolling
+     back to the hero left the film stopped for good. A ref, not state, so
+     the observer is installed once and never reads a stale value. */
+  const stoppedByScroll = useRef(false);
   useEffect(() => {
     const el = video.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          if (playing) el.play().catch(() => {});
-        } else {
+          if (stoppedByScroll.current) {
+            stoppedByScroll.current = false;
+            el.play().catch(() => {});
+          }
+        } else if (!el.paused) {
+          /* Only a film that was actually running is resumed. One the viewer
+             stopped stays stopped. */
+          stoppedByScroll.current = true;
           el.pause();
         }
       },
@@ -115,7 +128,7 @@ export function HeroFilm() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [playing]);
+  }, []);
 
   const togglePlay = () => {
     const el = video.current;
