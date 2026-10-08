@@ -40,6 +40,17 @@ export function HeroFilm() {
   const [playing, setPlaying] = useState(false);
   const [sound, setSound] = useState(false);
 
+  /* Decided once, before the first paint, so the element is COMPLETE in the
+     markup: source, autoplay and muted all present when the browser first
+     sees it. Setting the source in an effect and calling play() afterwards
+     works in Chrome and does not work in Safari, which wants the attributes
+     at parse time. */
+  const [start] = useState(() => ({
+    src: pickRendition().src,
+    /* Never start by itself for a reader who asked for stillness. */
+    autoplay: !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  }));
+
   /* The film is sized to the screen under the sticky header, so something has
      to tell the CSS how tall that header is. The old pinned hero measured it;
      with that gone the stylesheet was falling back to a hardcoded 76px, which
@@ -60,20 +71,33 @@ export function HeroFilm() {
   useEffect(() => {
     const el = video.current;
     if (!el) return;
-
-    /* Chosen once, before the element has a src: swapping it later restarts
-       the film. Same decision the in-page player makes. */
-    el.src = pickRendition().src;
     showCaptions(el, false);
 
-    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (still) return;
+    /* React sets `muted` as a PROPERTY and never writes the attribute, and
+       Safari and Firefox both decide whether a film may autoplay by looking
+       at the attribute. This is the whole reason the hero was not playing for
+       the client while it played here: Chromium is happy with the property,
+       so every test passed. */
+    el.setAttribute("muted", "");
 
-    /* Autoplay is a request, not a guarantee. A refusal is fine and is left
+    /* Keep the label honest however it started or stopped, including when the
+       browser refuses to autoplay at all. */
+    const sync = () => setPlaying(!el.paused);
+    el.addEventListener("play", sync);
+    el.addEventListener("pause", sync);
+    sync();
+
+    /* A second attempt, for the browsers that ignore the attribute but allow
+       a scripted play on a muted element. A refusal is fine and is left
        alone: the poster is there, the controls are there, and a film somebody
        presses play on is a perfectly good outcome. */
-    el.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-  }, []);
+    if (start.autoplay) el.play().catch(() => {});
+
+    return () => {
+      el.removeEventListener("play", sync);
+      el.removeEventListener("pause", sync);
+    };
+  }, [start.autoplay]);
 
   /* A film nobody is looking at should not be decoding. */
   useEffect(() => {
@@ -148,11 +172,13 @@ export function HeroFilm() {
       <video
         ref={video}
         className="film-media"
+        src={start.src}
         poster="/video/mission-poster.jpg"
+        autoPlay={start.autoplay}
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         /* Not `aria-hidden`: it is the content of the hero, not decoration. */
         /* Focusable and labelled, so the film is its own pause control: see
            the accessibility note above. */
