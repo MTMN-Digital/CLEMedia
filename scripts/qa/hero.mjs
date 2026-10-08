@@ -1,21 +1,23 @@
-/* Contrast for the hero, which the whole-site audit cannot reach.
+/* Contrast for the hero copy, which sits over a moving picture.
  *
  * Run against a built preview, like the audit:
  *   node scripts/qa/hero.mjs --port 5371
  *
- * WHY THIS IS SEPARATE. audit.mjs walks the page in viewport steps and stitches
- * the slices, and it skips anything inside `.shot-pin`, because a pinned
- * section is one sticky screen whose state changes with scroll: successive
- * slices photograph the same box in different states and stack them. So the
- * hero, which is the first thing anyone sees and the only place on the site
- * where type sits on a photograph, was the one surface with no automated
- * check. It was measured by hand instead, with coordinates typed in from
- * looking at a screenshot, and those went stale the moment the layout moved.
+ * WHY THIS IS SEPARATE, and why it is not the same check it used to be. The
+ * hero was a pinned, scroll-driven set; audit.mjs skips anything pinned,
+ * because a pinned section photographs differently in every stitch slice, so
+ * the hero needed its own single-frame check. The hero is now the mission
+ * film, full bleed, with the headline over it.
  *
- * What this does: scrolls the hero to its settled state, reads the real
- * rectangles and resolved colours out of the DOM, photographs that one frame,
- * and hands both to the same sampler the site audit uses. One frame, so no
- * stitching, so no trap.
+ * That is a harder problem, not an easier one. audit.mjs would measure the
+ * copy against whatever frame the film happened to be showing at the moment
+ * of capture, and pass or fail on luck: the film opens on a dark wood and runs
+ * through a sunrise that is very nearly white. A single sample is worthless.
+ *
+ * So this seeks the film to a spread of timestamps, photographs each one, and
+ * runs every sample through the same pixel sampler the site audit uses. The
+ * verdict is the WORST frame, because a headline that is unreadable for two
+ * seconds of a looping film is unreadable.
  *
  * It exits non-zero on a failure, so it can gate a deploy.
  */
@@ -37,6 +39,8 @@ const PORT = arg("port", "5371");
 const OUT = arg("out", "/tmp/hero-qa");
 const W = Number(arg("width", 1440));
 const H = Number(arg("height", 900));
+/** Where in the film to look, as fractions of its duration. */
+const STOPS = [0, 0.12, 0.25, 0.38, 0.5, 0.62, 0.75, 0.88];
 
 mkdirSync(OUT, { recursive: true });
 
@@ -46,64 +50,33 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: "domcontentloaded", timeout: 40000 });
-await page.waitForTimeout(2200);
+await page.waitForTimeout(2500);
 
-/* JUST BEFORE the end of the move, not past it.
- *
- * This was `+ 60` past the release point, on the assumption that the hero
- * stays stuck for the whole pin. It does not: the sticky screen stops sticking
- * once the pin's bottom reaches the viewport bottom, so 60px later the hero has
- * slid up by 60px and the section below is showing. That is not merely an odd
- * screenshot. The copy slides up with it, and text measured where it overlaps
- * the next section is measured against the wrong ground entirely.
- *
- * So: stop a few pixels short, then ASSERT the hero is still pinned, and fail
- * loudly rather than quietly reporting a number from the wrong frame. */
-const settled = await page.evaluate(() => {
-  const pin = document.querySelector(".shot-pin");
-  const screen = document.querySelector(".shot-screen");
-  if (!pin || !screen) return { ok: false, why: "no .shot-pin or .shot-screen" };
-  /* The screen latches at `top: var(--header-h)`, so it starts sticking when
-     the pin's top reaches that line and releases exactly `span` later. The
-     header height cancels out of the release point, which is why adding
-     `pin.offsetTop` to it overshot by a whole header. */
-  const header = document.querySelector("header");
-  const headerH = header ? header.getBoundingClientRect().height : 0;
-  const span = pin.offsetHeight - screen.offsetHeight;
-  window.scrollTo(0, pin.offsetTop - headerH + span - 8);
-  return { ok: true };
+const ready = await page.evaluate(async () => {
+  const v = document.querySelector(".film-media");
+  if (!v) return { ok: false, why: "no .film-media in the hero" };
+  if (!v.duration || Number.isNaN(v.duration)) {
+    await new Promise((r) => {
+      if (v.readyState >= 1) return r();
+      v.addEventListener("loadedmetadata", r, { once: true });
+      setTimeout(r, 6000);
+    });
+  }
+  v.pause();
+  return { ok: Boolean(v.duration), duration: v.duration || 0 };
 });
-if (!settled.ok) {
-  console.log(`hero: ${settled.why}`);
-  process.exit(1);
-}
-await page.waitForTimeout(1100);
-
-const pinned = await page.evaluate(() => {
-  const screen = document.querySelector(".shot-screen");
-  const top = Math.round(screen.getBoundingClientRect().top);
-  const header = document.querySelector("header");
-  const want = header ? Math.round(header.getBoundingClientRect().height) : 0;
-  const p = screen.style.getPropertyValue("--p");
-  return { top, want, p: Number(p || 0) };
-});
-if (Math.abs(pinned.top - pinned.want) > 4) {
-  console.log(
-    `hero: NOT the settled frame. The screen sits at top ${pinned.top} but the ` +
-    `header is ${pinned.want} tall, so the hero has already come unstuck and ` +
-    `every sample would be taken against the wrong ground.`,
-  );
-  process.exit(1);
-}
-if (pinned.p < 0.97) {
-  console.log(`hero: the move has not finished, --p is ${pinned.p}`);
+if (!ready.ok) {
+  console.log(`hero: ${ready.why || "the film never reported a duration"}`);
+  await browser.close();
   process.exit(1);
 }
 
+/* Measured once: the copy does not move between frames, only the picture
+   under it does. Colours are resolved by the browser, never parsed here,
+   because Tailwind emits oklab() and a regex over the numbers turns
+   `text-white/90` into pure red. See contrast.py. */
 const items = await page.evaluate(() => {
   const cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
-  /* Resolved by the browser, never parsed: Tailwind emits oklab() and a regex
-     over the numbers turns `text-white/90` into pure red. See contrast.py. */
   const resolve = (css) => {
     cx.clearRect(0, 0, 1, 1);
     cx.fillStyle = "#000";
@@ -112,15 +85,10 @@ const items = await page.evaluate(() => {
     const d = cx.getImageData(0, 0, 1, 1).data;
     return [d[0], d[1], d[2], d[3] / 255];
   };
-  const out = [];
-  /* Not "elements with no children": the headline holds "Watch." and "Learn."
-     as direct text either side of a span, and each button holds its label next
-     to an svg. Both were skipped by that rule, which left this check reporting
-     two elements and a clean pass while the headline went unmeasured. The test
-     is whether the element has text of its OWN. */
   const ownsText = (el) =>
     Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent.trim());
-  document.querySelectorAll(".shot-copy span, .shot-copy p, .shot-copy a, .shot-cue").forEach((el) => {
+  const out = [];
+  document.querySelectorAll(".film-copy span, .film-copy p, .film-copy a, .film-btn").forEach((el) => {
     const text = (el.textContent || "").trim();
     if (!text || !ownsText(el)) return;
     const cs = getComputedStyle(el);
@@ -140,18 +108,36 @@ const items = await page.evaluate(() => {
   return out;
 });
 
-const shot = join(OUT, "hero.png");
-await page.screenshot({ path: shot, animations: "disabled" });
-writeFileSync(shot.replace(/\.png$/, ".json"), JSON.stringify(items));
+const worst = new Map();
+for (const f of STOPS) {
+  const at = +(ready.duration * f).toFixed(2);
+  await page.evaluate(async (t) => {
+    const v = document.querySelector(".film-media");
+    v.currentTime = t;
+    await new Promise((r) => {
+      v.addEventListener("seeked", r, { once: true });
+      setTimeout(r, 3000);
+    });
+  }, at);
+  await page.waitForTimeout(260);
+
+  const shot = join(OUT, `hero-${f}.png`);
+  await page.screenshot({ path: shot, animations: "disabled" });
+  writeFileSync(shot.replace(/\.png$/, ".json"), JSON.stringify(items));
+  const found = execFileSync("python3", [join(HERE, "contrast.py"), shot]).toString().trim();
+  unlinkSync(shot.replace(/\.png$/, ".json"));
+  if (found) for (const line of found.split("\n")) {
+    const key = line.slice(line.indexOf('"'));
+    const ratio = parseFloat(line.trim());
+    if (!worst.has(key) || ratio < worst.get(key).ratio) worst.set(key, { ratio, line, at });
+  }
+}
 await browser.close();
 
-const found = execFileSync("python3", [join(HERE, "contrast.py"), shot]).toString().trim();
-unlinkSync(shot.replace(/\.png$/, ".json"));
-
-console.log(`hero: ${items.length} text elements measured on the settled frame`);
-if (found) {
-  console.log(found);
-  console.log(`\nhero contrast failures: ${found.split("\n").length}`);
+console.log(`hero: ${items.length} text elements, measured across ${STOPS.length} frames of the film`);
+if (worst.size) {
+  for (const { line, at } of worst.values()) console.log(`${line}   (worst at ${at}s)`);
+  console.log(`\nhero contrast failures: ${worst.size}`);
   process.exitCode = 1;
 } else {
   console.log("hero contrast failures: 0");

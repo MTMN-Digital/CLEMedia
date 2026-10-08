@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { NAV, SITE } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
+import navMark from "@/assets/brand/cle-nav.webp";
 import { IconExternal, IconMail } from "@/components/icons";
 import { Container, TextLink } from "@/components/ui";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -35,8 +36,19 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-rule)] bg-[rgba(245,236,217,0.94)] backdrop-blur-[14px]">
       <Container width="wide" className="flex items-center gap-6 py-4">
+        {/* The felted mark itself, cropped to the three characters: no ropes
+            above them and no FAMILY MEDIA below, because at header height the
+            wordmark under the characters would be illegible mush. The company
+            name is carried by the link's accessible name instead, so a screen
+            reader and a search engine both still get it. */}
         <Link to="/" className="shrink-0" aria-label={`${SITE.name}, home`}>
-          <Wordmark size={21} />
+          <img
+            src={navMark}
+            alt=""
+            width={420}
+            height={176}
+            className="h-[34px] w-auto sm:h-[38px]"
+          />
         </Link>
 
         <nav aria-label="Main" className="ml-auto hidden lg:block">

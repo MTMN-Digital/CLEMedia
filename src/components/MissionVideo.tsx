@@ -41,8 +41,10 @@ const RENDITIONS: Record<"high" | "mid" | "low", Rendition> = {
   low: { src: "/video/mission-480.mp4", width: 854 },
 };
 
-/** Chosen once, before the element has a src. See the note above. */
-function pick(): Rendition {
+/** Chosen once, before the element has a src. See the note above.
+ *  Exported because the hero film makes the identical decision and there is
+ *  no sense in two copies of it drifting apart. */
+export function pickRendition(): Rendition {
   const conn = (navigator as Navigator & {
     connection?: { saveData?: boolean; effectiveType?: string };
   }).connection;
@@ -81,7 +83,7 @@ export function MissionVideo({
   /* The src is set from an effect rather than at render so the choice is made
      against the real window, once, and so a server-rendered build of this page
      would never bake one visitor's connection into the markup. */
-  useEffect(() => setSource(pick()), []);
+  useEffect(() => setSource(pickRendition()), []);
 
   useEffect(() => {
     const el = video.current;

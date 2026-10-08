@@ -2,11 +2,10 @@ import { useState, type FormEvent } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
-import { HeroShot } from "@/components/home/HeroShot";
+import { HeroFilm } from "@/components/home/HeroFilm";
 import { Wipe } from "@/components/Wipe";
 import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
-import { MissionVideo } from "@/components/MissionVideo";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
 import {
@@ -133,11 +132,11 @@ export default function Home() {
         jsonLd={organizationJsonLd}
       />
 
-      {/* ═══ 1. HERO. One still: the mark hanging in a lit room, with the
-          words under it. The room is a rendered photograph rather than a live
-          scene, so the page decodes an image instead of running a renderer.
-          See HeroShot for why the WebGL version was taken out. ═══ */}
-      <HeroShot />
+      {/* ═══ 1. HERO. The mission film, full bleed, muted, with the copy over
+          it and sound one press away. It was a rendered studio set until the
+          client's own people asked for the film, the way consulting.ie and
+          m.ind.coach open. See HeroFilm. ═══ */}
+      <HeroFilm />
 
       {/* The garden, edge to edge, as the horizon the rest of the page sits
           under. It does not drift: one thing moving against a fixed ground is
@@ -263,41 +262,7 @@ export default function Home() {
         </Section>
       </div>
 
-      {/* ═══ 3. THE FILM. Conor's own statement of the mission, in his
-          voice. It sits here and not under the hero because a visitor who has
-          not yet read what this company believes has no reason to give it a
-          minute; by this point they have read it, and the film is the person
-          behind it saying the same thing. It starts muted with its controls
-          showing, and one press turns the sound on.
-
-          The player takes the full 1560 and the heading does not: a title
-          block that fills the width ahead of it makes the film look like one
-          more row. The credit sits on the rule the player hangs from, which is
-          where a credit goes. ═══ */}
-      <Section labelledBy="film-h">
-        <Container width="wide">
-          <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-end">
-            <div>
-              <Kicker>In his own words</Kicker>
-              <h2 id="film-h" className="t-h2 mt-4 max-w-[14ch]">The mission, said out loud</h2>
-            </div>
-            <Lead className="lg:pb-1">
-              A minute on what we are making and who we are making it for. Captioned, and silent
-              until you ask for sound.
-            </Lead>
-          </Wipe>
-          {/* 1:03 is the duration of the file that ships, not a round number. */}
-          <p className="hairline mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 pt-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
-            <span>Conor Sexton, founder</span>
-            <span className="tnum">1:03</span>
-          </p>
-          <Settle className="mt-5">
-            <MissionVideo />
-          </Settle>
-        </Container>
-      </Section>
-
-      {/* ═══ 4. THE SERIES. A filmstrip, because perforated stock IS the
+      {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the
           trade. The felted show wordmark is a photograph of a real object on a
           lit felt backdrop, so it cannot be knocked out the way the CLE mark
           was. It is staged instead: leaned back on the ledge under the same
@@ -358,7 +323,7 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* ═══ 5. WHO MAKES IT, AND WHO CHECKS IT. One list, not two: see
+      {/* ═══ 4. WHO MAKES IT, AND WHO CHECKS IT. One list, not two: see
           CallSheet for what it replaced and why. ═══ */}
       <Section labelledBy="people-h">
         <Container width="wide">
@@ -366,7 +331,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 6. THE AI POSITION. The one narrow section on the page, on the one
+      {/* ═══ 5. THE AI POSITION. The one narrow section on the page, on the one
           sunken ground. A single argument does not want 1560px, and after a
           wide list of faces the reader should feel the page close in before
           the navy band. ═══ */}
@@ -408,7 +373,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 7. CONTACT, the one deep band. The two offers are different
+      {/* ═══ 6. CONTACT, the one deep band. The two offers are different
           things, so a rule stands between them rather than a gap. ═══ */}
       <Section deep labelledBy="cta-h">
         <Container width="wide">

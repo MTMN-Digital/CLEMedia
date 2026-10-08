@@ -613,459 +613,6 @@ body > * { position: relative; z-index: 1; }
   );
 }
 
-/* ---------------------------------------------------------------------------
-   The hero, as a photographed set.
-
-   Five custom properties are written by HeroStage: --p for the overall
-   timeline, --turn for the eased move and --dolly for the mark's size as a
-   fraction of full (0.7 at rest, 1 at the end) once a frame; --rise for how
-   far below its final place the figure sits at rest and --words-off for how
-   far below theirs the words do, on resize. Every transform below is a
-   calc off those, so the resting state is what renders when JS never runs,
-   and the reduced-motion block at the bottom throws the hold away and shows
-   the finished frame.
-
-   The move is one camera move, a dolly in with a tilt down, and every layer
-   takes it at the rate its distance gives it: the sweep grows and lifts a
-   little, the objects grow from 0.7 to full and lift into the top of the
-   frame, the words rise into the frame from below the floor, the near
-   leaves grow the most. On the WebGL path the objects' part of this is a
-   real camera move in the scene (hero3d/scene.ts); the CSS here scales only
-   flat things: the shadows, the layered fallback mark, the set.
-
-   The set has a tonal range this page does not have anywhere else: from a lit
-   pool of paper behind the objects to a corner about three stops deeper than
-   --color-sunken. Every tone is a mix of two page tokens, set on the stage
-   as --set-* so the whole set can be retuned in one place. Text only ever
-   sits in the pool on the floor, which is held at --color-paper-3 or lighter
-   (ink 11:1, body 7:1); the deep tones are corners, the near floor and the
-   top of the paper, and no text goes there.
---------------------------------------------------------------------------- */
-.hero-pin {
-  --p: 0;
-  --turn: 0;
-  --dolly: 0.7;
-  --rise: 0px;
-  /* Until HeroStage has measured: the words' own height plus the margin
-     under them, which is their distance to the edge when the frame is only
-     just tall enough for everything. */
-  --words-off: calc(100% + 5.5rem);
-  position: relative;
-}
-
-.hero-stage {
-  /* The tones of the set, lit to dark. */
-  /* Every shade is mixed toward --color-red rather than --color-body.
-
-     The first version of this set mixed the darks toward body, which is the
-     ink ramp: a desaturated cool brown. It gave a correct tonal range and a
-     grey room, and the page lost the warm clay the rest of the site is built
-     on. Mixing the same amounts toward the show's red keeps the identical
-     range and puts the warmth back, because a warm lamp on warm paper throws
-     warm shadows. Darkest stop here is still well above the floor the text
-     needs. */
-  /* 22% red, not 38%: enough to warm the shadows, little enough that the
-     upper wall does not go pink. */
-  --set-shade: color-mix(in srgb, var(--color-body) 78%, var(--color-red));
-  --set-lit:   color-mix(in srgb, var(--color-paper-1) 62%, var(--color-raised));
-  --set-paper: var(--color-paper-2);
-  --set-wall:  color-mix(in srgb, var(--color-sunken) 78%, var(--set-shade));
-  --set-deep:  color-mix(in srgb, var(--color-sunken) 50%, var(--set-shade));
-  --set-pool:  color-mix(in srgb, var(--color-paper-3) 76%, var(--color-paper-1));
-  --set-floor: color-mix(in srgb, var(--color-sunken) 70%, var(--set-shade));
-  --set-near:  color-mix(in srgb, var(--color-sunken) 36%, var(--set-shade));
-  /* How far the right of the paper falls off from the lamp. Eased on a phone,
-     where the frame is so narrow the falloff was reaching the lead copy. */
-  --set-fall: 70%;
-  /* The camera pan, as one length everything else is a multiple of. The sweep
-     takes 1x, the objects 3x, the near leaves 5x: three rates, which is what
-     the eye reads as depth. The words take none. */
-  --pan: calc(var(--turn) * 1vw);
-  position: sticky;
-  /* Stuck just under the header, not under it: the frame is the whole of
-     the screen below the header for the whole of the hold, and the next
-     section arrives only when the hold releases. */
-  top: var(--header-h, 0px);
-  /* svh, not vh: on a phone the browser chrome makes vh taller than what the
-     reader can actually see. The header height comes off the top because the
-     header is sticky but still occupies flow. HeroStage measures it. */
-  height: calc(100svh - var(--header-h, 0px));
-  /* clip, not hidden: the words wait below the bottom edge at rest, and a
-     hidden overflow can still be scrolled by a focus landing in it, which
-     would drag the whole frame. A clipped one cannot; HeroStage finishes the
-     move instead when focus arrives early. */
-  overflow: clip;
-  display: grid;
-  /* A definite row. An auto row grows to the content's height, and the
-     content (figure plus words) is taller than a short screen; this pins
-     the row to the stage so the inner grid's flexible row shrinks instead
-     and the words stay on screen. */
-  grid-template-rows: 100%;
-  place-items: center;
-  isolation: isolate;
-  background: var(--set-wall);
-  /* The depth of the room. Lower numbers exaggerate the turn; this is about
-     two and a half object widths back, which is a lens that does not distort. */
-  perspective: 1500px;
-  perspective-origin: 50% 46%;
-}
-
-/* ─── The set ───────────────────────────────────────────────────────────────
-   A seamless paper sweep under one lamp, up and to the left and a little in
-   front of the objects (the same lamp hero3d/scene.ts lights the wool with).
-   The paper is lit where the lamp reaches it and falls off everywhere else:
-   dark across the top, where the lamp's beam does not go, darker to the right,
-   and then the curve into the floor, which faces the lamp less than the wall
-   does and so sits a stop under it, except for the pool the beam makes on it
-   under the objects. That pool is where the words stand.
-
-   It pans with the camera at a third of the rate the objects do. That ratio IS
-   the depth: a backdrop that panned with the objects would be a sticker behind
-   them, and one that did not pan at all would be a wall the camera is bolted
-   to. --------------------------------------------------------------------- */
-.hero-set {
-  position: absolute;
-  /* Wider than the frame so the pan never exposes an edge. */
-  inset: 0 -6%;
-  pointer-events: none;
-  overflow: hidden;
-  /* The sweep's share of the camera move: the smallest pan, a little growth
-     for the dolly, a little lift for the tilt. The floor runs 16% past the
-     bottom edge, so the lift never shows the stage behind it. */
-  transform-origin: 50% 45%;
-  transform: translate3d(var(--pan), calc(var(--turn) * -2.5%), 0) scale(calc(1 + var(--turn) * 0.08));
-  will-change: transform;
-}
-.hero-set > * { position: absolute; }
-/* The wall. Dark at the top, the lamp's pool left of centre, falloff right. */
-.hero-set-wall {
-  inset: 0;
-  background:
-    radial-gradient(
-      50% 60% at 42% 34%,
-      var(--set-lit) 0%,
-      color-mix(in srgb, var(--set-lit) 55%, transparent) 32%,
-      transparent 72%
-    ),
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--set-deep) 30%, transparent) 0%,
-      transparent 30%,
-      transparent 56%,
-      color-mix(in srgb, var(--set-deep) var(--set-fall), transparent) 100%
-    ),
-    linear-gradient(
-      to bottom,
-      var(--set-deep) 0%,
-      var(--set-wall) 22%,
-      var(--set-paper) 58%,
-      var(--set-paper) 100%
-    );
-}
-/* The curve from wall into floor. A very wide, very shallow ellipse: a real
-   sweep's curve is almost flat across the middle of frame and only falls
-   away at the edges. The floor sits under the wall in tone, with the beam's
-   pool on it under the objects, and goes deeper toward the camera. */
-.hero-set-floor {
-  left: -30%;
-  right: -30%;
-  bottom: -16%;
-  height: 60%;
-  border-radius: 50% 50% 0 0 / 18% 18% 0 0;
-  background:
-    radial-gradient(
-      40% 52% at 50% 40%,
-      var(--set-pool) 0%,
-      color-mix(in srgb, var(--set-pool) 70%, var(--set-floor)) 46%,
-      transparent 78%
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--set-paper) 50%, var(--set-floor)) 0%,
-      var(--set-floor) 34%,
-      var(--set-near) 100%
-    );
-  /* The seam fades out rather than ending. A sweep has no edge where the wall
-     becomes the floor; leaving one drew a visible line across the frame. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12%);
-  mask-image: linear-gradient(to bottom, transparent 0, black 12%);
-}
-/* The garden's shadow on the paper: a gobo, light through foliage, across the
-   top of the sweep where the lamp's beam skims it. Drawn leaves, not a
-   photograph of leaves, because a photograph of leaves would be stock, and
-   soft, because a leaf a metre from the paper throws a soft shadow. Static:
-   it is a shadow in a still room. */
-.hero-set-gobo {
-  inset: -4% -2% auto -2%;
-  height: 52%;
-  fill: var(--set-shade);
-  opacity: 0.2;
-  /* Half the blur of the first pass. These leaves are now small enough that
-     10px dissolved them into one wash. */
-  filter: blur(5px);
-  mix-blend-mode: multiply;
-}
-/* The light in the air. One beam from the lamp down across the objects, just
-   visible, the way a key light shows in a room with any dust in it. */
-.hero-set-beam {
-  left: -4%;
-  top: -70%;
-  width: 40%;
-  height: 230%;
-  transform-origin: 50% 0;
-  transform: rotate(-30deg);
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    color-mix(in srgb, var(--set-lit) 30%, transparent) 46%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(to bottom, black 28%, transparent 78%);
-  mask-image: linear-gradient(to bottom, black 28%, transparent 78%);
-}
-/* Haze lifts the darks near the lamp and leaves the far corners alone, which
-   is what air does to a lit room. */
-.hero-set-haze {
-  inset: 0;
-  background: radial-gradient(
-    64% 58% at 36% 36%,
-    color-mix(in srgb, var(--set-lit) 26%, transparent),
-    transparent 70%
-  );
-  mix-blend-mode: screen;
-}
-
-.hero-inner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  /* Two rows: the figure above, the words below, never the same cell. The
-     words take what they need and the figure gets the rest; on a short screen
-     the figure is taller than its row and overflows UPWARD, so the strings
-     run further off the top of the frame and the letters still clear the
-     headline. The two cannot overlap at any viewport.
-
-     minmax(0, max-content), not 1fr: the same thing on a short screen, where
-     the row takes all the space there is, but on a tall one the row stops at
-     the figure's own height and the rows pack to the top, so the strings
-     still run to the top of the frame instead of stopping in mid air with
-     empty wall above them. A hanging object hangs FROM something. */
-  grid-template-rows: minmax(0, max-content) auto;
-  grid-template-columns: 100%;
-  align-content: start;
-  /* The air between the wordmark and the headline. The scene's camera is a
-     perspective camera, so at the end of the move the wordmark, nearest the
-     lens, hangs a little past the bottom of the figure's box; this gap is
-     measured so that what is left between wool and type is about the same
-     as the type's own cap height. */
-  row-gap: clamp(2.25rem, 6vh, 3.5rem);
-  justify-items: center;
-  width: min(100% - 2.5rem, 97.5rem);
-  /* Full height of the stage. Without this it sizes to its tallest child, and
-     then anchoring one child to the top and the other to the bottom separates
-     them by nothing at all. */
-  height: 100%;
-  transform-style: preserve-3d;
-}
-
-/* The objects and their two shadows, as one figure, hanging into the frame
-   from above. */
-.hero-figure {
-  position: relative;
-  grid-row: 1;
-  align-self: end;
-  /* The mark at the end of the move. About 62% of the frame's width, which
-     is the size the client asked for, held back by the frame's height so
-     that the cut the top of the frame makes is always through string and
-     never through a letter. The letters begin 45% of the way down the mark's
-     box (the lion's mane, measured on the alpha), so at least 58% of the box
-     must be on screen to leave a few percent of string above them. What is
-     left for it is the frame less the words' block: the headline at 5.6vw
-     and 0.92 leading, the lead and the buttons with their gaps (about
-     10.3rem), the row gap (6vh) and the margin under the words (5vh).
-     Divide that remainder by 0.58 and you have this. On a 1440 by 900
-     screen it lands at about 830px, 58% of the frame; on a 1920 by 1080 at
-     about 1100px; on a shorter or squarer screen the height wins harder. */
-  width: clamp(
-    230px,
-    min(62vw, calc((100svh - var(--header-h, 0px)) * 1.72 - 19vh - 9vw - 17.8rem)),
-    1240px
-  );
-  z-index: 2;
-  /* The figure is scenery: it must not take the pointer, or the canvas would
-     cover the buttons at the bottom of the frame on a short screen. */
-  pointer-events: none;
-  transform-style: preserve-3d;
-  /* The figure only ever translates, because the canvas is inside it. The
-     camera pan at three times the sweep's rate, and the tilt: at rest the
-     figure sits --rise lower than its final place (HeroStage measures it so
-     the scaled box's top edge is exactly the top of the frame) and lifts to
-     its place as the camera comes in. */
-  transform: translate3d(calc(var(--pan) * 3), calc(var(--rise) * (1 - var(--turn))), 0);
-}
-/* The dolly, for the flat things: the two shadows and the layered CSS mark
-   scale about the mark's centre from 0.7 to 1. The canvas is NOT in here; it
-   is the figure's other child, at one size, and the scene moves its camera
-   instead, because a CSS scale on a canvas is resampled pixels. */
-.hero-dolly {
-  position: relative;
-  transform-style: preserve-3d;
-  transform-origin: 50% 50%;
-  transform: scale(var(--dolly));
-}
-.hero-object {
-  position: relative;
-  z-index: 1;
-  transform-style: preserve-3d;
-}
-
-.hero-mark {
-  position: relative;
-  /* A `filter` on this element forces its used transform-style to flat, which
-     silently collapsed every layer's translateZ and is why the CSS hero showed
-     no depth at all in Chrome. The shadow each layer needs is already on the
-     layer itself, so the parent carries none. */
-  transform-style: preserve-3d;
-  /* The turn: the RIGHT edge goes away from the reader, the left comes
-     forward. That is a POSITIVE rotateY. The first build had it negative, so
-     the object turned the wrong way entirely.
-
-     14 degrees, not 26. With five layers moving past each other the depth is
-     carried by the parallax between them, not by the angle, and a smaller
-     angle keeps the mark legible as a logo the whole way through. */
-  /* No scale. A zoom on an object that is already turning in perspective adds
-     nothing a reader can read as depth, and it was the one part of this move
-     that said "web animation" rather than "object in a room". */
-  transform:
-    rotateY(calc(var(--turn) * 20deg))
-    rotateZ(calc(var(--turn) * -1.6deg));
-}
-
-/* The five objects the mark is cut into. They share one square box and are
-   stacked in it, so they register exactly; the only thing that separates them
-   is where each one stands in Z. The group turns, they move past each other.
-
-   Each layer carries a shadow scaled to its own depth, which is what stops the
-   stack reading as five stickers on one pane of glass. */
-.hero-layers {
-  position: relative;
-  transform-style: preserve-3d;
-  /* Reserve the square the layers occupy: they are all absolute, so without
-     this the stage would collapse to nothing. */
-  aspect-ratio: 591 / 592;
-}
-.hero-layer {
-  position: absolute;
-  inset: 0;
-  display: block;
-  transform: translate3d(0, 0, var(--z, 0px));
-  filter: drop-shadow(
-    calc(var(--turn) * (var(--z, 0px) / 6)) calc(6px + var(--z, 0px) / 10)
-    calc(10px + var(--z, 0px) / 5) rgba(74, 53, 42, 0.26)
-  );
-}
-.hero-layer img { display: block; width: 100%; height: auto; }
-
-/* The light crossing the face.
-
-   Masked with the mark's own PNG, because without that this is a rectangle of
-   light sitting over a cut-out object, and a rectangle is exactly what the
-   first build of it looked like: a pale panel hanging behind the strings. The
-   alpha of the file is the shape of the thing, so it is also the shape of the
-   light on it. */
-.hero-sheen {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  -webkit-mask-image: url("/brand/cle-mark.png");
-  mask-image: url("/brand/cle-mark.png");
-  z-index: 2;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  opacity: calc(var(--turn) * 0.45);
-  background: linear-gradient(
-    102deg,
-    rgba(255, 252, 240, 0) 32%,
-    rgba(255, 252, 240, 0.5) 50%,
-    rgba(255, 252, 240, 0) 68%
-  );
-  mix-blend-mode: soft-light;
-}
-
-/* What the objects throw onto the set.
-
-   The mark's own alpha, flattened to black, twice. Once down the wall behind
-   the objects, offset away from the lamp and softened by the gap between the
-   wool and the paper. Once across the floor beneath them, flattened to a
-   fifth of its height and leaning away from the lamp, which is what a hanging
-   object's shadow does when it lands on a floor seen from the front. The two
-   together are what put the objects IN the room rather than on it: one says
-   there is a wall behind them, the other says there is a floor under them.
-   Both swing a little further as the objects turn. */
-.hero-shadow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  mix-blend-mode: multiply;
-}
-.hero-shadow-wall {
-  transform-origin: 50% 0;
-  transform:
-    translate3d(calc(7% + var(--turn) * 5%), 7%, 0)
-    scale(1.03);
-}
-.hero-shadow-wall .hero-shadow-art img {
-  filter: brightness(0) blur(calc(11px + var(--turn) * 5px));
-  opacity: 0.22;
-}
-.hero-shadow-floor {
-  transform-origin: 50% 100%;
-  transform:
-    translate3d(calc(9% + var(--turn) * 7%), 6%, 0)
-    skewX(calc(-30deg - var(--turn) * 8deg))
-    scaleY(0.14);
-  /* Thins out toward the camera, so its tail never darkens the paper the
-     headline stands on: the red word has to hold 3:1 there. */
-  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
-}
-.hero-shadow-floor .hero-shadow-art img {
-  filter: brightness(0) blur(calc(14px + var(--turn) * 4px));
-  opacity: 0.3;
-}
-.hero-shadow-art { display: block; }
-.hero-shadow-art img { display: block; width: 100%; height: auto; }
-
-/* The words stand on the floor, in front of the objects, under the same lamp.
-
-   In the tree and readable from the first frame: a reader not looking at the
-   screen meets the headline, the lead and the buttons whatever the picture is
-   doing. On screen they are below the bottom edge of the frame at rest, where
-   the floor runs on out of shot, and the tilt brings that floor and them up
-   into the frame as the camera comes in: they arrive by moving, as part of
-   the one move, not by fading in from nothing. Once placed they do not move.
-   At full turn the figure has panned a little to the right and they are
-   exactly where they were. The travel is the distance from their place to
-   the bottom edge, measured by HeroStage, so at rest the top of the headline
-   is just under the edge whatever the frame's height. */
-.hero-words {
-  grid-row: 2;
-  justify-self: center;
-  /* Clear of the scroll cue on the bottom edge at every height. With the
-     6vh row gap above, this is the 11vh the figure's width rule takes off
-     the frame for the words. */
-  margin-bottom: clamp(2.25rem, 5vh, 3.5rem);
-  width: min(100%, 64rem);
-  text-align: center;
-  z-index: 1;
-  pointer-events: none;
-  transform: translate3d(0, calc((1 - var(--turn)) * var(--words-off)), 0);
-}
-.hero-words :where(a) { pointer-events: auto; }
-
 /* The headline. Fraunces at poster scale, one line across the floor of the
    set. Optical sizing is on, which is the whole reason this face was chosen
    over the display face used elsewhere. */
@@ -1099,144 +646,6 @@ body > * { position: relative; z-index: 1; }
 }
 .hero-head-2 { color: var(--color-red-deep); }
 .hero-lead { color: var(--color-body); }
-
-/* Nearest the camera, out of focus: the garden, between the lens and the set.
-   It pans the furthest of anything in the frame. Kept to the near corners so
-   nothing ever crosses the objects or the words. */
-.hero-near {
-  position: absolute;
-  /* The bottom of the frame only: nothing near the lens ever rises as far
-     as the headline. */
-  inset: auto -6% 0 -6%;
-  height: 44%;
-  z-index: 3;
-  pointer-events: none;
-  overflow: hidden;
-  /* The nearest thing to the lens grows the most as the camera comes in,
-     about the bottom edge it is pinned to, so the branches push out into
-     the corners and never toward the words. */
-  transform-origin: 50% 100%;
-  transform: translate3d(calc(var(--pan) * 5), 0, 0) scale(calc(1 + var(--turn) * 0.28));
-  will-change: transform;
-}
-.hero-near-leaves {
-  width: 100%;
-  height: 100%;
-  /* Olive, not grey: the garden's sage pulled toward the body colour, laid on
-     with multiply so it darkens the lit floor the way a real leaf in front of
-     the lens does, rather than painting a grey shape over it. */
-  fill: color-mix(in srgb, var(--color-sage) 60%, var(--set-shade));
-  mix-blend-mode: multiply;
-}
-/* The nearer spray: bigger, softer, fainter. Out of focus because it is close
-   to the lens, not because it is unimportant. */
-.hero-near-close {
-  opacity: 0.34;
-  filter: blur(16px);
-}
-/* The one behind it: smaller, sharper, darker. Two distances is what makes a
-   corner read as a plant rather than a shape. */
-.hero-near-mid {
-  opacity: 0.3;
-  filter: blur(7px);
-}
-
-.hero-cue {
-  position: absolute;
-  z-index: 4;
-  bottom: clamp(1.25rem, 4vh, 2.5rem);
-  left: 50%;
-  translate: -50% 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  /* The pool reaches the bottom edge, so this sits on lit floor: body, which
-     measures 5:1 there, where muted would not. */
-  color: var(--color-body);
-  opacity: calc(1 - var(--p) * 3);
-}
-.hero-cue-rule { display: block; width: 2.5rem; height: 1px; background: var(--color-rule); }
-
-/* The WebGL mark. HeroMark3D mounts a canvas over the figure's box, the
-   square the four CSS layers fill at the end of the move, bleeding 15% past
-   it so the turned object is never clipped. The canvas is a child of the
-   figure, beside the dolly and outside it, so it is translated with the
-   figure and never scaled; the scene draws the mark smaller at rest by
-   having its camera further away. Once a frame is drawn HeroStage marks the
-   stage .is-3d: the canvas fades in, the flat layers fade out (opacity, not
-   display, so the image that carries the accessible name stays in the
-   tree), and the rotation moves off the CSS and into the scene. Context
-   loss reverses it. */
-.hero-3d-canvas {
-  position: absolute;
-  top: -15%;
-  left: -15%;
-  width: 130%;
-  height: 130%;
-  z-index: 3;
-  display: block;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
-}
-/* No transform at all on the CSS mark once the canvas has it: the turn and
-   the dolly are both in the scene. */
-.hero-stage.is-3d .hero-mark { transform: none; }
-.hero-stage.is-3d .hero-sheen { display: none; }
-
-/* Below the lg breakpoint there is no hold, no turn, no pan and no WebGL. The
-   set stays: the same lit paper, the same floor, the same two shadows and the
-   same leaves in the corners, as a still photograph of the same room, with
-   the objects above the words. */
-@media (max-width: 1023px) {
-  .hero-pin { height: auto !important; }
-  .hero-stage {
-    --pan: 0px;
-    position: relative;
-    /* No sticking, so no offset under the header: on a relative box the
-       sticky top would become a gap. */
-    top: auto;
-    height: auto;
-    padding: 1.75rem 0 3.25rem;
-    perspective: none;
-  }
-  /* No pan, so no bleed: the extra width became horizontal page scroll. */
-  .hero-set { inset: 0; transform: none; }
-  .hero-near { inset: auto 0 0 0; height: 36%; transform: none; }
-  .hero-stage { --set-fall: 28%; }
-  .hero-set-floor { height: 54%; bottom: -10%; }
-  /* Sharper on a phone, not softer: the leaves are a third the size here and
-     at 9px a real silhouette went back to being a smudge. */
-  .hero-set-gobo { height: 60%; filter: blur(4px); }
-  .hero-near-close { filter: blur(10px); opacity: 0.42; }
-  .hero-near-mid { filter: blur(5px); opacity: 0.36; }
-  .hero-inner { display: block; width: min(100% - 2rem, 97.5rem); margin-inline: auto; height: auto; }
-  .hero-figure { width: clamp(220px, 56vw, 400px); margin: 0 auto; transform: none; }
-  .hero-dolly, .hero-mark, .hero-words { transform: none; }
-  .hero-shadow-wall { transform: translate3d(6%, 6%, 0) scale(1.03); }
-  /* Less lean on a phone: the frame is narrow and the tail was reaching the
-     lead copy at the right edge. */
-  .hero-shadow-floor { transform: translate3d(7%, 7%, 0) skewX(-20deg) scaleY(0.13); }
-  .hero-words { width: auto; margin-top: 3.25rem; }
-  .hero-head { white-space: normal; }
-  .hero-sheen, .hero-cue { display: none; }
-}
-
-/* Reduced motion: the finished frame, held still. No hold, no pan, no turn,
-   no dolly; HeroStage writes nothing but the header height, and every
-   transform above is switched off here, so the mark is at full size in its
-   final place with the words placed under it: the frame the move ends on. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-pin { height: auto !important; }
-  .hero-stage { position: relative; top: auto; --pan: 0px; }
-  .hero-set, .hero-near, .hero-figure, .hero-dolly, .hero-words { transform: none; }
-  .hero-mark { transform: none; }
-  .hero-sheen, .hero-cue { display: none; }
-}
 
 /* ---------------------------------------------------------------------------
    The room, applied to the page.
@@ -1338,291 +747,125 @@ body > * { position: relative; z-index: 1; }
    releases so the frame is settled before the handover) and --w (the copy's
    own arrival). No JS touches a style except those three.
 --------------------------------------------------------------------------- */
-.shot-pin { position: relative; }
-.shot-screen {
-  position: sticky;
-  top: var(--header-h, 0px);
-  height: calc(100svh - var(--header-h, 0px));
+/* ---------------------------------------------------------------------------
+   THE HERO: the mission film, full bleed.
+
+   No pin, no scroll choreography, nothing driven by a scroll listener. The
+   studio set that used to be here is in scripts/render-hero-plate.py and still
+   renders; the page simply does not load it any more.
+--------------------------------------------------------------------------- */
+.film-hero {
+  position: relative;
+  /* Its own gutter. `--gutter` is defined on .filmstrip-root further up, not
+     globally, so referencing it here resolved to nothing, the declarations
+     using it were dropped, and the copy and the controls both fell back to
+     their static position hard against the left edge of the screen. This
+     matches the page container: the headline lines up with the body copy of
+     every section below it. */
+  --film-gutter: calc((100% - min(100%, 97.5rem)) / 2 + 1.25rem);
+  /* The header is sticky and opaque, so the film is sized to what is left of
+     the screen under it rather than to the whole of it. */
+  height: calc(100svh - var(--header-h, 76px));
+  min-height: 30rem;
   overflow: hidden;
   isolation: isolate;
-  background: var(--color-paper-1);
-  perspective: 1400px;
-  --p: 0;
-  --s: 0;
-  --w: 0;
+  background: var(--color-ink);
 }
-
-/* The planes. Each is EIGHT PERCENT TALLER than the screen (four above, four
-   below) so the tilt has room to move through: a plane exactly frame sized
-   would show its own edge the moment it was translated. The plate is rendered
-   16:10 so that it fills this taller box edge to edge on a laptop with no
-   side crop, and composed so that nothing that matters sits in the outer
-   four percent. */
-.plane {
+.film-media {
   position: absolute;
-  inset: -4% 0;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: cover;
-  /* The garden's contact line with the floor, not the middle of the picture.
-     Scaling about the line where the timber meets the paper keeps that join
-     fixed, so the garden grows out of the floor instead of sliding across
-     it. Both planes share the origin AND the translate: a garden that moved
-     against the floor it stands on is the float the client kept seeing. */
-  transform-origin: 50% 81%;
-  will-change: transform;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* No controls attribute: the film carries its own two buttons, which are
+     reachable, labelled, and do not put a browser chrome bar across the
+     bottom of the hero. */
 }
 
-/* THE ORBIT. Three renders of the same set, the camera swung 0, 10 and 20
-   degrees around the garden, stacked and cross-faded as the page scrolls.
-
-   The bed is built square to the world now, so it does not arrive looking like
-   a prop someone set down at an angle. What turns is the CAMERA, which means
-   the whole room turns with it: the cyc's edge swings into view, the rig moves
-   across, the light on the timber changes. A CSS rotation of one flat
-   photograph could not do any of that, it would only skew the picture.
-
-   They are stacked rather than blended in pairs: the first frame is opaque and
-   the other two are painted over it as their opacity comes up, so there is
-   never a moment when the backdrop shows through a half transparent plate. */
-.plane {
-  z-index: 0;
-  transform:
-    translate(calc(var(--s) * -1.6%), calc((1 - var(--s)) * 4%))
-    scale(calc(1 + 0.045 * var(--s)));
-}
-.plane-o0 { background-image: image-set(
-    url("../assets/hero/hero-o0-2560.avif") type("image/avif"),
-    url("../assets/hero/hero-o0-2560.webp") type("image/webp"),
-    url("../assets/hero/hero-o0-2560.jpg") type("image/jpeg")); }
-.plane-o1 {
-  /* A SHORT blend, not a long one. Dissolving between two camera angles
-     always ghosts: for the length of the blend you see both positions of
-     every stand at once. Holding each frame for most of its stretch and
-     crossing over quickly keeps the double exposure to a moment. */
-  opacity: clamp(0, calc((var(--s) - 0.33) / 0.14), 1);
-  background-image: image-set(
-    url("../assets/hero/hero-o1-2560.avif") type("image/avif"),
-    url("../assets/hero/hero-o1-2560.webp") type("image/webp"),
-    url("../assets/hero/hero-o1-2560.jpg") type("image/jpeg"));
-}
-.plane-o2 {
-  opacity: clamp(0, calc((var(--s) - 0.78) / 0.14), 1);
-  background-image: image-set(
-    url("../assets/hero/hero-o2-2560.avif") type("image/avif"),
-    url("../assets/hero/hero-o2-2560.webp") type("image/webp"),
-    url("../assets/hero/hero-o2-2560.jpg") type("image/jpeg"));
-}
-
-/* The mark. Dominant: it is the subject, the set is what it hangs in. Its
-   centre sits over the garden, left of the frame's middle, and it stays
-   there: the thing is locked to the camera and the set moves under it. What
-   it does during the hold is settle on its ropes, a small swing damping to
-   rest and a few percent of growth, and nothing else.
-
-   `top` is negative so the ropes leave the top of the frame rather than
-   beginning in mid air: the thing hangs from the pipe overhead, which is
-   above the picture. It was at -20% and the client said it was raised too
-   much; at -11% the wordmark hangs over the planting and clear of the front
-   timber, which is what a dangling object over a garden looks like. */
-.shot-mark {
+/* The scrim. Type over a moving picture is only readable if the picture is
+   darkened under it, and this is where that happens: strongest at the bottom
+   left where the copy sits, gone by halfway up. Measured against the brightest
+   frame of the film, not against the poster. */
+.film-scrim {
   position: absolute;
-  z-index: 2;
-  /* Centred when you land, walking left to where it settles. It used to start
-     at 31%, which is already most of the way to its resting place, so the
-     opening frame had the brand sitting off to one side for no reason. */
-  left: calc(50% - var(--s) * 23.5%);
-  top: -11%;
-  /* Square artwork, so height is the binding constraint on a laptop. */
-  width: min(87vh, 50vw, 46rem);
-  transform:
-    translateX(-50%)
-    translateY(calc((1 - var(--s)) * 3vh))
-    scale(calc(0.94 + 0.06 * var(--s)))
-    rotateY(calc(var(--s) * 5deg))
-    rotateZ(calc(1.4deg - var(--s) * 1.4deg));
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-/* The copy, beside the mark and level with its letters, on the lit floor to
-   the right of the garden. The set was built with that part of the floor left
-   quiet: the apple boxes sit below it, the C-stand stands beyond its right
-   edge, and the pool on the cyc is aimed behind it so the ground under the
-   words is the brightest paper in the picture. Left aligned, because a
-   centred block pinned to the right half reads as a mistake. */
-.shot-copy {
-  position: absolute;
-  z-index: 4;
-  left: 53%;
-  right: var(--gutter);
-  top: 46%;
-  max-width: 36rem;
-  opacity: var(--w);
-  transform: translateY(-50%) translateX(calc((1 - var(--w)) * 2.5rem));
+  inset: 0;
   pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(14, 11, 9, 0.82) 0%, rgba(14, 11, 9, 0.55) 26%,
+                    rgba(14, 11, 9, 0.12) 54%, rgba(14, 11, 9, 0) 72%),
+    linear-gradient(to right, rgba(14, 11, 9, 0.5) 0%, rgba(14, 11, 9, 0) 58%);
 }
-.shot-copy :where(a) { pointer-events: auto; }
-/* The quiet button carries no fill of its own, which is fine on paper and not
-   fine on a photograph: over the apple boxes its label measured 4.32:1 against
-   the timber. It gets a paper backing here, so it brings its own ground
-   wherever the set happens to put something behind it. */
-.shot-copy .btn-quiet {
-  background: color-mix(in srgb, var(--color-raised) 88%, transparent);
+
+.film-copy {
+  position: absolute;
+  left: var(--film-gutter);
+  right: var(--film-gutter);
+  bottom: clamp(2.5rem, 7vh, 4.5rem);
+  max-width: 38rem;
+  color: var(--color-raised);
+}
+.film-copy .hero-head { color: var(--color-raised); font-size: clamp(2.2rem, 5.2vw, 4.4rem); }
+.film-copy .hero-head-2 { color: #ffb9bb; }
+.film-lead { color: rgba(253, 248, 237, 0.92); }
+.film-copy .btn-quiet {
+  color: var(--color-raised);
+  border-color: rgba(253, 248, 237, 0.45);
+  background: rgba(253, 248, 237, 0.08);
   backdrop-filter: blur(3px);
 }
-.shot-copy .hero-head {
-  /* One line. The headline throws a raked shadow along the floor and a two
-     line version of that shadow reads as a printing error, so the size is
-     capped by the width the block has between the mark's right edge and the
-     C-stand at the right of frame. */
-  font-size: clamp(2.1rem, 4vw, 3.6rem);
-}
-.shot-copy .hero-lead { font-size: clamp(1rem, 1.35vw, 1.2rem); }
+.film-copy .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.75); }
 
-.shot-cue {
+.film-controls {
   position: absolute;
-  z-index: 4;
-  bottom: clamp(1.25rem, 3vh, 2.25rem);
-  left: 50%;
+  top: clamp(1rem, 3vh, 1.75rem);
+  right: var(--film-gutter);
   display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  color: var(--color-body);
+  gap: 0.5rem;
+}
+.film-btn {
+  border: 1px solid rgba(253, 248, 237, 0.42);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  /* 0.72, not 0.52. These pills sit on a film that runs from a dark wood to a
+     near-white sunrise: at 0.52 the label measured 4.36:1 against the brightest
+     frame, forty seconds in. A control over moving pictures has to carry its
+     own ground, not borrow one. */
+  background: rgba(14, 11, 9, 0.72);
+  backdrop-filter: blur(6px);
+  color: var(--color-raised);
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  opacity: calc(1 - var(--w));
-  transform: translateX(-50%);
+  cursor: pointer;
+  transition: border-color 220ms var(--ease-out), background 220ms var(--ease-out);
 }
-
-/* A phone gets a different structure, not the desktop one squeezed.
-
-   The desktop frame works because the copy is placed into a quiet part of the
-   picture. At 390 wide there is no quiet part: the plate's own bands land
-   wherever `cover` puts them and the headline ended up across the wordmark
-   and the hedge, unreadable. So on a phone the plate is a band at the top
-   with the mark in it, and the copy sits on plain paper underneath. The
-   plate is anchored to its own bottom edge, which is the lit floor, so the
-   join reads as that floor continuing rather than as a crop.
-
-   There is also no pinned scroll here: holding a phone screen for two swipes
-   before the page will start is a cost a reader did not agree to. */
-/* Between the phone and a large desktop, the 1920 plates. A 1440 laptop was
-   pulling the 2560 set, which is 338 KB of hero for a screen that cannot
-   resolve it; the 1920 set is 161 KB and is still over 1x on that screen. */
-@media (min-width: 821px) and (max-width: 1600px) {
-  .plane-o0 { background-image: image-set(
-      url("../assets/hero/hero-o0-1920.avif") type("image/avif"),
-      url("../assets/hero/hero-o0-1920.webp") type("image/webp"),
-      url("../assets/hero/hero-o0-1920.jpg") type("image/jpeg")); }
-  .plane-o1 { background-image: image-set(
-      url("../assets/hero/hero-o1-1920.avif") type("image/avif"),
-      url("../assets/hero/hero-o1-1920.webp") type("image/webp"),
-      url("../assets/hero/hero-o1-1920.jpg") type("image/jpeg")); }
-  .plane-o2 { background-image: image-set(
-      url("../assets/hero/hero-o2-1920.avif") type("image/avif"),
-      url("../assets/hero/hero-o2-1920.webp") type("image/webp"),
-      url("../assets/hero/hero-o2-1920.jpg") type("image/jpeg")); }
-}
+.film-btn:hover { border-color: rgba(253, 248, 237, 0.85); background: rgba(14, 11, 9, 0.85); }
 
 @media (max-width: 820px) {
-  .shot-pin { height: auto !important; }
-  .shot-screen {
+  /* Paper, not ink. The copy moves off the film and onto the page here, so the
+     section's own ground has to move with it: left on ink it was dark ink text
+     on a dark ink panel, and the headline simply was not there. */
+  .film-hero { height: auto; min-height: 0; background: var(--color-raised); }
+  /* The film keeps its own shape on a phone and the copy sits under it on
+     paper: a 16:9 film cropped to a tall screen is a close-up of whatever
+     happens to be in the middle of the frame. */
+  .film-media { position: relative; height: auto; aspect-ratio: 16 / 9; }
+  .film-scrim { display: none; }
+  .film-copy {
     position: relative;
-    top: 0;
-    height: auto;
-    /* The band is PADDING, not a box the content happens to sit inside. The
-       copy paints its own paper background and used to follow the mark in
-       normal flow, so the paper started directly under the wordmark and
-       covered the bottom third of the plate. The plate is anchored to its own
-       bottom edge, so what the paper covered was all of the planting: a hero
-       built around a planted bank showed a beige wall with one leaf in the
-       corner. Padding the screen by the band's height and hanging the mark
-       inside it keeps the two apart. */
-    padding: var(--band) 0 9vh;
-    perspective: none;
-    background: var(--color-raised);
-    --band: 51vh;
-    --p: 1;
-    --s: 1;
-    --w: 1;
-  }
-  .plane {
-    inset: 0 0 auto 0;
-    height: var(--band);
-    transform: none !important;
-    /* A portrait band through a landscape plate shows a little over half of
-       its width, so it is aimed at the garden, which stands left of the
-       plate's centre, rather than at the bare floor right of it. */
-    background-position: 18% 50%;
-  }
-  /* No orbit on a phone: there is no pinned scroll here, so there is nothing
-     to drive it. One frame, the head on one, and the other two are not even
-     requested. */
-  .plane-o1, .plane-o2 { display: none; }
-  .plane-o0 { background-image: image-set(
-      url("../assets/hero/hero-o0-1280.avif") type("image/avif"),
-      url("../assets/hero/hero-o0-1280.webp") type("image/webp"),
-      url("../assets/hero/hero-o0-1280.jpg") type("image/jpeg")); }
-  /* Hung inside the band rather than flowed above the copy, so the planting
-     below it stays visible and the wordmark's descenders cannot be sliced by
-     the join. */
-  .shot-mark {
-    position: absolute;
-    z-index: 2;
-    top: 6vh;
-    left: 50%;
-    margin: 0;
-    width: min(64vw, 18.5rem);
-    transform: translateX(-50%) !important;
-  }
-  .shot-copy {
-    /* Relative, NOT static. z-index has no effect on a static element, so
-       static dropped the copy out of the stacking order and the plate, which
-       is absolutely positioned, painted straight over it: the lead and both
-       buttons were in the DOM at the right coordinates and simply invisible. */
-    position: relative;
-    z-index: 4;
     inset: auto;
     max-width: none;
-    margin: 0;
-    padding: 5vh var(--gutter) 0;
-    background: var(--color-raised);
-    opacity: 1;
-    transform: none;
-    text-align: center;
+    padding: 6vh var(--film-gutter) 0;
+    color: var(--color-ink);
   }
-  .shot-copy .hero-head { font-size: clamp(2rem, 9.4vw, 3rem); white-space: normal; }
-  .shot-copy .hero-lead { margin-inline: auto; }
-  .shot-copy > div { justify-content: center; }
-  .shot-cue { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .plane, .shot-mark, .shot-copy { transition: none; }
-}
-
-/* No move: the settled frame, held still. Phone width is excluded because the
-   phone layout is already a still, and it builds its height out of padding
-   that this would overwrite.
-
-   THE SCREEN NEEDS A REAL HEIGHT HERE. The mark and the copy are both
-   absolutely positioned, so `height: auto` had nothing in flow to measure and
-   collapsed the hero to 135px, leaving the mark and the headline hanging
-   outside it across the section below. */
-@media (prefers-reduced-motion: reduce) and (min-width: 821px) {
-  .shot-pin { height: auto !important; }
-  .shot-screen {
-    position: relative;
-    top: 0;
-    height: min(86svh, 54rem);
-    min-height: 34rem;
-    padding: 0;
-    --p: 1;
-    --s: 1;
-    --w: 1;
+  .film-copy .hero-head { color: var(--color-ink); font-size: clamp(2rem, 9.4vw, 3rem); }
+  .film-copy .hero-head-2 { color: var(--color-red-deep); }
+  .film-lead { color: var(--color-body); }
+  .film-copy .btn-quiet {
+    color: var(--color-body);
+    border-color: rgba(74, 53, 42, 0.22);
+    background: transparent;
   }
 }
 
