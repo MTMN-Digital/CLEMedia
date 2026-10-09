@@ -25,6 +25,9 @@ shift 2
 
 # --- project-tunable lists ---------------------------------------------------------------------
 SLOP_COLOR='(indigo|violet|purple|fuchsia)-[0-9]{2,3}|from-(indigo|violet|purple)|to-(indigo|violet|purple)'
+# TUNED for cle-media (2026-10-09-cle-rooms): this project ships `--color-slate` (a deprecated alias
+# for --color-body) and bare `text-slate`, with NO numeric suffix. The pattern below needs a dash and
+# two or three digits after the word, so those never match; untouched Tailwind `slate-500` still does.
 SLOP_DEFAULT='(zinc|slate)-[0-9]{2,3}'
 PLACEHOLDER='[Ll]orem ipsum|TODO|FIXME|XXX:|dicebear|via\.placeholder|placehold\.co|aspect-video bg-muted'
 BRACKET_COPY='\[(Client|Company|Name|Business|City|Address|Phone|Email)[a-zA-Z ]*\]'
@@ -95,22 +98,21 @@ for f in "${FILES[@]}"; do
   fails=1
 done
 
-# --- house: Tailwind !important escapes ------------------------------------
-# DONE-WHEN items 3 and 5: rhythm comes from <Section pad>, and no literal may
-# restate a token. Both were being broken by `!py-*`, `!text-[11px]` and the
-# like, and the gate only caught them when a human read the diff.
-for f in "$@"; do
-  [ -f "$f" ] || continue
-  # A backticked `!py-*` is prose ABOUT the escape, not an escape: the file that
-  # defines the spacing contract documents the thing it replaced, and a check
-  # that fails its own documentation gets switched off rather than obeyed.
-  hits=$(grep -nE '!(py|pt|pb|px|text|border|tracking)-' "$f" | grep -vE '`!(py|pt|pb|px|text|border|tracking)-')
+# --- cle-media: Tailwind !important escapes ---------------------------------------------------
+# Section rhythm comes from <Section pad>, and no literal restates a token. `!py-*`, `!text-[11px]`
+# and the like were how both got broken. A backticked `!py-*` is prose ABOUT the escape, not one.
+for f in "${FILES[@]}"; do
+  hits=$(grep -anE '!(py|pt|pb|px|text|border|tracking)-' "$f" | grep -avE '`!(py|pt|pb|px|text|border|tracking)-')
   if [ -n "$hits" ]; then
-    printf '%s\n' "$hits" | sed "s|^|FAIL $f: Tailwind !important escape, use the contract instead: |"
+    printf '%s\n' "$hits" | sed "s|^|FAIL ESCAPE - $f: Tailwind !important escape, use the contract instead: |"
     fails=1
   fi
 done
 
-[ $fails -eq 0 ] && echo "shard-lint: clean (${#FILES[@]} files)"
+# --- cle-media: motion that is not Settle / useRoomEntry / an existing Wipe -----------------------
+# The brief allows fades and short reveals only. Relief's lamp is scroll-driven and HangingMarks
+# (.rk-hang) drifts forever; neither may be mounted by a shard. No animation library, no keyframes.
+hit MOTION-BANNED "from ['\"](framer-motion|motion|gsap|lenis)['\"/]|<HangingMarks|<Relief|rk-hang|@keyframes|animation:|\binfinite\b|useScroll\("
 
+[ $fails -eq 0 ] && echo "shard-lint: clean (${#FILES[@]} files)"
 exit $fails

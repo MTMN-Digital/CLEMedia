@@ -136,3 +136,123 @@ it and losing on source order.
 `opacity`, and do not brighten the bench's lamp: at a 17% cream radial the
 brightest corner measured 4.29:1, which is a fail, and the lift is largest
 exactly where a heading sits.
+## Run 2026-10-09-cle-rooms additions: THE LIT ROOM
+
+Everything above still holds. This section adds the one thing the earlier
+contract predates: the render kit, and the reading of it that `/contact` and
+`/team` now ship. Those two pages are the reference for this run. Open them
+before writing anything.
+
+### Why this exists
+
+The client's verdict on the site, four times in one session, was that it was
+flat, and then, after a correct but generic rebuild of `/contact`, that it
+"isn't unique in any way and it doesn't relate to CLÉ". The answer both times
+is the same: the company makes needle-felted objects by hand, photographs them
+and hangs them up, so its site shows objects standing in a lit room rather than
+content sitting in boxes on a page. A card with a hairline and a soft shadow is
+a sheet on a page. An object reads as present when it has a position in a
+space, a light falling on it from somewhere in particular, a shadow that
+belongs to that light, and a surface it stands on. The kit supplies those four
+things and nothing else.
+
+### The two references, and what each is for
+
+**`src/pages/Contact.tsx` plus `.rk-corr` in render.css: THE ROOM.** One
+`.rk-studio` panel holding a two-column scene. Five people mounted on the wall
+on their own ledges, and the sheet you write on standing in front of them. Copy
+this when a page has a few important objects and one block of content that has
+to stay perfectly readable.
+
+**`src/components/team/StageSequence.tsx` plus `.rk-board` / `.rk-slip`: THE
+SHELF.** Six numbered slips standing on two shelves under one lamp, read left
+to right, three across and two down, aligned by their FEET so they stand at
+their own heights. Copy this when a page has a set of peer items that belong in
+an order.
+
+Mirror whichever is closer. Do not invent a third reading of the kit.
+
+### The classes, and what each needs around it
+
+| Class | What it is | Needs |
+|---|---|---|
+| `.rk-studio` | the room: wall panel, radius, padding, `container-name: studio` | `is-armed` / `is-in` from `useRoomEntry()` |
+| `.rk-room` | modifier on `.rk-studio` that raises the wall's dark floor | a TALL room only. See the gradient trap below |
+| `.rk-rake` | the raking light across the wall | first child of `.rk-studio`, `aria-hidden` |
+| `.rk-head` | the picture rail: a functional shelf label, never a strapline | inside `.rk-studio`; pairs with `.rk-head-rule` + `.rk-head-meta` |
+| `.rk-bench` | the grid of objects: 1 / 2 / 4 across by container width | direct children are `.rk-item` |
+| `.rk-board .rk-bench` | the same grid at 3 across, with one ledge per row of three | the `.rk-board` modifier on `.rk-studio` |
+| `.rk-item` | one cell; owns the shelf under its row via `::after` | `--i` set inline for the entry stagger |
+| `.rk-plate` | the object's own box; margin-bottom equals the ledge height | wraps a `Stage` |
+| `.rk-mat` | the cream mount a print sits on | holds `.rk-pic`, and the caption if there is one |
+| `.rk-pic` | the clipped picture window inside the mount | holds `Figure` plus `.rk-light` |
+| `.rk-light` | the light falling across the face of the picture | inside `.rk-pic`, `aria-hidden` |
+| `.rk-tag` | a small cream label card standing at the object's foot | positioned against `.rk-plate` |
+| `.rk-corr__sheet` | a FLAT lit sheet, not on a Stage | anything with text fields or controls |
+
+`Stage` is the lit-object primitive: `seated`, `ground="ledge"`, `light`
+(azimuth in degrees, 0 overhead, negative from the left), `tilt`, `turn`,
+`roll`, `depth` 0 to 1, `backdrop`, `rake`, `lift`, `radius`. A board on a
+ledge is `tilt` 5 to 8. Hand-place every pose so no two objects match: three
+objects with identical poses is a shop display, not a studio.
+
+### One lamp, not N lamps
+
+There is ONE light in the room and every object's azimuth is the angle from
+that light to that object. Compute it from the object's COLUMN, not its index,
+so a second row is lit the same way as the first (the lamp is above them both).
+`StageSequence.tsx` and `StudioWall.tsx` both show the two-line version of
+this. A row of objects each lit by its own identical sweep reads as a row of
+separate lights, which is the single tell that separates a rendered scene from
+a row of cards with drop shadows.
+
+### The sheet does not lean
+
+Every object in this kit sits on a few degrees of 3D rotation. **Anything
+holding a form field, a control, or a long block of reading does not.** A
+rotated ancestor blurs text in every field and moves the caret and the native
+autofill panel off the control they belong to. The room supplies the light and
+the shadow; the thing the visitor has to use stays square and flat. Use
+`.rk-corr__sheet`, which is lit by the room without being posed by it.
+
+### The four contrast traps this codebase has already paid for
+
+1. **Never dim a text colour with `opacity`.** Four separate AA failures so
+   far, every one of them `opacity` on ink or on muted. Hierarchy comes from
+   size, face and tracking. Use the token at full strength.
+2. **`--color-muted` is the floor, and only on PAPER.** On the render kit's
+   wall, text is `--color-ink` at full strength or it does not go on the wall.
+3. **A caption on a lit wall belongs INSIDE the `.rk-mat`, on cream.** That is
+   how a framed print carries one, and it is the only place its contrast stops
+   depending on how deep the room is.
+4. **The wall gradient darkens down the panel, and `.grain` multiplies on top.**
+   A painted pixel is roughly 10% darker than the CSS colour says. A room
+   tuned over 600px fails at 1200px: that is what `.rk-room` is for.
+
+### Motion
+
+`Settle` and `useRoomEntry` only. Both reveal once on entry and both collapse
+under `prefers-reduced-motion`. No animation library, no `@keyframes`, no
+infinite loop, no parallax, no scroll pinning. `Relief` (the scroll-driven
+lamp) and `HangingMarks` (`.rk-hang`, which drifts forever) are mounted by the
+footer and by `/contact` and are NOT for a shard to add: the brief puts the
+characters in the supporting cast and allows one dedicated module, which is
+already spent.
+
+### Images
+
+`src/lib/brand.ts` is the whole universe. Every image goes through `Figure`
+with a key from the `AssetKey` union. There is no image generation on this
+project and no stock photography. A key whose `base` is `null` is an unfilled
+placeholder and renders a labelled block: that is correct behaviour, not
+something to work around.
+
+### Typecheck, and the one command a shard may run
+
+`npx tsc --noEmit -p tsconfig.app.json`
+
+That is the only build command. Four shards run concurrently in ONE checkout
+against one `node_modules` and one `dist/`, so no shard runs `npm install`,
+`npm run build` or a dev server. `tsconfig.app.json` is not incremental, so
+concurrent typechecks are safe. Integration runs the real build. This overrides
+item 1 of the earlier `DONE-WHEN.md`.
