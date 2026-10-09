@@ -118,6 +118,29 @@
 }
 @keyframes ink-open { to { transform: scale(1); opacity: 1; } }
 
+/* ─── Held until it is seen ───────────────────────────────────────────────
+   A kit animation runs from MOUNT, so a drawing below the fold finishes
+   before anyone scrolls to it. Found 2026-10-09: the production line, the
+   logo strip, the refused checkout and the correction had all been playing
+   to nobody since the day they were written.
+
+   The fix is one rule, not a hook per drawing: any armed-but-not-yet-entered
+   ancestor pauses the kit's animations under it. `Settle` already sets
+   `is-armed` on arm and `is-in` on entry, and the QA capture tooling already
+   knows how to force that pair to their finished state, so a drawing wrapped
+   in a `Settle` gets the gate for free and still photographs correctly.
+
+   `animation-play-state`, not a delay: the drawing holds at frame zero for as
+   long as it takes, however far down the page it is, and nothing has to know
+   the scroll distance.
+   ─────────────────────────────────────────────────────────────────────── */
+.is-armed:not(.is-in) .ink-draw,
+.is-armed:not(.is-in) .ink-in,
+.is-armed:not(.is-in) .ink-extend,
+.is-armed:not(.is-in) .ink-open {
+  animation-play-state: paused;
+}
+
 /* ─── Asked for stillness ───────────────────────────────────────────────── */
 /* Every drawing is composed at rest. The resting pose is the one a crawler,
    a screenshot and anyone with reduced motion sees, so it has to be right. */

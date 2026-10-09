@@ -1,0 +1,84 @@
+/* ─── One episode, three stages, on /: the trail ────────────────────────────
+   See components/home/EpisodeRings.tsx. Marks come from components/draw/
+   draw.css; this file is layout and the entry gate only.
+
+   THE ALIGNMENT RULE. The drawing's three stages sit in the vertical thirds
+   of its viewBox. The captions sit in the vertical thirds of the SAME height:
+   the list is stretched to the drawing's row and divided into three equal
+   tracks, each caption centred in its track. So Watch is level with the
+   screen, Play with the jump, Learn with the sheet, at every width, without
+   a legend and without anything positioned by hand.
+
+   The drawing is `height: 100%` with `slice`, so if a caption ever runs
+   taller than its third the drawing scales up to the taller rows rather than
+   leaving its bottom stage stranded above the last caption. The overspill is
+   sideways only, a few pixels into the gutter, and the kit's `overflow:
+   visible` lets it paint.
+
+   TWO ARRANGEMENTS. Under 820px the wide plan would be 110px tall on a phone,
+   which is not a drawing, so a strip authored at 150 units wide stands beside
+   the captions instead, at the width it really gets. Above 820px the strip
+   is swapped for the 420 by 560 plan.
+   ─────────────────────────────────────────────────────────────────────── */
+.trail {
+  display: grid;
+  grid-template-columns: minmax(112px, 2fr) minmax(0, 3fr);
+  column-gap: clamp(1rem, 4vw, 2.5rem);
+  margin-top: clamp(2rem, 4vw, 3rem);
+  align-items: stretch;
+}
+.trail__art {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: 100%;
+  /* CLIPPED, and this one has to be.
+
+     The kit sets `overflow: visible` on `.ink` so a ledge or a cast shadow
+     can sit a few pixels outside its box. This drawing is different: it is
+     `preserveAspectRatio="slice"`, so when the caption column is taller than
+     the art the svg scales UP to meet it and deliberately overspills
+     sideways. Left visible, that overspill is paper-coloured `.ink-fill`
+     shapes painted outside the section, and on 2026-10-10 they covered the
+     top of the bench band below, which reported three real contrast failures
+     on the filmstrip labels: cream type measured against the trail's spilled
+     paper instead of the dark band behind it.
+
+     A drawing that oversizes on purpose clips on purpose. */
+  overflow: hidden;
+}
+.trail__art--wide { display: none; }
+
+.trail__words {
+  grid-column: 2;
+  grid-row: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  row-gap: 1rem;
+}
+.trail__word { align-self: center; }
+.trail__word p { margin-top: 0.5rem; max-width: 46ch; }
+
+@media (min-width: 820px) {
+  .trail {
+    grid-template-columns: minmax(300px, 440px) minmax(0, 1fr);
+    column-gap: clamp(2.5rem, 5vw, 5rem);
+  }
+  .trail__art--wide { display: block; }
+  .trail__art--narrow { display: none; }
+  .trail__words { row-gap: 1.5rem; }
+}
+
+/* ─── Held until seen ───────────────────────────────────────────────────
+   The kit's arrivals run from mount, and this sits a full screen below the
+   fold on /, so it would finish before anyone scrolled to it. JS arms the
+   hold in a layout effect, the observer releases it once on entry. With no
+   JS, no IntersectionObserver or reduced motion the hold is never armed and
+   the finished drawing is simply there. */
+.trail.is-armed:not(.is-in) .ink-draw,
+.trail.is-armed:not(.is-in) .ink-in {
+  animation-play-state: paused;
+}

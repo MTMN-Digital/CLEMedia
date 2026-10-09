@@ -1,3 +1,4 @@
+import { Settle } from "@/components/Settle";
 import "@/components/draw/draw.css";
 
 /* ============================================================================
@@ -25,7 +26,7 @@ export function Correction() {
   const line = (i: number) => 44 + i * 19;
 
   return (
-    <figure className="corr">
+    <Settle as="figure" className="corr">
       <svg
         className="ink"
         viewBox="0 0 300 220"
@@ -74,6 +75,6 @@ export function Correction() {
           under it.
         </p>
       </figcaption>
-    </figure>
+    </Settle>
   );
 }

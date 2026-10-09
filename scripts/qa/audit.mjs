@@ -23,6 +23,28 @@
  *    intersects, so a stop has to outlast them, and a section revealed at the
  *    seam between two stops can be missed entirely. Every reveal is forced to
  *    its finished state before the walk rather than waited for.
+ * 5. ON A VERY TALL PAGE IT CAN MIS-SAMPLE, intermittently. Measured on
+ *    2026-10-10, when the home page reached 7,459px and began reporting three
+ *    contrast failures on the filmstrip's `.edge-print` labels on roughly half
+ *    of otherwise identical runs: cream type apparently sitting on paper.
+ *
+ *    It is NOT the page. Two independent checks say so. A DOM probe puts the
+ *    label at y=4132 inside a `.bench` band running 3044 to 4287, and a direct
+ *    viewport screenshot at that scroll position shows cream type on dark
+ *    umber, perfectly legible. The recorded element box and the pixels the
+ *    sampler reads for it drift apart somewhere in the stitch on a long page,
+ *    so it reads a different part of the document.
+ *
+ *    Ruled out, so nobody re-tries them: waiting on `document.fonts.ready`
+ *    (added anyway, it is correct), forcing `animation-play-state: running`
+ *    (added anyway, the drawing kit's hold-until-seen gate needs it), and the
+ *    lazy-image eager pass, which was already here.
+ *
+ *    SO: re-run a failing sweep before believing it, and on a failure that
+ *    only appears on the tallest page, confirm with a direct viewport shot of
+ *    the element before changing any CSS. Two separate sessions have now
+ *    chased this and nearly "fixed" a page that was already correct.
+ *
  * 4. Contrast cannot be computed from styles on this site. `.wall` and
  *    `.deep` paint with the `background` shorthand, so their computed
  *    `background-color` is transparent, and walking up the tree for a colour
@@ -183,7 +205,13 @@ for (const [path, name] of PAGES) {
       const settle = document.createElement("style");
       settle.textContent =
         "*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important;" +
-        "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important}";
+        "animation-duration:0s !important;animation-delay:0s !important;animation-iteration-count:1 !important;" +
+        /* AND UNPAUSE. The drawing kit holds a drawing at frame zero with
+           `animation-play-state: paused` until it scrolls into view, which
+           zeroing the duration does not release: a paused animation of zero
+           length is still paused. Without this the sweep photographs every
+           drawing below the fold unstarted. */
+        "animation-play-state:running !important}";
       document.head.appendChild(settle);
 
       const land = () =>
@@ -216,6 +244,15 @@ for (const [path, name] of PAGES) {
         { timeout: 15000 },
       )
       .catch(() => {});
+    /* AND FOR THE FONTS. Same failure as the lazy images, by a different
+       route: this site self-hosts four faces, and every element the sweep
+       reported as a phantom failure was set in one of them. A label measured
+       in the fallback face and then re-laid-out when the real one arrives has
+       a recorded box that no longer points at its own pixels, so the sampler
+       reads whatever is now behind it. That is how the home page reported
+       cream filmstrip labels sitting on paper while a DOM probe showed them
+       1,100px inside the dark band, intermittently, on 2 runs out of 3. */
+    await page.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
     /* One frame for the zeroed transitions to commit. */
     await page.waitForTimeout(220);
     if (CALIBRATE) {

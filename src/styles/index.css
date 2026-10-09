@@ -1313,31 +1313,6 @@ body > * { position: relative; z-index: 1; }
   .noway { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); column-gap: clamp(2rem, 4vw, 3.5rem); }
 }
 
-/* ─── The gap, on /story ──────────────────────────────────────────────────
-   See components/story/TheGap.tsx. Two sets, a small overlap, one mark.
-   ─────────────────────────────────────────────────────────────────────── */
-.gap { margin: 0; }
-.gap__keys {
-  display: grid;
-  gap: 0.45rem;
-  margin-top: 0.75rem;
-}
-.gap__key { position: relative; padding-left: 1.5rem; }
-.gap__key::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.18em;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-ink);
-}
-.gap__key--mark::before {
-  background: var(--color-red);
-  border-color: var(--color-red);
-}
-
 /* ─── The production line, flat ───────────────────────────────────────────
    See components/ethical-ai/ProductionFlat.tsx and the 2,700px vertical
    chain it replaced. Marks in components/draw/draw.css; layout only here.
@@ -1422,33 +1397,6 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-red-deep);
 }
 .pline__case { margin-top: clamp(2rem, 4vw, 3rem); }
-
-/* ─── One episode, three stages: the rings ────────────────────────────────
-   See src/components/home/EpisodeRings.tsx. The marks live in
-   components/draw/draw.css; this is only the layout.
-
-   The drawing holds one side and the three readings stack on the other. An
-   earlier attempt put a reading at each ring with a leader line out to it:
-   the leaders crossed the text they were pointing at and two captions
-   collided. Each reading carries its ring's own mark instead, which ties it
-   locally and survives every width.
-   ─────────────────────────────────────────────────────────────────────── */
-.rings {
-  display: grid;
-  gap: clamp(2rem, 4vw, 3.5rem);
-  margin-top: clamp(2rem, 4vw, 3rem);
-  align-items: center;
-}
-.rings__art { max-width: 320px; margin-inline: auto; width: 100%; }
-.rings__words { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(1.5rem, 2.5vw, 2.25rem); }
-.rings__word h3 { display: flex; align-items: center; gap: 0.6rem; }
-.rings__word p { margin-top: 0.55rem; max-width: 46ch; }
-.rings__glyph { width: 20px; height: 20px; flex: none; overflow: visible; }
-
-@media (min-width: 820px) {
-  .rings { grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 5rem); }
-  .rings__art { max-width: 420px; }
-}
 
 /* ─── One headline, arriving in order ─────────────────────────────────────
    Used once, on the hero. The words of "Watch. Play. Learn." are a sequence,

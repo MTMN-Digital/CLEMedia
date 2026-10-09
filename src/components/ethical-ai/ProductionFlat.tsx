@@ -84,6 +84,9 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
 
   return (
     <div className="pline">
+      {/* Wrapped so the kit's hold-until-seen gate applies: this drawing
+          sits well below the fold and was finishing before anyone reached it. */}
+      <Settle>
       <svg
         className="ink pline__art"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -147,6 +150,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
           style={{ "--d": "2.3s" } as React.CSSProperties}
         />
       </svg>
+      </Settle>
 
       {/* The gates in words, under the track, in the same order. A reader who
           wants the detail reads across; a reader who wants the shape has

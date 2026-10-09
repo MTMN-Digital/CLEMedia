@@ -183,14 +183,18 @@ export default function Home() {
       </Section>
 
       {/* ═══ 2b. THE MODEL, drawn.
-          This was three equal columns under `01` `02` `03` set large in mono,
-          which is the retired numbered eyebrow and the row of three identical
-          cards in one block. It is now a single drawing of the journey the
-          three words describe, with the client's own three sentences hanging
-          off it. Not one word was cut. The first replacement drew a journey
-          out of the screen onto paper, which drew the wrong subject: the
-          episode does not travel, the child gets further out from it. See
-          src/components/home/EpisodeRings.tsx. ═══ */}
+          Three concepts before this one. Three equal columns under `01` `02`
+          `03` in mono (the retired numbered eyebrow and the row of three
+          identical cards, in one block). Then a stroke running out of the
+          screen onto paper, which drew the wrong subject: the episode does not
+          travel. Then concentric rings, which put the screen at the CENTRE of
+          the child's world, and the company's own pull quote says it is the
+          beginning of the thing rather than the whole of it, which is an edge.
+          It is a floor seen from above now: the screen at the top edge, the
+          child's own prints leading away from it, and the episode's sun turned
+          up again in crayon on a printed sheet at the far end. Not one word of
+          the client's three sentences was cut.
+          See src/components/home/EpisodeRings.tsx. ═══ */}
       <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
         <Container width="wide">
           <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
