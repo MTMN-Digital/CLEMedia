@@ -8,6 +8,7 @@ import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
+import { EpisodeArc } from "@/components/home/EpisodeArc";
 import {
   Button, Container, Kicker, Lead, Section,
 } from "@/components/ui";
@@ -53,11 +54,8 @@ import { IconArrow, IconMail } from "@/components/icons";
        two are one list now; see CallSheet.
    ========================================================================== */
 
-const STAGES = [
-  { n: "01", title: "Watch", body: "An episode, together. Calm stories paced for how young children actually take things in, with nothing autoplaying into something nobody chose." },
-  { n: "02", title: "Play", body: "A pause for a movement or breathing prompt, so the episode becomes something a child does rather than only sees." },
-  { n: "03", title: "Learn", body: "A printable or an educator-designed activity afterwards, moving the learning off the screen entirely." },
-];
+/* The three stages moved into EpisodeArc.tsx with the drawing they label,
+   so the words and the marks they sit on cannot drift apart. */
 
 /* Titles and synopses are the show's own, from its site. Runtime, age range and
    theme are not known and are not invented. */
@@ -109,7 +107,11 @@ export default function Home() {
           uncaptioned rendered image at the top of its home page. It is also
           the page's first use of the registered mark. */}
       <Section as="div" pad="none">
-        <div className="h-[clamp(260px,44vw,620px)] overflow-hidden">
+        {/* The caption sits ON the frame. It used to have a band of its own
+            below the image: a strip of bare paper carrying one right-aligned
+            mono line and nothing else, which read as a stray label floating
+            between two sections. A caption belongs on the thing it captions. */}
+        <div className="relative h-[clamp(260px,44vw,620px)] overflow-hidden">
           <Figure
             asset="home.hero"
             fill
@@ -118,12 +120,14 @@ export default function Home() {
             priority
             sizes="100vw"
           />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
+            <Container width="wide">
+              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
+                A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
+              </p>
+            </Container>
+          </div>
         </div>
-        <Container width="wide">
-          <p className="pb-8 pt-3.5 text-right font-mono text-[11px] uppercase tracking-[0.16em] text-muted sm:pb-10">
-            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
-          </p>
-        </Container>
       </Section>
 
       {/* ═══ 2. THE ARGUMENT, on the wall.
@@ -143,21 +147,27 @@ export default function Home() {
           ═══ */}
       <Section labelledBy="thesis-h" pad={["normal", "none"]} className="wall">
           <Container width="wide">
-            <Wipe>
-              <Kicker>What we believe</Kicker>
-              {/* The one display-sized line below the hero. A page whose
-                  headings are all one size is flat however good the words
-                  are, so the argument gets the jump and the section headings
-                  stay at h2. */}
-              <h2 id="thesis-h" className="t-display mt-6 max-w-[19ch]">
-                We are not going to tell anyone their child watches too much television.
-              </h2>
+            {/* A SPREAD, not a lone eyebrow over an empty half.
+                The eyebrow and the display line used to sit at the left with
+                the whole right of the band empty beside them, and the best
+                sentence on the page was buried as the third of three columns
+                underneath, wearing a coloured left border, which is a card
+                tell in its own right. The line now answers the headline
+                across the band, which is what it is for, and the argument
+                below is two columns rather than three. */}
+            <Wipe className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-end xl:gap-x-24">
+              <div>
+                <Kicker>What we believe</Kicker>
+                <h2 id="thesis-h" className="t-display mt-6 max-w-[17ch]">
+                  We are not going to tell anyone their child watches too much television.
+                </h2>
+              </div>
+              <p className="max-w-[26ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep lg:pb-2">
+                We would rather make the episode the beginning of the thing than the whole of it.
+              </p>
             </Wipe>
 
-            {/* Three columns under one rule. Each is about forty characters,
-                which is a column measure rather than a paragraph stretched to
-                the width of a monitor. */}
-            <Settle className="hairline mt-14 grid gap-x-12 gap-y-8 pt-10 md:grid-cols-3 lg:gap-x-16">
+            <Settle className="hairline mt-14 grid gap-x-12 gap-y-8 pt-10 md:grid-cols-2 lg:gap-x-24">
               <p className="t-lead text-body">
                 The gap we saw is narrower than that. Not enough content made at a child's pace,
                 with genuine educational intent, and with a clear account of who made it and who
@@ -168,59 +178,29 @@ export default function Home() {
                 watching rather than what they take away from it. Attention is what gets measured,
                 so attention is what gets designed for.
               </p>
-              <p className="border-l-2 border-red pl-5 font-display text-[clamp(1.125rem,0.95rem+0.6vw,1.4rem)] leading-snug text-ink">
-                We would rather make the episode the beginning of the thing than the whole of it.
-              </p>
             </Settle>
           </Container>
       </Section>
 
-        {/* ═══ 2b. THE MODEL, still on the wall. Three panels of one sheet,
-            divided by hairlines, with the figures set large in mono. Not three
-            cards: a card on a wall reads as something stuck to it, and these
-            three words are the company's proposition, not three features. ═══ */}
+      {/* ═══ 2b. THE MODEL, drawn.
+          This was three equal columns under `01` `02` `03` set large in mono,
+          which is the retired numbered eyebrow and the row of three identical
+          cards in one block. It is now a single drawing of the journey the
+          three words describe, with the client's own three sentences hanging
+          off it as captions at three different heights. Not one word was cut.
+          See src/components/home/EpisodeArc.tsx. ═══ */}
       <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
-          <Container width="wide">
-            <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-              <h2 id="model-h" className="t-h2 max-w-[14ch]">One episode, three stages</h2>
-              <Lead className="lg:pb-1">
-                Designed to move a child from the screen into play and conversation, rather than to
-                hold them in front of it.
-              </Lead>
-            </Wipe>
+        <Container width="wide">
+          <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+            <h2 id="model-h" className="t-h2 max-w-[14ch]">One episode, three stages</h2>
+            <Lead className="lg:pb-1">
+              Designed to move a child from the screen into play and conversation, rather than to
+              hold them in front of it.
+            </Lead>
+          </Wipe>
 
-            <Settle as="ol" className="mt-12 grid gap-y-8 sm:grid-cols-3 sm:gap-y-0">
-              {STAGES.map((st, i) => (
-                <li
-                  key={st.n}
-                  /* The rule sits in the gutter between columns, so the first
-                     column is flush left with the heading above it and the
-                     text in all three starts at the same inset from its own
-                     rule. Equal padding either side of the rule, not a left
-                     margin on two of the three. */
-                  className={
-                    i === 0
-                      ? "hairline pt-7 sm:border-t-0 sm:pt-0 sm:pr-8 lg:pr-12"
-                      : "hairline pt-7 sm:border-t-0 sm:border-l sm:border-[color:var(--color-rule)] sm:pt-0 sm:pl-8 lg:pl-12" +
-                        (i === 1 ? " sm:pr-8 lg:pr-12" : "")
-                  }
-                >
-                  <span
-                    className="tnum block font-mono text-[clamp(1.75rem,1.4rem+1.1vw,2.4rem)] leading-none text-body"
-                    aria-hidden="true"
-                  >
-                    {st.n}
-                  </span>
-                  {/* Calistoga, at a size it is drawn for. These three words
-                      are the hero's own and were being set at 19px. */}
-                  <h3 className="mt-5 font-display text-[clamp(1.5rem,1.25rem+0.9vw,2rem)] leading-[1.1]">
-                    {st.title}
-                  </h3>
-                  <p className="t-body mt-3.5 max-w-[38ch] text-body">{st.body}</p>
-                </li>
-              ))}
-            </Settle>
-          </Container>
+          <EpisodeArc />
+        </Container>
       </Section>
 
       {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the

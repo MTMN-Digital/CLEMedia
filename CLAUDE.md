@@ -95,8 +95,16 @@ typography. Sister brand to the show, not a new one.
 - **Mobile first**, every section, every time. 320px to 2560px.
 - No gradients. No drop shadows on everything. No bouncing animations. No
   auto-rotating carousels.
-- Motion limited to fades and short scroll reveals, respecting
-  `prefers-reduced-motion`.
+- Motion: one orchestrated entrance per page is expected, not one fade. A
+  drawn line may draw itself, objects may assemble, a lamp may cross. What
+  stays banned is anything that never stops: no ambient loops, no parallax
+  backgrounds, no drifting, no auto-rotating carousels, no bouncy springs.
+  Everything collapses under `prefers-reduced-motion`.
+  REVISED 2026-10-09. The old rule read "motion limited to fades and short
+  scroll reveals", and it was being followed: the whole site ran on a single
+  8px fade-up used everywhere, which the client's verdict was that it still
+  read as static. The restraint the brief is really asking for is about
+  things that never settle, not about whether anything may move at all.
 - Proper type scale. Max two typefaces plus one optional accent.
 - **WCAG 2.1 AA contrast minimum on every text and UI element. Check it, do not
   assume.**

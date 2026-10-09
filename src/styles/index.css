@@ -1084,6 +1084,114 @@ body > * { position: relative; z-index: 1; }
 }
 
 
+/* ─── One episode, three stages: the drawn arc ────────────────────────────
+   See src/components/home/EpisodeArc.tsx for what this replaced and why.
+   The marks are strokes in ink, the one rationed accent marks the moment the
+   child gets up, and the whole thing draws itself once on entry.
+   ─────────────────────────────────────────────────────────────────────── */
+.arc {
+  position: relative;
+  margin-top: clamp(2rem, 4vw, 3.25rem);
+}
+.arc-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.arc-wide { display: none; }
+.arc-tall { display: block; max-width: 280px; margin-inline: auto; }
+@media (min-width: 900px) {
+  .arc-wide { display: block; }
+  .arc-tall { display: none; }
+}
+
+/* The marks. Ink line work on paper, one accent, nothing filled heavily:
+   this is a drawing, not an illustration with a palette of its own. */
+.arc-line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.arc-thin { stroke-width: 1.4; opacity: 0.55; }
+.arc-fill { fill: var(--color-raised); stroke: none; }
+.arc-sun { fill: var(--color-red); opacity: 0.85; }
+.arc-dot { fill: var(--color-red); }
+.arc-ledge {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+/* The journey itself. Dashed to its own length so the draw is independent of
+   how wide the band is. */
+.arc-path {
+  fill: none;
+  stroke: var(--color-red-deep);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: arc-draw 1.5s var(--ease-out) 0.15s forwards;
+}
+@keyframes arc-draw { to { stroke-dashoffset: 0; } }
+
+/* The screen lights and the sheet settles as the stroke reaches them. One
+   orchestrated entrance, then nothing moves. */
+.arc-screen, .arc-burst, .arc-sheet { opacity: 0; animation: arc-in 0.7s var(--ease-out) forwards; }
+.arc-screen { animation-delay: 0.1s; }
+.arc-burst  { animation-delay: 0.85s; }
+.arc-sheet  { animation-delay: 1.3s; }
+@keyframes arc-in { to { opacity: 1; } }
+
+/* The captions. Three different heights on a wide screen, following the
+   stroke, so the block never resolves into three equal columns. */
+.arc-words {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+  margin-top: clamp(0.5rem, 2vw, 1.25rem);
+}
+.arc-word h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.arc-word p {
+  margin-top: 0.6rem;
+  max-width: 34ch;
+  font-size: 1rem;
+  line-height: 1.62;
+  color: var(--color-body);
+}
+@media (min-width: 900px) {
+  .arc-words {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: 0;
+    align-items: start;
+  }
+  /* Staggered to the arc: Watch sits under the screen, Play is pushed down
+     from the apex, Learn sits under the sheet. */
+  .arc-word--watch { margin-top: -2.25rem; }
+  .arc-word--play  { margin-top: 1rem; justify-self: center; }
+  .arc-word--learn { margin-top: -2.25rem; justify-self: end; text-align: right; }
+  .arc-word--learn p { margin-left: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arc-path { animation: none; stroke-dashoffset: 0; }
+  .arc-screen, .arc-burst, .arc-sheet { animation: none; opacity: 1; }
+}
+
 /* ─── One headline, arriving in order ─────────────────────────────────────
    Used once, on the hero. The words of "Watch. Play. Learn." are a sequence,
    so they land as one: each rises a little and settles, a tenth of a second
