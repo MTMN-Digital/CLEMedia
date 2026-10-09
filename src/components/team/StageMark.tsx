@@ -11,9 +11,10 @@ import "./stagemark.css";
    below are drawn to not be one, and it is worth being explicit about what
    that took, because "six clever icons" would have failed the same test.
 
-   1. THEY DIFFER IN KIND. One is a single stroke (01, a trace with no
-      object in it). One is a pile of paper with one sheet pulled out (02, a
-      cluster, mostly thin). One is a stack standing on a floor (03, an
+   1. THEY DIFFER IN KIND. One is three canes tied at the top and pushed
+      into bare ground, with nothing growing on them (01, an open frame,
+      all line, no object inside it). One is a pile of paper with one sheet
+      pulled out (02, a cluster, mostly thin). One is a stack standing on a floor (03, an
       object, tall). One is two lines of sight meeting a page (04, a
       gesture, open, mostly thin). One is a dense jagged line with a mark
       over part of it (05, a trace again but of a different texture, and
@@ -25,7 +26,8 @@ import "./stagemark.css";
 
    2. EACH ONE DEPICTS WHAT ONLY ITS STAGE DOES. The test used was the
       brief's own: would this mark serve the next stage with the label
-      swapped. The story arc is only the story. The pulled take is only the
+      swapped. An empty frame set before anything grows is only the stage
+      that happens before anything exists. The pulled take is only the
       stage that selects assets rather than accepting them. The blocks are
       only the offline, hands-on activity reviewed against early years
       practice. Two heights reading one page is only the stage that reads
@@ -45,9 +47,10 @@ import "./stagemark.css";
       decide, one can stop.
 
    THE SIX, for the record:
-   01  The arc of one episode's story, rising to a late peak and settling,
-       with three short ticks where the acts turn. Drawn before anything
-       else exists.
+   01  A bean frame: three canes tied together at the top and set into the
+       ground, with nothing on them yet. The first thing put into a garden,
+       before anything grows, and the thing everything that grows is held
+       to. Three canes, one tie, bare ground.
    02  Assets as they arrive, fanned in a loose pile, thin. The one the
        director picked, lifted out and set square at full weight.
    03  Three blocks stacked the way a child stacks them, the top one not
@@ -81,24 +84,35 @@ const at = (d: number, dur?: number): CSSProperties =>
 
 const SVG = { className: "ink stagemark", "aria-hidden": true, focusable: "false" } as const;
 
-/* 01. The story. One stroke, a late peak, a quick settle: a story climaxes
-   late, a bell curve does not, and the first draft of this was a bell curve.
-   The ticks were placed by evaluating the curve, not by eye, so they sit on
-   the line at 40px. */
-function Story() {
+/* 01. Set before anything exists. The first draft of this was a story arc
+   with the acts ticked, and at 56px on a cream slip a curve with ticks on
+   it is a line graph, whatever the ticks mean. This is the frame a gardener
+   puts up before anything is planted: three canes pushed into bare ground
+   and tied together at the top, and nothing growing on them. The concept,
+   the story and the learning goal are the three canes, set at once and
+   held by one tie, and everything that grows later is held to them. Only
+   the stage that happens before anything exists can be an empty frame.
+
+   The canes cross and carry on past the tie, the way cut canes do. That
+   crossing is what stops it reading as a camera tripod, which on a media
+   company's site would say the opposite of the sentence beside it. The
+   canes are cut to three different lengths because they are canes, not a
+   drawn triangle; the feet go through the ground line because they are
+   pushed in, not stood on it. Each cane draws from its foot upward, left,
+   right, then the back one, and the tie lands last. No ink-heavy and no
+   accent: the ground here is the thin line of 04's floor, not the surface
+   06 stands on. */
+function Canes() {
   return (
-    <svg {...SVG} viewBox="0 0 96 48">
-      <path
-        d="M4 42 C 30 40 52 26 66 9 C 72 2 76 10 80 21 C 83 29 88 32 92 32"
-        pathLength="1"
-        className="ink-line ink-draw"
-        style={at(0, 1)}
-      />
-      <path
-        d="M32.6 30.2 L36.1 37.4 M56.4 13.6 L62.0 19.3 M76.7 5.6 L70.8 10.9"
-        className="ink-line ink-thin ink-in"
-        style={at(0.8)}
-      />
+    <svg {...SVG} viewBox="0 0 60 48">
+      <path d="M3 44 H57" className="ink-line ink-thin ink-in" style={at(0)} />
+      <path d="M7 47.5 L35.3 7" pathLength="1" className="ink-line ink-draw" style={at(0.1, 0.5)} />
+      <path d="M53 47.5 L23.5 8.8" pathLength="1" className="ink-line ink-draw" style={at(0.3, 0.5)} />
+      <path d="M31 47 L28.2 3" pathLength="1" className="ink-line ink-draw" style={at(0.5, 0.5)} />
+      <g className="ink-in" style={at(0.95)}>
+        <circle cx="29" cy="16" r="2.6" className="ink-fill" />
+        <circle cx="29" cy="16" r="2.6" className="ink-line" />
+      </g>
     </svg>
   );
 }
@@ -204,7 +218,7 @@ function Held() {
 }
 
 const MARKS: Record<StageNumber, () => ReactElement> = {
-  1: Story,
+  1: Canes,
   2: Picked,
   3: Blocks,
   4: TwoHeights,

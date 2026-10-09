@@ -6,6 +6,8 @@ import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
 import { Bluebell } from "@/components/graphics";
 import { TheGap } from "@/components/story/TheGap";
+import { Hooks } from "@/components/story/Hooks";
+import { Thread } from "@/components/story/Thread";
 import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Card, Container, Kicker, Section, TextLink } from "@/components/ui";
@@ -206,18 +208,26 @@ export default function Story() {
               </>
             }
           >
-            <p>
-              I started paying proper attention to children's media the way most people do, by
-              sitting beside a small child who was watching it. What struck me was the speed.
-              Cuts every second or so. Colours turned up past anything in the real world. A new
-              hook arriving before the last one had finished landing.
-            </p>
-            <p>
-              None of it was malicious. You could see the logic plainly enough: attention is
-              what gets measured, so attention is what gets designed for. But watching a child
-              come off forty minutes of it, wired and brittle and somehow tired at the same
-              time, I could not accept that this was simply how children's content had to work.
-            </p>
+            {/* The prose runs AROUND the first drawing rather than beside
+                it: the hooks float right of the opening paragraph and the
+                second paragraph carries on around them. See
+                components/story/Hooks.tsx. The block is its own formatting
+                context so the float cannot run on into the next Spread. */}
+            <div className="wrap-flow space-y-5">
+              <p>
+                <Hooks />
+                I started paying proper attention to children's media the way most people do, by
+                sitting beside a small child who was watching it. What struck me was the speed.
+                Cuts every second or so. Colours turned up past anything in the real world. A new
+                hook arriving before the last one had finished landing.
+              </p>
+              <p>
+                None of it was malicious. You could see the logic plainly enough: attention is
+                what gets measured, so attention is what gets designed for. But watching a child
+                come off forty minutes of it, wired and brittle and somehow tired at the same
+                time, I could not accept that this was simply how children's content had to work.
+              </p>
+            </div>
           </Spread>
 
           <Spread
@@ -412,12 +422,19 @@ export default function Story() {
               bringing the parent and early years perspectives that catch what a production read
               misses.
             </p>
-            <p>
-              <em>The Pawsitive Pugs &amp; Pals</em> is our first original series. Finn, the fawn
-              pug, and Fia, the black pug, came out of that work. The learning was built in from
-              the start rather than added once the scripts were finished, which is a slower way
-              to make a show and, as far as we can tell, the only way to make this one.
-            </p>
+            {/* The second drawing the prose runs around: the script with the
+                learning stitched through it from the first line, floated
+                left so the page zigzags, drawing left then the frame right.
+                See components/story/Thread.tsx. */}
+            <div className="wrap-flow">
+              <p>
+                <Thread />
+                <em>The Pawsitive Pugs &amp; Pals</em> is our first original series. Finn, the fawn
+                pug, and Fia, the black pug, came out of that work. The learning was built in from
+                the start rather than added once the scripts were finished, which is a slower way
+                to make a show and, as far as we can tell, the only way to make this one.
+              </p>
+            </div>
             <figure className="!mt-8 w-[min(100%,300px)] sm:ml-auto">
               <Card className="card-still tilt-a overflow-hidden p-2">
                 <Figure

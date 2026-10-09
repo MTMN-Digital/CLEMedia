@@ -1,0 +1,91 @@
+/* ─── Drawings the letter runs around, on /story ──────────────────────────
+   See components/story/Hooks.tsx and Thread.tsx. Marks come from
+   components/draw/draw.css; this file is the float, the traced outline and
+   the phone fallback only.
+
+   WHY A FLOAT AND NOT THE MARGIN. The margin already carries one drawing
+   (TheGap) and the client's verdict was still "a lot of large text blocks".
+   A drawing in a margin column breaks the page beside the prose; a drawing
+   the prose actually flows around breaks the block itself, which is the
+   thing being asked for. So these two sit inside their paragraph as floats,
+   and `shape-outside` gives the text the drawing's real outline rather than
+   its box: the first lines tuck in over the rise of the first hook, and the
+   lines beside the script follow the lean of the sheet.
+
+   THE OUTLINE IS TRACED. Each polygon below is the drawing's own silhouette
+   in percent of its content box, so it scales with the svg. The reference
+   box is `content-box` so the coordinates match the viewBox directly; the
+   text-side margin is what `shape-margin` is clipped to, so it is set to
+   cover it.
+
+   OFF UNDER 700px. On a phone the measure is already narrow and a float eats
+   it, so below the breakpoint each drawing is a plain block above its
+   paragraph, at drawn size, left aligned on the prose axis like TheGap.
+
+   THE MEASURE. The letter's column is 56ch, which is 533px and about 69
+   characters, at every width the floats are on (the column is capped, so it
+   is the same at 1440, 1100 and 820). Measured in Chrome with the real
+   fonts: beside the hooks the lines keep 45 to 49 characters, the two beside
+   the ground being the narrowest; beside the script, 48 to 53. That is why
+   the hooks are 150 wide and not 200.
+   ─────────────────────────────────────────────────────────────────────── */
+.wrap-flow {
+  /* A float escapes its paragraph when the paragraph is shorter than the
+     drawing. The block that holds the drawing and its prose is its own
+     formatting context, so the float is contained whatever follows. */
+  display: flow-root;
+}
+
+.wrap {
+  display: block;
+  margin: 0 0 1.25rem;
+}
+.wrap--hooks { width: 150px; }
+.wrap--thread { width: 140px; }
+.wrap__ink { width: 100%; }
+
+@media (min-width: 700px) {
+  .wrap { margin: 0; }
+  .wrap--right {
+    float: right;
+    /* Aligned with the x-height of the first line rather than the top of
+       its line box, so the ground of the drawing does not sit a line higher
+       than it looks like it should. */
+    margin: 0.35rem 0 0.75rem 0.75rem;
+    shape-margin: 12px;
+  }
+  .wrap--left {
+    float: left;
+    margin: 0.35rem 0.75rem 0.75rem 0;
+    shape-margin: 12px;
+  }
+  /* The hooks, 150 by 105. The left edge is the rise of the first arc from
+     the ground to its apex, then the top runs level across the apexes. The
+     ground is the full width, so the lowest lines get the least room. */
+  .wrap--hooks {
+    shape-outside: polygon(
+      0 93%,
+      0 90%,
+      7% 67%,
+      12% 48%,
+      17% 35%,
+      22% 26.5%,
+      27% 22.5%,
+      100% 22.5%,
+      100% 93%
+    ) content-box;
+  }
+  /* The script, 140 by 150. A sheet laid down six degrees off true, so the
+     edge the text follows leans: the four corners of the sheet, one stroke
+     out. */
+  .wrap--thread {
+    shape-outside: polygon(
+      0 0,
+      14% 4.5%,
+      94% 12.5%,
+      84% 96.5%,
+      4.5% 88%,
+      0 88%
+    ) content-box;
+  }
+}
