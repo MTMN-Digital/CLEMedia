@@ -3,6 +3,7 @@ import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { StageBoard, type BoardSlip } from "@/components/app/StageBoard";
 import { ReviewerRoom } from "@/components/app/ReviewerRoom";
+import { NoWayOut } from "@/components/app/NoWayOut";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import {
@@ -266,6 +267,14 @@ export default function AppPage() {
               A young child can find their way around it, and cannot accidentally find their way out of it.
             </p>
           </Wipe>
+
+          {/* The sentence above, drawn. Everything inside connects to
+              everything inside; the three ways a children's app usually leaks
+              a child out of it stop at the wall. All three are the page's own
+              claims from the feature list. See components/app/NoWayOut.tsx. */}
+          <Settle className="mt-12 lg:mt-16">
+            <NoWayOut />
+          </Settle>
         </Container>
       </Section>
 
