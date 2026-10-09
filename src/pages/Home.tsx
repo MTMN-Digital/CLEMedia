@@ -9,7 +9,7 @@ import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
 import {
-  Button, Container, Kicker, Lead, Section, TextLink,
+  Button, Container, Kicker, Lead, Section,
 } from "@/components/ui";
 import { IconArrow, IconMail } from "@/components/icons";
 
@@ -39,10 +39,10 @@ import { IconArrow, IconMail } from "@/components/icons";
    holds the whole argument (the thesis and the three stages, as a set page
    rather than as two sections), then the two big objects the page already had
    and never bettered (the film, then the filmstrip running off the right
-   edge), then the call sheet, whose faces and stage figures make a column you
-   can read without reading, then one narrow sunken band for the AI position,
-   then the navy close. Wide, wide, wide, narrow, deep: the widths carry the
-   rhythm, not the headings.
+   edge), then the call sheet, the six sign-off slips standing on a shelf in
+   a lit room, then the AI position on the wall at display size, then the navy
+   close. Updated 2026-10-09: the call sheet stopped being a third copy of the
+   team's faces, and the AI band stopped being the quietest block on the page.
 
    Removed rather than restyled:
      - the second garden picture. The page opens on a full-bleed garden frame
@@ -288,7 +288,7 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* ═══ 4. WHO MAKES IT, AND WHO CHECKS IT. One list, not two: see
+      {/* ═══ 4. WHO CHECKS IT. The sequence, not the staff list: see
           CallSheet for what it replaced and why. ═══ */}
       <Section labelledBy="people-h" pad={["tight", "normal"]}>
         <Container width="wide">
@@ -296,43 +296,69 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 5. THE AI POSITION. The one narrow section on the page, on the one
-          sunken ground. A single argument does not want 1560px, and after a
-          wide list of faces the reader should feel the page close in before
-          the navy band. ═══ */}
-      <Section labelledBy="ai-h" className="well">
-        <Container width="text">
+      {/* ═══ 5. THE AI POSITION. The site's single most important trust
+          claim, and it used to be the quietest block on the page: an h2 over
+          a plain card of paragraphs on the sunken ground. It now gets the
+          page's second display line and a room of its own on the wall.
+
+          Weight comes from type and from being specific, never from a figure.
+          There is no statistic, badge or certification to show, and the page
+          that argues about honesty is the worst place on this site to invent
+          one. What it has is a sentence nobody else in the category says out
+          loud, set large, and the facts it rests on (which tools, at which
+          point, and who signs off) set as a record beside it. Every word below
+          was already on this page; it is rearranged, not added to.
+
+          The record is a FLAT card: it is a block of reading, so it is never
+          posed on a Stage. ═══ */}
+      <Section labelledBy="ai-h" pad="open" className="wall">
+        <Container width="wide">
           <Settle>
             <Kicker>Responsible AI</Kicker>
-            <h2 id="ai-h" className="t-h2 mt-4 max-w-[20ch]">
+            <h2 id="ai-h" className="t-display mt-6 max-w-[17ch]">
               AI is a production tool. People remain responsible for the work.
             </h2>
           </Settle>
-          {/* The statement sits at lead size rather than body. Three
-              paragraphs an investor will actually stop and read are the one
-              place on this page where the text should be bigger than the row
-              copy, and at this measure it comes out around sixty characters
-              a line. An earlier version of this put the card in a column
-              beside the heading, which left a dead quarter of the band under
-              the heading and no good width for either. */}
-          <Settle className="mt-10 lg:mt-12">
+
+          <Settle className="hairline mt-14 grid gap-x-16 gap-y-12 pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-x-20">
+            {/* The honesty sentence, as the band's pull line. Ink at full
+                strength on the wall, at a size set by the face rather than by
+                a tint. */}
+            <div>
+              <p className="border-l-2 border-red pl-6 font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] text-ink">
+                Calling this work handmade would be untrue. Calling it AI-generated would erase the
+                people who actually make the decisions.
+              </p>
+              <div className="mt-10 pl-6">
+                <Button to="/ethical-ai" variant="quiet">
+                  Read the full position<IconArrow size={16} />
+                </Button>
+              </div>
+            </div>
+
             <div className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
               <span className="card-tab" aria-hidden="true">POSITION</span>
-              <div className="t-lead space-y-5 text-body">
-                <p>
-                  Our creative and educational decisions are made by people. In final production we
-                  use Runway for visual production and ElevenLabs for voice production. Our team
-                  directs, reviews and approves the work before publication.
-                </p>
-                <p className="text-ink">
-                  Calling this work handmade would be untrue. Calling it AI-generated would erase
-                  the people who actually make the decisions.
-                </p>
-                <p>Nothing is generated and published automatically.</p>
-              </div>
-              <div className="mt-7">
-                <TextLink to="/ethical-ai">Read the full position<IconArrow size={15} /></TextLink>
-              </div>
+              <dl className="divide-y divide-rule">
+                <div className="pb-6">
+                  <dt className="eyebrow eyebrow-sm">Decisions</dt>
+                  <dd className="t-lead mt-2 text-ink">
+                    Our creative and educational decisions are made by people.
+                  </dd>
+                </div>
+                <div className="py-6">
+                  <dt className="eyebrow eyebrow-sm">In final production</dt>
+                  <dd className="t-body mt-2 text-body">
+                    Runway for visual production. ElevenLabs for voice production.
+                  </dd>
+                </div>
+                <div className="pt-6">
+                  <dt className="eyebrow eyebrow-sm">Before publication</dt>
+                  <dd className="t-body mt-2 text-body">
+                    Our team directs, reviews and approves the work. Nothing is generated and
+                    published automatically.
+                  </dd>
+                </div>
+              </dl>
             </div>
           </Settle>
         </Container>
@@ -345,7 +371,7 @@ export default function Home() {
           <Settle className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             <div>
               <h2 id="cta-h" className="t-h2 max-w-[16ch]">Working with CLÉ Family Media</h2>
-              <p className="t-lead mt-6 max-w-[46ch] opacity-85">
+              <p className="t-lead mt-6 max-w-[46ch]">
                 We are open to conversations with studios, distribution partners, educators and
                 press. If you are assessing the company, we would rather answer your questions
                 directly.
@@ -354,7 +380,7 @@ export default function Home() {
             </div>
             <div className="lg:border-l lg:border-white/15 lg:pl-16">
               <h3 className="t-h3">Occasional updates</h3>
-              <p className="t-body mt-3 max-w-[40ch] opacity-80">
+              <p className="t-body mt-3 max-w-[40ch]">
                 Production notes and company news, for adults. Infrequent, and easy to leave.
               </p>
               <NotifyForm cta="Sign up" icon={<IconMail size={16} />} done="Thank you. We will be in touch when there is something worth sending." />

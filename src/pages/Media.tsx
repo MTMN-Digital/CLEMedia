@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { StudioWall } from "@/components/render";
+import { Stage, StudioWall, useRoomEntry } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
-import { SITE } from "@/lib/site";
+import { APP_LAUNCHED, SITE } from "@/lib/site";
 import type { MediaItem } from "@/lib/types";
 
 /* ============================================================================
@@ -14,7 +14,7 @@ import type { MediaItem } from "@/lib/types";
    WHAT A PRESS PAGE IS FOR. One reader: somebody writing about the company
    who needs to get the facts right and reach a person. So the page is built
    as the things that reader actually uses. An index, ruled like a listings
-   column, holding every appearance in date order. A short statement of what
+   column, holding every appearance, newest first. A short statement of what
    the company is glad to talk about, each line pointing at the page that
    documents it, so a journalist can read the source before the call. And a
    notes-to-editors sheet carrying the spellings, the trade marks, the
@@ -41,6 +41,10 @@ import type { MediaItem } from "@/lib/types";
 
 /* What the company is glad to be asked about, each pointing at the page that
    already sets out its position, so nobody is quoted inventing one. */
+/* Every line below that describes the player's state reads APP_LAUNCHED from
+   src/lib/site.ts, the same flag /app reads. */
+const PLAYER_STATE = APP_LAUNCHED ? "released" : "in development";
+
 const SUBJECTS: { topic: string; line: string; to: string; cta: string }[] = [
   {
     topic: "AI in children's production",
@@ -61,8 +65,10 @@ const SUBJECTS: { topic: string; line: string; to: string; cta: string }[] = [
     cta: "Read the story",
   },
   {
-    topic: `${SITE.playerName}, in development`,
-    line: "What the product is for, what it will and will not do, and why it is being described as in development rather than announced.",
+    topic: `${SITE.playerName}™, ${PLAYER_STATE}`,
+    line: APP_LAUNCHED
+      ? "What the product is for, what it does and does not do, and how it has been built for children and their parents."
+      : "What the product is for, what it will and will not do, and why it is being described as in development rather than announced.",
     to: "/app",
     cta: "See the app",
   },
@@ -81,8 +87,10 @@ const STANDING: { when: string; what: string; detail: string; pending?: boolean 
   {
     when: "To be confirmed",
     what: "More around the app launch",
-    /* First use of the player's name on this page, so it carries the mark. */
-    detail: `Further appearances are expected as ${SITE.playerName}™ launches.`,
+    /* Carries the mark wherever it is the first use on screen. */
+    detail: APP_LAUNCHED
+      ? `Further appearances are expected as ${SITE.playerName}™ reaches more families.`
+      : `Further appearances are expected as ${SITE.playerName}™ launches.`,
     pending: true,
   },
 ];
@@ -92,7 +100,7 @@ const STANDING: { when: string; what: string; detail: string; pending?: boolean 
 const NOTES: { k: string; v: string }[] = [
   { k: "Company", v: "CLÉ Family Media. Note the É." },
   { k: "Series", v: "The Pawsitive Pugs & Pals®, written with the ampersand and the registered mark." },
-  { k: "Player", v: "PupsPlayer™, one word, capital P twice. In development, not released." },
+  { k: "Player", v: `PupsPlayer™, one word, capital P twice. ${APP_LAUNCHED ? "Released." : "In development, not released."}` },
   { k: "Founder", v: "Conor Sexton, Founder and CEO." },
   { k: "Characters", v: "Finn, the fawn pug. Fia, the black pug." },
   { k: "Episodes", v: "Series one, four episodes, free to watch. The show's own site carries them." },
@@ -106,17 +114,16 @@ const NOTES: { k: string; v: string }[] = [
   { k: "Imagery", v: "Artwork and stills come through the press route." },
 ];
 
+type Load = "loading" | "ready" | "empty" | "failed";
+
 /**
- * The press index, plus whether the question has actually been answered.
- *
- * `settled` exists because `null` meant two things, "there is nothing" and
- * "we have not heard back", and the page printed "Nothing published yet" for
- * both. The standing rows below are a written fallback and are correct either
- * way; the COUNT is a claim and waits.
+ * The press index and an explicit load state. The standing rows are a written
+ * fallback and are correct in every state; any COUNT or "nothing yet" claim
+ * waits for a confirmed answer.
  */
-function useMediaItems(): { items: MediaItem[] | null; settled: boolean } {
+function useMediaItems(): { items: MediaItem[] | null; load: Load } {
   const [items, setItems] = useState<MediaItem[] | null>(null);
-  const [settled, setSettled] = useState(false);
+  const [load, setLoad] = useState<Load>("loading");
 
   useEffect(() => {
     let live = true;
@@ -124,36 +131,87 @@ function useMediaItems(): { items: MediaItem[] | null; settled: boolean } {
       // Dynamic, like the shop's catalogue: the Supabase client stays out of
       // the bundle every other page downloads.
       const { supabase } = await import("@/lib/supabase");
-      if (!supabase) return live && setSettled(true);
-      const { data } = await supabase
+      if (!supabase) return live && setLoad("failed");
+      const { data, error } = await supabase
         .from("media_items")
         .select("id, title, outlet, published_on, description, thumbnail, link, embed_url, sort_order")
-        .order("sort_order", { ascending: true })
-        .order("published_on", { ascending: false });
+        .order("published_on", { ascending: false, nullsFirst: false })
+        .order("sort_order", { ascending: true });
       if (!live) return;
-      if (data?.length) setItems(data as MediaItem[]);
-      setSettled(true);
+      if (error) return setLoad("failed");
+      if (data?.length) {
+        setItems(data as MediaItem[]);
+        setLoad("ready");
+      } else {
+        setLoad("empty");
+      }
     })().catch(() => {
-      /* A press index that fails to load shows the standing rows, and never
-         claims a count it did not get. `settled` stays false. */
+      if (live) setLoad("failed");
     });
     return () => {
       live = false;
     };
   }, []);
 
-  return { items, settled };
+  return { items, load };
 }
 
 function monthYear(iso: string | null): string {
   if (!iso) return "Undated";
+  /* A date-only value is read as year and month directly, so no timezone can
+     move it into the previous month. */
+  const m = /^(\d{4})-(\d{2})/.exec(iso);
+  if (m) {
+    const month = Number(m[2]);
+    if (month >= 1 && month <= 12) {
+      return new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric", timeZone: "UTC" }).format(
+        new Date(Date.UTC(Number(m[1]), month - 1, 1)),
+      );
+    }
+    return "Undated";
+  }
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "Undated";
-  return new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric" }).format(d);
+  return new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
 }
 
+/* How each slip stands, hand-placed so no two neighbours match. */
+const POSE = [
+  { tilt: 6.0, turn: -2.0, roll: -0.3, depth: 0.54 },
+  { tilt: 4.9, turn: -0.5, roll: 0.25, depth: 0.42 },
+  { tilt: 6.8, turn: 1.8, roll: -0.2, depth: 0.6 },
+];
+
+/* One lamp, up and left of the shelf. Each slip's azimuth is the angle from
+   the lamp to its COLUMN, the same two-line version /team's review board uses. */
+const LAMP_X = -0.6;
+const LAMP_H = 2.2;
+function azimuthFor(column: number, columns: number) {
+  const x = (column + 0.5) / columns;
+  return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
+}
+
+type Slip = { key: string; when: string; title: string; body: string; status: string };
+
 export default function Media() {
-  const { items, settled } = useMediaItems();
+  const { items, load } = useMediaItems();
+  const shelf = useRoomEntry();
+
+  const slips: Slip[] = items
+    ? items.map((m) => ({
+        key: String(m.id),
+        when: m.outlet ? `${monthYear(m.published_on)}, ${m.outlet}` : monthYear(m.published_on),
+        title: m.title,
+        body: m.description ?? "",
+        status: "Published",
+      }))
+    : STANDING.map((s) => ({
+        key: s.what,
+        when: s.when,
+        title: s.what,
+        body: s.detail,
+        status: s.pending ? "Expected" : "Booked",
+      }));
 
   return (
     <>
@@ -183,9 +241,10 @@ export default function Media() {
                 this page would rather be short than padded.
               </Lead>
 
+              {!items && (
               <div className="mt-12 max-w-[44rem] border-t border-rule pt-7">
                 <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Next</p>
-                <p className="mt-4 font-display text-[26px] leading-[1.22] text-ink sm:text-[32px]">
+                <p className="mt-4 font-sans text-[24px] font-semibold leading-[1.25] text-ink sm:text-[28px]">
                   A UK podcast appearance is booked for December, with more to follow around the
                   app launch.
                 </p>
@@ -193,6 +252,7 @@ export default function Media() {
                   It appears in the index below, with the show and the link, on the day it goes out.
                 </p>
               </div>
+              )}
             </div>
           </Settle>
         </Container>
@@ -224,92 +284,107 @@ export default function Media() {
         </Container>
       </Section>
 
-      {/* ═══ THE INDEX. A listings column in the right-hand body column. The
-          empty state is drawn as a slot: a dashed frame the first real entry
-          will drop into, carrying the honest line. ═══ */}
-      <Section labelledBy="index-h" pad="tight">
-        <Container>
-          <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 id="index-h" className="t-h2">The index</h2>
-              <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
-                {items
-                  ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
-                  : settled
-                    ? "Nothing published yet"
+      {/* ═══ THE INDEX. Each appearance is a slip standing on a shelf, read
+          left to right under one lamp, the way /team stands its review stages.
+          A booking is an object, not a row. The empty state is honest in
+          words under the shelf rather than drawn as a dashed box. ═══ */}
+      <Section labelledBy="index-h" pad={["tight", "normal"]}>
+        <Container width="wide">
+          <Settle className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
+            <h2 id="index-h" className="t-h2">The index</h2>
+            <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
+              {load === "ready" && items
+                ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
+                : load === "empty"
+                  ? "Nothing published yet"
+                  : load === "failed"
+                    ? "The index could not be loaded"
                     : "Loading the index"}
-              </p>
-            </div>
-
-            <div className="lg:border-l lg:border-rule-soft lg:pl-12">
-              <ol className="border-t border-rule">
-                {items
-                  ? items.map((m) => (
-                      <li key={m.id} className="border-b border-rule">
-                        <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[10rem_minmax(0,1fr)_auto]">
-                          <p className="tnum font-mono text-[13px] leading-[1.6] text-muted">
-                            {monthYear(m.published_on)}
-                            {m.outlet && <span className="block normal-case tracking-normal text-body">{m.outlet}</span>}
-                          </p>
-                          <div>
-                            <h3 className="t-h3">{m.title}</h3>
-                            {m.description && (
-                              <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">
-                                {m.description}
-                              </p>
-                            )}
-                          </div>
-                          {m.link && (
-                            <p className="md:pt-1">
-                              <TextLink href={m.link}>
-                                Open
-                                <IconExternal size={14} />
-                              </TextLink>
-                            </p>
-                          )}
-                        </div>
-                      </li>
-                    ))
-                  : STANDING.map((s) => (
-                      <li
-                        key={s.what}
-                        className={s.pending ? "border-b border-dashed border-rule" : "border-b border-rule"}
-                      >
-                        <div className="grid grid-cols-1 gap-x-10 gap-y-2 py-7 md:grid-cols-[10rem_minmax(0,1fr)_auto]">
-                          <p className="tnum font-mono text-[13px] uppercase tracking-[0.08em] text-muted">
-                            {s.when}
-                          </p>
-                          <div>
-                            <h3 className={`t-h3 ${s.pending ? "text-muted" : ""}`}>{s.what}</h3>
-                            <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-body">{s.detail}</p>
-                          </div>
-                          <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted md:pt-2 md:text-right">
-                            {s.pending ? "Expected" : "Booked"}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-              </ol>
-
-              {!items && (
-                <div className="mt-6 rounded-[var(--radius-md)] border border-dashed border-rule px-6 py-8 sm:px-8">
-                  <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">The next slot</p>
-                  <p className="mt-3 max-w-[46ch] text-[16px] leading-[1.7] text-body">
-                    No coverage has run yet, so there is none on this page. The first piece to run
-                    takes this place, with its outlet, its date and a link to the original.
-                  </p>
-                </div>
-              )}
-            </div>
+            </p>
           </Settle>
-        </Container>
 
-        {/* The statement. The page's honesty at display size, between two
-            rules, the way /story sets its one quote. It is the company's own
-            line about itself, not a quotation from anyone else. */}
-        <Container width="wide" className="mt-14 sm:mt-20">
+          <div
+            ref={shelf.ref}
+            className={`rk-studio rk-board mt-10 lg:mt-14 ${shelf.armed ? "is-armed" : ""} ${shelf.lit ? "is-in" : ""}`}
+          >
+            <span className="rk-rake" aria-hidden="true" />
+            <div className="rk-head" aria-hidden="true">
+              <span>Appearances</span>
+              <span className="rk-head-rule" />
+              <span className="rk-head-meta">Newest first</span>
+            </div>
+
+            <ol className="rk-bench">
+              {slips.map((sl, i) => {
+                const pose = POSE[i % POSE.length];
+                return (
+                  <li key={sl.key} className="rk-item" style={{ "--i": i } as CSSProperties}>
+                    <div className="rk-plate">
+                      <Stage
+                        seated
+                        /* Azimuth is picked for the three-across board, the
+                           widest layout, as StageSequence does. */
+                        light={azimuthFor(i % 3, 3)}
+                        tilt={pose.tilt}
+                        turn={pose.turn}
+                        roll={pose.roll}
+                        depth={pose.depth}
+                        radius="var(--radius-md)"
+                      >
+                        <article className="rk-slip">
+                          <p className="rk-slip__sign">{sl.when}</p>
+                          <h3 className="rk-slip__title">{sl.title}</h3>
+                          {sl.body && <p className="rk-slip__check">{sl.body}</p>}
+                          <p className="rk-slip__who">
+                            <span className="rk-slip__sign">Status</span>
+                            <span className="rk-slip__name">{sl.status}</span>
+                          </p>
+                        </article>
+                      </Stage>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+
+          {/* Links stay out of the posed slips: a control does not lean. */}
+          {items && items.some((m) => m.link) && (
+            <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+              {items.filter((m) => m.link).map((m) => (
+                <li key={m.id}>
+                  <TextLink href={m.link as string}>
+                    Open {m.title}
+                    <IconExternal size={14} />
+                  </TextLink>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {load === "failed" && (
+            <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
+              The index could not be loaded just now, so the standing entries above are what is
+              known. Please try again shortly, or ask through the press route.
+            </p>
+          )}
+          {load === "empty" && (
+            <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
+              No coverage has run yet, so there is none on this page. The first piece to run
+              takes the next place on the shelf, with its outlet, its date and a link to the
+              original.
+            </p>
+          )}
+        </Container>
+      </Section>
+
+      {/* The statement. The page's honesty at display size, with room around
+          it. It is the company's own line about itself, not a quotation. */}
+      <Section pad="open" labelledBy="statement-h">
+        <Container width="wide">
+          <h2 id="statement-h" className="sr-only">What this page will not do</h2>
           <Wipe>
-            <p className="t-h1 max-w-[26ch] border-y border-rule py-10 font-display text-ink sm:py-14">
+            <p className="t-h1 max-w-[24ch] border-y border-rule py-14 font-display text-ink sm:py-20">
               No logo strip of publications that have not written about us, and no quote nobody
               said.
             </p>
@@ -381,20 +456,29 @@ export default function Media() {
               </div>
             </div>
 
-            <div className="card-stock tilt-b relative self-start px-6 pb-8 pt-10 sm:px-10 sm:pb-10 sm:pt-12">
-              <span className="card-tab uppercase">CLÉ Family Media</span>
-              <dl>
-                {NOTES.map((n) => (
-                  <div
-                    key={n.k}
-                    className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
-                  >
-                    <dt className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
-                    <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="mt-7 font-mono text-[12px] uppercase tracking-[0.2em] text-muted">Ends</p>
+            <div className="rk-studio rk-room self-start">
+              <span className="rk-rake" aria-hidden="true" />
+              <div className="rk-head" aria-hidden="true">
+                <span>Press sheet</span>
+                <span className="rk-head-rule" />
+                <span className="rk-head-meta">CLÉ Family Media</span>
+              </div>
+              {/* Flat, lit by the room and not posed by it: this is the block
+                  a journalist selects and copies from. */}
+              <div className="rk-corr__sheet">
+                <dl>
+                  {NOTES.map((n) => (
+                    <div
+                      key={n.k}
+                      className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
+                    >
+                      <dt className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
+                      <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-7 font-mono text-[12px] uppercase tracking-[0.2em] text-muted">Ends</p>
+              </div>
             </div>
           </Settle>
         </Container>
@@ -406,13 +490,13 @@ export default function Media() {
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
               <h2 id="press-h" className="t-h2 max-w-[18ch]">Writing about children's media?</h2>
-              <p className="t-lead mt-6 max-w-[48ch] opacity-85">
+              <p className="t-lead mt-6 max-w-[48ch]">
                 We would rather answer a question directly than be quoted from a web page. Tell us
                 what you are working on and who you need.
               </p>
             </div>
             <div>
-              <Button to="/contact">
+              <Button to="/contact" variant="primary">
                 Press enquiries
                 <IconArrow size={16} />
               </Button>

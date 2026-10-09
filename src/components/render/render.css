@@ -762,6 +762,11 @@
   }
   /* Hung at the foot of the wall. */
   .rk-corr__note { margin-top: auto; }
+  /* A wall of three with no sheet beside it (/app's reviewers) stays in one
+     row, so each portrait's column, and its light, is i % 3. */
+  .rk-corr__people.rk-corr__people--row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* ─── Entry ────────────────────────────────────────────────────────────────

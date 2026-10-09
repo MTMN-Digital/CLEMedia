@@ -256,3 +256,19 @@ against one `node_modules` and one `dist/`, so no shard runs `npm install`,
 `npm run build` or a dev server. `tsconfig.app.json` is not incremental, so
 concurrent typechecks are safe. Integration runs the real build. This overrides
 item 1 of the earlier `DONE-WHEN.md`.
+
+### Integration rulings, run 2026-10-09-cle-rooms
+
+- **A database image is not an AssetKey.** `Figure` is for `src/lib/brand.ts`
+  keys. A product thumbnail from Supabase renders as a plain `img` inside the
+  same `.rk-mat` / `.rk-pic` mount, `alt=""` when the tag beside it names the
+  product. `src/components/shop/Shelf.tsx` is the reference.
+- **The launch flag is `APP_LAUNCHED` in `src/lib/site.ts`.** No page keeps its
+  own copy.
+- **A wall of three portraits with no sheet beside it** uses
+  `.rk-corr__people--row`, which holds three across in the wide room. No inline
+  `gridTemplateColumns`.
+- **Board light is read from the 3-across column** (`i % 3`) at every width, as
+  `StageSequence` does. At 1 and 2 columns the azimuth is the desktop column's,
+  which is accepted: the poses still differ and nothing reads as N lamps.
+- **`ShopProduct` is out of scope for this run** and keeps its current layout.

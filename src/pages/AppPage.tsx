@@ -1,7 +1,8 @@
-import { type ReactNode } from "react";
 import { NotifyForm } from "@/components/NotifyForm";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
+import { StageBoard, type BoardSlip } from "@/components/app/StageBoard";
+import { ReviewerRoom } from "@/components/app/ReviewerRoom";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import {
@@ -13,6 +14,7 @@ import {
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconBell, IconExternal } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
+import { APP_LAUNCHED } from "@/lib/site";
 
 /* ============================================================================
    PupsPlayer, before it exists.
@@ -33,7 +35,7 @@ import type { AssetKey } from "@/lib/brand";
    stands alone on a wall band with open padding, a garden frame takes the
    page edge to edge, and then Watch, Play and Learn carry the rest as three
    rows, each with the stage in the left column and its planned features on
-   the right. Surfaces alternate paper, wall, paper, wall, and the page closes
+   the right. The five-stage board stands on one StageBoard and the page closes
    on the one deep band.
 
    Nothing is claimed that the page did not already claim. No launch date, no
@@ -41,9 +43,9 @@ import type { AssetKey } from "@/lib/brand";
    missing the page says so rather than filling the gap.
    ========================================================================== */
 
-/** Flipped at launch. Store links stay null until the client supplies them, and
- *  a null link renders nothing: no badge placeholders. */
-const APP_LAUNCHED = false;
+/** Store links stay null until the client supplies them, and a null link
+ *  renders nothing: no badge placeholders. The launch flag is APP_LAUNCHED in
+ *  src/lib/site.ts. */
 const STORE_LINKS: { label: string; href: string | null }[] = [
   { label: "App Store", href: null },
   { label: "Google Play", href: null },
@@ -98,7 +100,12 @@ const STAGE_ITEMS: Record<Stage, string[]> = {
   play: ["follows"],
   learn: ["printables", "grounded"],
 };
-const STAGE_BY_ID = Object.fromEntries(STAGES.map((s) => [s.id, s])) as Record<Stage, (typeof STAGES)[number]>;
+const SLIPS: BoardSlip[] = STAGES.map((s, i) => ({
+  n: String(i + 1),
+  title: s.title,
+  line: s.line,
+  items: STAGE_ITEMS[s.id].map((k) => ITEMS[k]),
+}));
 
 /* The people who check what goes into the app, as the client supplied them.
    The same three review stages the episodes pass: educational review, and
@@ -109,47 +116,6 @@ const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[]
   { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
 ];
 
-
-/* The Story page's margin grid: heading column left, body right, a hairline
-   down the inside edge of the body. Stacked and capped under 1024px. */
-function Spread({ margin, children }: { margin: ReactNode; children: ReactNode }) {
-  return (
-    <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
-      <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
-      <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
-        <div className="max-w-[56ch]">{children}</div>
-      </div>
-    </Settle>
-  );
-}
-
-function StageRow({ stage, surface }: { stage: Stage; surface?: "wall" }) {
-  const s = STAGE_BY_ID[stage];
-  return (
-    <Section labelledBy={`${stage}-h`} pad="tight" className={surface === "wall" ? "wall" : ""}>
-      <Container>
-        <Spread
-          margin={
-            <>
-              <h2 id={`${stage}-h`} className="t-h2">{s.title}</h2>
-              <p className="eyebrow eyebrow-sm mt-3">Planned, not yet available</p>
-              <p className="t-sm mt-4 max-w-[30ch] text-body">{s.line}</p>
-            </>
-          }
-        >
-          <ul>
-            {STAGE_ITEMS[stage].map((k) => (
-              <li key={k} className="hairline py-6 first:border-t-0 first:pt-0">
-                <h3 className="t-h3">{ITEMS[k].title}</h3>
-                <p className="t-body mt-2.5 text-body">{ITEMS[k].body}</p>
-              </li>
-            ))}
-          </ul>
-        </Spread>
-      </Container>
-    </Section>
-  );
-}
 
 export default function AppPage() {
   const liveLinks = STORE_LINKS.filter((l): l is { label: string; href: string } => Boolean(l.href));
@@ -282,13 +248,18 @@ export default function AppPage() {
       {/* ═══ 3. THE THREE STAGES, one row each. Watch, Play, Learn is the spine
           of the company, so it is the spine of the page: the stage in the
           left column, the planned features that belong to it on the right.
-          Paper, wall, paper. ═══ */}
-      <StageRow stage="watch" />
+          One StageBoard. ═══ */}
+      <Section labelledBy="stages-h" pad={["tight", "none"]}>
+        <Container width="wide">
+          <h2 id="stages-h" className="t-h2 mb-10 max-w-[18ch]">What each stage will hold</h2>
+          <StageBoard slips={SLIPS} />
+        </Container>
+      </Section>
 
       {/* A plain statement at display size between two rules, the same
           sentence the plan already makes about small hands, pulled out of the
           list above so it can be read from across a room. */}
-      <Section pad={["none", "tight"]} as="div">
+      <Section pad="normal" as="div">
         <Container width="wide">
           <Wipe>
             <p className="t-h1 max-w-[26ch] border-y border-rule py-10 font-display text-ink sm:py-14">
@@ -298,48 +269,27 @@ export default function AppPage() {
         </Container>
       </Section>
 
-      <StageRow stage="play" surface="wall" />
-      <StageRow stage="learn" />
-
       {/* ═══ 4. WHO CHECKS IT. A credits block: three faces at a size you can
           read, over the three lines of what each of them actually does. It
           used to be a card in a narrow measure with the portraits at 64px,
           which made the one section on the page that carries named human
           accountability the quietest thing on it. ═══ */}
-      <Section labelledBy="check-h" className="wall">
+      <Section labelledBy="check-h" pad={["none", "normal"]}>
         <Container width="default">
-          <Settle className="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-12">
-            {/* Rounded squares, the same shape the same six faces take on
-                /team, rather than the overlapping circles this was. A cream
-                keyline on each rather than a ring in the ground colour: the
-                ground is a gradient, so a ring matched to it at one scroll
-                position shows as a halo at another. */}
-            <div className="flex items-center gap-3">
-              {REVIEWERS.map((p) => (
-                <div
-                  key={p.name}
-                  className="w-[84px] shrink-0 overflow-hidden rounded-[var(--radius-md)] ring-[3px] ring-[var(--color-raised)] sm:w-[104px]"
-                >
-                  <Figure
-                    asset={p.asset}
-                    rounded="rounded-[var(--radius-md)]"
-                    className="aspect-square"
-                    sizes="104px"
-                  />
-                </div>
-              ))}
-            </div>
-            <div>
-              <h2 id="check-h" className="t-h2 max-w-[20ch]">
-                Checked by the people who check the episodes
-              </h2>
-              <p className="t-body mt-4 max-w-[58ch] text-body">
-                Every activity in the app maps back to the early years objective behind its episode
-                and passes the same review the episode does: educational review, then parent and
-                early years review. Nothing is generated and published automatically.
-              </p>
-            </div>
+          <Settle className="max-w-[58ch]">
+            <h2 id="check-h" className="t-h2 max-w-[20ch]">
+              Checked by the people who check the episodes
+            </h2>
+            <p className="t-body mt-4 text-body">
+              Every activity in the app maps back to the early years objective behind its episode
+              and passes the same review the episode does: educational review, then parent and
+              early years review. Nothing is generated and published automatically.
+            </p>
           </Settle>
+
+          <div className="mt-10">
+            <ReviewerRoom people={REVIEWERS} />
+          </div>
 
           <Settle as="ul" className="mt-10 grid gap-x-10 gap-y-7 sm:grid-cols-3">
             {REVIEWERS.map((p) => (
@@ -371,11 +321,11 @@ export default function AppPage() {
               <h2 id="next-h" className="t-h2 max-w-[16ch]">Where it stands</h2>
               <dl className="mt-8 max-w-[52ch]">
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em] opacity-70">Status</dt>
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Status</dt>
                   <dd className="t-body">{APP_LAUNCHED ? "Available now" : "In development"}</dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em] opacity-70">Stores</dt>
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Stores</dt>
                   <dd className="t-body">
                     {liveLinks.length > 0
                       ? liveLinks.map((l) => l.label).join(" and ")
@@ -383,14 +333,14 @@ export default function AppPage() {
                   </dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em] opacity-70">Until then</dt>
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Until then</dt>
                   <dd className="t-body">The four released episodes are on YouTube, linked above.</dd>
                 </div>
               </dl>
             </div>
             <div>
               <h3 className="t-h3">Hear when it lands</h3>
-              <p className="t-body mt-3 max-w-[40ch] opacity-80">
+              <p className="t-body mt-3 max-w-[40ch]">
                 One email when it is available. No list, no marketing, and we do not share it with
                 anyone.
               </p>

@@ -21,6 +21,10 @@ export const SITE = {
   tagline: "Watch, Play, Learn.",
 } as const;
 
+/** Flipped at launch. /app and /media both read this one flag, so every line
+ *  that describes PupsPlayer's state changes together. */
+export const APP_LAUNCHED = false;
+
 export const NAV = [
   { to: "/story", label: "Our story" },
   { to: "/team", label: "Team" },

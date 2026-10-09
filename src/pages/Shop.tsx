@@ -4,9 +4,10 @@ import { Settle } from "@/components/Settle";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
+import { Shelf } from "@/components/shop/Shelf";
 import { EmptyShelf } from "@/components/shop/EmptyShelf";
 import { SheetBench } from "@/components/shop/PrintedSheet";
-import { formatPrice, useProducts } from "@/components/shop/catalogue";
+import { useProducts } from "@/components/shop/catalogue";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
@@ -197,44 +198,9 @@ export default function Shop() {
           </div>
 
           {products.state === "ready" ? (
-            <ul className="mx-auto mt-10 max-w-[62rem] border-t border-rule">
-              {products.data.map((p) => (
-                <li key={p.id} className="border-b border-rule">
-                  <Link
-                    to={`/shop/${p.slug}`}
-                    className="group flex items-center gap-5 py-5 sm:gap-7 sm:py-6"
-                  >
-                    <span className="w-[64px] shrink-0 sm:w-[84px]">
-                      {p.thumbnail ? (
-                        <img
-                          src={p.thumbnail}
-                          alt=""
-                          loading="lazy"
-                          decoding="async"
-                          className="aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised object-cover"
-                        />
-                      ) : (
-                        <span className="block aspect-[1/1.3] w-full rounded-[3px] border border-rule bg-raised" />
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[17px] font-semibold text-ink">{p.title}</span>
-                      {p.description && (
-                        <span className="mt-1.5 block max-w-[52ch] text-[15px] leading-[1.6] text-body">
-                          {p.description.split("\n")[0]}
-                        </span>
-                      )}
-                    </span>
-                    <span className="tnum shrink-0 text-[17px] font-semibold text-ink">
-                      {formatPrice(p.price_cents, p.currency)}
-                    </span>
-                    <span className="shrink-0 text-red-deep transition-transform duration-300 group-hover:translate-x-1">
-                      <IconArrow size={17} />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-10">
+              <Shelf products={products.data} />
+            </div>
           ) : (
             <Settle className="mt-10">
               <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
@@ -305,7 +271,7 @@ export default function Shop() {
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
               <h2 id="free-h" className="t-h2 max-w-[14ch]">Most of it costs nothing</h2>
-              <p className="t-lead mt-6 max-w-[40ch] opacity-85">
+              <p className="t-lead mt-6 max-w-[40ch]">
                 The episodes are free to watch and the show's own site carries family activities.
                 The shop is for the things worth printing.
               </p>
@@ -339,9 +305,9 @@ export default function Shop() {
                   <>
                     <span className="min-w-0">
                       <span className="block text-[17px] font-semibold">{n.title}</span>
-                      <span className="t-body mt-1.5 block max-w-[46ch] opacity-80">{n.line}</span>
+                      <span className="t-body mt-1.5 block max-w-[46ch]">{n.line}</span>
                     </span>
-                    <span className="mt-1 shrink-0 opacity-80 transition-opacity group-hover:opacity-100">
+                    <span className="mt-1 shrink-0">
                       {n.href ? <IconExternal size={16} /> : <IconArrow size={16} />}
                     </span>
                   </>
