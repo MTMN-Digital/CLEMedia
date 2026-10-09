@@ -15,6 +15,7 @@
 import { createRequire } from "node:module";
 const require = createRequire("/home/david/Documents/GitHub/internal/M.ind/node_modules/playwright/package.json");
 const { chromium } = require("playwright");
+import { chromePath } from "./chrome.mjs";
 
 const arg = (n, d) => {
   const i = process.argv.indexOf(`--${n}`);
@@ -24,7 +25,7 @@ const PORT = arg("port", "4318");
 
 const browser = await chromium.launch({
   headless: true,
-  executablePath: "/home/david/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome",
+  executablePath: chromePath(chromium),
   args: ["--autoplay-policy=no-user-gesture-required"],
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });

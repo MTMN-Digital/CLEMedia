@@ -287,3 +287,14 @@ item 1 of the earlier `DONE-WHEN.md`.
   "Nothing on sale yet" on the `.rk-head` rail AND in the page's own heading
   row, where it is state-aware across loading / ready / empty / failed. The
   rail says what the shelf IS; the page says what is on it.
+- **One lamp means the azimuth is computed, every time.** `light={-32}` on
+  every object in a row is six objects each with its own light, and it is the
+  single tell that separates a rendered scene from a row of cards with drop
+  shadows. Three places still had it after the fan-out: `/journal`'s four
+  strand cards, `/team`'s opening portrait strip, and (correctly) two
+  single-object stages, which need no column. The two rows now use the same
+  two-line `azimuthFor(column, columns)` the review board uses. A single object
+  on its own may take a fixed azimuth; a row never may.
+- **A card lying on a surface is `seated`.** Without it a Stage draws the cast
+  shadow but no contact pool, so the object reads as laid OVER the ground
+  rather than ON it. `/journal`'s strands had that for a week.

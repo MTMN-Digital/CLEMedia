@@ -29,6 +29,7 @@ import { dirname, join } from "node:path";
 
 const require = createRequire("/home/david/Documents/GitHub/internal/M.ind/node_modules/playwright/package.json");
 const { chromium } = require("playwright");
+import { chromePath } from "./chrome.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 const arg = (name, fallback) => {
@@ -46,7 +47,7 @@ mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({
   headless: true,
-  executablePath: "/home/david/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome",
+  executablePath: chromePath(chromium),
 });
 const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: "domcontentloaded", timeout: 40000 });

@@ -10,8 +10,9 @@
 import { createRequire } from "node:module";
 const require = createRequire("/home/david/Documents/GitHub/internal/M.ind/node_modules/playwright/package.json");
 const { chromium } = require("playwright");
+import { chromePath } from "./chrome.mjs";
 const [url, sel, out, w] = [process.argv[2], process.argv[3], process.argv[4], Number(process.argv[5] || 1440)];
-const b = await chromium.launch({ headless: true, executablePath: "/home/david/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" });
+const b = await chromium.launch({ headless: true, executablePath: chromePath(chromium) });
 const p = await b.newPage({ viewport: { width: w, height: 900 } });
 await p.goto(url, { waitUntil: "domcontentloaded" });
 await p.waitForTimeout(1200);

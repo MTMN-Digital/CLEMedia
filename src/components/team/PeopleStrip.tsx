@@ -45,6 +45,15 @@ const MOUNT = [
   { roll: 0.3, tilt: 1.9, depth: 0.56 },
 ];
 
+/* One lamp up and left of the bench, the same geometry StageSequence and the
+   studio wall use. */
+const LAMP_X = -0.6;
+const LAMP_H = 2.2;
+function azimuthFor(column: number, columns: number) {
+  const x = (column + 0.5) / Math.max(1, columns);
+  return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
+}
+
 export function PeopleStrip({ people }: { people: Member[] }) {
   const shown = people.filter((p) => p.asset);
   if (shown.length < 2) return null;
@@ -64,7 +73,12 @@ export function PeopleStrip({ people }: { people: Member[] }) {
             roll={m.roll}
             tilt={m.tilt}
             depth={m.depth}
-            light={-32}
+            /* ONE LAMP, 2026-10-09. The whole row was lit at -32, so six
+               portraits on one bench cast six parallel shadows and read as
+               six separate lights. Six columns above 1024; below that the
+               row scrolls, so the column index still reads left to right
+               along the strip, which is what the lamp is crossing. */
+            light={azimuthFor(i, shown.length)}
             lift
             radius="var(--radius-md)"
           >

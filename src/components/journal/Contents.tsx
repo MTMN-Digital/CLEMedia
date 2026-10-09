@@ -35,6 +35,23 @@ export interface ContentsRow extends Strand {
   count: number;
 }
 
+/* ONE LAMP, 2026-10-09. All four cards were lit at `light={-32}`, the same
+   azimuth, so every shadow on the desk ran parallel and the file read as four
+   cards each with its own light rather than four cards under the room's. Every
+   other staged object on this site reads its azimuth from its COLUMN, and this
+   was the last place that did not. Two columns above 1024 and one below, so
+   the single-column case gets the middle of the sweep.
+
+   They are SEATED as well. A card lying on a desk meets the desk, and without
+   it the four had a cast shadow but no contact pool, which is what made them
+   look laid over the bench rather than on it. */
+const LAMP_X = -0.6;
+const LAMP_H = 2.2;
+function azimuthFor(column: number, columns: number) {
+  const x = (column + 0.5) / columns;
+  return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
+}
+
 /* lean: degrees of roll. tab: where the divider's tab sits along the top edge.
    lift: how far off the surface, which drives the shadow. */
 const PLACED = [
@@ -67,7 +84,8 @@ export function Contents({ rows }: { rows: ContentsRow[] }) {
               roll={place.lean}
               tilt={2.2}
               depth={place.lift}
-              light={-32}
+              light={azimuthFor(i % 2, 2)}
+              seated
               lift
               radius="var(--radius-md)"
               className="h-full"
