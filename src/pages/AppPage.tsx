@@ -251,7 +251,7 @@ export default function AppPage() {
           One StageBoard. ═══ */}
       <Section labelledBy="stages-h" pad={["tight", "none"]}>
         <Container width="wide">
-          <h2 id="stages-h" className="t-h2 mb-10 max-w-[18ch]">What each stage will hold</h2>
+          <h2 id="stages-h" className="t-h2 mb-10 max-w-[18ch]">{APP_LAUNCHED ? "What each stage holds" : "What each stage will hold"}</h2>
           <StageBoard slips={SLIPS} />
         </Container>
       </Section>

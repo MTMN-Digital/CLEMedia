@@ -473,12 +473,15 @@
 }
 .rk-board .rk-plate {
   width: 100%;
-  /* Not a link. The whole slip is the content; there is nowhere to go from
-     it, so it does not lift on hover and does not take focus. */
+}
+/* A slip is not a link. The whole slip is the content; there is nowhere to go
+   from it, so it does not lift on hover and does not take focus. A plate that
+   IS a link (the shop's shelf) keeps the pointer and the lift. */
+.rk-board .rk-plate:not(a) {
   cursor: default;
 }
-.rk-board .rk-plate:hover,
-.rk-board .rk-plate:focus-visible {
+.rk-board .rk-plate:not(a):hover,
+.rk-board .rk-plate:not(a):focus-visible {
   --lift: 0;
 }
 

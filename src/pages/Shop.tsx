@@ -8,7 +8,7 @@ import { Shelf } from "@/components/shop/Shelf";
 import { EmptyShelf } from "@/components/shop/EmptyShelf";
 import { SheetBench } from "@/components/shop/PrintedSheet";
 import { useProducts } from "@/components/shop/catalogue";
-import { SITE } from "@/lib/site";
+import { APP_LAUNCHED, SITE } from "@/lib/site";
 
 /* ============================================================================
    The shop, rebuilt 2026-10-06.
@@ -291,7 +291,7 @@ export default function Shop() {
                   href: SITE.showUrl,
                 },
                 {
-                  title: `${SITE.playerName} is in development`,
+                  title: APP_LAUNCHED ? `${SITE.playerName}, available now` : `${SITE.playerName} is in development`,
                   line: "Watch, play and learn in one place, with the interactive activities that do not print.",
                   to: "/app",
                 },

@@ -108,7 +108,11 @@ export function parseBody(body: string): Block[] {
 
     /* A paragraph runs to the next blank line. Single newlines inside it are
        soft wraps in the textarea, not line breaks the reader asked for. */
-    const parts: string[] = [];
+    /* The first line is always taken: nothing above matched it, so it is text,
+       even when it starts like a block ("#hashtag", "#### deep heading"). Not
+       taking it left i where it was and the loop never ended. */
+    const parts: string[] = [line];
+    i += 1;
     while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i].trim())) {
       parts.push(lines[i].trim());
       i += 1;

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Stage, useRoomEntry } from "@/components/render";
+import { APP_LAUNCHED } from "@/lib/site";
 
 /* Watch, Play and Learn as three slips standing on one shelf under one lamp,
    the way the review board stands its six. Mirrors team/StageSequence.tsx:
@@ -39,7 +40,7 @@ export function StageBoard({ slips }: { slips: BoardSlip[] }) {
       <div className="rk-head" aria-hidden="true">
         <span>Watch, Play, Learn</span>
         <span className="rk-head-rule" />
-        <span className="rk-head-meta">Planned, not yet available</span>
+        <span className="rk-head-meta">{APP_LAUNCHED ? "Available now" : "Planned, not yet available"}</span>
       </div>
 
       <ol className="rk-bench">
