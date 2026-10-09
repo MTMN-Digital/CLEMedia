@@ -1,4 +1,3 @@
-import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import type { Member, Stage } from "./people";
 
@@ -47,30 +46,23 @@ export function Roster({
   outside?: boolean;
 }) {
   return (
-    <ul className="grid gap-y-12 lg:gap-y-16">
+    <ul className="grid gap-y-10 lg:gap-y-12">
       {people.map((m) => {
         const at = outside ? "" : standsAt(m, stages);
         return (
           <Settle as="li" key={m.name}>
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12 xl:gap-16">
-              <div className="flex items-start gap-4">
-                {/* Mansi has no portrait and the slot stays EMPTY rather than
-                    carrying a disc or an initial: a drawn placeholder where a
-                    face should be reads as a missing person. */}
-                {m.asset && (
-                  <div className="w-[88px] shrink-0 sm:w-[104px]">
-                    <Figure
-                      asset={m.asset}
-                      rounded="rounded-[var(--radius-md)]"
-                      className="aspect-square"
-                      sizes="104px"
-                    />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="t-h3 font-display leading-tight">{m.name}</p>
-                  <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
-                </div>
+            <div className="hairline grid gap-5 pt-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-14 lg:pt-10 xl:gap-20">
+              {/* NO PORTRAIT, 2026-10-09. This was the THIRD photograph of the
+                  same person on one page: the strip in the opening band, the
+                  review board, and then here. Three face lists down a single
+                  page is the "boring vertical list" complaint arriving by a
+                  different route, and the one that earns its place least is
+                  this one, where the reading is the biography. The name is
+                  set as the display line instead and the margin carries the
+                  stages, which is what this column is actually for. */}
+              <div className="min-w-0">
+                <p className="t-h3 font-display leading-tight">{m.name}</p>
+                <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
               </div>
 
               <div className="min-w-0">

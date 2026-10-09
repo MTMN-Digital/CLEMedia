@@ -215,10 +215,16 @@ export default function Contact() {
           below arrives as a scene rather than as a box with a title in it. ═══ */}
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
-          <Settle>
-            <Kicker>Contact</Kicker>
-            <h1 className="t-display mt-5 max-w-[14ch]">Write to the people who make it</h1>
-            <Lead className="mt-6 max-w-[54ch]">
+          {/* A spread, not a left column with 600px of bare paper beside it.
+              The title holds the left edge and the whole of the voice sits at
+              the right, both flush to the band's own edges and aligned at
+              their feet, which is the shape /team's opening already uses. */}
+          <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
+            <div>
+              <Kicker>Contact</Kicker>
+              <h1 className="t-display mt-5 max-w-[13ch]">Write to the people who make it</h1>
+            </div>
+            <Lead className="max-w-[46ch] lg:pb-1">
               Studios, distributors, investors, educators and press. Choose what this is about,
               and the message arrives marked as that, with the company that makes the series.
             </Lead>
@@ -264,14 +270,23 @@ export default function Contact() {
                               asset={p.asset}
                               rounded="rounded-none"
                               className="aspect-square"
-                              sizes="(min-width: 1024px) 140px, 28vw"
+                              sizes="(min-width: 1024px) 180px, 30vw"
                             />
                             <span className="rk-light" aria-hidden="true" />
                           </div>
+                          {/* The caption is printed on the MOUNT, which is
+                              how a framed print carries one, and it is also
+                              the only place it is safe: set on the wall the
+                              role line measured 4.38:1 against the dark end
+                              of the room's own gradient. On cream it is ink
+                              at 13:1 and stays there however deep the room
+                              gets. */}
+                          <div className="rk-corr__caption">
+                            <p className="rk-corr__name">{p.name}</p>
+                            <p className="rk-corr__role">{p.role}</p>
+                          </div>
                         </div>
                       </Stage>
-                      <p className="rk-corr__name">{p.name}</p>
-                      <p className="rk-corr__role">{p.role}</p>
                     </li>
                   ))}
                 </ul>

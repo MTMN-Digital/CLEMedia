@@ -657,28 +657,28 @@
 .rk-corr__people > li {
   container-type: inline-size;
 }
+/* The caption, printed on the mount under the picture. */
+.rk-corr__caption {
+  padding: max(7px, 2.6cqw) max(2px, 0.6cqw) max(1px, 0.4cqw);
+}
 .rk-corr__name {
-  margin-top: 0.75rem;
-  font-size: 13px;
+  font-size: max(12px, 3.6cqw);
   font-weight: 600;
   line-height: 1.25;
-  /* INK, not muted. This prints onto the wall's own gradient, which runs from
-     #beb29b to #95876f, where muted measures 3.61:1 at the light end. */
   color: var(--color-ink);
 }
 .rk-corr__role {
-  margin-top: 0.2rem;
+  margin-top: 0.25rem;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: max(9.5px, 2.8cqw);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1.45;
-  /* Ink at FULL strength. At `opacity: 0.78` these three lines measured 3.66
-     to 4.31:1 against the dark end of the wall's own gradient, under AA on a
-     10px line. The hierarchy between the name and the role is already carried
-     by the size, the face and the tracking, so the dimming bought nothing and
-     cost the contrast. Third time this exact trap has been written down in
-     this file. */
+  /* Ink at FULL strength, on cream. At `opacity: 0.78` and set on the wall
+     this line measured 3.66 to 4.38:1, under AA. The hierarchy between the
+     name and the role is carried by the size, the face and the tracking, so
+     the dimming bought nothing and cost the contrast. Third time this exact
+     trap has been written down in this file. */
   color: var(--color-ink);
 }
 .rk-corr__note {
