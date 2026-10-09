@@ -1373,7 +1373,7 @@ run shipped or broke the site. It needs a built preview, so run it AFTER the bui
 The baseline before this run was 0 overflow and 0 contrast failures on BOTH sweeps, hero clean
 over 8 frames and hero-resume PASS. Anything worse than that baseline is a regression this run
 caused: fix it before reporting, and name it in the report. Read scripts/qa/audit.mjs's header
-comment first: failures print AFTER their page's `h=` line, which has been misread before.
+comment first: failures print AFTER their page's 'h=' line, which has been misread before.
 Kill the preview server when you are done. Return a manual spot-check list.
 
 Then run ONE whole-repo cold review of the integrated build - this is where architecture actually
