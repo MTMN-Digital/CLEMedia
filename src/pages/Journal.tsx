@@ -4,6 +4,7 @@ import { Settle } from "@/components/Settle";
 import { Button, Container, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { Contents, type ContentsRow } from "@/components/journal/Contents";
+import { Correction } from "@/components/journal/Correction";
 import { formatDate, resolveStrands, useJournal } from "@/components/journal/data";
 
 /* ============================================================================
@@ -229,6 +230,14 @@ export default function Journal() {
                 <Button to="/story" variant="quiet">
                   The founder's story
                 </Button>
+              </div>
+
+              {/* The one rule of the four that is a shape rather than a
+                  sentence. Almost every publisher swaps the wrong line out
+                  and leaves no sign; drawing the difference is the argument.
+                  See components/journal/Correction.tsx. */}
+              <div className="mt-12">
+                <Correction />
               </div>
             </div>
 

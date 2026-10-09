@@ -1268,6 +1268,22 @@ body > * { position: relative; z-index: 1; }
   .theline__below > li { animation: none; opacity: 1; }
 }
 
+/* ─── The logo strip that is not there, on /media ─────────────────────────
+   See components/media/NoStrip.tsx.
+   ─────────────────────────────────────────────────────────────────────── */
+/* Capped: stretched to the 1560 container the slots were 230px wide and the
+   strip stopped looking like the thing it is imitating. */
+.nostrip { margin: clamp(2rem, 4vw, 3rem) 0 0; max-width: 724px; }
+.nostrip__cap { display: block; margin-top: 0.9rem; }
+
+/* ─── A correction that stays, on /journal ────────────────────────────────
+   See components/journal/Correction.tsx. Sits on the navy band, so the kit's
+   `.deep` overrides give it cream line work.
+   ─────────────────────────────────────────────────────────────────────── */
+.corr { margin: 0; max-width: 300px; }
+.corr__cap { margin-top: 1rem; }
+.corr__note { margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.55; color: var(--color-raised); }
+
 /* ─── No way out, on /app ─────────────────────────────────────────────────
    See components/app/NoWayOut.tsx.
    ─────────────────────────────────────────────────────────────────────── */

@@ -71,6 +71,14 @@
 .wall .ink-fill, .well .ink-fill { fill: var(--color-paper-1); }
 .bench .ink-line, .deep .ink-line { stroke: var(--color-raised); }
 .bench .ink-fill, .deep .ink-fill { fill: rgba(253, 248, 237, 0.08); }
+/* The accent has to survive the ground swap, and it has to come AFTER the
+   rule above: `.deep .ink-line` and `.ink-accent` are both one class deep
+   once nested, so source order decides, and the first version of this lost
+   every accent stroke on the navy band to a cream one. #ffb9bb is the light
+   red this site already uses for the brand red on a dark ground; the ink red
+   is 2.1:1 on navy and disappears. */
+.bench .ink-accent, .deep .ink-accent { stroke: #ffb9bb; }
+.bench .ink-accent-fill, .deep .ink-accent-fill { fill: #ffb9bb; }
 
 /* ─── Arriving ──────────────────────────────────────────────────────────── */
 /* A stroke that draws itself. Needs pathLength="1".

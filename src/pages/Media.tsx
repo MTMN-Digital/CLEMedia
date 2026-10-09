@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { StudioWall } from "@/components/render";
+import { NoStrip } from "@/components/media/NoStrip";
 import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
@@ -353,6 +354,14 @@ export default function Media() {
               said.
             </p>
           </Wipe>
+
+          {/* And the strip itself, empty. Every press page on the internet
+              has this shape full of marks the company has no right to; a
+              reader recognises it before reading a word. See
+              components/media/NoStrip.tsx. */}
+          <Settle>
+            <NoStrip />
+          </Settle>
         </Container>
       </Section>
 
