@@ -670,6 +670,14 @@
   line-height: 1.25;
   color: var(--color-ink);
 }
+/* The third caption line: what this person actually checks. Only /app's
+   reviewer room uses it; /contact's five have their account on /team. */
+.rk-corr__line {
+  margin-top: 0.5rem;
+  font-size: max(12px, 3.2cqw);
+  line-height: 1.5;
+  color: var(--color-body);
+}
 .rk-corr__role {
   margin-top: 0.25rem;
   font-family: var(--font-mono);

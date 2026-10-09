@@ -272,3 +272,18 @@ item 1 of the earlier `DONE-WHEN.md`.
   `StageSequence` does. At 1 and 2 columns the azimuth is the desktop column's,
   which is accepted: the poses still differ and nothing reads as N lamps.
 - **`ShopProduct` is out of scope for this run** and keeps its current layout.
+- **A page carries at most TWO render-kit rooms.** The room is how this site
+  shows an OBJECT. `/media` came out of the fan-out with three (the title
+  slates, a coverage index, the press sheet) and the device stopped reading as
+  a room and started reading as the page's wallpaper. The index went back to
+  hairline rows on paper, because a list of two coverage entries is a list, not
+  a set of objects. Ask what the objects are before reaching for a room.
+- **A credit is printed once.** The mount carries the name, the role and the
+  line (`.rk-corr__caption` with `.rk-corr__name` / `.rk-corr__role` /
+  `.rk-corr__line`). `/app` had the room's captions and then the same three
+  names and roles again in a list below it. If the mount names someone, nothing
+  under it names them again.
+- **A room's rail carries no state the page already prints.** `/shop` had
+  "Nothing on sale yet" on the `.rk-head` rail AND in the page's own heading
+  row, where it is state-aware across loading / ready / empty / failed. The
+  rail says what the shelf IS; the page says what is on it.

@@ -7,7 +7,7 @@ import type { AssetKey } from "@/lib/brand";
    each print on its own ledge, the caption printed ON the cream mount, and
    one lamp whose azimuth is read from the portrait's column. */
 
-export type Reviewer = { name: string; role: string; asset: AssetKey };
+export type Reviewer = { name: string; role: string; line: string; asset: AssetKey };
 
 /* Three across at every width: .rk-corr__people--row in render.css keeps the
    wide room from dropping to two, so a portrait's column is always
@@ -56,9 +56,15 @@ export function ReviewerRoom({ people }: { people: Reviewer[] }) {
                     />
                     <span className="rk-light" aria-hidden="true" />
                   </div>
+                  {/* The whole credit is on the mount: who, what they are,
+                      and what they check. It used to be the name and role
+                      here and then the SAME name and role again in a list
+                      directly underneath, which is the page naming three
+                      people twice in one screen. */}
                   <div className="rk-corr__caption">
                     <p className="rk-corr__name">{p.name}</p>
                     <p className="rk-corr__role">{p.role}</p>
+                    <p className="rk-corr__line">{p.line}</p>
                   </div>
                 </div>
               </Stage>

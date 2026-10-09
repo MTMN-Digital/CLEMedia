@@ -1,7 +1,7 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Stage, StudioWall, useRoomEntry } from "@/components/render";
+import { StudioWall } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
@@ -175,27 +175,10 @@ function monthYear(iso: string | null): string {
   return new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
 }
 
-/* How each slip stands, hand-placed so no two neighbours match. */
-const POSE = [
-  { tilt: 6.0, turn: -2.0, roll: -0.3, depth: 0.54 },
-  { tilt: 4.9, turn: -0.5, roll: 0.25, depth: 0.42 },
-  { tilt: 6.8, turn: 1.8, roll: -0.2, depth: 0.6 },
-];
-
-/* One lamp, up and left of the shelf. Each slip's azimuth is the angle from
-   the lamp to its COLUMN, the same two-line version /team's review board uses. */
-const LAMP_X = -0.6;
-const LAMP_H = 2.2;
-function azimuthFor(column: number, columns: number) {
-  const x = (column + 0.5) / columns;
-  return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
-}
-
 type Slip = { key: string; when: string; title: string; body: string; status: string };
 
 export default function Media() {
   const { items, load } = useMediaItems();
-  const shelf = useRoomEntry();
 
   const slips: Slip[] = items
     ? items.map((m) => ({
@@ -284,10 +267,17 @@ export default function Media() {
         </Container>
       </Section>
 
-      {/* ═══ THE INDEX. Each appearance is a slip standing on a shelf, read
-          left to right under one lamp, the way /team stands its review stages.
-          A booking is an object, not a row. The empty state is honest in
-          words under the shelf rather than drawn as a dashed box. ═══ */}
+      {/* ═══ THE INDEX, on paper.
+          This was built as a third lit room, slips standing on a shelf. It
+          was well made and it was one room too many: the page already stands
+          the title slates in a room and the press sheet in another, and a
+          third turned the device into the page's wallpaper. The room is the
+          site's way of showing an OBJECT. A coverage index is not an object,
+          it is a list of two entries, and rows on paper say that honestly
+          while giving the two rooms either side of it their effect back.
+          The state logic is unchanged: ready, empty and failed stay
+          distinguished, because "could not load" must never render as
+          "nothing has run". ═══ */}
       <Section labelledBy="index-h" pad={["tight", "normal"]}>
         <Container width="wide">
           <Settle className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
@@ -303,52 +293,26 @@ export default function Media() {
             </p>
           </Settle>
 
-          <div
-            ref={shelf.ref}
-            className={`rk-studio rk-board mt-10 lg:mt-14 ${shelf.armed ? "is-armed" : ""} ${shelf.lit ? "is-in" : ""}`}
-          >
-            <span className="rk-rake" aria-hidden="true" />
-            <div className="rk-head" aria-hidden="true">
-              <span>Appearances</span>
-              <span className="rk-head-rule" />
-              <span className="rk-head-meta">Newest first</span>
-            </div>
+          <Settle as="ul" className="mt-10 lg:mt-12">
+            {slips.map((sl) => (
+              <li
+                key={sl.key}
+                className="hairline grid gap-x-10 gap-y-2 py-7 sm:grid-cols-[minmax(0,0.26fr)_minmax(0,1fr)_minmax(0,0.22fr)] sm:py-8"
+              >
+                <p className="eyebrow eyebrow-sm">{sl.when}</p>
+                <div>
+                  <h3 className="text-[17px] font-semibold text-ink">{sl.title}</h3>
+                  {sl.body && <p className="t-body mt-2 max-w-[58ch] text-body">{sl.body}</p>}
+                </div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted sm:justify-self-end">
+                  {sl.status}
+                </p>
+              </li>
+            ))}
+          </Settle>
 
-            <ol className="rk-bench">
-              {slips.map((sl, i) => {
-                const pose = POSE[i % POSE.length];
-                return (
-                  <li key={sl.key} className="rk-item" style={{ "--i": i } as CSSProperties}>
-                    <div className="rk-plate">
-                      <Stage
-                        seated
-                        /* Azimuth is picked for the three-across board, the
-                           widest layout, as StageSequence does. */
-                        light={azimuthFor(i % 3, 3)}
-                        tilt={pose.tilt}
-                        turn={pose.turn}
-                        roll={pose.roll}
-                        depth={pose.depth}
-                        radius="var(--radius-md)"
-                      >
-                        <article className="rk-slip">
-                          <p className="rk-slip__sign">{sl.when}</p>
-                          <h3 className="rk-slip__title">{sl.title}</h3>
-                          {sl.body && <p className="rk-slip__check">{sl.body}</p>}
-                          <p className="rk-slip__who">
-                            <span className="rk-slip__sign">Status</span>
-                            <span className="rk-slip__name">{sl.status}</span>
-                          </p>
-                        </article>
-                      </Stage>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-
-          {/* Links stay out of the posed slips: a control does not lean. */}
+          {/* The links sit under the index rather than inside a row, so a
+              row stays one scannable line per entry. */}
           {items && items.some((m) => m.link) && (
             <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
               {items.filter((m) => m.link).map((m) => (

@@ -41,10 +41,13 @@ export function EmptyShelf({ kinds }: { kinds: ShelfKind[] }) {
       >
         <span className="rk-rake" aria-hidden="true" />
 
+        {/* No stock status on the rail. The page's own heading row already
+            carries it, and that one is state-aware across all four states
+            (loading / ready / empty / failed) where this was the word
+            "empty" hardcoded. Printing it twice said it twice. */}
         <div className="rk-head" aria-hidden="true">
           <span>Downloads</span>
           <span className="rk-head-rule" />
-          <span className="rk-head-meta">Nothing on sale yet</span>
         </div>
 
         <ul aria-hidden="true" className="rk-bench">

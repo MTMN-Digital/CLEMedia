@@ -291,15 +291,10 @@ export default function AppPage() {
             <ReviewerRoom people={REVIEWERS} />
           </div>
 
-          <Settle as="ul" className="mt-10 grid gap-x-10 gap-y-7 sm:grid-cols-3">
-            {REVIEWERS.map((p) => (
-              <li key={p.name} className="hairline pt-5">
-                <h3 className="t-h3">{p.name}</h3>
-                <p className="eyebrow eyebrow-sm mt-1.5 ">{p.role}</p>
-                <p className="t-sm mt-3 leading-relaxed text-body">{p.line}</p>
-              </li>
-            ))}
-          </Settle>
+          {/* No credits list under the room. The room's mounts already carry
+              the name, the role and the line; the list repeated all three a
+              few hundred pixels lower, so the page named the same three
+              people twice on one screen. */}
 
           <div className="mt-9">
             <TextLink to="/ethical-ai">The full review sequence<IconArrow size={15} /></TextLink>
