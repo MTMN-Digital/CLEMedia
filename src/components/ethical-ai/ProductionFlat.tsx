@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { STATIONS, PLATFORMS, DO_NOT } from "./stations";
+import { StageMark } from "@/components/team/StageMark";
 import "@/components/draw/draw.css";
 
 /* ============================================================================
@@ -163,6 +164,11 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
               {s.kind === "gate" ? " Can hold a release" : " Person decides"}
             </p>
             <h3>{s.title}</h3>
+            {s.index && (
+              <div className="pline__mark">
+                <StageMark n={s.index} />
+              </div>
+            )}
             <p className="pline__who">{s.who}</p>
             {s.faces && s.faces.length > 0 && (
               <ul className="pline__faces">

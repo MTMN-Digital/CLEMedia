@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAGE MARKS, the sizing only.
+
+   Everything about how a mark is drawn, weighted and arrives comes from the
+   shared kit in components/draw/draw.css. This file does one thing the kit
+   does not: it sizes a drawing by HEIGHT and lets the width fall out of the
+   viewBox, so a wide mark is wide and a tall mark is tall. The kit's `.ink`
+   sizes by width because every other drawing on the site is a figure that
+   fills its column; these six sit inside text and have to keep their own
+   proportions, which is most of what stops them reading as six tiles.
+
+   `--stagemark-h`  the height, on any ancestor. Designed for 40px to 56px.
+   `--stagemark-delay`  an offset added to every delay inside the mark, so a
+                        host that staggers its own children can push the
+                        drawing to land with them. Defaults to 0s.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ink.stagemark {
+  width: auto;
+  height: var(--stagemark-h, 48px);
+  flex: 0 0 auto;
+}

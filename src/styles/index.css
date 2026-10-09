@@ -1344,6 +1344,7 @@ body > * { position: relative; z-index: 1; }
   line-height: 1.25;
   color: var(--color-ink);
 }
+.pline__mark { margin-top: 0.6rem; --stagemark-h: 40px; }
 .pline__who { margin-top: 0.3rem; font-size: 0.9375rem; font-weight: 600; color: var(--color-ink); }
 .pline__body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 42ch; }
 .pline__faces { list-style: none; margin: 0.7rem 0 0; padding: 0; display: flex; gap: 0.4rem; }

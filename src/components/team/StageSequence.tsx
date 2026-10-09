@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Figure } from "@/components/Figure";
 import { Stage, useRoomEntry } from "@/components/render";
+import { StageMark } from "./StageMark";
 import type { Stage as ReviewStage } from "./people";
 
 /* ============================================================================
@@ -110,6 +111,15 @@ export function StageSequence({ stages }: { stages: ReviewStage[] }) {
                       <span className="sr-only">Stage </span>{s.n}
                     </p>
                     <h3 className="rk-slip__title">{s.stage}</h3>
+
+                    {/* What happens at this stage, drawn. Six marks that
+                        differ in kind rather than six icons in matched boxes;
+                        see components/team/StageMark.tsx. Decorative: the
+                        slip already carries the number, the stage, the people
+                        and the check as real text. */}
+                    <div className="rk-slip__mark">
+                      <StageMark n={s.n} />
+                    </div>
 
                     {s.faces.length > 0 && (
                       <ul className="rk-slip__faces">
