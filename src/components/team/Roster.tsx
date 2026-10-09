@@ -1,5 +1,6 @@
 import { Settle } from "@/components/Settle";
 import type { Member, Stage } from "./people";
+import { StandsAt } from "./StandsAt";
 
 /* ============================================================================
    The people, and the stages each of them stands at, in words.
@@ -63,6 +64,11 @@ export function Roster({
               <div className="min-w-0">
                 <p className="t-h3 font-display leading-tight">{m.name}</p>
                 <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
+                {/* Where this one stands on the six, in the margin beside the
+                    name. The sentence below still spells it out; this is for
+                    the reader scanning seven biographies for the one person
+                    they came to check. */}
+                <StandsAt member={m} stages={stages} outside={outside} />
               </div>
 
               <div className="min-w-0">

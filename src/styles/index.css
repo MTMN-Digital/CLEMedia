@@ -1313,6 +1313,10 @@ body > * { position: relative; z-index: 1; }
   .noway { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); column-gap: clamp(2rem, 4vw, 3.5rem); }
 }
 
+/* The roster's margin track. Small on purpose: it repeats seven times down
+   one page. See components/team/StandsAt.tsx. */
+.standsat { max-width: 150px; margin-top: 0.85rem; }
+
 /* ─── The production line, flat ───────────────────────────────────────────
    See components/ethical-ai/ProductionFlat.tsx and the 2,700px vertical
    chain it replaced. Marks in components/draw/draw.css; layout only here.
