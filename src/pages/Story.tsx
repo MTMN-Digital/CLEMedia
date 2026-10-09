@@ -5,6 +5,7 @@ import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
 import { Bluebell } from "@/components/graphics";
+import { TheGap } from "@/components/story/TheGap";
 import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Card, Container, Kicker, Section, TextLink } from "@/components/ui";
@@ -258,7 +259,11 @@ export default function Story() {
         </Container>
 
         <Container>
-          <Spread margin={<span className="hidden lg:block" aria-hidden="true" />}>
+          {/* The margin column carries the drawing of the sentence beside it.
+              "Plenty were gentle, plenty were educational, very few were
+              both" is a shape before it is a sentence. See
+              components/story/TheGap.tsx. */}
+          <Spread margin={<TheGap />}>
             <p>
               So I went looking, and there was less of it than I expected. Plenty of shows were
               gentle. Plenty were educational. Very few were both, and fewer still would tell

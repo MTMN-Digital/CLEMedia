@@ -337,3 +337,37 @@ and it has rules.
 - **A drawing needs a composition at 390 too.** The home arc is horizontal
   above 900px and vertical below it: same three marks, laid out for the space.
   A 1200-wide drawing on a phone is 110px tall and is not a drawing.
+
+### The drawing hand, settled 2026-10-09
+
+`src/components/draw/draw.css` is the hand. Every drawing on the site uses its
+classes and nothing defines its own stroke weight. A drawing that needs a
+weight the file does not have is a change to that file, made once.
+
+- `.ink` the svg wrapper, `.ink-line` the 2px edge, `.ink-thin` detail inside
+  an object, `.ink-heavy` a surface something stands on, `.ink-accent` the one
+  rationed accent, `.ink-fill` paper inside a drawn object.
+- Arriving: `.ink-draw` (a stroke that draws itself, REQUIRES
+  `pathLength="1"`), `.ink-in` (lands where the stroke reaches it),
+  `.ink-extend` (a rule that extends), `.ink-open` (a ring opening outward).
+  Delay with `--d`, duration with `--dur`.
+- Labels are HTML beside the svg, never `<text>`: real fonts, selectable,
+  readable, and they reflow.
+
+**Three traps this cost us, all now fixed in the kit:**
+
+1. **`.ink-draw` cannot also be dashed.** It animates `stroke-dashoffset`
+   against `stroke-dasharray: 1`, so a dash attribute on the same path is
+   overridden and silently does nothing. A path that must be dashed uses
+   `.ink-in`, or the dash goes on a sibling underneath.
+2. **`--color-muted` is a PAPER-ONLY floor.** `.ink-label` shipped as muted
+   and measured 4.39 to 4.44:1 on the `.wall` and `.well` grounds. The kit
+   now defaults labels to `--color-body` and takes ink on the deeper grounds.
+3. **A drawing needs its own composition at 390,** not a scaled-down one.
+
+**And one judgement, learned by getting it wrong:** draw the right SUBJECT.
+Watch / Play / Learn was first drawn as a journey out of a screen onto paper.
+It read well and it was wrong: the episode does not travel, it stays ten
+minutes long, and what changes is how far out from it the child gets. It is
+rings now, the episode small at the centre, which is the page's own pull
+quote. Ask what is actually moving before drawing an arrow.

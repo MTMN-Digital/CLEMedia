@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
+import { ProductionFlat } from "@/components/ethical-ai/ProductionFlat";
 import { TheLine } from "@/components/ethical-ai/TheLine";
 import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
 import { Button, Container, DisclosurePanel, Kicker, Lead, Section, TextLink } from "@/components/ui";
@@ -179,7 +179,7 @@ export default function EthicalAi() {
               of the return path keys off this element's own .is-armed.is-in, and
               a per-station Settle would arm seven separate clocks for one line. */}
           <Settle className="mt-14 sm:mt-16">
-            <ProductionLine gateSlot={<CaseStudy />} />
+            <ProductionFlat gateSlot={<CaseStudy />} />
           </Settle>
 
           <Settle className="mt-14 flex max-w-[64ch] gap-4">

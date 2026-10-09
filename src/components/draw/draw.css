@@ -1,0 +1,160 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE DRAWING HAND
+
+   The site has two visual languages and this is the second one.
+
+   The RENDER KIT (components/render) shows an OBJECT: a thing standing in a
+   lit room, with a position, a lamp, a shadow and a surface. It is how this
+   site shows a portrait, an episode plate, a printed sheet.
+
+   This is how it shows an ARGUMENT. Ink line work on paper, drawn once. Most
+   of this site is argument, which is why nine pages could carry one object
+   each and still read as several hundred words of prose with a picture next
+   to it.
+
+   EVERY DRAWING ON THE SITE USES THESE CLASSES. That is the whole point: one
+   stroke weight, one accent, one way of arriving, so twenty-five drawings
+   read as one hand rather than twenty-five separate decisions. A drawing that
+   needs a weight this file does not have is a change to this file, made once,
+   not a local override.
+
+   THE RULES, which are also in .parallel/CONTRACT.md:
+   - A drawing replaces a LAYOUT, never a sentence. Nothing is cut to make
+     room for one. It sits above or beside the prose and says the same thing
+     in one look.
+   - Draw the argument THIS page is making. If the drawing would fit another
+     page, it is decoration and it is wrong.
+   - Never an icon row. One drawing per idea, at scale.
+   - Every label is lifted from the page's own copy. A drawing is a new way to
+     read a claim, never a new claim.
+   - It draws itself once and then stops. No loop, no drift, no parallax.
+
+   WHY CSS KEYFRAMES AND NOT A MOTION LIBRARY. The contrast sweep zeroes
+   `animation-duration` and pins `animation-iteration-count`, so a `forwards`
+   keyframe lands on its final frame for the capture. A JS tween photographs
+   mid-draw and reports failures that do not exist.
+
+   `.ink-draw` REQUIRES `pathLength="1"` on the path. The dash maths is then
+   independent of how long the path actually is, so one duration reads the
+   same on a 60px stem and a 900px arc.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ink {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The marks are allowed outside the box: a ledge or a shadow that stops
+     dead at the viewBox edge reads as a clipping bug. */
+  overflow: visible;
+}
+
+/* ─── The marks ─────────────────────────────────────────────────────────── */
+.ink-line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Secondary line work: detail inside an object, never the object's own edge. */
+.ink-thin { stroke-width: 1.4; opacity: 0.55; }
+/* A surface something stands on. */
+.ink-heavy { stroke-width: 3; opacity: 0.8; }
+/* THE one rationed accent. It marks the single moment the drawing is about
+   and nothing else. A drawing with two accents has no accent. */
+.ink-accent { stroke: var(--color-red-deep); }
+.ink-accent-fill { fill: var(--color-red); stroke: none; }
+/* Paper, for the inside of a drawn object so it sits on the ground rather
+   than letting the ground show through it. */
+.ink-fill { fill: var(--color-raised); stroke: none; }
+/* A drawn object standing on the deeper grounds keeps its own paper. */
+.wall .ink-fill, .well .ink-fill { fill: var(--color-paper-1); }
+.bench .ink-line, .deep .ink-line { stroke: var(--color-raised); }
+.bench .ink-fill, .deep .ink-fill { fill: rgba(253, 248, 237, 0.08); }
+
+/* ─── Arriving ──────────────────────────────────────────────────────────── */
+/* A stroke that draws itself. Needs pathLength="1".
+   IT CANNOT ALSO BE DASHED. The draw works by animating `stroke-dashoffset`
+   against `stroke-dasharray: 1`, so a `stroke-dasharray` attribute on the
+   same element is overridden by this rule and silently does nothing. A path
+   that must be dashed is drawn with `.ink-in` instead, or the dash goes on a
+   sibling path underneath it. */
+.ink-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ink-draw var(--dur, 1.4s) var(--ease-out) var(--d, 0s) forwards;
+}
+@keyframes ink-draw { to { stroke-dashoffset: 0; } }
+
+/* Anything that is not a stroke: it lands where the stroke reaches it. */
+.ink-in {
+  opacity: 0;
+  animation: ink-in 0.6s var(--ease-out) var(--d, 0s) forwards;
+}
+@keyframes ink-in { to { opacity: 1; } }
+
+/* A rule or a bar that extends. Transform only, so it is compositor work. */
+.ink-extend {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  animation: ink-extend var(--dur, 1s) var(--ease-out) var(--d, 0s) forwards;
+}
+@keyframes ink-extend { to { transform: scaleX(1); } }
+
+/* A ring that opens out from its own centre. */
+.ink-open {
+  transform: scale(0.82);
+  transform-origin: center;
+  opacity: 0;
+  animation: ink-open 0.8s var(--ease-out) var(--d, 0s) forwards;
+}
+@keyframes ink-open { to { transform: scale(1); opacity: 1; } }
+
+/* ─── Asked for stillness ───────────────────────────────────────────────── */
+/* Every drawing is composed at rest. The resting pose is the one a crawler,
+   a screenshot and anyone with reduced motion sees, so it has to be right. */
+@media (prefers-reduced-motion: reduce) {
+  .ink-draw { animation: none; stroke-dashoffset: 0; }
+  .ink-in { animation: none; opacity: 1; }
+  .ink-extend { animation: none; transform: scaleX(1); }
+  .ink-open { animation: none; transform: scale(1); opacity: 1; }
+}
+
+/* ─── Labels on a drawing ───────────────────────────────────────────────── */
+/* Set in HTML beside the SVG, never as <text>: real fonts, selectable,
+   readable by a screen reader, and they reflow. */
+.ink-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* BODY, not muted. `--color-muted` is the documented floor and it is a
+     floor ON PAPER ONLY: at 11px on the `.wall` and `.well` grounds it
+     measures 4.39 to 4.44:1, under AA, which is exactly how the first six
+     drawings shipped with a label on a deeper ground. A label on a drawing
+     is text and it has to clear AA wherever the drawing is put, so the
+     default is the colour that does. */
+  color: var(--color-body);
+}
+/* Deeper still: the wall, the well and the bench take ink or cream outright. */
+.wall .ink-label,
+.well .ink-label { color: var(--color-ink); }
+.bench .ink-label,
+.deep .ink-label { color: var(--color-raised); }
+.ink-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+.ink-note {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+.bench .ink-note,
+.deep .ink-note { color: var(--color-raised); }
+.bench .ink-name,
+.deep .ink-name { color: var(--color-raised); }

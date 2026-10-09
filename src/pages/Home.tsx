@@ -8,7 +8,7 @@ import { type Episode } from "@/components/home/EpisodeSlate";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
-import { EpisodeArc } from "@/components/home/EpisodeArc";
+import { EpisodeRings } from "@/components/home/EpisodeRings";
 import {
   Button, Container, Kicker, Lead, Section,
 } from "@/components/ui";
@@ -187,8 +187,10 @@ export default function Home() {
           which is the retired numbered eyebrow and the row of three identical
           cards in one block. It is now a single drawing of the journey the
           three words describe, with the client's own three sentences hanging
-          off it as captions at three different heights. Not one word was cut.
-          See src/components/home/EpisodeArc.tsx. ═══ */}
+          off it. Not one word was cut. The first replacement drew a journey
+          out of the screen onto paper, which drew the wrong subject: the
+          episode does not travel, the child gets further out from it. See
+          src/components/home/EpisodeRings.tsx. ═══ */}
       <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
         <Container width="wide">
           <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
@@ -199,7 +201,7 @@ export default function Home() {
             </Lead>
           </Wipe>
 
-          <EpisodeArc />
+          <EpisodeRings />
         </Container>
       </Section>
 
