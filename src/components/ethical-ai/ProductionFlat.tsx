@@ -51,11 +51,36 @@ const X0 = 70;
 const X1 = VB_W - 70;
 const gateX = (i: number, n: number) => X0 + ((X1 - X0) * i) / (n - 1);
 
+const RETURN_HEAD_LENGTH = 12;
+const RETURN_HEAD_HALF_WIDTH = 6;
+
+function arrowHeadFromEndTangent(
+  endX: number,
+  endY: number,
+  controlX: number,
+  controlY: number,
+) {
+  const tangentX = endX - controlX;
+  const tangentY = endY - controlY;
+  const tangentLength = Math.hypot(tangentX, tangentY);
+  const backX = endX - (tangentX / tangentLength) * RETURN_HEAD_LENGTH;
+  const backY = endY - (tangentY / tangentLength) * RETURN_HEAD_LENGTH;
+  const normalX = (-tangentY / tangentLength) * RETURN_HEAD_HALF_WIDTH;
+  const normalY = (tangentX / tangentLength) * RETURN_HEAD_HALF_WIDTH;
+
+  return `M${backX + normalX} ${backY + normalY} L${endX} ${endY} L${backX - normalX} ${backY - normalY}`;
+}
+
 export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
   const people = STATIONS.filter((s) => s.kind !== "tool");
   const n = people.length;
   const toolX = (gateX(1, n) + gateX(2, n)) / 2;
   const lastX = gateX(n - 1, n);
+  const returnStartY = TRACK_Y - 13;
+  const returnControl1Y = TRACK_Y - 76;
+  const returnControl2Y = TRACK_Y - 86;
+  const returnEndY = TRACK_Y;
+  const returnArrow = arrowHeadFromEndTangent(toolX, returnEndY, toolX, returnControl2Y);
 
   return (
     <div className="pline">
@@ -88,7 +113,6 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
               <circle
                 cx={x} cy={TRACK_Y} r={isGate ? 11 : 7}
                 className={`ink-line ${isGate ? "ink-accent" : ""}`}
-                strokeWidth={isGate ? 2.5 : 2}
               />
               {isGate && <circle cx={x} cy={TRACK_Y} r="4" className="ink-accent-fill" />}
             </g>
@@ -108,7 +132,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
             and the chain buried it in a footnote under 2,700px of column. */}
         <path
           pathLength="1"
-          d={`M${lastX} ${TRACK_Y - 13} C ${lastX} ${TRACK_Y - 76}, ${toolX} ${TRACK_Y - 86}, ${toolX} ${TRACK_Y - 26}`}
+          d={`M${lastX} ${returnStartY} C ${lastX} ${returnControl1Y}, ${toolX} ${returnControl2Y}, ${toolX} ${returnEndY}`}
           /* SOLID, not dashed. `.ink-draw` works by animating
              `stroke-dashoffset` against `stroke-dasharray: 1`, so a dash
              pattern on the same path is overridden by the class and silently
@@ -118,7 +142,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
           style={{ "--d": "1.45s", "--dur": "0.9s" } as React.CSSProperties}
         />
         <path
-          d={`M${toolX - 6} ${TRACK_Y - 34} L ${toolX} ${TRACK_Y - 23} L ${toolX + 6} ${TRACK_Y - 34}`}
+          d={returnArrow}
           className="ink-line ink-accent ink-in"
           style={{ "--d": "2.3s" } as React.CSSProperties}
         />

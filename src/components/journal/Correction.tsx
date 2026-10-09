@@ -53,14 +53,13 @@ export function Correction() {
         <path
           pathLength="1"
           d={`M30 ${line(2)} H 270`}
-          className="ink-line ink-accent ink-draw"
-          strokeWidth="2.5"
+          className="ink-line ink-heavy ink-accent ink-draw"
           style={{ "--d": "0.95s", "--dur": "0.5s" } as React.CSSProperties}
         />
 
         {/* What changed, added underneath, inside the piece. */}
         <g className="ink-in" style={{ "--d": "1.5s" } as React.CSSProperties}>
-          <path d="M30 150 H 50" className="ink-line ink-accent" strokeWidth="2.5" />
+          <path d="M30 150 H 50" className="ink-line ink-heavy ink-accent" />
           <g className="ink-line ink-thin">
             <path d="M60 150 H 262" />
             <path d="M60 169 H 214" />

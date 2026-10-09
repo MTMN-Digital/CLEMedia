@@ -36,6 +36,12 @@ const INSIDE = [
    it meets, so the stop bar across it is one short straight line: the first
    version ran them diagonally into the corners and the arrowheads came out
    crooked, which read as a drawing mistake rather than as a wall. */
+/* The stop sits just INSIDE the boundary, and the dashed path ends on the
+   stop, not on the wall. Taking the paths all the way to the wall and putting
+   the bars on it is geometrically tidier and reads worse: an accent bar lying
+   along the boundary merges into it and looks like a coloured length of wall
+   rather than something stopping. The gap between the bar and the wall is the
+   whole point, so it is deliberate and it is not a rounding error. */
 const BLOCKED: { d: string; stop: string; label: string }[] = [
   { d: "M150 86 V 34", stop: "M132 34 H 168", label: "Autoplay to the next thing" },
   { d: "M92 168 H 40", stop: "M40 150 V 186", label: "A purchase inside the app" },
@@ -78,7 +84,7 @@ export function NoWayOut() {
         {BLOCKED.map((b, i) => (
           <g key={b.label} className="ink-in" style={{ "--d": `${1.5 + i * 0.14}s` } as React.CSSProperties}>
             <path d={b.d} className="ink-line ink-thin" strokeDasharray="4 5" />
-            <path d={b.stop} className="ink-line ink-accent" strokeWidth="3" />
+            <path d={b.stop} className="ink-line ink-heavy ink-accent" />
           </g>
         ))}
 
