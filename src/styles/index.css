@@ -305,6 +305,82 @@ body > * { position: relative; z-index: 1; }
   }
   .hairline { border-top: 1px solid var(--color-rule); }
 
+  /* ─── Form fields ────────────────────────────────────────────────────────
+     A field is a BOX. The contact page shipped inputs as a label with a
+     hairline under it, sitting directly on the clay: no fill, no edge, no
+     affordance, and the client's verdict was that the page was unusable. An
+     underline is a typographic flourish that costs a stranger the one thing
+     the page exists to give them, which is somewhere obvious to type.
+
+     So the field is raised above the ground, carries a real edge, and is tall
+     enough to hit on a phone. 17px, because anything under 16 makes iOS Safari
+     zoom the page on focus. Focus is the red edge PLUS a soft ring: the edge
+     alone is a one-pixel change on an element that already has one. */
+  .field-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+  .field-label .opt { font-weight: 400; color: var(--color-body); }
+  .field-input,
+  .field-textarea {
+    display: block;
+    width: 100%;
+    background: var(--color-raised);
+    border: 1px solid rgba(74, 53, 42, 0.26);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem 1rem;
+    font: inherit;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--color-ink);
+    box-shadow: inset 0 1px 2px rgba(60, 50, 28, 0.06);
+    transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  }
+  .field-textarea { min-height: 11rem; resize: vertical; line-height: 1.6; }
+  .field-input::placeholder,
+  .field-textarea::placeholder { color: var(--color-muted); }
+  .field-input:hover,
+  .field-textarea:hover { border-color: rgba(74, 53, 42, 0.42); }
+  .field-input:focus,
+  .field-textarea:focus {
+    outline: none;
+    border-color: var(--color-red);
+    box-shadow: 0 0 0 3px rgba(163, 46, 50, 0.18), inset 0 1px 2px rgba(60, 50, 28, 0.06);
+  }
+  .field-input.is-error,
+  .field-textarea.is-error { border-color: var(--color-red); }
+
+  /* The enquiry type. Four pills in a row, which is what a choice of four
+     short things looks like everywhere else on the web. It was four
+     full-width columns of body copy with a dot in front, which reads as four
+     sections of the page rather than as one question. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(74, 53, 42, 0.26);
+    border-radius: var(--radius-pill);
+    background: var(--color-raised);
+    padding: 0.6rem 1.05rem;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-body);
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease-out), background 0.2s var(--ease-out),
+      color 0.2s var(--ease-out);
+  }
+  .chip:hover { border-color: rgba(74, 53, 42, 0.5); color: var(--color-ink); }
+  .chip:has(:focus-visible) { outline: 2px solid var(--color-red); outline-offset: 3px; }
+  .chip[data-on] {
+    background: var(--color-red-deep);
+    border-color: var(--color-red-deep);
+    color: #fdf8ed;
+  }
+  .chip[data-on]:hover { color: #fdf8ed; }
+
   /* The one deep band per page. */
   .deep {
     background: var(--color-navy);
@@ -1007,119 +1083,6 @@ body > * { position: relative; z-index: 1; }
   }
 }
 
-
-/* ─── The review sequence: six stages, in order, with a line that draws ────
-   Replaces the stage matrix. Nothing here is encoded in a shape: the state a
-   square used to carry is written out, so the block needs no key. */
-.rk-seq {
-  --seq-rail: 2.75rem;
-  display: grid;
-  gap: 0;
-}
-.rk-seq__step {
-  position: relative;
-  display: grid;
-  /* Marker, then the stage, then the faces in their own column on a wide
-     screen. Stacked under 900 the faces fall back under the text. */
-  grid-template-columns: var(--seq-rail) minmax(0, 1fr);
-  column-gap: clamp(1rem, 2.4vw, 2rem);
-  padding-bottom: clamp(2.25rem, 4vw, 3.5rem);
-}
-/* The faces stay WITH the name they belong to. Tried in their own right-hand
-   column: at 1440 they ended up 600px from the person they identify, and the
-   grid row they created opened a hole in the middle of every step. */
-.rk-seq__step:last-child { padding-bottom: 0; }
-
-/* The spine runs from this marker to the next one. The last step has none,
-   because a line leaving the final stage would promise a seventh. */
-.rk-seq__spine {
-  position: absolute;
-  left: calc(var(--seq-rail) / 2);
-  top: 2.75rem;
-  bottom: 0;
-  width: 2px;
-  margin-left: -1px;
-  background: linear-gradient(to bottom, var(--color-red-deep), var(--color-rule));
-  transform-origin: 50% 0;
-  transform: scaleY(0);
-  transition: transform 0.9s var(--ease-out);
-}
-.rk-seq__step:last-child .rk-seq__spine { display: none; }
-.rk-seq__step.is-in .rk-seq__spine { transform: scaleY(1); }
-
-.rk-seq__marker {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--seq-rail);
-  height: var(--seq-rail);
-  border-radius: 50%;
-  background: var(--color-red-deep);
-  color: var(--color-raised);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-}
-
-.rk-seq__body { padding-top: 0.35rem; }
-.rk-seq__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.85rem);
-  line-height: 1.12;
-  letter-spacing: -0.01em;
-}
-.rk-seq__who {
-  margin-top: 0.85rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.3rem 0.75rem;
-}
-.rk-seq__wholabel {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  /* The token at full strength, never dimmed inherited ink. At `opacity: 0.75`
-     this measured 4.03 to 4.41:1 across the four paper tones it sits on, under
-     AA on every one of them. `--color-muted` is the documented floor that
-     still carries text on paper. */
-  color: var(--color-muted);
-}
-.rk-seq__whoname { font-size: 1.0625rem; font-weight: 600; }
-.rk-seq__faces {
-  margin-top: 0.9rem;
-  display: flex;
-  gap: 0.6rem;
-}
-.rk-seq__faces > li { width: 56px; }
-
-.rk-seq__checks {
-  margin-top: 0.9rem;
-  max-width: 52ch;
-  font-size: 1.0625rem;
-  line-height: 1.68;
-}
-/* The one fact the matrix buried in its legend. */
-.rk-seq__hold {
-  margin-top: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: 1px solid currentColor;
-  border-radius: var(--radius-pill);
-  padding: 0.3rem 0.85rem;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rk-seq__spine { transition: none; transform: scaleY(1); }
-}
 
 /* ─── One headline, arriving in order ─────────────────────────────────────
    Used once, on the hero. The words of "Watch. Play. Learn." are a sequence,

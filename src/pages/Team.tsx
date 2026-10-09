@@ -23,17 +23,20 @@ import { PeopleStrip } from "@/components/team/PeopleStrip";
    the answer to "who answers for what" is now one grid read in one move.
 
    THE PAGE IS THEREFORE THREE MOVEMENTS, NOT FOUR. The separate adviser card
-   went into the table as a row under a rule whose six cells are replaced by the
-   statement that the sequence does not apply to him, which says "outside the
-   process" harder than a card on a different axis ever did, and takes a
+   went into the roster as a row under a rule, with the statement that the
+   sequence does not apply to him in place of his stages, which says "outside
+   the process" harder than a card on a different axis ever did and takes a
    quarter of the height. Nothing was cut: every biography, every stage
    sentence and the adviser's whole entry are still on the page.
 
-   THE SHAPE, with the text blurred out: a deep band of type, then a wide ruled
-   grid with a column of faces down its left edge and a scatter of marks across
-   it, then a navy close. Nothing else on this site looks like that, and in
-   particular it is the opposite of /story, which is one measure with a mono
-   margin and no grid at all.
+   THE SHAPE, with the text blurred out, 2026-10-09: a bench band of type
+   ending on the faces, then a lit room with six slips standing on two shelves,
+   then a wide ruled roster with a column of portraits down its left edge, then
+   a navy close. The matrix that paragraph used to describe was replaced twice
+   over; see StageSequence.tsx for both attempts and why this is the third.
+   Nothing else on this site looks like it, and in particular it is the
+   opposite of /story, which is one measure with a mono margin and no grid at
+   all.
 
    There is no group photograph (team.group is null), so the opening is made
    from type and the deeper ground alone. The people, bios and stages live in
@@ -89,11 +92,15 @@ export default function Team() {
                   in the review sequence an episode passes through before a child sees it, and any
                   stage can hold a release back.
                 </Lead>
+                {/* Was an account of a table that no longer exists: the six
+                    stages were a matrix of marks against a legend until
+                    2026-10-03, and the paragraph describing how to read it
+                    outlived two rebuilds of the thing it described. */}
                 <p className="mt-6 max-w-[44ch] border-t border-rule pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
-                  Everything below is one table. The six stages run across it, the people run down
-                  it, and a mark where they meet is the company's own account of who is answerable
-                  there. Two of the stages are taken by the team as a whole, so they carry a team
-                  mark rather than a name.
+                  Below, the six stages as the slips they are signed off on, then the same fact
+                  from the other side: each person, and what they answer for. Two of the stages
+                  the company gives to the team as a whole, and those say so rather than naming
+                  anyone.
                 </p>
               </div>
             </div>
@@ -117,12 +124,7 @@ export default function Team() {
               there, and the last one can send the work back.
             </p>
           </Settle>
-          {/* A measure, not the full 1560: a step is a line of prose and a
-              couple of faces, and stretched across a wide container it reads
-              as one item lost on a shelf. */}
-          <div className="max-w-[56rem]">
-            <StageSequence stages={STAGES} />
-          </div>
+          <StageSequence stages={STAGES} />
         </Container>
       </Section>
 

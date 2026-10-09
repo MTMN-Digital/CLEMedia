@@ -13,18 +13,24 @@ import type { AssetKey } from "@/lib/brand";
 /* ============================================================================
    Contact.
 
-   This is the page the rest of the site funnels toward, and the earlier
-   version was a form in a box under a heading. It carried none of the
-   credibility the other pages build and told the sender nothing about where
-   their words went.
+   REBUILT 2026-10-09. The page before this one failed at the only job it has.
+   The fields were a label with a hairline under it, sitting on clay, so a
+   stranger could not see where to type; the four enquiry types were four
+   full-width columns of body copy; and the right half of the band was a live
+   preview of the notification email, which looked like a second form and
+   competed with the real one. The client's verdict was "borderline unusable",
+   and it was right.
 
-   So the page now does four things, in order. It asks what the message is
-   about, as a rail of four routes rather than a stack of cards. It shows, live,
-   the message as the team will receive it (the receipt, the device this page
-   owns), built from the same rules as api/contact.ts. It routes the four
-   audiences this site is written for to the page that already answers them,
-   including the parents the form is not really for. And it puts the faces of
-   the people on the other side of the form under all of it.
+   So this page is deliberately conventional, and it is the one page on the
+   site where that is the correct answer. One form, in one column, at a
+   readable measure, with boxes you can see and a question at the top that is
+   four pills rather than four sections. Everything inventive the page used to
+   do before the send now happens after it.
+
+   THE RECEIPT IS DEMOTED, NOT DROPPED. Showing a sender the exact notification
+   the team receives is a good idea in the wrong place: nobody needs it while
+   they are still writing. It now appears once the message has gone, where it
+   is a confirmation of what was sent rather than a rehearsal of it.
 
    THE FOUR AUDIENCES, 2026-10-06. The site is written for investors and
    partners, broadcasters and distributors, educators and schools, and parents,
@@ -43,28 +49,36 @@ import type { AssetKey } from "@/lib/brand";
 
    Functional contract, unchanged: POST /api/contact with
    { route, company_website, name, email, organisation, message }. The route
-   fieldset sits OUTSIDE the <form> exactly as before, so FormData carries the
-   same five fields in the same order and `route` is spread in by hand.
+   radios now sit INSIDE the form, so FormData carries `route` itself; the
+   explicit spread stays because it is the same value and the server contract
+   should not depend on which of the two wrote it.
    ========================================================================== */
 
-const ROUTES: { id: RouteId; label: string; blurb: string }[] = [
+/* `short` is what the pill carries and `label` is what the subject line and
+   the confirmation say. A pill wide enough for "Partnerships and distribution"
+   stops being a pill. */
+const ROUTES: { id: RouteId; short: string; label: string; blurb: string }[] = [
   {
     id: "partnership",
+    short: "Partnerships",
     label: "Partnerships and distribution",
     blurb: "Studios, broadcasters, distributors, licensing and investment.",
   },
   {
     id: "educator",
+    short: "Educators",
     label: "Educators and case studies",
     blurb: "Early years settings, schools and anyone using the activities with children.",
   },
   {
     id: "press",
+    short: "Press",
     label: "Press",
     blurb: "Interviews, podcast bookings and media requests.",
   },
   {
     id: "general",
+    short: "General",
     label: "General enquiry",
     blurb: "Anything else about the company, the series or the work.",
   },
@@ -90,20 +104,6 @@ const FACES: { name: string; role: string; asset: AssetKey }[] = [
   { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
   { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia" },
   { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie" },
-];
-
-const ALSO: { name: string; role: string; remit: string; asset?: AssetKey }[] = [
-  {
-    name: "Mansi",
-    role: "Production Coordination",
-    remit: "Holds the schedule together, so that a note raised at one review stage reaches the people who have to act on it.",
-  },
-  {
-    name: "David Toth",
-    role: "Strategic Advisor",
-    asset: "person.david",
-    remit: "Shapes platform strategy and the low-stimulation media framework that connects screen time to real-world creativity, nature and offline play.",
-  },
 ];
 
 /* The four audiences the site is written for, each sent to the page that
@@ -137,26 +137,7 @@ const ELSEWHERE: { who: string; title: string; line: string; to?: string; href?:
   },
 ];
 
-/* What is true about the handling, read off api/contact.ts. Each line maps to
-   a line of code there; nothing is a promise about people or time. */
-const HANDLING = [
-  "The type you choose becomes the subject line, so a partnership enquiry is marked as one before anyone opens it.",
-  "Your address is set as the reply-to on the notification, so a reply comes back to you directly.",
-  "A hidden field catches automated submissions. There is no captcha to solve.",
-  "We store what you send so we can reply to it, and use it for nothing else.",
-];
-
 const EMPTY: Draft = { name: "", email: "", organisation: "", message: "" };
-
-/* An underline rather than a box. The form sits on the paper itself, which is
-   what stops it reading as a widget dropped into the page. 17px so no mobile
-   browser zooms on focus. Focus thickens the rule to red; the global outline
-   is kept off here only because a 2px red rule is the stronger signal on a
-   field that has no other edge. */
-const FIELD =
-  "block w-full rounded-none border-0 border-b border-rule bg-transparent px-0 py-3 text-[17px] text-ink " +
-  "placeholder:text-muted focus:border-red focus:shadow-[0_1px_0_0_var(--color-red)] focus:outline-none";
-const LABEL = "block text-[14px] font-semibold text-ink";
 
 export default function Contact() {
   const [route, setRoute] = useState<RouteId>("partnership");
@@ -201,94 +182,89 @@ export default function Contact() {
         path="/contact"
       />
 
-      {/* ═══ 1. THE ASK, AND THE ROUTE RAIL.
-          The heading and the four routes share one section so the first
-          decision the sender makes is part of the opening statement, and a
-          selected route is shown by a red rule along the top of its column.
-          Outside the <form> on purpose: see the header comment. ═══ */}
-      <Section pad={["normal", "none"]}>
+      {/* ═══ 1. THE ASK AND THE FORM, in one band.
+          Two columns on a desktop: what this page is on the left, the form on
+          the right, and the left column holds while the form scrolls past it.
+          Centring the sheet under a left-aligned heading left a third of the
+          band empty beside it and read as a widget dropped onto the page.
+          The faces are here rather than in a section of their own further
+          down: "who reads this" is a thing to know BEFORE writing, and the
+          version that sat at the foot of the page was a second copy of a
+          strip /team already owns. ═══ */}
+      <Section pad={["normal", "normal"]} labelledBy="form-h">
         <Container width="wide">
-          <Settle>
-            <Kicker>Contact</Kicker>
-            <h1 className="t-display mt-5 max-w-[14ch]">Write to the people who make it</h1>
-            <Lead className="mt-6 max-w-[52ch]">
-              Studios, distributors, investors, educators and press. Choose what this is about,
-              and the message arrives marked as that, with the company that makes the series.
-            </Lead>
-          </Settle>
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-16 xl:gap-24">
+            <Settle className="lg:sticky lg:top-28 lg:self-start">
+              <Kicker>Contact</Kicker>
+              <h1 className="t-display mt-5 max-w-[13ch]">Write to the people who make it</h1>
+              <Lead className="mt-6 max-w-[42ch]">
+                Studios, distributors, investors, educators and press. Choose what this is about,
+                and the message arrives marked as that, with the company that makes the series.
+              </Lead>
 
-          <fieldset className="mt-14 sm:mt-16">
-            <legend className="sr-only">What is this about?</legend>
-            <Settle className="grid sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8">
-              {ROUTES.map((r) => {
-                const on = route === r.id;
-                return (
-                  <label
-                    key={r.id}
-                    className={`hairline group relative flex cursor-pointer flex-col gap-3 py-6 pr-4 transition-shadow duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-red ${
-                      on ? "shadow-[inset_0_2px_0_0_var(--color-red)]" : ""
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="route"
-                      value={r.id}
-                      checked={on}
-                      onChange={() => setRoute(r.id)}
-                      className="sr-only"
-                    />
-                    <span className="flex items-center gap-3">
-                      <span
-                        aria-hidden="true"
-                        className={`h-3.5 w-3.5 shrink-0 rounded-full border-2 transition-colors duration-300 ${
-                          on ? "border-red bg-red" : "border-muted group-hover:border-body"
-                        }`}
+              <div className="mt-10 border-t border-rule pt-8">
+                <p className="eyebrow">Who it reaches</p>
+                <ul className="mt-5 flex flex-wrap gap-3">
+                  {FACES.map((p) => (
+                    <li key={p.name} className="w-[clamp(56px,16%,68px)]">
+                      <Figure
+                        asset={p.asset}
+                        rounded="rounded-[var(--radius-sm)]"
+                        className="aspect-square"
+                        sizes="68px"
                       />
-                      <span className={`text-[16px] font-semibold ${on ? "text-ink" : "text-body"}`}>
-                        {r.label}
-                      </span>
-                    </span>
-                    <span className="t-sm leading-relaxed text-body">{r.blurb}</span>
-                  </label>
-                );
-              })}
+                    </li>
+                  ))}
+                </ul>
+                <p className="t-body mt-5 max-w-[42ch] text-body">
+                  Not a shared inbox with a logo over it. These are the five people named on the
+                  review stages of every episode.
+                </p>
+                <p className="mt-5">
+                  <TextLink to="/team">Read who each of them is<IconArrow size={15} /></TextLink>
+                </p>
+              </div>
             </Settle>
-          </fieldset>
-        </Container>
-      </Section>
 
-      {/* ═══ 2. THE LETTER AND THE RECEIPT.
-          Form on the left, directly on the paper. The receipt on the right
-          updates as the sender types and stays in view on a desktop. On a
-          phone it follows the form, as a summary of what was written. ═══ */}
-      <Section pad={["tight", "normal"]} labelledBy="form-h">
-        <Container width="wide">
-          <div className="grid gap-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20 xl:gap-28">
-            <div>
+            <Settle>
               <h2 id="form-h" className="sr-only">Your message</h2>
+
               {sent ? (
-                <Settle>
-                  <div role="status" className="max-w-[48ch]">
-                    <p className="eyebrow">Sent</p>
-                    <p className="t-h2 mt-4 font-display">Thank you. It has reached us.</p>
-                    <p className="t-lead mt-5 text-body">
-                      Thanks, we will come back to you. The receipt on this page shows what was
-                      sent, with the subject line the team sees.
-                    </p>
-                    <div className="mt-8 flex flex-wrap gap-4">
-                      <Button to="/">Back to the home page<IconArrow size={16} /></Button>
-                      <Button to="/team" variant="quiet">Meet the team</Button>
-                    </div>
-                  </div>
-                </Settle>
-              ) : (
-                <form className="max-w-[60ch]" onSubmit={submit}>
-                  <p className="t-sm text-body">
-                    Sending as:{" "}
-                    <strong className="font-semibold text-ink">
-                      {ROUTES.find((r) => r.id === route)?.label}
-                    </strong>
+                <div role="status">
+                  <p className="eyebrow">Sent</p>
+                  <p className="t-h2 mt-4 font-display">Thank you. It has reached us.</p>
+                  <p className="t-lead mt-5 text-body">
+                    This is the message as the team has it, with the subject line they see.
                   </p>
+                  <Receipt className="mt-8" route={route} draft={draft} sent />
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    <Button to="/">Back to the home page<IconArrow size={16} /></Button>
+                    <Button to="/team" variant="quiet">Meet the team</Button>
+                  </div>
+                </div>
+              ) : (
+                <form className="card card-still rounded-[var(--radius-lg)] px-5 py-8 sm:px-10 sm:py-10" onSubmit={submit}>
+                  <fieldset>
+                    <legend className="field-label">What is this about?</legend>
+                    <div className="flex flex-wrap gap-2.5">
+                      {ROUTES.map((r) => (
+                        <label key={r.id} className="chip" data-on={route === r.id ? "" : undefined}>
+                          <input
+                            type="radio"
+                            name="route"
+                            value={r.id}
+                            checked={route === r.id}
+                            onChange={() => setRoute(r.id)}
+                            className="sr-only"
+                          />
+                          {r.short}
+                        </label>
+                      ))}
+                    </div>
+                    <p className="t-sm mt-3 text-body">
+                      {ROUTES.find((r) => r.id === route)?.blurb}
+                    </p>
+                  </fieldset>
 
                   {/* Honeypot, no CAPTCHA, which would cost us accessibility. */}
                   <div aria-hidden="true" className="absolute left-[-9999px]">
@@ -296,42 +272,42 @@ export default function Contact() {
                     <input id="company-website" name="company_website" tabIndex={-1} autoComplete="off" />
                   </div>
 
-                  <div className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-x-10">
+                  <div className="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-x-6">
                     <div>
-                      <label htmlFor="name" className={LABEL}>Name</label>
+                      <label htmlFor="name" className="field-label">Name</label>
                       <input
                         id="name" name="name" required autoComplete="name"
                         value={draft.name} onChange={set("name")}
-                        className={FIELD}
+                        className="field-input"
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className={LABEL}>Email</label>
+                      <label htmlFor="email" className="field-label">Email</label>
                       <input
                         id="email" name="email" type="email" required autoComplete="email"
                         value={draft.email} onChange={set("email")}
-                        className={FIELD}
+                        className="field-input"
                       />
                     </div>
                   </div>
 
-                  <div className="mt-8">
-                    <label htmlFor="organisation" className={LABEL}>
-                      Organisation <span className="font-normal text-body">(optional)</span>
+                  <div className="mt-6">
+                    <label htmlFor="organisation" className="field-label">
+                      Organisation <span className="opt">(optional)</span>
                     </label>
                     <input
                       id="organisation" name="organisation" autoComplete="organization"
                       value={draft.organisation} onChange={set("organisation")}
-                      className={FIELD}
+                      className="field-input"
                     />
                   </div>
 
-                  <div className="mt-8">
-                    <label htmlFor="message" className={LABEL}>Message</label>
+                  <div className="mt-6">
+                    <label htmlFor="message" className="field-label">Message</label>
                     <textarea
-                      id="message" name="message" rows={6} required
+                      id="message" name="message" rows={8} required
                       value={draft.message} onChange={set("message")}
-                      className={`${FIELD} resize-y leading-[1.6]`}
+                      className="field-textarea"
                     />
                   </div>
 
@@ -339,31 +315,23 @@ export default function Contact() {
                     <p role="alert" className="t-sm mt-6 font-medium text-red-deep">{error}</p>
                   )}
 
-                  <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+                  <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
                     <Button type="submit" disabled={busy}>
                       {busy ? "Sending" : "Send message"}<IconMail size={16} />
                     </Button>
                     <p className="t-sm text-body">Name, email and message are required.</p>
                   </div>
+
+                  {/* One line, not four bullets of implementation detail. The
+                      page where an investor writes to the company is not the
+                      place to explain the honeypot. */}
+                  <p className="t-sm mt-7 border-t border-rule pt-5 text-body">
+                    Your address is set as the reply-to, so a reply comes straight back to you.
+                    We store what you send so we can answer it, and use it for nothing else.
+                  </p>
                 </form>
               )}
-            </div>
-
-            <div>
-              <div className="lg:sticky lg:top-24">
-                <Settle>
-                  <Receipt route={route} draft={draft} sent={sent} />
-                  <ul className="mt-7 space-y-3">
-                    {HANDLING.map((line) => (
-                      <li key={line} className="flex gap-3 t-sm leading-relaxed text-body">
-                        <span aria-hidden="true" className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-red" />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Settle>
-              </div>
-            </div>
+            </Settle>
           </div>
         </Container>
       </Section>
@@ -423,69 +391,6 @@ export default function Contact() {
                   </li>
                 );
               })}
-            </Settle>
-          </div>
-        </Container>
-      </Section>
-
-      {/* ═══ 4. THE OTHER SIDE OF THE FORM.
-          The five people named on every episode's review stages in one row of
-          faces, then the two who are on the team in a different capacity, each
-          in a hairline row with their remit. The whole site argues "made by
-          named people", so the page where a stranger writes to the company
-          should show them, and the lead over each group has to be true of
-          everyone under it. ═══ */}
-      <Section pad={["none", "normal"]} labelledBy="people-h">
-        <Container width="wide">
-          <div className="hairline pt-14 sm:pt-16">
-            <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-              <h2 id="people-h" className="t-h2 max-w-[18ch]">Who is on the other side</h2>
-              <Lead className="lg:pb-1">
-                Not a shared inbox with a logo over it. First, the five people named on the review
-                stages of every episode.
-              </Lead>
-            </Settle>
-
-            <Settle
-              as="ul"
-              className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-5"
-            >
-              {FACES.map((p) => (
-                <li key={p.name}>
-                  <div className="w-[clamp(72px,100%,124px)]">
-                    <Figure asset={p.asset} rounded="rounded-[var(--radius-md)]" className="aspect-square" sizes="124px" />
-                  </div>
-                  <h3 className="mt-4 text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
-                  <p className="eyebrow eyebrow-sm mt-1.5  leading-snug">{p.role}</p>
-                </li>
-              ))}
-            </Settle>
-
-            <Settle as="ul" className="mt-12">
-              {ALSO.map((p) => (
-                <li
-                  key={p.name}
-                  className="hairline grid gap-y-3 py-7 sm:grid-cols-[72px_minmax(0,16rem)_minmax(0,1fr)] sm:items-start sm:gap-x-8"
-                >
-                  {/* No portrait, no frame: the identity moves into the
-                      portrait's place and the remit stays on its own axis,
-                      the /team rule. */}
-                  {p.asset && (
-                    <div className="w-[72px]">
-                      <Figure asset={p.asset} rounded="rounded-[var(--radius-md)]" className="aspect-square" sizes="72px" />
-                    </div>
-                  )}
-                  <div className={p.asset ? "" : "sm:col-span-2"}>
-                    <h3 className="text-[15px] font-semibold leading-snug text-ink">{p.name}</h3>
-                    <p className="eyebrow eyebrow-sm mt-1.5  leading-snug">{p.role}</p>
-                  </div>
-                  <p className="t-body max-w-[58ch] text-body">{p.remit}</p>
-                </li>
-              ))}
-            </Settle>
-
-            <Settle className="mt-10">
-              <TextLink to="/team">Read who each of them is<IconArrow size={15} /></TextLink>
             </Settle>
           </div>
         </Container>

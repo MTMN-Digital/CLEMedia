@@ -81,9 +81,11 @@ function azimuthFor(i: number, count: number) {
 }
 
 /* One settle, armed only when JS runs and motion is allowed. The same shape
-   as Settle, kept local because Settle's own transform would fight the 3D
-   transform on the plates. */
-function useRoomEntry() {
+   as Settle, kept local to the render kit because Settle's own transform
+   would fight the 3D transform on the plates. Exported because the review
+   board stands its slips in the same room and has to come up with the same
+   light. */
+export function useRoomEntry() {
   const ref = useRef<HTMLDivElement>(null);
   const [armed, setArmed] = useState(false);
   const [lit, setLit] = useState(false);

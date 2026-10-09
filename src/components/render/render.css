@@ -448,6 +448,165 @@
   .rk-tag-rt { display: none; }
 }
 
+/* ─── Review board ──────────────────────────────────────────────────────
+   The same room as the studio wall, standing paper instead of title slates.
+   Everything structural is the wall's: the panel, the rake, the picture rail,
+   the bench grid, the per-item ledge and the entry. Three across rather than
+   four, because a slip carries a sentence and a four-column bench starves it.
+   ─────────────────────────────────────────────────────────────────────── */
+.rk-board .rk-bench {
+  counter-reset: none;
+}
+@container studio (min-width: 58rem) {
+  .rk-board .rk-bench { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* One ledge per row of three, and the wall's four-up rule has to be undone
+     before this one lands or the second row loses its shelf. */
+  .rk-board .rk-item:not(:nth-child(4n + 1))::after { display: block; }
+  .rk-board .rk-item:not(:nth-child(3n + 1))::after { display: none; }
+}
+/* The slips stand at different heights on one shelf, so they are aligned by
+   their FEET, not by their tops. A grid cell stretches by default, which put
+   short slips on an invisible ledge of their own halfway up the row. */
+.rk-board .rk-item {
+  display: flex;
+  align-items: flex-end;
+}
+.rk-board .rk-plate {
+  width: 100%;
+  /* Not a link. The whole slip is the content; there is nowhere to go from
+     it, so it does not lift on hover and does not take focus. */
+  cursor: default;
+}
+.rk-board .rk-plate:hover,
+.rk-board .rk-plate:focus-visible {
+  --lift: 0;
+}
+
+/* The slip. Printed paper, not a card in a page: it is standing in a lit
+   room, so it carries the room's light across it rather than the page's
+   drop shadow, and the shadow it casts is the Stage's. */
+.rk-slip {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(
+    168deg,
+    var(--color-paper-1) 0%,
+    var(--color-raised) 42%,
+    color-mix(in srgb, var(--color-raised) 88%, var(--color-sunken)) 100%
+  );
+  border: 1px solid var(--color-rule);
+  padding: clamp(1.1rem, 6.5cqw, 1.6rem);
+  container-type: inline-size;
+}
+/* The light the room throws across the face of the slip, from the same
+   azimuth the Stage is lighting it from. */
+.rk-slip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--az),
+    color-mix(in srgb, var(--color-raised) 34%, transparent) 0%,
+    transparent 46%,
+    color-mix(in srgb, var(--shade) 8%, transparent) 100%
+  );
+}
+.rk-slip > * { position: relative; z-index: 1; }
+
+/* The filing number. Printed large in the hero face, the way a number on a
+   real docket is the first thing you find it by.
+
+   It is NOT decorative and it is not set back. It carries the order of the
+   six stages, which is the one thing a reader has to get from this board, and
+   the first pass had it at a 26% tint that the contrast sweep measured at
+   1.80:1. The order is the content; a tint is how the matrix lost the digit
+   in the first place. At 70% it measures over 3:1 against every point of the
+   slip's gradient, which is AA for text this size, and it looks like it was
+   stamped on rather than watermarked. */
+.rk-slip__no {
+  font-family: var(--font-hero);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 17cqw, 3.4rem);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--color-red-deep) 70%, transparent);
+}
+.rk-slip__title {
+  margin-top: 0.55rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.0625rem, 6cqw, 1.25rem);
+  line-height: 1.22;
+  letter-spacing: -0.005em;
+  color: var(--color-ink);
+}
+
+/* The portraits, mounted. A thin ink edge and a tight shadow, so they read
+   as prints pinned to the slip rather than as avatars. */
+.rk-slip__faces {
+  margin-top: 1.1rem;
+  display: flex;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+}
+.rk-slip__faces > li {
+  width: clamp(42px, 16cqw, 52px);
+  border-radius: 7px;
+  padding: 2px;
+  background: var(--color-raised);
+  border: 1px solid var(--color-rule);
+  box-shadow: 1px 2px 4px -2px color-mix(in srgb, var(--shade) 42%, transparent);
+}
+
+.rk-slip__who {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-rule);
+}
+.rk-slip__sign {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* The documented floor that still carries text on paper. Never dimmed ink:
+     at `opacity: 0.75` the same line measured under AA on all four grounds. */
+  color: var(--color-muted);
+}
+.rk-slip__name {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.rk-slip__check {
+  margin-top: 0.85rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+/* The one fact the matrix buried in its legend, and the only red on the
+   board. A band across the foot of the slip, not a pill floating in it: this
+   is a stamp on a document. */
+.rk-slip__hold {
+  margin-top: 1.1rem;
+  margin-inline: calc(-1 * clamp(1.1rem, 6.5cqw, 1.6rem));
+  margin-bottom: calc(-1 * clamp(1.1rem, 6.5cqw, 1.6rem));
+  padding: 0.7rem clamp(1.1rem, 6.5cqw, 1.6rem);
+  background: var(--color-red-deep);
+  color: var(--color-raised);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
 /* ─── Entry ────────────────────────────────────────────────────────────────
    One settle, armed only by JS. The room's light comes up and the plates
    settle onto the bench from the lit end, 90ms apart. */
