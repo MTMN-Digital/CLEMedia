@@ -607,6 +607,163 @@
   line-height: 1.5;
 }
 
+/* ─── Correspondence room ───────────────────────────────────────────────
+   /contact's one scene. The same room as the studio wall and the review
+   board: the five people this site names stand mounted on the wall, and the
+   sheet you write on stands in front of them.
+
+   THE SHEET IS NOT ON A STAGE. Everything else in this kit leans its object
+   back a few degrees on a 3D transform, and a form must not: a rotated
+   ancestor blurs the text in every field, and it moves the caret and the
+   native autofill panel off the control they belong to. So the sheet is flat,
+   square to the camera and lit by the room instead of by its own pose. The
+   room does the work; the thing you have to type into does not move.
+   ─────────────────────────────────────────────────────────────────────── */
+/* A TALL room's floor is raised. `.rk-studio`'s wall darkens linearly from
+   top to bottom, which is right over the 600px a bench of title slates takes
+   and wrong over the 1200px this room takes: the bottom reached
+   `sunken 58% ink`, and the name under the last portrait measured 4.18:1
+   against it, under AA. The floor is 66% here, which puts ink at 5.25:1
+   everywhere on the wall, and the room still reads as lit because the
+   contrast that does that work is between the top and the bottom, not the
+   absolute depth of either. Scoped, so /media's wall and /team's review
+   board keep the gradient they were measured on. */
+.rk-room {
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-sunken) 74%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 66%, var(--color-ink))
+    );
+}
+
+.rk-corr {
+  display: grid;
+  gap: clamp(2rem, 5cqw, 3.5rem);
+}
+
+/* The wall of faces. Three across while the column is the full width of the
+   room, two across once the sheet takes the other half: five portraits at a
+   third of a narrow column are thumbnails, and this is the page that says
+   "write to the people who make it". */
+.rk-corr__people {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.25rem, 4cqw, 2rem) clamp(0.75rem, 2.5cqw, 1.25rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rk-corr__people > li {
+  container-type: inline-size;
+}
+.rk-corr__name {
+  margin-top: 0.75rem;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  /* INK, not muted. This prints onto the wall's own gradient, which runs from
+     #beb29b to #95876f, where muted measures 3.61:1 at the light end. */
+  color: var(--color-ink);
+}
+.rk-corr__role {
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.45;
+  /* Ink at FULL strength. At `opacity: 0.78` these three lines measured 3.66
+     to 4.31:1 against the dark end of the wall's own gradient, under AA on a
+     10px line. The hierarchy between the name and the role is already carried
+     by the size, the face and the tracking, so the dimming bought nothing and
+     cost the contrast. Third time this exact trap has been written down in
+     this file. */
+  color: var(--color-ink);
+}
+.rk-corr__note {
+  margin-top: clamp(1.5rem, 4cqw, 2.25rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+/* The sheet. Paper standing against the wall, with the room's light across
+   it and the room's shadow under it. Flat on purpose: see the block comment. */
+.rk-corr__sheet {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    168deg,
+    var(--color-paper-1) 0%,
+    var(--color-raised) 46%,
+    color-mix(in srgb, var(--color-raised) 90%, var(--color-sunken)) 100%
+  );
+  border: 1px solid var(--color-rule);
+  padding: clamp(1.25rem, 4.5cqw, 2.5rem);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    var(--sx, 9px) var(--sy, 14px) var(--blur, 34px) calc(var(--blur, 34px) * -0.3)
+      color-mix(in srgb, var(--shade) 40%, transparent),
+    0 2px 5px -1px color-mix(in srgb, var(--shade) 22%, transparent);
+}
+/* The light the room throws across the face of the sheet, from the room's own
+   azimuth. Behind the content, and never over a field. */
+.rk-corr__sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--az),
+    color-mix(in srgb, var(--color-raised) 38%, transparent) 0%,
+    transparent 44%,
+    color-mix(in srgb, var(--shade) 7%, transparent) 100%
+  );
+}
+/* A card ON the sheet is recessed INTO it. The sent state puts the receipt
+   here, and a cream card floating on cream paper is the washed-out stack of
+   near-identical surfaces this system exists to avoid. */
+.rk-corr__sheet .card {
+  background: var(--color-paper-2);
+  background-image: none;
+  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--shade) 14%, transparent);
+}
+.rk-corr__sheet > * { position: relative; }
+
+/* ─── The room, once it is wide enough for two columns ────────────────────
+   EVERY override lives here, after the base rules it overrides. All of these
+   are one class deep, so the cascade is decided by source order alone, and
+   writing them next to `.rk-corr` at the top of the section meant each one
+   was quietly beaten by the base rule further down. Two of them were written
+   that way and neither did anything. */
+@container studio (min-width: 52rem) {
+  .rk-corr {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+    /* Stretch, not start. The sheet is taller than the wall of faces by a few
+       hundred pixels, and with the columns aligned to their tops that
+       difference was a dark hole in the bottom left of the room. */
+    align-items: stretch;
+    gap: clamp(2rem, 4.5cqw, 4rem);
+  }
+  .rk-corr > .rk-item {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Two across, not three. Five portraits at a third of the narrow column are
+     thumbnails, on the page whose headline is "write to the people who make
+     it". At two they are the thing you see first, and the wall fills. */
+  .rk-corr__people {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.5rem, 4cqw, 2.25rem) clamp(1rem, 3cqw, 1.75rem);
+  }
+  /* Hung at the foot of the wall. */
+  .rk-corr__note { margin-top: auto; }
+}
+
 /* ─── Entry ────────────────────────────────────────────────────────────────
    One settle, armed only by JS. The room's light comes up and the plates
    settle onto the bench from the lit end, 90ms apart. */

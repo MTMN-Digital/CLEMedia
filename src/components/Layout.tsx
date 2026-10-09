@@ -125,53 +125,86 @@ function Header() {
 /**
  * The page closes on the show's navy, which carries white at 11.9:1 and is the
  * most grown-up colour the brand owns. One deep band per page, and this is it.
+ *
+ * REBUILT 2026-10-09. It was the default four-column footer: a typographic
+ * stand-in lockup with the second line tracked out to 0.3em, then three
+ * equal columns of headed links spread across the rest of the width. Two
+ * problems, and the client named both. The mark was not their mark, and the
+ * whole thing was spaced out: four columns of two or three items each is a
+ * grid built to fill a width rather than to hold what is in it.
+ *
+ * So it is two parts now. The real lockup hangs at the left on its own ropes,
+ * from the top edge of the band, with the one sentence that says what the
+ * company is. Everything a reader might click sits opposite it in two tight
+ * groups: where to go on this site, and the two places that are not this site.
  */
 function Footer() {
   return (
-    <footer className="deep">
-      <Container width="wide" className="py-16 lg:py-20">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+    /* The ropes run off the top of the band rather than beginning in mid air,
+       which is the difference between an object hung from the ceiling and an
+       object floating. Clipped, so they stop at the band and do not reach up
+       into whatever section the page happens to end on. */
+    <footer className="deep overflow-hidden">
+      <Container width="wide" className="pb-14 lg:pb-16">
+        {/* Two poles, not four columns. The lockup and the sentence that says
+            what the company is at one end, everything clickable at the other,
+            and the width between them left alone. A four-column grid across
+            1560px was spreading nine links and two sentences over the whole
+            monitor, which is what "spaced out" means. */}
+        <div className="grid gap-x-16 gap-y-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
           <div>
-            <Wordmark size={22} />
-            <p className="mt-5 max-w-[30ch] font-body text-[14.5px] leading-relaxed opacity-80">
+            {/* Hung from the top edge of the band: the ropes in the art run
+                to the top of their frame, and the footer's own padding is
+                where they start. Clipped by the band, so they do not reach up
+                into whatever section the page ends on. */}
+            <Wordmark size={176} className="-mt-9 lg:-mt-11" />
+            <p className="mt-7 max-w-[32ch] font-body text-[14.5px] leading-relaxed opacity-80">
               Calm, purposeful edutainment for young children, built on research and made by people.
             </p>
           </div>
 
-          <nav aria-label="Footer">
-            <p className="eyebrow">Company</p>
-            <ul className="mt-5 space-y-2.5">
-              {NAV.map((i) => (
-                <li key={i.to}>
-                  <Link to={i.to} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
-                    {i.label}
-                  </Link>
+          <div className="flex flex-wrap gap-x-14 gap-y-10 lg:pt-16">
+            <nav aria-label="Footer">
+              <p className="eyebrow">This site</p>
+              {/* Two columns of a single list, not two headed sections. Seven
+                  links in one tall column was most of the old footer's
+                  height, and splitting them under invented headings would be
+                  inventing an information architecture for a footer. */}
+              <ul className="mt-5 grid grid-cols-2 gap-x-10 gap-y-2.5">
+                {NAV.map((i) => (
+                  <li key={i.to}>
+                    <Link to={i.to} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
+                      {i.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div>
+              <p className="eyebrow">Elsewhere</p>
+              <ul className="mt-5 space-y-4">
+                <li>
+                  <ShowSiteLink className="link-draw inline-flex font-body text-[14.5px] font-bold" />
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-75">
+                    Episodes, characters and activities.
+                  </p>
                 </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div>
-            <p className="eyebrow">The show</p>
-            <p className="mt-5 max-w-[26ch] font-body text-[14.5px] leading-relaxed opacity-80">
-              Episodes, characters and activities all live on the show's own site.
-            </p>
-            <ShowSiteLink className="link-draw mt-4 inline-flex font-body text-[14.5px] font-bold" />
-          </div>
-
-          <div>
-            <p className="eyebrow">Contact</p>
-            <p className="mt-5 max-w-[28ch] font-body text-[14.5px] leading-relaxed opacity-80">
-              Partnership, distribution and press enquiries all reach us directly.
-            </p>
-            <TextLink to="/contact" className="mt-4">
-              <IconMail size={15} />
-              Partnership enquiries
-            </TextLink>
+                <li>
+                  <TextLink to="/contact">
+                    <IconMail size={15} />
+                    Partnership enquiries
+                  </TextLink>
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-75">
+                    Distribution, investment and press.
+                  </p>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="hairline mt-14 flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
+        <div className="hairline mt-12 flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-body text-[12.5px] opacity-65">
             © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® and
             PupsPlayer™ are trade marks of CLÉ Family Media.

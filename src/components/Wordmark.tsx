@@ -1,47 +1,47 @@
+import { Relief } from "@/components/render";
+
 /**
- * Interim CLÉ Family Media lockup.
+ * The CLÉ Family Media lockup. Their actual logo.
  *
- * The brand kit contains no vector company mark: only a 3D felted render and a
- * rendered monogram, neither of which survives a favicon or a small footer
- * lockup. This is a typographic stand-in built from the two faces the brand
- * already uses, set the way the show site sets them: the name in Calistoga,
- * the descriptor in the widely tracked uppercase micro-voice.
+ * WHAT THIS REPLACED, 2026-10-09. A typographic stand-in: the name in
+ * Calistoga beside "F A M I L Y   M E D I A" tracked out to 0.3em, written
+ * when the brand audit concluded that the kit holds no vector mark. The audit
+ * was right about the vector and wrong about the consequence. The company has
+ * a logo and everyone involved knows exactly what it looks like: three
+ * needle-felted animals on ropes spelling CLÉ, with FAMILY MEDIA felted
+ * underneath. Setting their name in a different typeface and spacing the
+ * second line out until it filled the width is not a stand-in for that, it is
+ * a different company's logo. The client's word for it was "awful".
  *
- * It is deliberately not a monogram in a coloured tile. That shape reads as a
- * placeholder logo on every site that has ever used it, and inventing a mark
- * would pre-empt the real one. See QUESTIONS.md #21.
+ * The art for it was in `public/brand/` the whole time, in four pieces cut
+ * free of the background: mark-c, mark-l, mark-e and mark-word. All four sit
+ * on one shared 591px canvas, so they composite straight back into the
+ * original lockup; `public/brand/mark-lockup.png` and its height map are that
+ * composite, built once by hand. `Relief` then lights it off the 16 bit
+ * height map with the same lamp every other object on this site stands under,
+ * so the wool reads as wool on the navy rather than as a pasted cut-out.
+ *
+ * Still a stand-in for ONE thing: a favicon and any use under about 110px,
+ * where three animals on ropes stop being legible. That needs the vector, and
+ * it is QUESTIONS.md #21.
  */
 
 export function Wordmark({
   className = "",
-  size = 21,
-  /** Fills the name with the wool metallic. The brand's lettering is
-   *  needle-felted, so its wordmark carries the sheen wool has under a light
-   *  rather than sitting as flat ink. */
-  wool = false,
+  /** Width of the lockup. Under ~110px the animals stop reading. */
+  size = 168,
 }: {
   className?: string;
   size?: number;
-  wool?: boolean;
 }) {
   return (
-    <span
-      className={`inline-flex items-baseline gap-[0.5em] font-display leading-none ${className}`}
-      style={{ fontSize: size, letterSpacing: "-0.015em" }}
-    >
-      <span className={wool ? "wool-fill wool-animate" : undefined}>CLÉ</span>
-      <span
-        /* 0.85, not the 0.70 this started at. The descriptor is set at 42% of
-           the name, which is about 9px in the header, and 9px bold body brown
-           at 0.70 measures 4.28:1 against the header's paper: under the 4.5
-           an AA text of that size needs, on every page of the site. At 0.85
-           it is 6.9:1 on cream and 6.0:1 on paper-1, and the step down from
-           the name it is paired with still reads. */
-        className="font-body font-bold uppercase opacity-85"
-        style={{ fontSize: size * 0.42, letterSpacing: "0.3em" }}
-      >
-        Family Media
-      </span>
-    </span>
+    <Relief
+      mark="lockup"
+      size={size}
+      depth={2.6}
+      travel={0.4}
+      className={className}
+      alt="CLÉ Family Media"
+    />
   );
 }

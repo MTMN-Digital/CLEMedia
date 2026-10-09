@@ -30,8 +30,9 @@ import { useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "
    ========================================================================== */
 
 export interface ReliefProps {
-  /** Which mark. `word` is the full lockup, the letters are the single glyphs. */
-  mark?: "word" | "c" | "l" | "e";
+  /** Which mark. `lockup` is the whole logo, `word` is the felted FAMILY
+   *  MEDIA line on its own frame, the rest are the single glyphs. */
+  mark?: "lockup" | "word" | "c" | "l" | "e";
   /** Intended rendered size in px. A ceiling, not a floor. */
   size?: number;
   /** Take the width of whatever is laying this out instead of `size`. */
@@ -55,11 +56,21 @@ export interface ReliefProps {
   alt?: string;
 }
 
-const ART: Record<string, { colour: string; height: string }> = {
-  word: { colour: "/brand/mark-word.png", height: "/brand/depth/mark-word-height.png" },
-  c: { colour: "/brand/mark-c.png", height: "/brand/depth/mark-c-height.png" },
-  l: { colour: "/brand/mark-l.png", height: "/brand/depth/mark-l-height.png" },
-  e: { colour: "/brand/mark-e.png", height: "/brand/depth/mark-e-height.png" },
+/* `w` and `h` are the art's own pixels, so the <img> reserves the right box
+   and nothing shifts while it loads. The letters are square frames with the
+   object small inside them, which is what the hanging row's negative margins
+   exist to undo. */
+const ART: Record<string, { colour: string; height: string; w: number; h: number }> = {
+  /* The whole logo. The four cut-outs are positioned on one shared 591px
+     canvas, so compositing them reproduces the original lockup exactly:
+     three animals on their ropes with the felted word under them. Built by
+     hand once rather than reassembled in CSS, because the geometry is in the
+     art and anything that re-derives it in a layout gets it slightly wrong. */
+  lockup: { colour: "/brand/mark-lockup.png", height: "/brand/depth/mark-lockup-height.png", w: 589, h: 591 },
+  word: { colour: "/brand/mark-word.png", height: "/brand/depth/mark-word-height.png", w: 591, h: 591 },
+  c: { colour: "/brand/mark-c.png", height: "/brand/depth/mark-c-height.png", w: 591, h: 591 },
+  l: { colour: "/brand/mark-l.png", height: "/brand/depth/mark-l-height.png", w: 591, h: 591 },
+  e: { colour: "/brand/mark-e.png", height: "/brand/depth/mark-e-height.png", w: 591, h: 591 },
 };
 
 export function Relief({
@@ -174,12 +185,12 @@ export function Relief({
         </filter>
       </svg>
 
-      <img className="rk-relief__art" src={art.colour} width={size} height={size} alt="" decoding="async" />
+      <img className="rk-relief__art" src={art.colour} width={art.w} height={art.h} alt="" decoding="async" />
       <img
         className="rk-relief__lit"
         src={art.height}
-        width={size}
-        height={size}
+        width={art.w}
+        height={art.h}
         alt=""
         decoding="async"
         style={{

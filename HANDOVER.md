@@ -126,7 +126,60 @@ tint and the contrast sweep measured them at 1.80:1. They carry the order,
 which is the one thing a reader has to get off the board, so they are now at
 70% and over 3:1, and they are read out rather than `aria-hidden`.
 
-### 3.3 `src/lib/animations.ts` is deleted
+### 3.3 `/contact` again, and the footer logo, later the same day
+
+The client's verdict on the first `/contact` pass: it works, but it "isn't
+unique in any way and it doesn't relate to CLÉ". Fair. It was a cream card on
+clay and the same card would have suited an accountancy firm. Separately: the
+footer "is so awful, why isn't it just their actual logo, why have you spaced
+everything out".
+
+**The footer logo was not their logo.** `Wordmark` was a typographic
+stand-in, the name in Calistoga beside "FAMILY MEDIA" tracked out to 0.3em,
+written because the brand audit found no vector mark in the kit. The audit was
+right about the vector and wrong about the consequence: the company has a logo
+and everyone knows what it looks like, and the art for it was in
+`public/brand/` the whole time in four cut-out pieces. `mark-c`, `mark-l`,
+`mark-e` and `mark-word` all sit on one shared 591px canvas, so they composite
+straight back into the original lockup. `public/brand/mark-lockup.png` and its
+height map are that composite, built once; `Relief` lights it off the 16 bit
+map. It hangs from the top edge of the navy band on its own ropes, which is
+what the art was drawn to do.
+
+Still a stand-in for one thing: a favicon and any use under about 110px, where
+three animals on ropes stop being legible. That needs the vector, QUESTIONS.md
+#21.
+
+**The footer was the default four-column shape**, nine links and two sentences
+spread across 1560px. It is two poles now: the lockup and the one sentence
+that says what the company is at one end, everything clickable at the other.
+
+**`/contact` is CLÉ's own room.** One lit scene, built from the render kit the
+rest of the site already stands its objects in: the five people named on every
+episode's review are mounted on the wall on their own ledges, and the sheet you
+write on stands in front of them under the same lamp. Same room as `/team`'s
+review board and `/media`'s studio wall, which is the point. The headline
+"write to the people who make it" now has the people in it.
+
+**The sheet does not lean.** Every other object in the kit sits on a few
+degrees of 3D rotation. A form cannot: a rotated ancestor blurs the text in
+every field and moves the caret and the native autofill panel off the control
+they belong to. The room supplies the light and the shadow; the thing you type
+into stays square and flat.
+
+**The closing navy band is gone.** It carried the hanging CLÉ mark and the
+company's formal identity. The mark is the footer's now, on every page, so the
+page was showing it twice and stacking two navy bands. The company details
+moved onto the sheet under the form, where a letter puts the address.
+
+Three contrast failures were found and fixed on the way, all the same trap the
+file had already documented twice: `opacity` on a text colour. Ink at 0.78 on
+the wall measured 3.66 to 4.31:1. A fourth came from the room being twice as
+tall as the bench `.rk-studio`'s gradient was tuned for, so its floor is
+raised for a tall room only (`.rk-room`); `/media` and `/team` keep the
+gradient they were measured on.
+
+### 3.4 `src/lib/animations.ts` is deleted
 
 It had zero importers for the life of the project, and it could not get any:
 framer-motion writes opacity inline, the contrast sweep cannot force an inline
