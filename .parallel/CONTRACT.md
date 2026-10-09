@@ -298,3 +298,42 @@ item 1 of the earlier `DONE-WHEN.md`.
 - **A card lying on a surface is `seated`.** Without it a Stage draws the cast
   shadow but no contact pool, so the object reads as laid OVER the ground
   rather than ON it. `/journal`'s strands had that for a week.
+
+## Run 2026-10-09 drawings: the second visual language
+
+The lit room shows an OBJECT. It cannot show an ARGUMENT, and this site is
+mostly argument, which is why nine pages came out of the fan-out carrying one
+object each and several hundred words of prose. The client's verdict was "so
+many words, and blocks of words" and "maybe one render per page".
+
+So there is a second language beside the room: **ink line drawings on paper**,
+and it has rules.
+
+- **A drawing replaces a LAYOUT, never a sentence.** Not one word has been cut
+  to make room for any of these. The drawing goes above or beside the prose
+  and says the same thing in one look; the prose stays complete underneath for
+  the reader who wants it.
+- **Draw the argument the page is actually making.** `/shop` refuses a
+  checkout, so it draws a checkout with every field struck but one.
+  `/ethical-ai` is about a line nobody crosses, so it draws that line with
+  people above it and tools below. Home's three stages are one journey, so one
+  stroke runs out of a screen and lands on a sheet. None of these would fit
+  another page, which is the test.
+- **Never an icon row.** Three or four small marks in a line, one per feature,
+  is the tell this language exists to avoid. One drawing per idea, at scale.
+- **Every label is lifted from the page's own copy.** A drawing is a new way
+  to read a claim, never a new claim. A diagram that states something the page
+  does not is the worst kind of invented fact, because it looks authoritative.
+- **Ink line work, one rationed accent, no fills beyond the paper tone.** The
+  accent marks the one moment that matters (the child getting up, the line
+  itself, the strike). Everything else is ink at 1.4 to 2.5 stroke.
+- **It draws itself once, then stops.** `stroke-dasharray` on a
+  `pathLength="1"` path, or a `scaleX` transform on a rule, run from a CSS
+  keyframe with `forwards`. CSS and not a motion library, because the contrast
+  sweep zeroes `animation-duration` and pins the iteration count, so a
+  `forwards` keyframe lands on its final frame for the capture where a JS
+  tween photographs mid-draw. Reduced motion drops the animation and the
+  drawing is simply complete.
+- **A drawing needs a composition at 390 too.** The home arc is horizontal
+  above 900px and vertical below it: same three marks, laid out for the space.
+  A 1200-wide drawing on a phone is 110px tall and is not a drawing.

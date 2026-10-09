@@ -4,6 +4,8 @@ import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
+import { Bluebell } from "@/components/graphics";
+import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { Button, Card, Container, Kicker, Section, TextLink } from "@/components/ui";
 import { IconArrow, IconExternal } from "@/components/icons";
@@ -153,8 +155,21 @@ export default function Story() {
               <div className="flex items-center gap-4 lg:block">
                 {/* Width on the wrapper: Figure's own w-full beats a width in
                     className, which is a Tailwind ordering trap. */}
-                <div className="w-[76px] shrink-0 sm:w-[88px] lg:w-[104px]">
-                  <Figure asset="person.conor" priority rounded="rounded-full" className="aspect-square" sizes="104px" />
+                {/* A MOUNTED PRINT, not a circle. The contract has said
+                    "portraits are rounded squares, never circles" since the
+                    sitepass-w2 run and this page had three of them, which is
+                    the same six people rendered two ways on one site. It is
+                    also the letter's only object, so it stands on a ledge
+                    under the room's lamp like every other portrait here. */}
+                <div className="w-[88px] shrink-0 sm:w-[100px] lg:w-[128px]">
+                  <Stage seated ground="ledge" light={-34} tilt={5.4} turn={-1.2} roll={-0.3} depth={0.5}>
+                    <div className="rk-mat">
+                      <div className="rk-pic">
+                        <Figure asset="person.conor" priority rounded="rounded-none" className="aspect-square" sizes="128px" />
+                        <span className="rk-light" aria-hidden="true" />
+                      </div>
+                    </div>
+                  </Stage>
                 </div>
                 <div className="lg:mt-5">
                   <p className="text-[16px] font-semibold text-ink">Conor Sexton</p>
@@ -226,7 +241,12 @@ export default function Story() {
             hung in red. Not a box with a coloured edge, which is what it was. */}
         <Container width="wide" className="my-10 sm:my-14">
           <Wipe>
-            <blockquote className="border-y border-rule py-10 sm:py-14">
+            {/* The letter's one drawn moment. The bluebell is the show's own
+                world, it was drawn for this project in graphics.tsx and never
+                mounted anywhere, and it is the only ornament on this page.
+                It grows beside the line rather than sitting on top of it. */}
+            <blockquote className="grid items-center gap-7 border-y border-rule py-10 sm:py-14 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-12">
+              <Bluebell size={132} className="story-bell hidden text-red-deep lg:block" />
               <p className="t-h1 max-w-[26ch] pl-[0.45em] font-display text-ink [text-indent:-0.45em]">
                 <span className="text-red-deep" aria-hidden="true">&ldquo;</span>
                 I was not looking for something to keep her quiet. I was looking for something I
@@ -364,7 +384,7 @@ export default function Story() {
                   {PEOPLE.map((p) => (
                     <li key={p.name} className="flex items-center gap-3">
                       <div className="w-[40px] shrink-0">
-                        <Figure asset={p.asset} rounded="rounded-full" className="aspect-square" sizes="40px" />
+                        <Figure asset={p.asset} rounded="rounded-[6px]" className="aspect-square" sizes="40px" />
                       </div>
                       <div>
                         <p className="text-[14px] font-semibold leading-tight text-ink">{p.name}</p>
@@ -490,7 +510,7 @@ export default function Story() {
             <div>
               <div className="flex items-center gap-4">
                 <div className="w-[56px] shrink-0">
-                  <Figure asset="person.conor" rounded="rounded-full" className="aspect-square" sizes="56px" />
+                  <Figure asset="person.conor" rounded="rounded-[var(--radius-sm)]" className="aspect-square" sizes="56px" />
                 </div>
                 <div>
                   <p className="text-[16px] font-semibold">Conor Sexton</p>

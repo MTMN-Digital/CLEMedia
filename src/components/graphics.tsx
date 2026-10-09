@@ -30,14 +30,14 @@ export function Bluebell({ size = 40, className = "" }: { size?: number; classNa
   return (
     <svg width={size} height={size * 1.6} viewBox="0 0 40 64" className={className} aria-hidden="true"
       fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-      <path d="M20 62V20" />
-      <path d="M20 26c-6 0-9-3-10-8 5-1 9 2 10 8z" fill="currentColor" fillOpacity="0.16" />
-      <path d="M20 34c6 0 9-3 10-8-5-1-9 2-10 8z" fill="currentColor" fillOpacity="0.16" />
+      <path pathLength="1" d="M20 62V20" />
+      <path pathLength="1" d="M20 26c-6 0-9-3-10-8 5-1 9 2 10 8z" fill="currentColor" fillOpacity="0.16" />
+      <path pathLength="1" d="M20 34c6 0 9-3 10-8-5-1-9 2-10 8z" fill="currentColor" fillOpacity="0.16" />
       <g fill="currentColor" fillOpacity="0.28">
-        <path d="M13 12c0-3.6 2.4-6 5-6s5 2.4 5 6c0 3.2-2 6-5 7.4C15 18 13 15.2 13 12z" />
+        <path pathLength="1" d="M13 12c0-3.6 2.4-6 5-6s5 2.4 5 6c0 3.2-2 6-5 7.4C15 18 13 15.2 13 12z" />
       </g>
-      <path d="M13 12c0-3.6 2.4-6 5-6s5 2.4 5 6c0 3.2-2 6-5 7.4C15 18 13 15.2 13 12z" />
-      <path d="M28 20c0-2.8 1.9-4.7 3.9-4.7s3.9 1.9 3.9 4.7c0 2.5-1.6 4.7-3.9 5.8-2.3-1.1-3.9-3.3-3.9-5.8z"
+      <path pathLength="1" d="M13 12c0-3.6 2.4-6 5-6s5 2.4 5 6c0 3.2-2 6-5 7.4C15 18 13 15.2 13 12z" />
+      <path pathLength="1" d="M28 20c0-2.8 1.9-4.7 3.9-4.7s3.9 1.9 3.9 4.7c0 2.5-1.6 4.7-3.9 5.8-2.3-1.1-3.9-3.3-3.9-5.8z"
         fill="currentColor" fillOpacity="0.2" />
     </svg>
   );

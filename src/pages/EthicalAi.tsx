@@ -3,6 +3,7 @@ import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionLine } from "@/components/ethical-ai/ProductionLine";
+import { TheLine } from "@/components/ethical-ai/TheLine";
 import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
 import { Button, Container, DisclosurePanel, Kicker, Lead, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
@@ -240,7 +241,13 @@ export default function EthicalAi() {
             <h2 id="lines-h" className="t-h2">The lines we hold</h2>
             <p className="t-body text-body">The standards we hold ourselves to.</p>
           </Settle>
-          <Settle as="ol" className="mt-10">
+
+          {/* The boundary, drawn, before the six commitments that describe it.
+              A reader scanning gets the answer in one look; the detail below
+              is untouched and complete. See components/ethical-ai/TheLine.tsx. */}
+          <TheLine />
+
+          <Settle as="ol" className="mt-14">
             {LINES.map((l) => (
               <li key={l.title} className="hairline grid gap-y-2 py-7 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-x-10">
                 <h3 className="t-h3 max-w-[16ch]">{l.title}</h3>

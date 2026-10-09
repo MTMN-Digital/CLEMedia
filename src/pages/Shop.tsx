@@ -6,6 +6,7 @@ import { IconArrow, IconExternal } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
 import { Shelf } from "@/components/shop/Shelf";
 import { EmptyShelf } from "@/components/shop/EmptyShelf";
+import { NotAsked } from "@/components/shop/NotAsked";
 import { SheetBench } from "@/components/shop/PrintedSheet";
 import { useProducts } from "@/components/shop/catalogue";
 import { APP_LAUNCHED, SITE } from "@/lib/site";
@@ -152,6 +153,12 @@ export default function Shop() {
                 Every line here is a thing the code does or does not do, not a policy we wrote
                 down afterwards.
               </p>
+
+              {/* What the five rows opposite add up to, drawn. The rows keep
+                  every word and every file path. */}
+              <div className="mt-10">
+                <NotAsked />
+              </div>
             </div>
 
             <dl className="border-t border-rule">
