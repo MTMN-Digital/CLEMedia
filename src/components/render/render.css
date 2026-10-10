@@ -548,6 +548,18 @@
 
 /* The portraits, mounted. A thin ink edge and a tight shadow, so they read
    as prints pinned to the slip rather than as avatars. */
+/* The stage's own mark, between the title and who signed it off.
+
+   THIS RULE BELONGS HERE, not in index.css. The first attempt put it there
+   next to `.rk-slip__faces`, except that selector lives in THIS file, so the
+   insert matched nothing and silently did nothing: the marks shipped at the
+   kit's 48px default while the diff claimed 56. Every `.rk-slip__*` rule is
+   in render.css. The height is the knob; each mark's width falls out of its
+   own drawing, which is part of how the six avoid lining up as an icon row. */
+.rk-slip__mark {
+  margin-top: 1rem;
+  --stagemark-h: 56px;
+}
 .rk-slip__faces {
   margin-top: 1.1rem;
   display: flex;
