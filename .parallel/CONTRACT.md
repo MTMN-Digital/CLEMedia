@@ -371,3 +371,40 @@ It read well and it was wrong: the episode does not travel, it stays ten
 minutes long, and what changes is how far out from it the child gets. It is
 rings now, the episode small at the centre, which is the page's own pull
 quote. Ask what is actually moving before drawing an arrow.
+
+### LEGIBLE BEATS UNIQUE, settled 2026-10-10
+
+The drawing rules said "never an icon row" and "if the drawing would fit
+another page it is decoration". Both are still true. But they were read as
+"every item in a set must get a DIFFERENT mark", and that is where the six
+review-stage marks went wrong.
+
+What happened: six marks were commissioned for the six review stages, each
+required to be unique in kind and silhouette. The brief was followed well and
+the result failed anyway. Four of the six stages are genuinely the same action
+(a named person reads the work and can object to it), so the only way to make
+six different marks was to reach for a different metaphor each time: a bean
+frame for "concept and story", two posts and sightlines for "parent and early
+years review". Each was defensible in a sentence and none of them could be
+read without that sentence. A drawing whose caption has to teach it is not
+working.
+
+THE RULE NOW:
+
+1. **Legibility first.** A reader must get the drawing from the drawing. If it
+   only resolves once the caption explains the metaphor, redraw it or drop it.
+2. **Ask whether the set actually differs before drawing per item.** If the
+   items are alike, draw the SET once, or not at all. Six marks for six things
+   that are four-fifths the same is the mistake, not the execution.
+3. **Where two items genuinely do the same thing, they carry the same mark.**
+   A script page at stage 02 and a script page at stage 04 is correct, because
+   both stages handle a script. Repetition across a set is honest when the
+   things repeat. Difference is earned, never manufactured.
+4. **Draw the artefact, not the abstraction.** "Educational review" has no
+   shape. The activity sheet it reviews does. Where a stage, a step or a
+   feature is an abstract process, draw the real object it acts on.
+
+"Never an icon row" still stands, and is not in conflict with this: an icon
+row is six interchangeable glyphs in matched boxes standing in for categories.
+A set of drawn artefacts, at different sizes, some repeating because the work
+repeats, is not that.
