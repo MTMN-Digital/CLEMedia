@@ -1,23 +1,17 @@
-/* ─── The search that kept finding less, on /story ─────────────────────────
+/* ─── Crossing them off, on /story ──────────────────────────────────────────
    See components/story/TheGap.tsx. Marks come from components/draw/draw.css;
-   this file is layout and the entry gate only.
+   this file is layout only.
 
    It sits in the margin column of the founder's letter: 14rem on lg, 16rem on
    xl, and stacked above its paragraph under 1024px where the column is gone.
    The viewBox is 240 wide because that is the width it really gets, so the
    cap keeps it at drawn size when the margin is wider than the drawing, and
    it is left aligned so it sits on the prose axis when stacked.
+
+   Held until seen by its ancestor: the letter's Spread is a Settle, and the
+   kit pauses `.ink-draw` and `.ink-in` under any `.is-armed:not(.is-in)`
+   ancestor (see draw.css). No gate of its own, so there is one mechanism,
+   not two.
    ─────────────────────────────────────────────────────────────────────── */
 .gap { margin: 0; }
 .gap__ink { max-width: 256px; }
-
-/* ─── Held until seen ───────────────────────────────────────────────────
-   The kit's arrivals run from mount, and this drawing is well below the fold
-   on /story, so it would finish before anyone scrolled to it. JS arms the
-   hold in a layout effect, the observer releases it once on entry. With no
-   JS, no IntersectionObserver or reduced motion the hold is never armed and
-   the finished drawing is simply there. */
-.gap.is-armed:not(.is-in) .ink-draw,
-.gap.is-armed:not(.is-in) .ink-in {
-  animation-play-state: paused;
-}

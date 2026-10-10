@@ -9,7 +9,9 @@
    fills its column; these six sit inside text and have to keep their own
    proportions, which is most of what stops them reading as six tiles.
 
-   `--stagemark-h`  the height, on any ancestor. Designed for 40px to 56px.
+   `--stagemark-h`  the height, on any ancestor. Designed for, and checked
+                    at, the two sizes the site uses: 40px at the /ethical-ai
+                    gates and 56px on the /team slips.
    `--stagemark-delay`  an offset added to every delay inside the mark, so a
                         host that staggers its own children can push the
                         drawing to land with them. Defaults to 0s.

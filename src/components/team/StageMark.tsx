@@ -3,68 +3,69 @@ import "@/components/draw/draw.css";
 import "./stagemark.css";
 
 /* ============================================================================
-   Six marks, one per review stage.
+   Six marks, one per review stage. SECOND SET, drawn 2026-10-10.
 
-   THE PROBLEM WITH THE BRIEF, stated before the answer. Six small drawings
-   shown together, three across and two down, is the shape of an icon row,
-   and an icon row is banned on this site (draw.css, rule three). The marks
-   below are drawn to not be one, and it is worth being explicit about what
-   that took, because "six clever icons" would have failed the same test.
+   WHAT THE FIRST SET WAS, AND WHY IT FAILED. The first brief demanded six
+   marks each unique in kind and silhouette and banned any repetition, and
+   the set it got followed that brief well: a story arc for 01 (later a bean
+   frame), a fanned pile with one sheet picked out for 02, stacked blocks for
+   03, two posts with sightlines to a page for 04, a voice trace with a
+   bracket for 05, a barrier down for 06. The client, looking at them in place
+   on the review board, said they "don't really illustrate what they are next
+   to." He was right, and the fault was the brief, not the hand. Four of the
+   six stages are the SAME ACTION: a named person reads the work and can
+   object to it. The only way to draw that four different ways was to reach
+   for a different metaphor each time, and each metaphor needed its caption
+   to teach it. A drawing whose caption has to explain it is not working.
+   Only 06 read on its own, and 05 half read.
 
-   1. THEY DIFFER IN KIND. One is three canes tied at the top and pushed
-      into bare ground, with nothing growing on them (01, an open frame,
-      all line, no object inside it). One is a pile of paper with one sheet
-      pulled out (02, a cluster, mostly thin). One is a stack standing on a floor (03, an
-      object, tall). One is two lines of sight meeting a page (04, a
-      gesture, open, mostly thin). One is a dense jagged line with a mark
-      over part of it (05, a trace again but of a different texture, and
-      annotated). One is a barrier down over a thing on the ground (06, an
-      object, grounded, heavy). They do not share a silhouette, a visual
-      mass, a stroke mix, or a box: the viewBoxes run from 56 to 96 wide on
-      a 48 unit height and the CSS sizes by height, so the wide ones are
-      wide and the tall one is tall. The eye cannot line them up.
+   THE RULE NOW, written into .parallel/CONTRACT.md as LEGIBLE BEATS UNIQUE:
+   1. Legibility first. The reader gets it from the drawing, not the caption.
+   2. Where two stages genuinely do the same thing, they CARRY THE SAME MARK.
+      Repetition across a set is honest when the work repeats. Difference is
+      earned, never manufactured.
+   3. Draw the ARTEFACT, not the abstraction. "Educational review" has no
+      shape; the activity sheet it reviews does.
+   "Never an icon row" still stands: six interchangeable glyphs in matched
+   boxes standing in for categories. A set of drawn artefacts at different
+   sizes, two of them the same because the work is the same, is not that.
+   Do not re-litigate this by making the six different again.
 
-   2. EACH ONE DEPICTS WHAT ONLY ITS STAGE DOES. The test used was the
-      brief's own: would this mark serve the next stage with the label
-      swapped. An empty frame set before anything grows is only the stage
-      that happens before anything exists. The pulled take is only the
-      stage that selects assets rather than accepting them. The blocks are
-      only the offline, hands-on activity reviewed against early years
-      practice. Two heights reading one page is only the stage that reads
-      as a parent and as a child. A take with a stretch bracketed to redo is
-      only the stage that listens. A barrier down is only the stage that can
-      hold a release.
+   THE SIX NOW. Each is the thing the stage physically handles.
+   01  One blank page with the first hand-written marks on it. Nothing else
+       exists yet; the page is mostly empty and the two strokes are
+       handwriting at full weight, not printed lines.
+   02  The script: a stack of pages, the front one in screenplay layout
+       (a short centred character cue, then an indented block of dialogue,
+       twice). It arrives line by line, because here it is being written.
+   03  The activity sheet that follows the episode, landscape, with a row of
+       big shapes to work on and a dotted line to trace beneath them. This
+       is the object Paula reviews against early years practice.
+   04  THE SAME SCRIPT AS 02, on purpose: Lydia and Kirstie read the script
+       Alan wrote. It is already whole when it arrives, and what draws is a
+       reader's mark in the margin beside each block. Written at 02, read
+       at 04, one artefact.
+   05  The finished episode: a 16:9 frame with a picture in it and the voice
+       take as a hand-drawn trace beneath, the same width, because the stage
+       checks voices AND visuals. The first set showed only the waveform.
+   06  The barrier down, kept from the first set because it was the one that
+       worked. The episode waits on the ground under the arm, drawn at the
+       same 16:9 proportion as the frame in 05 so it is recognisably the
+       same object; the arm and its hinge are the one red in the set.
 
-   3. NONE IS A CATEGORY SYMBOL. No magnifier, bulb, tick, gear, lined
-      document, bubble or eye. Each is a thing that is physically on a desk
-      or in a room when that stage happens in a small studio.
+   THE ACCENT IS SPENT ON 06 AND NOWHERE ELSE. Five marks are ink only. 06
+   being the single coloured mark is load-bearing: it is the only stage that
+   can stop a release.
 
-   4. 06 IS NOT THE SIXTH OF SIX. It is the only mark with the accent, the
-      only one with a heavy stroke, the only one with a solid, the only one
-      standing on the kit's ground line, and the last thing that moves in it
-      is the arm coming down. The accent is spent here and nowhere else in
-      the set, which is the kit's rule and the page's claim: five stages
-      decide, one can stop.
-
-   THE SIX, for the record:
-   01  A bean frame: three canes tied together at the top and set into the
-       ground, with nothing on them yet. The first thing put into a garden,
-       before anything grows, and the thing everything that grows is held
-       to. Three canes, one tie, bare ground.
-   02  Assets as they arrive, fanned in a loose pile, thin. The one the
-       director picked, lifted out and set square at full weight.
-   03  Three blocks stacked the way a child stacks them, the top one not
-       quite straight, standing on the activity sheet lying flat.
-   04  The script, upright, read from two heights: a tall post and a short
-       one, each with a line of sight to the page.
-   05  A voice take as a hand-drawn trace, with the stretch to redo
-       bracketed above it.
-   06  The barrier down. The episode waits on the ground under the arm; the
-       arm and its hinge are the one red in the set.
+   SIZED BY HEIGHT. Every viewBox is 48 tall and the widths run from 38 to
+   64, so a page is narrow and a sheet or a barrier is wide. The CSS sizes by
+   height and lets the width fall out, which is most of what stops six marks
+   in a grid lining up as tiles. Designed to read at 40px (the /ethical-ai
+   gates) and 56px (the /team slips); checked at both.
 
    DECORATIVE, deliberately. Both hosts already carry the number, the stage,
    the person and the sentence as text, so every svg is aria-hidden and
-   carries no label of its own. A label here would be the same text twice.
+   carries no label of its own.
 
    ARRIVAL. The kit's classes only, with `--d` and `--dur`; each mark
    choreographs itself inside roughly 1.3s and then stops. The kit's
@@ -84,131 +85,173 @@ const at = (d: number, dur?: number): CSSProperties =>
 
 const SVG = { className: "ink stagemark", "aria-hidden": true, focusable: "false" } as const;
 
-/* 01. Set before anything exists. The first draft of this was a story arc
-   with the acts ticked, and at 56px on a cream slip a curve with ticks on
-   it is a line graph, whatever the ticks mean. This is the frame a gardener
-   puts up before anything is planted: three canes pushed into bare ground
-   and tied together at the top, and nothing growing on them. The concept,
-   the story and the learning goal are the three canes, set at once and
-   held by one tie, and everything that grows later is held to them. Only
-   the stage that happens before anything exists can be an empty frame.
+/* One page, the size every page in the set shares. The script (02, 04) and
+   the first page (01) are the same sheet so the family reads across the
+   board: one page, then a stack of them, then the stack again. */
+const PAGE = { x: 3, y: 4, width: 32, height: 43, rx: 1 } as const;
 
-   The canes cross and carry on past the tie, the way cut canes do. That
-   crossing is what stops it reading as a camera tripod, which on a media
-   company's site would say the opposite of the sentence beside it. The
-   canes are cut to three different lengths because they are canes, not a
-   drawn triangle; the feet go through the ground line because they are
-   pushed in, not stood on it. Each cane draws from its foot upward, left,
-   right, then the back one, and the tie lands last. No ink-heavy and no
-   accent: the ground here is the thin line of 04's floor, not the surface
-   06 stands on. */
-function Canes() {
+/* 01. Nothing exists yet. One page, blank, and the first two strokes of
+   handwriting at the top: the first runs most of the width, the second
+   stops short because the hand is still going. Full-weight strokes, because
+   this is a hand writing on a page, not a page that has been typed. The
+   rest of the page stays empty, which is the whole statement. */
+function FirstPage() {
   return (
-    <svg {...SVG} viewBox="0 0 60 48">
-      <path d="M3 44 H57" className="ink-line ink-thin ink-in" style={at(0)} />
-      <path d="M7 47.5 L35.3 7" pathLength="1" className="ink-line ink-draw" style={at(0.1, 0.5)} />
-      <path d="M53 47.5 L23.5 8.8" pathLength="1" className="ink-line ink-draw" style={at(0.3, 0.5)} />
-      <path d="M31 47 L28.2 3" pathLength="1" className="ink-line ink-draw" style={at(0.5, 0.5)} />
-      <g className="ink-in" style={at(0.95)}>
-        <circle cx="29" cy="16" r="2.6" className="ink-fill" />
-        <circle cx="29" cy="16" r="2.6" className="ink-line" />
+    <svg {...SVG} viewBox="0 0 38 48">
+      <g className="ink-in" style={at(0)}>
+        <rect {...PAGE} className="ink-fill" />
+        <rect {...PAGE} className="ink-line" />
       </g>
-    </svg>
-  );
-}
-
-/* 02. Selected, not accepted as they arrive. The pile is thin and loose
-   because nobody chose its order; the picked one is the only full-weight
-   line, and it draws itself after the pile has landed. */
-function Picked() {
-  return (
-    <svg {...SVG} viewBox="0 0 64 48">
-      <g className="ink-line ink-thin ink-in" style={at(0)}>
-        <rect x="6" y="26" width="24" height="17" rx="1.5" transform="rotate(-12 18 34)" />
-        <rect x="10" y="27" width="24" height="17" rx="1.5" transform="rotate(-4 22 35)" />
-        <rect x="14" y="28" width="24" height="17" rx="1.5" transform="rotate(4 26 36)" />
-      </g>
-      <rect x="34" y="6" width="25" height="18" rx="1.5" className="ink-fill ink-in" style={at(0.4)} />
-      <rect
-        x="34" y="6" width="25" height="18" rx="1.5"
-        pathLength="1"
-        className="ink-line ink-draw"
-        style={at(0.4, 0.7)}
-      />
-    </svg>
-  );
-}
-
-/* 03. Early years practice is hands-on. The blocks land one on another,
-   bottom first, and the top one is set down a few degrees off, which is how
-   a child sets a block down. The sheet under them is the activity. */
-function Blocks() {
-  return (
-    <svg {...SVG} viewBox="0 0 56 48">
-      <path d="M4 44 L14 31 H52 L42 44 Z" className="ink-line ink-thin ink-in" style={at(0)} />
-      <g className="ink-in" style={at(0.25)}>
-        <rect x="18" y="31" width="19" height="11" className="ink-fill" />
-        <rect x="18" y="31" width="19" height="11" className="ink-line" />
-      </g>
-      <g className="ink-in" style={at(0.5)}>
-        <rect x="22" y="20" width="14" height="11" className="ink-fill" />
-        <rect x="22" y="20" width="14" height="11" className="ink-line" />
-      </g>
-      <g className="ink-in" style={at(0.75)} transform="rotate(7 25.5 13.5)">
-        <rect x="20" y="8" width="11" height="11" className="ink-fill" />
-        <rect x="20" y="8" width="11" height="11" className="ink-line" />
-      </g>
-    </svg>
-  );
-}
-
-/* 04. Read again, from two heights. The page is upright and full weight;
-   the two readers are a tall post and a short one on the same floor, and
-   their lines of sight draw out to the page after it is there. No faces,
-   no eyes: the heights are the whole point. */
-function TwoHeights() {
-  return (
-    <svg {...SVG} viewBox="0 0 72 48">
-      <path d="M2 44 H44" className="ink-line ink-thin ink-in" style={at(0)} />
-      <path d="M9 44 V 6 M24 44 V 27" className="ink-line ink-in" style={at(0.1)} />
-      <g className="ink-in" style={at(0.3)}>
-        <rect x="50" y="8" width="17" height="30" rx="1" className="ink-fill" />
-        <rect x="50" y="8" width="17" height="30" rx="1" className="ink-line" />
-      </g>
-      <path d="M9 6 L50 15" pathLength="1" className="ink-line ink-thin ink-draw" style={at(0.6, 0.6)} />
-      <path d="M24 27 L50 30" pathLength="1" className="ink-line ink-thin ink-draw" style={at(0.8, 0.5)} />
-    </svg>
-  );
-}
-
-/* 05. Listened to. The take is a hand-drawn trace, uneven on purpose, and
-   it draws itself at the pace of being played through. The bracket lands
-   after, over the stretch that gets sent back. */
-function Take() {
-  return (
-    <svg {...SVG} viewBox="0 0 88 48">
       <path
-        d="M4 28 l3 -3 2 5 3 -9 2 7 3 -4 3 11 2 -16 3 9 2 -3 3 7 3 -12 2 7 3 -4 2 6 3 -13 3 15 2 -9 3 6 2 -3 3 7 3 -11 2 5 3 -3 2 6 3 -8 3 6 2 -3 3 2"
+        d="M9 11.5 q2 -2.2 4 0 t4 0 t4 0 t4 0 t3 0"
         pathLength="1"
         className="ink-line ink-draw"
-        style={at(0, 1.1)}
+        style={at(0.3, 0.5)}
       />
-      <path d="M38 9 v -4 h 27 v 4" className="ink-line ink-in" style={at(1.05)} />
+      <path
+        d="M9 18.5 q2 -2.2 4 0 t4 0 t3 0"
+        pathLength="1"
+        className="ink-line ink-draw"
+        style={at(0.75, 0.4)}
+      />
     </svg>
   );
 }
 
-/* 06. Held. Ground first, then the episode waiting on it, then the post
-   rises, and last the arm comes down from the hinge: the arm's path starts
-   at the post so `.ink-draw` swings it out from there. The arm and the hinge
-   are the only accent in the set. */
+/* The script page's lines, in screenplay layout: a short cue centred on the
+   page, then a block of dialogue indented under it, twice. Shared by 02 and
+   04 so the two stages carry the identical page. */
+const SCRIPT_LINES = [
+  "M15 11 H23",
+  "M10 16 H30",
+  "M10 21 H28",
+  "M15 28 H23",
+  "M10 33 H30",
+  "M10 38 H27",
+  "M10 43 H20",
+] as const;
+
+/* The stack: a second page offset behind the front one. The front page's
+   fill hides most of it, so only a top edge and a right edge show, which is
+   what a stack of pages looks like from above. */
+function ScriptPages() {
+  return (
+    <>
+      <rect x="7" y="1" width="32" height="43" rx="1" className="ink-line ink-thin" />
+      <rect {...PAGE} className="ink-fill" />
+      <rect {...PAGE} className="ink-line" />
+    </>
+  );
+}
+
+/* 02. The script being written. The stack lands, then the lines arrive one
+   after another from the top, cue, block, cue, block, at the pace of a page
+   being typed. Thin, because printed text is detail inside an object. */
+function ScriptWritten() {
+  return (
+    <svg {...SVG} viewBox="0 0 42 48">
+      <g className="ink-in" style={at(0)}>
+        <ScriptPages />
+      </g>
+      {SCRIPT_LINES.map((d, i) => (
+        <path
+          key={d}
+          d={d}
+          pathLength="1"
+          className="ink-line ink-thin ink-draw"
+          style={at(0.25 + i * 0.12, 0.35)}
+        />
+      ))}
+    </svg>
+  );
+}
+
+/* 04. The same script, read. The page is already whole when it arrives
+   (it was written at 02), and the only things that draw are the reader's
+   marks in the margin, one beside each block of dialogue: the mark a reader
+   makes against a passage they want to talk about. Two blocks, two marks,
+   two readers. Nothing else changes, because nothing else should. */
+function ScriptRead() {
+  return (
+    <svg {...SVG} viewBox="0 0 42 48">
+      <g className="ink-in" style={at(0)}>
+        <ScriptPages />
+        <g className="ink-line ink-thin">
+          {SCRIPT_LINES.map((d) => (
+            <path key={d} d={d} />
+          ))}
+        </g>
+      </g>
+      <path d="M6.5 14 V 22" pathLength="1" className="ink-line ink-draw" style={at(0.5, 0.4)} />
+      <path d="M6.5 31 V 39" pathLength="1" className="ink-line ink-draw" style={at(0.85, 0.4)} />
+    </svg>
+  );
+}
+
+/* 03. The activity sheet. Landscape, because a worksheet for a four year
+   old is, with a row of three big shapes to work on and a dotted line to
+   trace beneath. The shapes draw themselves one at a time, left to right,
+   and the trace line lands last. The dotted line is an `.ink-in`, not a
+   draw, because the kit's draw overrides any dash. */
+function ActivitySheet() {
+  return (
+    <svg {...SVG} viewBox="0 0 58 48">
+      <g className="ink-in" style={at(0)}>
+        <rect x="2" y="6" width="54" height="37" rx="1" className="ink-fill" />
+        <rect x="2" y="6" width="54" height="37" rx="1" className="ink-line" />
+      </g>
+      <circle cx="13" cy="19.5" r="6" pathLength="1" className="ink-line ink-draw" style={at(0.25, 0.45)} />
+      <rect x="23" y="13.5" width="12" height="12" pathLength="1" className="ink-line ink-draw" style={at(0.5, 0.45)} />
+      <path d="M39 25.5 L45 13.5 L51 25.5 Z" pathLength="1" className="ink-line ink-draw" style={at(0.75, 0.45)} />
+      <path
+        d="M8 35.5 H50"
+        strokeDasharray="2 2.6"
+        className="ink-line ink-thin ink-in"
+        style={at(1.05)}
+      />
+    </svg>
+  );
+}
+
+/* 05. The finished episode: picture and sound together. A 16:9 frame with
+   the garden's horizon inside it, and the voice take as a hand-drawn trace
+   under it at the same width, drawing itself at the pace of being played
+   through. Both halves at once because the stage checks both. */
+function Episode() {
+  return (
+    <svg {...SVG} viewBox="0 0 62 48">
+      <g className="ink-in" style={at(0)}>
+        <rect x="4" y="3" width="54" height="30" rx="1.5" className="ink-fill" />
+        <rect x="4" y="3" width="54" height="30" rx="1.5" className="ink-line" />
+      </g>
+      <path
+        d="M4 26 C 14 18 22 24 30 21 S 46 12 58 19"
+        pathLength="1"
+        className="ink-line ink-thin ink-draw"
+        style={at(0.2, 0.5)}
+      />
+      <path
+        d="M4 41 L6 39 8 43 10 36.5 12 41 14 39 16 45 18 36.5 20 41 22 39 24 43 26 37 28 40 30 38 32 44 34 36.5 36 42 38 39 40 45.5 42 38 44 41 46 39 48 43 50 37.5 52 41 54 39.5 56 42 58 40.5"
+        pathLength="1"
+        className="ink-line ink-draw"
+        style={at(0.4, 0.9)}
+      />
+    </svg>
+  );
+}
+
+/* 06. Held. Kept from the first set. Ground first, then the episode waiting
+   on it (the same 16:9 object as 05, small), then the post rises, and last
+   the arm comes down from the hinge: the arm's path starts at the post so
+   `.ink-draw` swings it out from there. The arm and the hinge are the only
+   accent in the set. */
 function Held() {
   return (
     <svg {...SVG} viewBox="0 0 64 48">
       <path d="M2 45 H62" className="ink-line ink-heavy ink-in" style={at(0)} />
       <g className="ink-in" style={at(0.2)}>
-        <rect x="8" y="33" width="13" height="12" rx="1" className="ink-fill" />
-        <rect x="8" y="33" width="13" height="12" rx="1" className="ink-line" />
+        <rect x="6" y="35" width="18" height="10" rx="1" className="ink-fill" />
+        <rect x="6" y="35" width="18" height="10" rx="1" className="ink-line" />
       </g>
       <path d="M52 45 V 12" pathLength="1" className="ink-line ink-draw" style={at(0.35, 0.5)} />
       <circle cx="52" cy="14" r="3" className="ink-accent-fill ink-in" style={at(0.8)} />
@@ -218,11 +261,11 @@ function Held() {
 }
 
 const MARKS: Record<StageNumber, () => ReactElement> = {
-  1: Canes,
-  2: Picked,
-  3: Blocks,
-  4: TwoHeights,
-  5: Take,
+  1: FirstPage,
+  2: ScriptWritten,
+  3: ActivitySheet,
+  4: ScriptRead,
+  5: Episode,
   6: Held,
 };
 
