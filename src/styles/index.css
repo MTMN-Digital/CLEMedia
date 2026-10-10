@@ -1284,35 +1284,6 @@ body > * { position: relative; z-index: 1; }
 .corr__cap { margin-top: 1rem; }
 .corr__note { margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.55; color: var(--color-raised); }
 
-/* ─── No way out, on /app ─────────────────────────────────────────────────
-   See components/app/NoWayOut.tsx.
-   ─────────────────────────────────────────────────────────────────────── */
-.noway { margin: 0; display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); align-items: center; }
-.noway > svg { max-width: 300px; margin-inline: auto; width: 100%; }
-.noway__keys { display: grid; gap: 1.5rem; }
-.noway__inside { margin-top: 0.6rem; font-size: 1rem; font-weight: 600; color: var(--color-ink); }
-.noway__keys ul { list-style: none; margin: 0.8rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
-.noway__keys li {
-  position: relative;
-  padding-left: 1.4rem;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  color: var(--color-body);
-}
-.noway__keys li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.52em;
-  width: 10px;
-  height: 2px;
-  background: var(--color-red-deep);
-  border-radius: 2px;
-}
-@media (min-width: 760px) {
-  .noway { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); column-gap: clamp(2rem, 4vw, 3.5rem); }
-}
-
 /* The roster's margin track. Small on purpose: it repeats seven times down
    one page. See components/team/StandsAt.tsx. */
 .standsat { max-width: 150px; margin-top: 0.85rem; }
