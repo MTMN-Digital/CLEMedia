@@ -211,9 +211,20 @@ const assets = {
      CONTENT-NEEDED.md so he can substitute preferred stills.
   ───────────────────────────────────────────────────────────────────────── */
   "slate.ep1": { base: "/brand/slate-ep1", alt: "Episode one, The Feather, its felted title slate", width: 640, height: 360, label: "Episode still" },
-  "slate.ep2": { base: "/brand/slate-ep2", alt: "Episode two, The Strawberry, its felted title slate", width: 640, height: 360, label: "Episode still" },
-  "slate.ep3": { base: "/brand/slate-ep3", alt: "Episode three, Chicken Vision, its felted title slate", width: 640, height: 360, label: "Episode still" },
-  "slate.ep4": { base: "/brand/slate-ep4", alt: "Episode four, The Cuckoo\u2019s Incredible Journey, its felted title slate", width: 640, height: 360, label: "Episode still" },
+  /* 2, 3 and 4 REPLACED 2026-10-10 from Alan's new set. Same slates, redrawn
+     with Finn and Fia looking over the top of each one, so the alt text says
+     so. Episode one has no new version in that drop and keeps its original.
+
+     5 and 6 are NEW EPISODES and their art is here and ready, but they are
+     NOT mounted anywhere yet: no runtime, no YouTube link and no confirmation
+     they are released have been supplied, and the site states "four episodes
+     released so far" in several places. Listing them without those facts
+     would be inventing a release. CONTENT-NEEDED.md. */
+  "slate.ep2": { base: "/brand/slate-ep2", alt: "Episode two, The Strawberry, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
+  "slate.ep3": { base: "/brand/slate-ep3", alt: "Episode three, Chicken Vision, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
+  "slate.ep4": { base: "/brand/slate-ep4", alt: "Episode four, The Cuckoo\u2019s Incredible Journey, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
+  "slate.ep5": { base: "/brand/slate-ep5", alt: "Episode five, Colour Quest, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
+  "slate.ep6": { base: "/brand/slate-ep6", alt: "Episode six, Fluffy Clouds, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
 
   "app.screen1": { base: null, alt: "PupsPlayer episode library", width: 540, height: 960, label: "App screenshot 1", fallback: "png" },
   "app.screen2": { base: null, alt: "PupsPlayer play activity", width: 540, height: 960, label: "App screenshot 2", fallback: "png" },

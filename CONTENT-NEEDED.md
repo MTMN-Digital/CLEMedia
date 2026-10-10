@@ -630,3 +630,31 @@ notice already promises. It is a paid service, roughly 9 to 14 euro a month at
 this size. Vercel's own Web Analytics is another option and is included on the
 plan this site is hosted on. Either way the notice goes back to the present
 tense on the day it is switched on, not before.
+
+## Episode slates, new set received 2026-10-10
+
+Alan sent five felted title slates (002 to 006) via Drive. They are the same
+slates as before, redrawn with Finn and Fia looking over the top of each one.
+Optimised into the house AVIF/WebP/JPG pipeline at 1x and 2x, metadata
+stripped, and live.
+
+| Item | Status | Notes |
+|---|---|---|
+| Slates 002, 003, 004 | ✅ | Replaced the previous versions everywhere |
+| Slates 005, 006 | ⚠️ | Art is in the repo and ready, NOT mounted. See below |
+| Slate 001, The Feather | ❌ | No new version in the drop. The wall now shows three slates with the pugs and one without, which is visibly inconsistent. Ask Alan for a matching 001 |
+
+**Episodes 005 Colour Quest and 006 Fluffy Clouds cannot go on the site yet.**
+Three facts are missing for each and every one of them is a claim:
+
+1. **Are they released?** The site says "four episodes released so far" on the
+   home page, `/app` and `/media`. Adding two more changes that sentence.
+2. **Runtime.** Every episode on the site carries one, read off the real
+   video. Nothing supplied for these.
+3. **YouTube URL.** The filmstrip, the studio wall and `/app` all link
+   straight to the video.
+
+**Episode 004's title does not match.** The site says "The Cuckoo's Incredible
+Journey", taken from the show's own site; the new slate says "THE CUCKOO".
+Left as it was, because an episode title is the client's to change, not ours.
+Confirm which is right.
