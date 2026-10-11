@@ -1,0 +1,7 @@
+/* ─── The logo strip that is not there, on /media ─────────────────────────
+   See components/media/NoStrip.tsx.
+   ─────────────────────────────────────────────────────────────────────── */
+/* Capped: stretched to the 1560 container the slots were 230px wide and the
+   strip stopped looking like the thing it is imitating. */
+.nostrip { margin: clamp(2rem, 4vw, 3rem) 0 0; max-width: 724px; }
+.nostrip__cap { display: block; margin-top: 0.9rem; }

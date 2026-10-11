@@ -1,4 +1,5 @@
 import "@/components/draw/draw.css";
+import "./nostrip.css";
 
 /* ============================================================================
    The logo strip that is not there.

@@ -63,6 +63,11 @@
    rather than wobbles. Anything under about 40 units tall takes it. */
 .ink { filter: url(#ink-hand-1oas022); }
 .ink--exact { filter: none; }
+/* Wobble, no graphite. For a drawing whose size is set by something other
+   than the drawing: a float bounded by the prose measure, a mark inside a
+   card. The tooth needs about four device pixels of stroke to sit in and
+   these do not have them, so it would read as noise. See InkDefs.tsx. */
+.ink--fine { filter: url(#ink-fine); }
 
 /* A drawing inside a `Settle` that has not arrived yet is still painted, and
    a filter on a hidden subtree is work the compositor does for nobody.
@@ -151,13 +156,13 @@
 @keyframes ink-extend { to { transform: scaleX(1); } }
 
 /* A ring that opens out from its own centre. */
-.ink-open {
+.ink-open-qeq6inx {
   transform: scale(0.82);
   transform-origin: center;
   opacity: 0;
-  animation: ink-open 0.8s var(--ease-out) var(--d, 0s) forwards;
+  animation: ink-open-qeq6inx 0.8s var(--ease-out) var(--d, 0s) forwards;
 }
-@keyframes ink-open { to { transform: scale(1); opacity: 1; } }
+@keyframes ink-open-qeq6inx { to { transform: scale(1); opacity: 1; } }
 
 /* ─── Held until it is seen ───────────────────────────────────────────────
    A kit animation runs from MOUNT, so a drawing below the fold finishes
@@ -178,7 +183,7 @@
 .is-armed:not(.is-in) .ink-draw,
 .is-armed:not(.is-in) .ink-in,
 .is-armed:not(.is-in) .ink-extend,
-.is-armed:not(.is-in) .ink-open {
+.is-armed:not(.is-in) .ink-open-qeq6inx {
   animation-play-state: paused;
 }
 
@@ -189,7 +194,7 @@
   .ink-draw { animation: none; stroke-dashoffset: 0; }
   .ink-in { animation: none; opacity: 1; }
   .ink-extend { animation: none; transform: scaleX(1); }
-  .ink-open { animation: none; transform: scale(1); opacity: 1; }
+  .ink-open-qeq6inx { animation: none; transform: scale(1); opacity: 1; }
 }
 
 /* ─── Labels on a drawing ───────────────────────────────────────────────── */

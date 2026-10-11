@@ -1370,22 +1370,12 @@ body > * { position: relative; z-index: 1; }
   .theline__below > li { animation: none; opacity: 1; }
 }
 
-/* ─── The logo strip that is not there, on /media ─────────────────────────
-   See components/media/NoStrip.tsx.
-   ─────────────────────────────────────────────────────────────────────── */
-/* Capped: stretched to the 1560 container the slots were 230px wide and the
-   strip stopped looking like the thing it is imitating. */
-.nostrip { margin: clamp(2rem, 4vw, 3rem) 0 0; max-width: 724px; }
-.nostrip__cap { display: block; margin-top: 0.9rem; }
-
-/* ─── A correction that stays, on /journal ────────────────────────────────
-   See components/journal/Correction.tsx. Sits on the navy band, so the kit's
-   `.deep` overrides give it cream line work.
-   ─────────────────────────────────────────────────────────────────────── */
-.corr { margin: 0; max-width: 300px; }
-.corr__cap { margin-top: 1rem; }
-.corr__note { margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.55; color: var(--color-raised); }
-
+/* Moved on 2026-10-11 to src/components/media/nostrip.css, beside the component it dresses, so one
+   worker could own the drawing and its layout together without editing this
+   file, which every page depends on. */
+/* Moved on 2026-10-11 to src/components/journal/corr.css, beside the component it dresses, so one
+   worker could own the drawing and its layout together without editing this
+   file, which every page depends on. */
 /* The roster's margin track. Small on purpose: it repeats seven times down
    one page. See components/team/StandsAt.tsx. */
 .standsat { max-width: 150px; margin-top: 0.85rem; }

@@ -1,5 +1,6 @@
 import { Settle } from "@/components/Settle";
 import "@/components/draw/draw.css";
+import "./corr.css";
 
 /* ============================================================================
    A correction that stays on the page.
