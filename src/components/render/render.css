@@ -478,6 +478,27 @@
   font-weight: 600;
   color: var(--color-ink);
 }
+/* The mark on a slate that is finished art but not yet published. It takes
+   the runtime's place on the label card, because it answers the same question
+   the runtime does: what is this, and can I watch it now. Red on cream at
+   10px, which is the site's own hold colour, the one it uses for a release
+   that is stopped. */
+.rk-tag-soon {
+  margin-left: auto;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-red-deep);
+  padding: 0.1rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: max(9px, 3.1cqw);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+}
+/* Under 256px the runtime goes to keep the title whole; the mark stays,
+   because it is the one thing a visitor needs to know about this plate. */
+
 /* On a plate under 256px the card keeps the number and the whole title and
    lets the runtime go; it is still in the link's name, and on the filmstrip. */
 @container (max-width: 16rem) {

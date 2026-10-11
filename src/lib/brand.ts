@@ -43,7 +43,7 @@ export interface BrandAsset {
    * and fail to decode silently. The rewrite now excludes file extensions, so
    * a mismatch 404s loudly instead, but it still has to be right.
    */
-  fallback?: "jpg" | "png";
+  fallback?: "png" | "jpg";
   /**
    * Set when no AVIF exists for this asset. <picture> does NOT fall through to
    * the next source if the one it chose 404s, so emitting an AVIF source for a
@@ -210,16 +210,21 @@ const assets = {
      pulls them; the slot names do not change. Flagged to Conor in
      CONTENT-NEEDED.md so he can substitute preferred stills.
   ───────────────────────────────────────────────────────────────────────── */
-  "slate.ep1": { base: "/brand/slate-ep1", alt: "Episode one, The Feather, its felted title slate", width: 640, height: 360, label: "Episode still" },
-  /* 2, 3 and 4 REPLACED 2026-10-10 from Alan's new set. Same slates, redrawn
-     with Finn and Fia looking over the top of each one, so the alt text says
-     so. Episode one has no new version in that drop and keeps its original.
+  "slate.ep1": { base: "/brand/slate-ep1", alt: "Episode one, The Feather, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
+  /* ALL SIX REPLACED, 2026-10-10 and 2026-10-11, from Alan's "new titles"
+   folder. The same slates redrawn with Finn and Fia looking over the top of
+   each one. 001 came in the same drop as the rest and was missed on the
+   first pass because it is a .jpg where the other five are .png.
 
-     5 and 6 are NEW EPISODES and their art is here and ready, but they are
-     NOT mounted anywhere yet: no runtime, no YouTube link and no confirmation
-     they are released have been supplied, and the site states "four episodes
-     released so far" in several places. Listing them without those facts
-     would be inventing a release. CONTENT-NEEDED.md. */
+   Five and six are episodes that are NOT YET RELEASED. Their art is final and
+   they are mounted on all three surfaces, each carrying a "Coming soon" mark
+   instead of a runtime, because the client asked for the series to be shown
+   whole. No runtime, no link and no synopsis exists for either and none is
+   invented: see lib/episodes.ts, where `released: false` is what carries that.
+
+   Titles here and in episodes.ts come from the SLATES, not from the YouTube
+   video titles, on the client's instruction. That is why 004 is "The Cuckoo"
+   while the video it links to is still "The Cuckoo's Incredible Journey". */
   "slate.ep2": { base: "/brand/slate-ep2", alt: "Episode two, The Strawberry, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
   "slate.ep3": { base: "/brand/slate-ep3", alt: "Episode three, Chicken Vision, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
   "slate.ep4": { base: "/brand/slate-ep4", alt: "Episode four, The Cuckoo\u2019s Incredible Journey, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },

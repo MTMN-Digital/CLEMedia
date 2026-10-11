@@ -1,5 +1,5 @@
 import { Figure } from "@/components/Figure";
-import type { AssetKey } from "@/lib/brand";
+import { type Episode, COMING_SOON } from "@/lib/episodes";
 
 /* ============================================================================
    Domain-specific chrome: the production slate.
@@ -20,19 +20,11 @@ import type { AssetKey } from "@/lib/brand";
    than guessed.
    ========================================================================== */
 
-export interface Episode {
-  n: string;
-  title: string;
-  line: string;
-  asset: AssetKey;
-  href: string;
-  /** Real values only. Absent until measured. */
-  runtime?: string;
-  guidance?: string;
-  reviewer?: string;
-}
+/* The shape lives in lib/episodes.ts now, with the list itself. Re-exported
+   so the components that already import `Episode` from here keep working. */
+export type { Episode };
 
-function Bracket({ at }: { at: "tl" | "tr" | "bl" | "br" }) {
+function Bracket({ at }: { at: "tr" | "tl" | "bl" | "br" }) {
   const pos = {
     tl: "left-0 top-0 border-l-2 border-t-2",
     tr: "right-0 top-0 border-r-2 border-t-2",
@@ -48,11 +40,18 @@ function Bracket({ at }: { at: "tl" | "tr" | "bl" | "br" }) {
 }
 
 export function EpisodeSlate({ ep }: { ep: Episode }) {
+  /* AN UNRELEASED EPISODE IS NOT A LINK. There is nowhere to go, so it is a
+     div: a disabled anchor is still in the tab order and still announces
+     itself as a link to a screen reader, which is a worse answer than not
+     being one. Everything inside is identical, so the two tiles sit in the
+     strip at the same size and weight as the four that are out. */
+  const Shell = ep.released ? "a" : "div";
+  const linkProps = ep.released
+    ? { href: ep.href, target: "_blank", rel: "noopener noreferrer" }
+    : {};
   return (
-    <a
-      href={ep.href}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Shell
+      {...linkProps}
       className="group relative block focus-visible:outline-none"
     >
       {/* The frame. Corner brackets are the viewfinder move, in red so they
@@ -77,9 +76,16 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
             <span className="truncate font-mono text-[11px] tracking-[0.1em] text-white/70">
               PAWSITIVE PUGS &amp; PALS
             </span>
-            {ep.runtime && (
+            {/* A runtime if there is one, and the mark if there is not. They
+                occupy the same slot because they answer the same question:
+                what is this, and can I watch it. */}
+            {ep.runtime ? (
               <span className="tnum ml-auto font-mono text-[11px] tracking-[0.12em] text-white/90">
                 {ep.runtime}
+              </span>
+            ) : (
+              <span className="ml-auto rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] whitespace-nowrap text-white uppercase">
+                {COMING_SOON}
               </span>
             )}
           </div>
@@ -87,7 +93,10 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
 
         <div className="px-3 pb-2 pt-5">
           <h3 className="t-h3">{ep.title}</h3>
-          <p className="t-body mt-2.5 text-slate">{ep.line}</p>
+          {/* No synopsis has been supplied for an unreleased episode and one
+              is not written here. The tile carries its number, its title and
+              its artwork, which is everything that is actually known. */}
+          {ep.line && <p className="t-body mt-2.5 text-slate">{ep.line}</p>}
 
           {/* The credit line. Only renders the fields that actually exist. */}
           {(ep.guidance || ep.reviewer) && (
@@ -108,10 +117,10 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
           )}
 
           <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-red-deep">
-            Watch on YouTube
+            {ep.released ? "Watch on YouTube" : COMING_SOON}
           </p>
         </div>
       </div>
-    </a>
+    </Shell>
   );
 }

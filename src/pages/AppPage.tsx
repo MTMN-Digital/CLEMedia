@@ -7,13 +7,13 @@ import { NoWayOut } from "@/components/app/NoWayOut";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import {
-  PupsPlayerWalkthrough,
-  STAGES,
-  type AppEpisode,
   type Stage,
+  STAGES,
+  PupsPlayerWalkthrough,
 } from "@/components/app/PupsPlayerWalkthrough";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconBell, IconExternal } from "@/components/icons";
+import { EPISODES, RELEASED } from "@/lib/episodes";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconExternal, IconBell, IconArrow } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
 import { APP_LAUNCHED } from "@/lib/site";
 
@@ -47,19 +47,15 @@ import { APP_LAUNCHED } from "@/lib/site";
 /** Store links stay null until the client supplies them, and a null link
  *  renders nothing: no badge placeholders. The launch flag is APP_LAUNCHED in
  *  src/lib/site.ts. */
-const STORE_LINKS: { label: string; href: string | null }[] = [
+const STORE_LINKS: { href: string | null; label: string }[] = [
   { label: "App Store", href: null },
   { label: "Google Play", href: null },
 ];
 
-/* Episode numbers, titles and runtimes are the real ones, read off the felted
-   title slates and the YouTube metadata. Same source as the home page. */
-const EPISODES: AppEpisode[] = [
-  { n: "001", title: "The Feather", runtime: "9:16", asset: "slate.ep1", href: "https://www.youtube.com/watch?v=duMH0f12JM0" },
-  { n: "002", title: "The Strawberry", runtime: "11:10", asset: "slate.ep2", href: "https://www.youtube.com/watch?v=ZzhkZJgQEK0" },
-  { n: "003", title: "Chicken Vision", runtime: "10:41", asset: "slate.ep3", href: "https://www.youtube.com/watch?v=CpgIzsn500Q" },
-  { n: "004", title: "The Cuckoo's Incredible Journey", runtime: "9:58", asset: "slate.ep4", href: "https://www.youtube.com/watch?v=yHYYBpMfE6M" },
-];
+/* The six live in lib/episodes.ts. This page uses both slices of them:
+   `RELEASED` for the ledger below, which is headed "Released so far" and
+   must stay exactly that, and the whole list for the walkthrough, which is
+   the app's own episode picker and shows what series one will hold. */
 
 /* The six commitments, carried over from the previous page word for word in
    substance. They were the page's own claims about the plan and they stay its
@@ -119,7 +115,7 @@ const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[]
 
 
 export default function AppPage() {
-  const liveLinks = STORE_LINKS.filter((l): l is { label: string; href: string } => Boolean(l.href));
+  const liveLinks = STORE_LINKS.filter((l): l is { href: string; label: string } => Boolean(l.href));
 
   return (
     <>
@@ -174,7 +170,7 @@ export default function AppPage() {
             <div className="card rounded-[var(--radius-lg)] px-5 py-1 sm:px-6 lg:mb-1.5">
               <p className="eyebrow eyebrow-sm  pt-5">Released so far</p>
               <ul className="mt-2">
-                {EPISODES.map((ep) => (
+                {RELEASED.map((ep) => (
                   <li key={ep.n} className="hairline">
                     <a
                       href={ep.href}

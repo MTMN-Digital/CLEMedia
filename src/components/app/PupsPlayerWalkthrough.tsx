@@ -1,7 +1,8 @@
-import { useId, useRef, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, useRef, useId, useState } from "react";
 import { Figure } from "@/components/Figure";
-import { IconCheck, IconLock } from "@/components/icons";
-import { LOGOS, type AssetKey } from "@/lib/brand";
+import { IconLock, IconCheck } from "@/components/icons";
+import { LOGOS } from "@/lib/brand";
+import { type Episode, COMING_SOON } from "@/lib/episodes";
 
 /* ============================================================================
    The drawn product.
@@ -34,17 +35,13 @@ import { LOGOS, type AssetKey } from "@/lib/brand";
    type the height it needs.
    ========================================================================== */
 
-export type Stage = "watch" | "play" | "learn";
+export type Stage = "learn" | "watch" | "play";
 
-export interface AppEpisode {
-  n: string;
-  title: string;
-  runtime: string;
-  asset: AssetKey;
-  href: string;
-}
+/* The walkthrough takes the site's own episode shape, so an unreleased one
+   arrives here with no runtime and no link and the screens below cope. */
+export type AppEpisode = Episode;
 
-export const STAGES: { id: Stage; title: string; line: string }[] = [
+export const STAGES: { title: string; id: Stage; line: string }[] = [
   {
     id: "watch",
     title: "Watch",
@@ -142,7 +139,7 @@ function StageNav({ active }: { active: Stage }) {
   );
 }
 
-function ScreenHeading({ title, line }: { title: string; line: string }) {
+function ScreenHeading({ title, line }: { line: string; title: string }) {
   return (
     <div>
       <p className={`${T.heading} font-bold leading-[1.15] text-ink`}>{title}</p>
@@ -178,7 +175,17 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
                   {ep.n}
                 </span>
                 <span className={`${T.tile} truncate font-semibold text-ink`}>{ep.title}</span>
-                <span className={`${T.mono} tnum shrink-0 font-mono text-muted @sm:ml-auto`}>{ep.runtime}</span>
+                {/* The runtime, or the mark if there is no runtime because
+                    there is no episode yet. Same slot, same question. */}
+                {ep.runtime ? (
+                  <span className={`${T.mono} tnum shrink-0 font-mono text-muted @sm:ml-auto`}>{ep.runtime}</span>
+                ) : (
+                  <span
+                    className={`${T.mono} shrink-0 rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-[0.5em] py-[0.1em] font-mono tracking-[0.1em] whitespace-nowrap text-white uppercase @sm:ml-auto`}
+                  >
+                    {COMING_SOON}
+                  </span>
+                )}
               </div>
             </li>
           ))}
@@ -243,7 +250,7 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
    puzzles and activity sheets, and the three generic marks below are those
    three kinds and nothing more specific.
 --------------------------------------------------------------------------- */
-function Sheet({ kind, label }: { kind: "colour" | "activity" | "puzzle"; label: string }) {
+function Sheet({ kind, label }: { kind: "colour" | "puzzle" | "activity"; label: string }) {
   return (
     <li>
       <div className="flex aspect-[1/1.3] flex-col gap-[0.45em] rounded-[0.5em] border border-rule bg-raised p-[0.7em]">

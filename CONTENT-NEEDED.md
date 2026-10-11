@@ -640,21 +640,31 @@ stripped, and live.
 
 | Item | Status | Notes |
 |---|---|---|
-| Slates 002, 003, 004 | ✅ | Replaced the previous versions everywhere |
-| Slates 005, 006 | ⚠️ | Art is in the repo and ready, NOT mounted. See below |
-| Slate 001, The Feather | ❌ | No new version in the drop. The wall now shows three slates with the pugs and one without, which is visibly inconsistent. Ask Alan for a matching 001 |
+| Slates 001 to 006 | ✅ | All six replaced from Alan's "new titles" folder, 2026-10-11. The felted slates redrawn with Finn and Fia looking over each one |
+| Episodes 005, 006 mounted | ✅ | On the home filmstrip, the `/media` studio wall and the `/app` walkthrough, each marked "Coming soon" instead of a runtime |
+| Runtime and link for 005, 006 | ❌ | Still unknown, and the site does not invent them. Send them when the episodes go up and the two tiles become ordinary ones |
+| Synopsis for 005, 006 | ❌ | The other four carry the show's own one-line synopsis. These two carry none, so their tiles are shorter than the rest |
 
-**Episodes 005 Colour Quest and 006 Fluffy Clouds cannot go on the site yet.**
-Three facts are missing for each and every one of them is a claim:
+**What changed on 2026-10-11.** 001 was in the original drop all along, as a
+`.jpg` where the other five were `.png`, and was missed on the first pass. All
+six slates are now the new artwork.
 
-1. **Are they released?** The site says "four episodes released so far" on the
-   home page, `/app` and `/media`. Adding two more changes that sentence.
-2. **Runtime.** Every episode on the site carries one, read off the real
-   video. Nothing supplied for these.
-3. **YouTube URL.** The filmstrip, the studio wall and `/app` all link
-   straight to the video.
+**Episode titles now come from the slates, not from YouTube.** The client's
+ruling: the folder is called "new titles", so the slate wins wherever the two
+disagree. That is why 004 is "The Cuckoo" on the site while the video it links
+to is still called "The Cuckoo's Incredible Journey" on the channel. If Alan
+renames the videos, nothing here needs to change.
 
-**Episode 004's title does not match.** The site says "The Cuckoo's Incredible
-Journey", taken from the show's own site; the new slate says "THE CUCKOO".
-Left as it was, because an episode title is the client's to change, not ours.
-Confirm which is right.
+**The count lines were deliberately left alone.** The client's instruction was
+to keep saying four are out and let the "Coming soon" marks explain the six
+tiles. One line on `/media` did change, because it said the SERIES has four
+episodes rather than that four are available, and six slates now sit above it.
+
+**Still owed for 005 and 006:**
+
+1. **Runtime.** Every released episode on the site carries one, read off the
+   real video. These two show "Coming soon" in that slot instead.
+2. **The YouTube URL**, so the tile becomes a link. Until then it is not one:
+   a tile with nowhere to go is rendered as plain markup rather than as a
+   disabled link, so it stays out of the tab order.
+3. **The one-line synopsis**, in the show's own words.

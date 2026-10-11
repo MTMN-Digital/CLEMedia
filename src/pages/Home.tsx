@@ -4,15 +4,15 @@ import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { HeroFilm } from "@/components/home/HeroFilm";
 import { Wipe } from "@/components/Wipe";
-import { type Episode } from "@/components/home/EpisodeSlate";
+import { EPISODES } from "@/lib/episodes";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
 import {
-  Button, Container, Kicker, Lead, Section,
+  Button, Kicker, Section, Container, Lead,
 } from "@/components/ui";
-import { IconArrow, IconMail } from "@/components/icons";
+import { IconMail, IconArrow } from "@/components/icons";
 
 /* ============================================================================
    THE RULE THIS PAGE WAS REBUILT ON.
@@ -59,25 +59,9 @@ import { IconArrow, IconMail } from "@/components/icons";
 
 /* Titles and synopses are the show's own, from its site. Runtime, age range and
    theme are not known and are not invented. */
-/* Episode numbers, titles and runtimes are the REAL ones, read off the felted
-   title slates and the YouTube metadata, not off the show site's section
-   ordering, which lists them in a different sequence. The Strawberry is 002 and
-   Chicken Vision is 003; the show site implies the reverse. Runtimes are the
-   actual durations. */
-const EPISODES: Episode[] = [
-  { n: "001", title: "The Feather", runtime: "9:16", asset: "slate.ep1",
-    href: "https://www.youtube.com/watch?v=duMH0f12JM0",
-    line: "A drifting feather leads Finn and Fia on a garden adventure where slowing down helps them discover the hidden beauty of the tiny world around them." },
-  { n: "002", title: "The Strawberry", runtime: "11:10", asset: "slate.ep2",
-    href: "https://www.youtube.com/watch?v=ZzhkZJgQEK0",
-    line: "After a rainy night in the garden, Finn and Fia help a tiny field mouse reach a strawberry just out of reach." },
-  { n: "003", title: "Chicken Vision", runtime: "10:41", asset: "slate.ep3",
-    href: "https://www.youtube.com/watch?v=CpgIzsn500Q",
-    line: "Finn and Fia meet a hen who sees the garden differently, and discover the world can look magical in many different ways." },
-  { n: "004", title: "The Cuckoo's Incredible Journey", runtime: "9:58", asset: "slate.ep4",
-    href: "https://www.youtube.com/watch?v=yHYYBpMfE6M",
-    line: "Finn and Fia go on a new adventure and meet a cuckoo who has travelled a very long way to get back to the garden." },
-];
+/* The six live in lib/episodes.ts, which is the only copy of them on the
+   site. Five and six have art and a title and nothing else, and the strip
+   marks them rather than hiding them. */
 
 
 export default function Home() {

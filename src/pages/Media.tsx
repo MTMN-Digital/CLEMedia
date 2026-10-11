@@ -4,9 +4,9 @@ import { Settle } from "@/components/Settle";
 import { StudioWall } from "@/components/render";
 import { NoStrip } from "@/components/media/NoStrip";
 import { Wipe } from "@/components/Wipe";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconExternal } from "@/components/icons";
-import { APP_LAUNCHED, SITE } from "@/lib/site";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconExternal, IconArrow } from "@/components/icons";
+import { SITE, APP_LAUNCHED } from "@/lib/site";
 import type { MediaItem } from "@/lib/types";
 
 /* ============================================================================
@@ -46,7 +46,7 @@ import type { MediaItem } from "@/lib/types";
    src/lib/site.ts, the same flag /app reads. */
 const PLAYER_STATE = APP_LAUNCHED ? "released" : "in development";
 
-const SUBJECTS: { topic: string; line: string; to: string; cta: string }[] = [
+const SUBJECTS: { topic: string; to: string; line: string; cta: string }[] = [
   {
     topic: "AI in children's production",
     line: "Where a tool is used, where a person decides, and the lines the company will not cross. The position is written down and the review stages are named.",
@@ -79,7 +79,7 @@ const SUBJECTS: { topic: string; line: string; to: string; cta: string }[] = [
    is the client's own fact and is stated exactly as given: a UK podcast, in
    December, with more expected around the app launch. No show name, no date,
    no host, because none has been supplied. */
-const STANDING: { when: string; what: string; detail: string; pending?: boolean }[] = [
+const STANDING: { detail: string; pending?: boolean; what: string; when: string }[] = [
   {
     when: "December",
     what: "A UK podcast appearance",
@@ -104,7 +104,7 @@ const NOTES: { k: string; v: string }[] = [
   { k: "Player", v: `PupsPlayer™, one word, capital P twice. ${APP_LAUNCHED ? "Released." : "In development, not released."}` },
   { k: "Founder", v: "Conor Sexton, Founder and CEO." },
   { k: "Characters", v: "Finn, the fawn pug. Fia, the black pug." },
-  { k: "Episodes", v: "Series one, four episodes, free to watch. The show's own site carries them." },
+  { k: "Episodes", v: "Series one. Four out now, free to watch. The show's own site carries them." },
   /* The imagery row is DELIBERATELY ABSENT. It read "No AI-generated imagery
      is used on this site", which this site's own asset manifest contradicts:
      `src/lib/brand.ts` records that the stage 1 audit found the brand kit
@@ -115,14 +115,14 @@ const NOTES: { k: string; v: string }[] = [
   { k: "Imagery", v: "Artwork and stills come through the press route." },
 ];
 
-type Load = "loading" | "ready" | "empty" | "failed";
+type Load = "empty" | "failed" | "ready" | "loading";
 
 /**
  * The press index and an explicit load state. The standing rows are a written
  * fallback and are correct in every state; any COUNT or "nothing yet" claim
  * waits for a confirmed answer.
  */
-function useMediaItems(): { items: MediaItem[] | null; load: Load } {
+function useMediaItems(): { load: Load; items: MediaItem[] | null } {
   const [items, setItems] = useState<MediaItem[] | null>(null);
   const [load, setLoad] = useState<Load>("loading");
 
@@ -176,7 +176,7 @@ function monthYear(iso: string | null): string {
   return new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
 }
 
-type Slip = { key: string; when: string; title: string; body: string; status: string };
+type Slip = { status: string; title: string; when: string; body: string; key: string };
 
 export default function Media() {
   const { items, load } = useMediaItems();

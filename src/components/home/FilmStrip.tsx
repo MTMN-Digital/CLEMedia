@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { EpisodeSlate, type Episode } from "@/components/home/EpisodeSlate";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { type Episode, EpisodeSlate } from "@/components/home/EpisodeSlate";
 
 /* ============================================================================
    The filmstrip.
@@ -72,7 +72,7 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
     };
   }, [readEdges]);
 
-  const step = (dir: 1 | -1) => {
+  const step = (dir: -1 | 1) => {
     const el = rail.current;
     if (!el) return;
     const card = el.querySelector("li");
@@ -168,7 +168,13 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
             CLÉ FAMILY MEDIA
           </span>
           <span className="frame-ticks h-3 flex-1" />
-          <span className="edge-print whitespace-nowrap font-mono">001 / 004</span>
+          {/* Film margin print, so it reads as the stock's own numbering: the
+              first frame on this reel over the number of frames. It was
+              hardcoded "001 / 004" and silently said four after the reel went
+              to six. */}
+          <span className="edge-print whitespace-nowrap font-mono">
+            {episodes[0]?.n ?? "001"} / {String(episodes.length).padStart(3, "0")}
+          </span>
         </div>
 
         <ul

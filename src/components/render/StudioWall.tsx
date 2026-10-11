@@ -1,6 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useState, type CSSProperties, useRef, useEffect } from "react";
 import { Figure } from "@/components/Figure";
-import type { AssetKey } from "@/lib/brand";
+import { COMING_SOON, type Episode, EPISODES } from "@/lib/episodes";
 import { Stage } from "@/components/render/Stage";
 import "./render.css";
 
@@ -37,27 +37,11 @@ import "./render.css";
    links go to the episodes themselves.
    ========================================================================== */
 
-export interface WallEpisode {
-  n: string;
-  title: string;
-  asset: AssetKey;
-  href: string;
-  /** Real values only. Absent until measured. */
-  runtime?: string;
-}
-
-/* The real four, as published. Structurally compatible with Home.tsx's
-   `Episode`, so the page may pass its own EPISODES instead. */
-export const STUDIO_EPISODES: WallEpisode[] = [
-  { n: "001", title: "The Feather", runtime: "9:16", asset: "slate.ep1",
-    href: "https://www.youtube.com/watch?v=duMH0f12JM0" },
-  { n: "002", title: "The Strawberry", runtime: "11:10", asset: "slate.ep2",
-    href: "https://www.youtube.com/watch?v=ZzhkZJgQEK0" },
-  { n: "003", title: "Chicken Vision", runtime: "10:41", asset: "slate.ep3",
-    href: "https://www.youtube.com/watch?v=CpgIzsn500Q" },
-  { n: "004", title: "The Cuckoo's Incredible Journey", runtime: "9:58", asset: "slate.ep4",
-    href: "https://www.youtube.com/watch?v=yHYYBpMfE6M" },
-];
+/* The wall shows the SERIES, not the watch list: it is the shelf of title
+   slates in the building that made them, so an episode that is finished art
+   but not yet published belongs on it. The list lives in lib/episodes.ts. */
+export type WallEpisode = Episode;
+export const STUDIO_EPISODES = EPISODES;
 
 /* How each board stands. Hand-placed, so none of the four match: the lean,
    the small turn toward the centre of the bench, and a fraction of roll. The
@@ -68,6 +52,12 @@ const POSE = [
   { tilt: 5.0, turn: -0.8, roll: 0.3, depth: 0.4 },
   { tilt: 7.2, turn: 0.8, roll: -0.2, depth: 0.62 },
   { tilt: 5.6, turn: 2.4, roll: 0.4, depth: 0.44 },
+  /* Five and six, added with episodes 005 and 006. The index wraps, so
+     without these two the second row would be the first row's poses again
+     and the wall would read as a repeat rather than as a hand placing six
+     different boards. */
+  { tilt: 4.4, turn: -1.6, roll: 0.22, depth: 0.52 },
+  { tilt: 6.8, turn: 1.4, roll: -0.44, depth: 0.36 },
 ];
 
 /* The lamp sits up and left of the bench. Each plate's light azimuth is the
@@ -170,23 +160,25 @@ export function StudioWall({
           const name = [
             `Episode ${ep.n}, ${ep.title}`,
             ep.runtime ? readableRuntime(ep.runtime) : null,
-            "Watch on YouTube, opens in a new tab",
+            ep.released ? "Watch on YouTube, opens in a new tab" : COMING_SOON,
           ]
             .filter(Boolean)
             .join(". ");
+          /* A plate with nothing to link to is not a link. The kit already
+             knows about this: `.rk-board .rk-plate:not(a)` drops the pointer
+             and the hover lift, so a slate that cannot be opened does not
+             pretend it can be. */
+          const Plate = ep.released ? "a" : "span";
+          const plateProps = ep.released
+            ? { href: ep.href, target: "_blank", rel: "noopener noreferrer" }
+            : {};
           return (
             <li
               key={ep.n}
               className="rk-item"
               style={{ "--i": i, "--dim": dim } as CSSProperties}
             >
-              <a
-                href={ep.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={name}
-                className="rk-plate"
-              >
+              <Plate {...plateProps} aria-label={name} className="rk-plate">
                 <Stage
                   seated
                   light={azimuthFor(i, count)}
@@ -210,9 +202,13 @@ export function StudioWall({
                 <span className="rk-tag">
                   <span className="rk-tag-no tnum">{ep.n}</span>
                   <span className="rk-tag-title">{ep.title}</span>
-                  {ep.runtime && <span className="rk-tag-rt tnum">{ep.runtime}</span>}
+                  {ep.runtime ? (
+                    <span className="rk-tag-rt tnum">{ep.runtime}</span>
+                  ) : (
+                    <span className="rk-tag-soon">{COMING_SOON}</span>
+                  )}
                 </span>
-              </a>
+              </Plate>
             </li>
           );
         })}
