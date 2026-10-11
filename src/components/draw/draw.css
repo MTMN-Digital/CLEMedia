@@ -61,7 +61,7 @@
    `.ink--exact` is the opt-out, and it exists for ONE reason: a drawing
    small enough that 1.4 units is a large fraction of its height deforms
    rather than wobbles. Anything under about 40 units tall takes it. */
-.ink { filter: url(#ink-hand); }
+.ink { filter: url(#ink-hand-1oas022); }
 .ink--exact { filter: none; }
 
 /* A drawing inside a `Settle` that has not arrived yet is still painted, and

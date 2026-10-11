@@ -8,7 +8,7 @@
  *
  * So the wobble is added at paint time rather than baked into the paths. One
  * turbulence field, one displacement, applied to the whole svg at once by
- * `.ink-hand`. The source stays clean, the output stops looking machined,
+ * `.ink` itself. The source stays clean, the output stops looking machined,
  * and a drawing that needs more or less of it changes one number here.
  *
  * THE NUMBERS ARE LOAD-BEARING, and they were tuned by eye against the
@@ -36,7 +36,7 @@ export function InkDefs() {
     <svg width="0" height="0" aria-hidden="true" focusable="false" className="absolute">
       <defs>
         <filter
-          id="ink-hand"
+          id="ink-hand-1oas022"
           x="-8%"
           y="-8%"
           width="116%"
