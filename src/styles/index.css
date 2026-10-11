@@ -1003,6 +1003,43 @@ body > * { position: relative; z-index: 1; }
     linear-gradient(to right, rgba(14, 11, 9, 0.34) 0%, rgba(14, 11, 9, 0) 46%);
 }
 
+/* ─── The caption ────────────────────────────────────────────────────────
+   Drawn by the component, not by the browser. See the long note in
+   components/home/HeroFilm.tsx for why the native cue could not be used:
+   the short version is that a browser puts its cues at the bottom centre of
+   the video, which on this hero is where the headline is, and no standard
+   property moves them.
+
+   It carries its own ground rather than leaning on `.film-scrim`. The scrim
+   is a gradient tuned to hold the four corners down; the caption sits in the
+   middle of the frame where that gradient has faded to nothing, and a
+   caption is the one piece of type here that MUST be readable on every frame
+   of a film that runs from a dark wood to a near white sunrise.
+   ─────────────────────────────────────────────────────────────────────── */
+.film-cc {
+  position: absolute;
+  /* Clear of the bottom row. The headline and the supporting paragraph take
+     roughly the bottom fifth of the frame plus the copy block's padding, so
+     this sits above that rather than being nudged by a pixel offset that
+     would be wrong at the next viewport height. */
+  bottom: 27%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  max-width: min(46ch, 86%);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(14, 11, 9, 0.78);
+  backdrop-filter: blur(4px);
+  color: var(--color-raised);
+  font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+  pointer-events: none;
+}
+
 /* The four corners. */
 .film-copy {
   position: absolute;
@@ -1139,6 +1176,9 @@ body > * { position: relative; z-index: 1; }
   .film-stage { position: relative; inset: auto; }
   .film-media { position: relative; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); }
   .film-scrim { display: none; }
+  /* Lower, because under this width the copy has left the picture: the only
+     thing the caption has to clear is the foot of the video itself. */
+  .film-cc { bottom: 6%; font-size: 0.875rem; padding: 0.35rem 0.6rem; }
   .film-copy {
     /* STATIC, not relative. The control pills are positioned against the
        frame so they stay on the picture; making this a positioned ancestor

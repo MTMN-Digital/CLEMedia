@@ -14,21 +14,26 @@ import { pickRendition } from "@/components/MissionVideo";
    renders; nothing on the site loads it.
 
    HOW IT PLAYS. Muted, looping, from the poster, because a film that starts
-   talking at a visitor is the opposite of this company's argument. Sound is
-   one press away, top right. Pressing it starts the film AGAIN from the
-   beginning and stops the loop: this is a narrated piece with a first line,
-   not wallpaper, so dropping somebody into the middle of Conor's sentence
-   with the sound suddenly on would be worse than not offering sound at all.
-   A restart sits bottom right for when somebody wants it from the top again.
+   talking at a visitor is the opposite of this company's argument. Three
+   controls sit top right: sound, captions, and a restart.
+
+   EACH CONTROL DOES ONE THING. Sound toggles `muted` and nothing else.
+   It used to seek back to zero and turn the loop off as well, on the
+   reasoning that this is a narrated piece with a first line rather than
+   wallpaper. The client overruled that on 2026-10-11 and the overrule is
+   right: a button labelled "Sound on" that silently discards the forty
+   seconds you have already watched is not the button it claims to be, and
+   the film loops anyway, so the first line comes round again by itself. The
+   restart is there for anyone who actually wants the top.
 
    ACCESSIBILITY. Content that moves for more than five seconds and starts on
    its own needs a mechanism to stop it (WCAG 2.2.2), and the brief commits to
    AA. The client asked for one visible pill, so the pause is the film itself:
    it is focusable and labelled, and a click or a key press stops and starts
-   it. Nothing extra is drawn, and the requirement is still met. The captions
-   track carries the narration when the sound is on (1.2.2), and
-   `prefers-reduced-motion` means it never starts by itself: poster, controls,
-   and the visitor decides.
+   it. Captions (1.2.2) are a real transcript of the narration on their own
+   toggle, drawn by this component rather than by the browser so they can be
+   put somewhere the headline is not. `prefers-reduced-motion` means the film
+   never starts by itself: poster, controls, and the visitor decides.
 
    The copy sits bottom left over a scrim rather than beside the film. Type on
    a moving picture is only readable if the picture is darkened under it, and
@@ -89,7 +94,6 @@ export function HeroFilm() {
   useEffect(() => {
     const el = video.current;
     if (!el) return;
-    showCaptions(el, false);
 
     /* React sets `muted` as a PROPERTY and never writes the attribute, and
        Safari and Firefox both decide whether a film may autoplay by looking
@@ -168,11 +172,6 @@ export function HeroFilm() {
     }
   };
 
-  /** Captions follow the sound: on when you can hear it, off when you cannot. */
-  const showCaptions = (el: HTMLVideoElement, on: boolean) => {
-    const track = el.textTracks?.[0];
-    if (track) track.mode = on ? "showing" : "hidden";
-  };
 
   const restart = () => {
     const el = video.current;
@@ -182,24 +181,64 @@ export function HeroFilm() {
     el.play().then(() => setPlaying(true)).catch(() => {});
   };
 
+  /* THE CAPTIONS ARE DRAWN BY US, NOT BY THE BROWSER.
+
+     The track is real and stays real; what changes is who paints it. A
+     native cue is placed by the browser in its own text track region, at the
+     bottom centre of the video, and that is exactly where this hero puts its
+     headline: "Watch. Play. Learn." sits bottom left and the supporting
+     paragraph bottom right, so a browser painted caption lands on top of
+     both. `::cue` can colour and size a cue but cannot move it, and the
+     property that can (`::-webkit-media-text-track-container`) is one
+     vendor's private API.
+
+     So the track is held at `hidden`, which still fires `cuechange` and still
+     exposes the text to assistive technology, and the active cue is rendered
+     into an ordinary element this stylesheet can place. The caption is then
+     just type on the page: it inherits the type scale, it wraps on the
+     measure we choose, and it sits where we put it.
+
+     `hidden` and not `disabled` is the load bearing part. `disabled` stops
+     the cues being parsed at all and `cuechange` never fires. */
+  const [captions, setCaptions] = useState(false);
+  const [cue, setCue] = useState("");
+  useEffect(() => {
+    const el = video.current;
+    const track = el?.textTracks?.[0];
+    if (!track) return;
+    track.mode = "hidden";
+    const read = () => {
+      const active = track.activeCues;
+      setCue(
+        active && active.length
+          ? Array.from(active)
+              .map((c) => (c as VTTCue).text)
+              .join(" ")
+          : "",
+      );
+    };
+    read();
+    track.addEventListener("cuechange", read);
+    return () => track.removeEventListener("cuechange", read);
+  }, []);
+
+  /* A VOLUME CONTROL, AND NOTHING ELSE.
+
+     This used to jump the film back to zero and stop the loop whenever the
+     sound came on, on the argument that a narrated piece has a first line and
+     dropping somebody into the middle of a sentence is worse than offering no
+     sound at all. The client overruled it on 2026-10-11, and he is right about
+     the thing I had not weighed: a control labelled "Sound on" that silently
+     throws away the forty seconds you just watched is not the control it says
+     it is. The film is already a loop; the first line comes round again.
+
+     So it toggles `muted` and stops. Playback position, play state and the
+     loop are all left exactly where they were, in both directions. */
   const toggleSound = () => {
     const el = video.current;
     if (!el) return;
-    if (el.muted) {
-      /* From the top, and once only. See the note above. */
-      viewerPaused.current = false;
-      el.muted = false;
-      el.loop = false;
-      el.currentTime = 0;
-      el.play().then(() => setPlaying(true)).catch(() => {});
-      showCaptions(el, true);
-      setSound(true);
-    } else {
-      el.muted = true;
-      el.loop = true;
-      showCaptions(el, false);
-      setSound(false);
-    }
+    el.muted = !el.muted;
+    setSound(!el.muted);
   };
 
   return (
@@ -252,6 +291,13 @@ export function HeroFilm() {
 
       <span aria-hidden="true" className="film-scrim" />
 
+      {/* Inside the stage, so it is over the PICTURE at every width. On a
+          phone the copy block leaves the picture and sits on paper below it,
+          and a caption that followed it there would be captioning nothing. */}
+      {captions && cue && (
+        <p className="film-cc">{cue}</p>
+      )}
+
         </div>
 
       {/* The copy sits in the FOUR CORNERS of the frame rather than clustered
@@ -272,8 +318,17 @@ export function HeroFilm() {
           <div className="film-controls">
             <button type="button" onClick={toggleSound} className="film-btn">
               {sound ? "Mute" : "Sound on"}
+              <span className="sr-only"> for the mission film</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCaptions((v) => !v)}
+              className="film-btn"
+              aria-pressed={captions}
+            >
+              CC
               <span className="sr-only">
-                {sound ? " for the mission film" : ", and play the mission film from the start"}
+                {captions ? ", hide the captions" : ", show the captions"}
               </span>
             </button>
             <button type="button" onClick={restart} className="film-restart">

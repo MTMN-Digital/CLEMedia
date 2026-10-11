@@ -68,6 +68,18 @@ await page.evaluate(() => {
 });
 await page.waitForTimeout(120);
 
+/* Captions on before anything is measured. They are off by default and are
+   drawn by the component rather than by the browser (see HeroFilm.tsx), so
+   without this the one piece of type most likely to sit on the brightest part
+   of the picture is simply absent from the sample. */
+await page.evaluate(() => {
+  const cc = [...document.querySelectorAll(".film-btn")].find((b) =>
+    b.textContent.trim().startsWith("CC"),
+  );
+  if (cc && cc.getAttribute("aria-pressed") !== "true") cc.click();
+});
+await page.waitForTimeout(200);
+
 const ready = await page.evaluate(async () => {
   const v = document.querySelector(".film-media");
   if (!v) return { ok: false, why: "no .film-media in the hero" };
@@ -110,7 +122,7 @@ const items = await page.evaluate(() => {
   // over a picture that runs from a dark wood to a near white sunrise.
   document
     .querySelectorAll(
-      ".film-copy span, .film-copy p, .film-copy a, .film-btn, .site-header.is-over a, .site-header.is-over button",
+      ".film-copy span, .film-copy p, .film-copy a, .film-btn, .film-cc, .site-header.is-over a, .site-header.is-over button",
     )
     .forEach((el) => {
     const text = (el.textContent || "").trim();
