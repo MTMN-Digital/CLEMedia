@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /* ============================================================================
    The mission film.
@@ -33,12 +33,31 @@ import { useEffect, useRef, useState } from "react";
    poster, controls, and the visitor decides.
    ========================================================================== */
 
-type Rendition = { src: string; width: number };
+/* TWO FILES PER RENDITION, and this is not a nicety.
 
-const RENDITIONS: Record<"high" | "mid" | "low", Rendition> = {
-  high: { src: "/video/mission-1080.mp4", width: 1920 },
-  mid: { src: "/video/mission-720.mp4", width: 1280 },
-  low: { src: "/video/mission-480.mp4", width: 854 },
+   The film shipped as H.264 video with AAC audio, which is what everything
+   plays, except that "everything" is not true on Linux. Chromium's open
+   source build carries no proprietary codecs, and the browsers built on it
+   that do not license them separately, Opera among them, cannot decode this
+   film at all. Reproduced on 2026-10-11 by driving the installed Opera
+   directly: `canPlayType('video/mp4; codecs="avc1.640028"')` returns the
+   empty string, the element reports error code 4 with
+   `DEMUXER_ERROR_NO_SUPPORTED_STREAMS`, and `play()` rejects with
+   `NotSupportedError`. It is not an autoplay policy, which is what it looks
+   like from the outside: the poster sits there and the controls do nothing,
+   because there is no decoder, so a click cannot help either.
+
+   VP9 and Opus in a WebM container are royalty free and are in every
+   Chromium build including those ones, so each rendition ships twice and the
+   browser takes the first it can decode. The mp4 is listed FIRST on purpose:
+   where both will play, H.264 is far more likely to hit a hardware decoder,
+   which on a laptop is the difference between a warm fan and a quiet one. */
+type Rendition = { width: number; webm: string; mp4: string };
+
+const RENDITIONS: Record<"mid" | "high" | "low", Rendition> = {
+  high: { mp4: "/video/mission-1080.mp4", webm: "/video/mission-1080.webm", width: 1920 },
+  mid: { mp4: "/video/mission-720.mp4", webm: "/video/mission-720.webm", width: 1280 },
+  low: { mp4: "/video/mission-480.mp4", webm: "/video/mission-480.webm", width: 854 },
 };
 
 /** Chosen once, before the element has a src. See the note above.
@@ -46,7 +65,7 @@ const RENDITIONS: Record<"high" | "mid" | "low", Rendition> = {
  *  no sense in two copies of it drifting apart. */
 export function pickRendition(): Rendition {
   const conn = (navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
+    connection?: { effectiveType?: string; saveData?: boolean };
   }).connection;
   if (conn?.saveData) return RENDITIONS.low;
   if (conn?.effectiveType && /^(slow-)?2g$/.test(conn.effectiveType)) return RENDITIONS.low;
@@ -73,8 +92,8 @@ export function MissionVideo({
   /** The home page shows it as one beat among many; Story gives it the page. */
   eager = false,
 }: {
-  className?: string;
   eager?: boolean;
+  className?: string;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const [source, setSource] = useState<Rendition | null>(null);
@@ -133,10 +152,20 @@ export function MissionVideo({
         /* Without this a phone may take the film full screen the moment it
            autoplays, which is not what a muted background beat should do. */
         disablePictureInPicture={false}
-        src={source?.src}
+        /* KEYED ON THE CHOSEN FILE, which forces React to build a fresh
+           element once the rendition is known. `<source>` children are read
+           when the element is parsed and are NOT re-scanned when they change,
+           unlike a `src` attribute, so without this the element would keep
+           the empty source list it was created with and never load anything.
+           The alternative is calling `load()` from an effect; a fresh element
+           is one line and also puts the sources in place at parse time, which
+           is what Safari wants. */
+        key={source?.mp4}
         width={source?.width}
         height={source ? Math.round((source.width * 1068) / 1920) : undefined}
       >
+        {source && <source src={source.mp4} type="video/mp4" />}
+        {source && <source src={source.webm} type="video/webm" />}
         <track kind="captions" srcLang="en" label="English" src="/video/mission.en.vtt" default />
       </video>
 

@@ -61,7 +61,10 @@ export function HeroFilm() {
      works in Chrome and does not work in Safari, which wants the attributes
      at parse time. */
   const [start] = useState(() => ({
-    src: pickRendition().src,
+    /* Both files, not one. See the note in MissionVideo: on Linux, Chromium
+       based browsers that do not license H.264 cannot decode the mp4 at all,
+       and the symptom is indistinguishable from a blocked autoplay. */
+    rendition: pickRendition(),
     /* Never start by itself for a reader who asked for stillness. */
     autoplay: !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   }));
@@ -211,7 +214,6 @@ export function HeroFilm() {
       <video
         ref={video}
         className="film-media"
-        src={start.src}
         poster="/video/mission-poster.jpg"
         autoPlay={start.autoplay}
         muted
@@ -232,6 +234,15 @@ export function HeroFilm() {
           }
         }}
       >
+        {/* The mp4 first, so a browser that can decode both takes the one
+            more likely to reach a hardware decoder. Listed as `<source>`
+            children rather than a `src` attribute so a browser without the
+            proprietary codecs falls through to the WebM instead of failing
+            the element. Both are known before the first render, so they are
+            in the markup at parse time and nothing has to call `load()`. */}
+        <source src={start.rendition.mp4} type="video/mp4" />
+        <source src={start.rendition.webm} type="video/webm" />
+
         {/* Not `default`: a default track is SHOWING from the first frame, so
             the narration printed itself across the hero while the film was
             still muted, straight over the headline. It is turned on with the
