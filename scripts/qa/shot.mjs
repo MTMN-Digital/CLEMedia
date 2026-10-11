@@ -21,7 +21,11 @@ const loc = p.locator(sel).first();
 const box = await loc.boundingBox();
 if (!box) { console.log("NOT FOUND", sel); await b.close(); process.exit(1); }
 await p.evaluate((y) => window.scrollTo(0, y), Math.max(0, box.y - 180));
-await p.waitForTimeout(2600);
+// 5.2s, not 2.6. The longest arrival on the site is the home trail, whose
+// third scene finishes around 4.3s, and at 2.6 this script photographed it
+// mid-draw and reported an empty sheet as the finished pose. The contrast
+// sweep in audit.mjs zeroes durations and is unaffected either way.
+await p.waitForTimeout(5200);
 await loc.screenshot({ path: out });
 console.log("ok", out, JSON.stringify(box));
 await b.close();

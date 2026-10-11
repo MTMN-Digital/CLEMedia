@@ -58,7 +58,13 @@ export function StandsAt({
 
   return (
     <svg
-      className="ink standsat"
+      /* EXACT, no wobble. The hand's displacement filter moves a point by up
+         to 2.6 user units, and this drawing is 22 units tall, so the same
+         amount that bends a 300-unit sheet tears a 5-unit node open. Shot at
+         4x on 2026-10-11: one circle came out with a crescent bitten out of
+         it and the rule between two nodes broke in half. Under about 40 units
+         tall a drawing takes the opt-out. */
+      className="ink ink--exact standsat"
       viewBox={`0 0 ${W} 22`}
       aria-hidden="true"
       focusable="false"

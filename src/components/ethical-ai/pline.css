@@ -1,0 +1,107 @@
+/* ─── The production line, flat ───────────────────────────────────────────
+   See components/ethical-ai/ProductionFlat.tsx and the 2,700px vertical
+   chain it replaced. Marks in components/draw/draw.css; layout only here.
+   ─────────────────────────────────────────────────────────────────────── */
+.pline { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
+.pline__draw { position: relative; }
+.pline__art { max-width: 100%; }
+
+/* The sentence inside the return loop. Positioned in the drawing's own
+   proportions: the loop's rail is at 50/250 of the height and the track at
+   128/250, and the rail runs from the tools (x 388) to the last gate
+   (x 1130) of a 1200-wide box, so the centre of the loop is at 63% across
+   and 36% down. Below 900px the loop is about 20px tall and the caption
+   under the drawing carries the same sentence, so the label goes. */
+.pline__return {
+  display: none;
+  position: absolute;
+  left: 63.25%;
+  top: 35.6%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (min-width: 900px) { .pline__return { display: block; } }
+
+.pline__gates {
+  list-style: none;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
+}
+@media (min-width: 680px) { .pline__gates { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .pline__gates { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.pline__gate { border-top: 1px solid var(--color-rule); padding-top: 0.9rem; }
+.pline__gate--hold { border-top-color: var(--color-red-deep); }
+.pline__gate h3 {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+/* 56px, up from 40 (2026-10-11): at 40 the marks' interior detail fell under
+   a pixel and 03 read as nothing. Same height as the /team slips now, so the
+   six are designed and checked at one size. */
+.pline__mark { margin-top: 0.7rem; --stagemark-h: 56px; }
+.pline__who { margin-top: 0.3rem; font-size: 0.9375rem; font-weight: 600; color: var(--color-ink); }
+.pline__body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 42ch; }
+.pline__faces { list-style: none; margin: 0.7rem 0 0; padding: 0; display: flex; gap: 0.4rem; }
+.pline__faces > li {
+  width: 40px;
+  border-radius: 6px;
+  padding: 2px;
+  background: var(--color-raised);
+  border: 1px solid var(--color-rule);
+}
+
+.pline__detail {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid var(--color-rule);
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 3rem);
+}
+@media (min-width: 900px) { .pline__detail { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.pline__tools ul,
+.pline__never ul { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 1rem; }
+.pline__tools h4 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+.pline__tools h4 span {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Same trap as .ink-label: muted is a paper-only floor and this sits on
+     the well, where it measured 4.40:1. */
+  color: var(--color-body);
+  margin-left: 0.5rem;
+}
+.pline__tools p { margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 48ch; }
+.pline__never li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-body);
+  max-width: 48ch;
+}
+.pline__never li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 9px;
+  height: 1px;
+  background: var(--color-red-deep);
+}
+.pline__case { margin-top: clamp(2rem, 4vw, 3rem); }

@@ -6,6 +6,7 @@ import navMark from "@/assets/brand/cle-nav.webp";
 import { IconExternal, IconMail } from "@/components/icons";
 import { Container, TextLink } from "@/components/ui";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { InkDefs } from "@/components/draw/InkDefs";
 
 function ShowSiteLink({ className = "" }: { className?: string }) {
   return (
@@ -258,6 +259,9 @@ export function Layout() {
     <SmoothScroll>
     {/* The paper tooth. Fixed, multiply, above everything and inert. */}
     <div className="grain" aria-hidden="true" />
+    {/* The hand's wobble filter, mounted once. Every .ink svg on every page
+        references it by id, so it has to be in the tree before any of them. */}
+    <InkDefs />
     <div className="flex min-h-screen flex-col">
       <a
         href="#main"

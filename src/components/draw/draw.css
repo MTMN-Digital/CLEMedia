@@ -48,6 +48,28 @@
   overflow: visible;
 }
 
+/* THE WOBBLE. See components/draw/InkDefs.tsx for the filter itself and for
+   why it is applied at paint time rather than baked into the paths.
+
+   It is on `.ink`, so it reaches every drawing on the site without any of
+   them opting in, which is the only way a change to the hand stays a change
+   to the hand. User units on this site are within about 20% of CSS pixels in
+   every drawing (they all carry the same 2-unit stroke and all render at
+   roughly their authored width), so one displacement scale reads the same on
+   the 1100-unit production line and on the 360-unit plate.
+
+   `.ink--exact` is the opt-out, and it exists for ONE reason: a drawing
+   small enough that 1.4 units is a large fraction of its height deforms
+   rather than wobbles. Anything under about 40 units tall takes it. */
+.ink { filter: url(#ink-hand); }
+.ink--exact { filter: none; }
+
+/* A drawing inside a `Settle` that has not arrived yet is still painted, and
+   a filter on a hidden subtree is work the compositor does for nobody.
+   Dropping it while the drawing is held also means the wobble appears with
+   the first stroke rather than being applied to an empty box first. */
+.is-armed:not(.is-in) .ink { filter: none; }
+
 /* ─── The marks ─────────────────────────────────────────────────────────── */
 .ink-line {
   fill: none;
@@ -79,6 +101,25 @@
    is 2.1:1 on navy and disappears. */
 .bench .ink-accent, .deep .ink-accent { stroke: #ffb9bb; }
 .bench .ink-accent-fill, .deep .ink-accent-fill { fill: #ffb9bb; }
+
+/* A WASH. Flat tone inside a shape, under the line work.
+
+   Outline-only drawing is why a page of these reads flat: every object is
+   the same value as every other object, so nothing is in front of anything.
+   A wash on the one or two shapes that matter puts them forward and leaves
+   the rest as line. It is tone, never colour, and it is never the accent:
+   a drawing says one thing in red and that thing is a stroke. */
+.ink-wash { fill: color-mix(in srgb, var(--color-ink) 10%, transparent); stroke: none; }
+.ink-wash--deep { fill: color-mix(in srgb, var(--color-ink) 19%, transparent); }
+.bench .ink-wash, .deep .ink-wash { fill: rgba(253, 248, 237, 0.13); }
+.bench .ink-wash--deep, .deep .ink-wash--deep { fill: rgba(253, 248, 237, 0.22); }
+
+/* WEIGHT. The hand has three weights and they mean three different things,
+   which is the other half of why outline-only drawings read flat. An object's
+   own silhouette is the heaviest line in it; `.ink-line` is the middle; detail
+   inside the object is `.ink-thin`. A drawing authored entirely in `.ink-line`
+   has thrown this away and will look like an icon whatever else is done to it. */
+.ink-edge { stroke-width: 2.8; }
 
 /* ─── Arriving ──────────────────────────────────────────────────────────── */
 /* A stroke that draws itself. Needs pathLength="1".

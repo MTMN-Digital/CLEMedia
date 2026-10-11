@@ -9,86 +9,88 @@ import "./noway.css";
    can find their way around it, and cannot accidentally find their way out of
    it." That is a shape, and both halves of it have to be in the drawing.
 
-   WHAT WAS HERE BEFORE, and why it failed. The first version was a rounded
-   boundary with three small identical circles inside it, joined in a
-   triangle, and three dashed paths leaving the circles and stopping at a red
-   bar just inside the wall. A caption beside it listed what the circles were
-   ("Inside, all connected: Episodes, Activities, Printables") and what the
-   bars stopped ("Autoplay to the next thing, A purchase inside the app, An
-   advert"). The client's verdict was that it did not really illustrate what
-   it sat next to, and the diagnosis is that only half of it did. The stops
-   read: a path cut by a bar is a thing anyone can see. The inside did not
-   read at all. Three unlabelled circles are a diagram of nothing, so the
-   half of the sentence about a child finding their way AROUND the app was
-   carried entirely by the caption, which is to say by a key. A drawing that
-   needs a key is not finished (.parallel/CONTRACT.md, "legible beats
-   unique"), and the specific failure is rule four of that section: an
-   abstract node was drawn where a real artefact exists. An episode, an
-   activity and a printable all have shapes. The circles had none.
+   WHAT WAS HERE BEFORE, and why it was redrawn (2026-10-11). The second
+   version got the parts right and the composition wrong. It was a 360-unit
+   plate standing alone at 400px in a 1376px column, so three quarters of its
+   own box was empty paper. The child inside was a stick figure with both
+   arms up, which reads as cheering, the opposite of what the drawing says.
+   The three things outside the wall were glyphs too small to name, so the
+   point of the drawing, WHAT is being kept out, was carried by nothing. And
+   every mark was the same 2-unit line, so the wall, the child, the plate and
+   the price tag were all the same value and nothing was in front of anything.
 
-   WHAT IS HERE NOW. Every node, inside and out, is the real object it stood
-   for, so the drawing names its own parts and the caption is gone.
+   WHAT IS HERE NOW. One landscape plate, 1100 units wide, taking the full
+   column the way the production line on /ethical-ai does, so the drawing is
+   the width of the sentence above it rather than a stamp in its corner.
 
-   Inside the boundary:
-     An EPISODE, drawn as the landscape plate the walkthrough above shows
-       four of, with a play mark in it.
-     An ACTIVITY, drawn as a small child mid-jump, arms up. The page's own
-       words for the activity are "a short movement or breathing prompt" and
-       "something a child does rather than only sees", so the artefact of
-       the activity is the child doing it. No face, no features: a round
-       head and five lines, drawn the way the kit draws a person (posts and
-       lines, see team/StageMark.tsx), with one arm higher than the other
-       so it is a jump and not a pictogram.
-     A PRINTABLE, drawn as a sheet of paper with a folded corner, a title
-       line and a puzzle grid, which is the walkthrough's own mark for the
-       puzzle sheet. The fold is what makes it paper rather than a screen.
-   The three are joined to each other by solid lines, which is the claim
-   that the play follows the story rather than sitting beside it, and that
-   a child who taps anything gets somewhere they are meant to be.
+   Inside the boundary, a room. Three real things stand on one floor:
+     An EPISODE, the landscape plate the walkthrough shows four of, with a
+       play mark in it, washed deep so it is the heaviest thing in the room.
+     A CHILD, standing between the other two, one hand on the episode and
+       the other on the sheet. A round head and posts, no face, the way the
+       kit draws a person (team/StageMark.tsx). The arms are at mid height
+       and each one ends ON a thing, which is what makes it a child using the
+       app and not a child cheering: hands that land on objects are doing
+       something, hands in the air are not.
+     A PRINTABLE, a sheet with a folded corner, a title line and the puzzle
+       grid, washed light. The fold is what makes it paper and not a second
+       screen.
+   The floor joins them and the child's hands join them. That is the first
+   half of the sentence: everything inside leads to everything inside, and a
+   child in the middle of it has both of them in reach.
 
-   Outside the boundary, one real thing at the end of each exit, so the
-   three stops name themselves too. All three are the page's own claims from
-   the feature list, in its own words:
-     "No autoplay into something nobody chose": a queue of plates stacked up
-       beyond the top wall, the next things that would play by themselves.
+   Outside the boundary, the three things that usually come with children's
+   video, each one drawn large enough to be named at a glance and each one
+   the page's own claim, in its own words:
+     "No autoplay into something nobody chose": a queue of plates above the
+       top wall, the next things that would play by themselves.
      "No surprise purchases inside the app": a price tag beyond the left
-       wall.
-     "No advertising to children anywhere in it": a billboard on two posts
-       beyond the right wall.
-   They are drawn thin because they are never reached. The exit paths are
-   dashed because they are the paths a child never takes. The bar across
-   each one is the accent, and the only accent: the stop is what the drawing
-   is about.
+       wall, point and hole towards the room, a euro mark on it.
+     "No advertising to children anywhere in it": a hoarding beyond the
+       right wall, a framed portrait board on one off-centre post, standing
+       on its own bit of ground.
+   They are line only, no wash, so they sit behind the room. The inside is
+   tone and the outside is outline, which is the whole weight argument in one
+   decision.
 
-   THE STOP SITS INSIDE THE WALL, not on it. Taking the paths to the wall and
-   laying the bars along it is tidier and reads worse: an accent bar on the
-   boundary merges into it and looks like a red length of wall. The gap
-   between bar and wall is deliberate. Each exit runs perpendicular to the
-   wall it meets so its bar is one short straight line; the very first
-   version ran them diagonally into the corners and the bars came out
-   crooked, which read as a mistake.
+   THE STOP SITS INSIDE THE WALL, not on it. Each exit is a dashed path, the
+   path a child never takes, running from the thing inside straight at the
+   thing outside, and a red bar cuts it just short of the wall. Taking the
+   paths to the wall and laying the bars along it is tidier and reads worse:
+   an accent bar on the boundary merges into it and looks like a red length
+   of wall. The gap between bar and wall is deliberate. Each exit runs
+   perpendicular to the wall it meets so its bar is one short straight line;
+   the very first version ran them diagonally into the corners and the bars
+   came out crooked, which read as a mistake. The bar is the accent and the
+   only accent: the stop is what the drawing is about.
 
-   ORDER OF ARRIVAL. The boundary draws itself, the three things inside
-   land, the lines between them draw, and then each exit appears with the
-   thing it leads to and is cut by its bar, top, left, right. The stop is
-   the last thing that happens, three times. Nothing loops. The kit's
-   hold-until-seen gate pauses everything under an `.is-armed:not(.is-in)`
-   ancestor and the page wraps this in a `Settle`, so there is no observer
-   in here.
+   WEIGHT. `.ink-edge` on the wall and on every object's own silhouette,
+   `.ink-line` for the play mark, the sheet's title and the child's limbs,
+   `.ink-thin` for everything inside an object (the puzzle grid, the
+   billboard's copy, the tag's label, the plate's progress strip). The wobble
+   is the kit's, applied at paint time by `.ink`; nothing here is bent by hand.
 
-   MEANINGFUL, not decorative. With the caption gone the drawing is the only
-   place on the page that puts the three exits against the three things
-   inside, so the svg is `role="img"` with a label that says in words what
-   the drawing says in ink.
+   ORDER OF ARRIVAL. The wall draws, the floor draws, the episode lands, the
+   child lands, the sheet lands. Then each exit appears with the thing it
+   leads to and is cut by its bar, top, left, right. The stop is the last
+   thing that happens, three times. Nothing loops. The kit's hold-until-seen
+   gate pauses everything under an `.is-armed:not(.is-in)` ancestor and the
+   page wraps this in a `Settle`, so there is no observer in here. Reduced
+   motion collapses to this finished pose, which is the pose it was drawn in.
 
-   SIZE. It ships at up to 400px wide, standing alone under the pull
-   statement on the prose axis, and takes the full column width below that.
-   The old version was 300px beside a caption column; the caption is gone,
-   so the drawing takes the room it needs to be read.
+   MEANINGFUL, not decorative. The drawing is the only place on the page that
+   puts the three exits against the three things inside, so the svg is
+   `role="img"` with a label that says in words what the drawing says in ink.
    ========================================================================== */
 
 const at = (d: number, dur?: number): CSSProperties =>
   ({ "--d": `${d}s`, ...(dur !== undefined ? { "--dur": `${dur}s` } : {}) }) as CSSProperties;
+
+/* The room. */
+const VB_W = 1100;
+const VB_H = 430;
+const WALL = { x: 230, y: 110, w: 640, h: 300, rx: 40 };
+const FLOOR_Y = 368;
 
 /* The three exits. Each `path` runs from the thing inside to just short of
    its bar, each `stop` is the bar, and each `beyond` is the thing outside
@@ -96,56 +98,60 @@ const at = (d: number, dur?: number): CSSProperties =>
 const EXITS: { key: string; path: string; stop: string; d: number; beyond: () => ReactElement }[] = [
   {
     key: "autoplay",
-    path: "M180 92 V 72",
-    stop: "M163 70 H197",
+    path: "M422 244 V 162",
+    stop: "M392 155 H 452",
     d: 2.0,
-    /* The next things, queued. Three plates stacked up and back, the front
-       one carrying the play mark. */
+    /* The next things, queued. Three plates stacked up and back beyond the
+       top wall, the front one carrying the play mark. The two behind are
+       drawn as only the edges the front one leaves visible, rather than as
+       full rectangles under a paper fill: `.ink-fill` is the raised white and
+       on this ground it read as the brightest thing in the drawing. */
     beyond: () => (
       <>
-        <rect x="172" y="6" width="40" height="26" rx="3" />
-        <rect x="166" y="12" width="40" height="26" rx="3" />
-        <rect x="160" y="18" width="40" height="26" rx="3" />
-        <path d="M175 25 L185 31 L175 37 Z" />
+        <path d="M386 18 V 14 a6 6 0 0 1 6 -6 H 500 a6 6 0 0 1 6 6 V 72 a6 6 0 0 1 -6 6 H 494" className="ink-line ink-thin" />
+        <path d="M374 28 V 24 a6 6 0 0 1 6 -6 H 488 a6 6 0 0 1 6 6 V 82 a6 6 0 0 1 -6 6 H 482" className="ink-line ink-thin" />
+        <rect x="362" y="28" width="120" height="70" rx="6" className="ink-line ink-edge" />
+        <path d="M410 50 L436 63 L410 76 Z" className="ink-line" />
       </>
     ),
   },
   {
     key: "purchase",
-    path: "M98 196 H 80",
-    stop: "M78 180 V 212",
-    d: 2.18,
-    /* A price tag, point and hole towards the wall. */
+    path: "M314 310 H 258",
+    stop: "M252 284 V 336",
+    d: 2.2,
+    /* A price tag, point and hole towards the room, with a euro mark on it.
+       Two label lines read as a luggage tag; the currency mark is what makes
+       it a price. It is drawn, not set as <text>, so it stays in the hand
+       and takes the wobble with the rest. */
     beyond: () => (
       <>
-        <path d="M20 196 L32 184 H50 V208 H32 Z" />
-        <circle cx="34" cy="196" r="2.6" />
+        <path d="M70 288 H156 L196 310 L156 332 H70 Z" className="ink-line ink-edge" />
+        <circle cx="166" cy="310" r="4.5" className="ink-line" />
+        <path d="M130 299 A 15 15 0 1 0 130 321 M100 306 H 128 M100 314 H 126" className="ink-line" />
       </>
     ),
   },
   {
     key: "advert",
-    path: "M264 196 H 282",
-    stop: "M284 180 V 212",
-    d: 2.36,
-    /* A billboard on two posts, with two lines of copy on it. */
+    path: "M772 300 H 842",
+    stop: "M848 274 V 326",
+    d: 2.4,
+    /* A hoarding: a portrait board with a visible frame, on ONE post set
+       off centre, standing on its own ground. The first pass was a landscape
+       board on two symmetric posts, which is the silhouette of a television
+       on a stand, and /story on this site is drawn entirely in television
+       sets. Taller than wide, framed, and one-legged, it cannot be a screen. */
     beyond: () => (
       <>
-        <rect x="310" y="178" width="42" height="26" rx="2" />
-        <path d="M320 204 V 220 M342 204 V 220" />
-        <path d="M317 187 H345 M317 195 H335" />
+        <rect x="948" y="196" width="100" height="138" rx="3" className="ink-line ink-edge" />
+        <rect x="957" y="205" width="82" height="120" rx="2" className="ink-line ink-thin" />
+        <path d="M964 334 V 368" className="ink-line" />
+        <path d={`M940 ${FLOOR_Y} H 1056`} className="ink-line ink-heavy" />
+        <path d="M968 236 H1028 M968 256 H1012 M968 276 H1024 M968 296 H1002" className="ink-line ink-thin" />
       </>
     ),
   },
-];
-
-/* The lines between the three things inside. Each starts at the edge of one
-   object and ends at the edge of the next, never at a centre, so they read as
-   paths between things rather than as a triangle with things on its corners. */
-const JOINS = [
-  "M161 130 L124 160",
-  "M199 130 L236 170",
-  "M134 196 H224",
 ];
 
 export function NoWayOut() {
@@ -153,57 +159,54 @@ export function NoWayOut() {
     <figure className="noway">
       <svg
         className="ink noway__ink"
-        viewBox="0 0 360 258"
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="An episode, a movement activity and a printable sheet, joined to each other inside a boundary. Three paths lead out of it, towards the next things queued to autoplay, a price tag and a billboard, and each one stops at a bar just inside the boundary."
+        aria-label="A child standing inside a boundary with one hand on an episode and the other on a printable sheet, the three of them on one floor. Beyond the boundary wait a queue of episodes that would autoplay, a price tag marked in euro and an advertising hoarding on a post, and the path towards each one is cut by a bar just inside the wall."
       >
-        {/* The boundary. */}
+        {/* The wall. */}
         <rect
-          x="62" y="56" width="236" height="190" rx="26" pathLength="1"
-          className="ink-line ink-draw"
+          x={WALL.x} y={WALL.y} width={WALL.w} height={WALL.h} rx={WALL.rx} pathLength="1"
+          className="ink-line ink-edge ink-draw"
           style={at(0.1, 1.1)}
         />
 
-        {/* The episode: a landscape plate with a play mark. */}
-        <g className="ink-in" style={at(0.85)}>
-          <rect x="152" y="92" width="56" height="38" rx="4" className="ink-fill" />
-          <rect x="152" y="92" width="56" height="38" rx="4" className="ink-line" />
-          <path d="M174 103 L188 111 L174 119 Z" className="ink-line" />
+        {/* The floor everything inside stands on. */}
+        <path
+          d={`M270 ${FLOOR_Y} H 830`}
+          pathLength="1"
+          className="ink-line ink-heavy ink-draw"
+          style={at(0.7, 0.6)}
+        />
+
+        {/* The episode: a landscape plate with a play mark, washed deep. */}
+        <g className="ink-in" style={at(1.0)}>
+          <rect x="320" y="250" width="205" height="116" rx="8" className="ink-wash ink-wash--deep" />
+          <rect x="320" y="250" width="205" height="116" rx="8" className="ink-line ink-edge" />
+          <path d="M402 286 L440 307 L402 328 Z" className="ink-line" />
+          <path d="M334 352 H 511" className="ink-line ink-thin" />
         </g>
 
-        {/* The activity: a child mid-jump, arms up, one higher than the other. */}
-        <g className="ink-in" style={at(1.0)}>
-          <circle cx="116" cy="170" r="6.5" className="ink-fill" />
-          <circle cx="116" cy="170" r="6.5" className="ink-line" />
+        {/* The child, between the two, a hand on each. */}
+        <g className="ink-in" style={at(1.2)}>
+          <circle cx="590" cy="220" r="19" className="ink-line ink-edge" />
           <path
-            d="M116 177 V 197 M116 182 L101 170 M116 182 L130 167 M116 197 L106 214 M116 197 L127 213"
+            d={`M590 239 V 300 M590 300 L572 ${FLOOR_Y} M590 300 L608 ${FLOOR_Y} M590 256 L530 274 M590 256 L650 298`}
             className="ink-line"
           />
         </g>
 
-        {/* The printable: a sheet with a folded corner, a title line and a
-            puzzle grid. */}
-        <g className="ink-in" style={at(1.15)}>
-          <path d="M226 170 H250 L262 182 V216 H226 Z" className="ink-fill" />
-          <path d="M226 170 H250 L262 182 V216 H226 Z" className="ink-line" />
-          <path d="M250 170 V182 H262" className="ink-line" />
-          <path d="M232 182 H244" className="ink-line" />
+        {/* The printable: a sheet with a folded corner, a title line and the
+            puzzle grid, washed light. */}
+        <g className="ink-in" style={at(1.4)}>
+          <path d="M655 262 H741 L765 286 V366 H655 Z" className="ink-wash" />
+          <path d="M655 262 H741 L765 286 V366 H655 Z" className="ink-line ink-edge" />
+          <path d="M741 262 V286 H765" className="ink-line" />
+          <path d="M670 288 H 716" className="ink-line" />
           <g className="ink-line ink-thin">
-            <rect x="233" y="190" width="21" height="21" />
-            <path d="M240 190 V211 M247 190 V211 M233 197 H254 M233 204 H254" />
+            <rect x="672" y="302" width="60" height="54" />
+            <path d="M692 302 V356 M712 302 V356 M672 320 H732 M672 338 H732" />
           </g>
         </g>
-
-        {/* Everything inside leads to everything inside. */}
-        {JOINS.map((d, i) => (
-          <path
-            key={d}
-            d={d}
-            pathLength="1"
-            className="ink-line ink-thin ink-draw"
-            style={at(1.35 + i * 0.15, 0.45)}
-          />
-        ))}
 
         {/* The three ways out. The path and the thing it leads to appear
             together, then the bar cuts the path. The bar is a bar and not an
@@ -211,8 +214,8 @@ export function NoWayOut() {
             somewhere. */}
         {EXITS.map((x) => (
           <g key={x.key}>
-            <g className="ink-line ink-thin ink-in" style={at(x.d)}>
-              <path d={x.path} strokeDasharray="4 5" />
+            <g className="ink-in" style={at(x.d)}>
+              <path d={x.path} strokeDasharray="5 7" className="ink-line" />
               {x.beyond()}
             </g>
             <path

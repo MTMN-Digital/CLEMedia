@@ -190,10 +190,16 @@ export default function Home() {
           travel. Then concentric rings, which put the screen at the CENTRE of
           the child's world, and the company's own pull quote says it is the
           beginning of the thing rather than the whole of it, which is an edge.
-          It is a floor seen from above now: the screen at the top edge, the
-          child's own prints leading away from it, and the episode's sun turned
-          up again in crayon on a printed sheet at the far end. Not one word of
-          the client's three sentences was cut.
+          Then that floor seen from above, with the child's own prints walking
+          off it, which failed for a reason worth keeping: at the width this
+          column actually gets, a plan view asks the viewer to decode three
+          kinds of mark at once, and the prints came out at ten pixels and read
+          as blobs rather than feet.
+          It is three small scenes in elevation now, one per caption: two heads
+          watching a screen, the child up off the floor beside a paused one,
+          and a sheet with the episode's sun drawn on it in crayon and no
+          screen anywhere in it. One child, one screen, one sun, read top to
+          bottom. Not one word of the client's three sentences was cut.
           See src/components/home/EpisodeRings.tsx. ═══ */}
       <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
         <Container width="wide">

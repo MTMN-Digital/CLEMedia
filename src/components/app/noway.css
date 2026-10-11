@@ -2,15 +2,14 @@
    No way out, on /app. See components/app/NoWayOut.tsx.
 
    Marks come from components/draw/draw.css; this file is layout only. The
-   drawing has no caption any more (every part of it is the real object it
-   stands for, so it names its own parts), which means it no longer needs the
-   two-column figure the first version had. It stands alone under the pull
-   statement, left on the prose axis, capped at the width it was drawn to be
-   read at, and takes the full column below that.
+   drawing is a 1100-unit landscape plate and it takes the full column, the
+   same way the production line on /ethical-ai does: it sits under a display
+   sentence that runs most of the column, and the previous 400px cap left
+   three quarters of the box as empty paper.
 
    The hold-until-seen gate is the kit's own global rule, keyed on the
    `.is-armed:not(.is-in)` ancestor the page's Settle provides. Nothing here
    duplicates it.
    ========================================================================= */
 .noway { margin: 0; }
-.noway__ink { max-width: 400px; }
+.noway__ink { max-width: 100%; }

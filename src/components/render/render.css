@@ -65,12 +65,30 @@
 
 /* Raking light. One source, at --lx along the top edge, falling across the
    wall toward the far corner, which is the direction the shadows run. The
-   radial is the light; the linear is the room getting darker away from it. */
+   radial is the light; the linear is the room getting darker away from it.
+
+   THE POOL HAS A SIZE. It was 120% by 85% of the panel, so on a 1376px board
+   the lamp lit a 1650px ellipse and every point of the wall sat inside it at
+   much the same value: that is what read as a background div at 1440. A lamp
+   throws a pool of a fixed size whatever the wall is. The cap is on the
+   LAYER, via background-size, not inside the gradient: Chromium 156 rejects
+   `min()` as a radial-gradient size and drops the whole declaration, so the
+   first cut of this shipped a wall with no lamp on it at all and the proof
+   was a computed `background-image: none`. The radial's box is at most 60rem
+   wide, which is the whole panel on a phone or a tablet (no change there)
+   and two thirds of a desktop board; the ellipse is still 120% of its box,
+   so it fades out well inside the tile and leaves no edge. The rake only
+   ever ADDS light, so the floor every piece of print on the wall was
+   measured against is untouched. */
 .rk-rake {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
+  background-repeat: no-repeat;
+  background-size:
+    min(100%, 60rem) 100%,
+    100% 100%;
+  background-image:
     radial-gradient(
       120% 85% at var(--lx) -18%,
       var(--color-paper-1) 0%,
@@ -172,7 +190,20 @@
 
 /* The ledge. A top face catching the light, a front face a stop deeper, and
    the shelf's own shadow onto the wall under it. Shared with the studio bench
-   so the two draw the same piece of furniture. */
+   so the two draw the same piece of furniture.
+
+   TWO FACES, NOT ONE STRIPE. The first cut gave the top face 30% of the
+   height and painted the front face in `--color-sunken`, which at the 15px
+   the bench renders is a 4px cream line over an 11px tan band that is
+   LIGHTER than the wall it stands against (sunken at 84% is #c1ad8f; the
+   wall at the shelf line is #887b66). A pale bar on a dark wall is a
+   stripe. The front face is now the site's own bench umber, the same
+   material `.bench` in index.css is made of, so it sits a stop deeper than
+   the wall the way a shelf edge in a lamp's shade does, and the top face
+   takes 44% of the height so the lit plane is tall enough to read as a
+   plane. One hard stop between them: that edge IS the shelf. Still two flat
+   faces and the shadow that was already there; no perspective, no extra
+   layer. */
 .rk-ledge,
 .rk-item::after {
   position: relative;
@@ -188,11 +219,12 @@
     ),
     linear-gradient(
       to bottom,
-      var(--color-paper-1) 0,
-      var(--color-raised) 30%,
-      color-mix(in srgb, var(--color-sunken) 84%, var(--shade)) 30%,
-      var(--color-sunken) 46%,
-      color-mix(in srgb, var(--color-sunken) 80%, var(--shade)) 100%
+      var(--color-raised) 0,
+      var(--color-paper-1) 18%,
+      var(--color-paper-3) 44%,
+      color-mix(in srgb, var(--color-bench) 92%, var(--color-ink)) 44%,
+      var(--color-bench) 62%,
+      color-mix(in srgb, var(--color-bench) 84%, var(--color-ink)) 100%
     );
   box-shadow:
     0 calc(var(--ledge, 14px) * 0.5)
@@ -323,7 +355,11 @@
   left: -100vw;
   right: -100vw;
   bottom: 0;
-  --ledge: clamp(10px, 3.6cqw, 15px);
+  /* 18px at the desktop bench, where the slips it carries stand 400px tall;
+     15px under those was a stripe however it was painted. The same value is
+     repeated on `.rk-plate` below, and the two MUST match: one is the
+     shelf's height, the other is the room the plate leaves for it. */
+  --ledge: clamp(11px, 4.2cqw, 18px);
 }
 @container studio (min-width: 32rem) and (max-width: 57.98rem) {
   .rk-item:nth-child(2n)::after { display: none; }
@@ -340,7 +376,7 @@
 /* The plate is the link. Its margin is the ledge's height, so the foot of
    the object lands exactly on the top face of the shelf. */
 .rk-plate {
-  --ledge: clamp(10px, 3.6cqw, 15px);
+  --ledge: clamp(11px, 4.2cqw, 18px);
   position: relative;
   display: block;
   margin-bottom: var(--ledge);
@@ -531,13 +567,18 @@
 .rk-slip__no {
   font-family: var(--font-hero);
   font-weight: 600;
-  font-size: clamp(2.4rem, 17cqw, 3.4rem);
+  font-size: clamp(2.6rem, 18cqw, 3.9rem);
   line-height: 0.82;
   letter-spacing: -0.03em;
   color: color-mix(in srgb, var(--color-red-deep) 70%, transparent);
 }
+/* THE RHYTHM IS UNEVEN ON PURPOSE. Number to title is tight: the two are one
+   lockup, the way a docket's number and its heading are set together. Then
+   air, and the signature block at the foot. The first cut had every gap on
+   the slip within a few pixels of 14px, and evenly spaced fields are what
+   make a piece of paper read as a web form. */
 .rk-slip__title {
-  margin-top: 0.55rem;
+  margin-top: 0.3rem;
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: clamp(1.0625rem, 6cqw, 1.25rem);
@@ -557,7 +598,7 @@
    in render.css. The height is the knob; each mark's width falls out of its
    own drawing, which is part of how the six avoid lining up as an icon row. */
 .rk-slip__mark {
-  margin-top: 1rem;
+  margin-top: 1.35rem;
   --stagemark-h: 56px;
 }
 .rk-slip__faces {
@@ -566,6 +607,17 @@
   gap: 0.45rem;
   list-style: none;
   padding: 0;
+}
+/* THE PORTRAIT SLOT IS ALWAYS THERE. A slip that carries a drawing carries a
+   row of portraits under it, and two of the six (the production team's) have
+   nobody's portrait to put there. Without this, those two slips stood 70px
+   shorter than the one beside them, which on the bench looked like one card
+   standing taller for no reason a viewer could see. The slot is reserved at
+   exactly the height the portraits take (their margin plus one square), so
+   the six slips in a row of three share one head and one foot line and the
+   only height a slip adds is the hold stamp, which IS a visible reason. */
+.rk-slip__mark:not(:has(+ .rk-slip__faces)) {
+  padding-bottom: calc(1.1rem + clamp(42px, 16cqw, 52px));
 }
 .rk-slip__faces > li {
   width: clamp(42px, 16cqw, 52px);
@@ -577,8 +629,8 @@
 }
 
 .rk-slip__who {
-  margin-top: 0.85rem;
-  padding-top: 0.85rem;
+  margin-top: 1.5rem;
+  padding-top: 0.7rem;
   border-top: 1px solid var(--color-rule);
 }
 .rk-slip__sign {
@@ -593,26 +645,34 @@
 }
 .rk-slip__name {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-ink);
 }
+/* Close under the name: it is what that person checks, so it belongs to the
+   signature, not to the next field down. */
 .rk-slip__check {
-  margin-top: 0.85rem;
+  margin-top: 0.6rem;
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-body);
 }
-
 /* The one fact the matrix buried in its legend, and the only red on the
-   board. A band across the foot of the slip, not a pill floating in it: this
-   is a stamp on a document. */
+   board. A solid red block, not a pill floating in it: this is a stamp on a
+   document.
+
+   STAMPED, NOT LAID OUT. The first cut bled it to both edges and the foot of
+   the slip, full width, which is where a web card keeps its footer and is
+   exactly how it read. A stamp is the size of its own text, it lands inside
+   the margin of the paper, and nobody holds it perfectly square. So: inline,
+   framed by the slip's own padding on every side, and a fraction off true
+   about its left foot. Same ink, same fill, same contrast as before. */
 .rk-slip__hold {
-  margin-top: 1.1rem;
-  margin-inline: calc(-1 * clamp(1.1rem, 6.5cqw, 1.6rem));
-  margin-bottom: calc(-1 * clamp(1.1rem, 6.5cqw, 1.6rem));
-  padding: 0.7rem clamp(1.1rem, 6.5cqw, 1.6rem);
+  display: inline-block;
+  margin-top: 1.4rem;
+  padding: 0.55rem 0.85rem 0.5rem;
+  border-radius: 2px;
   background: var(--color-red-deep);
   color: var(--color-raised);
   font-family: var(--font-mono);
@@ -620,6 +680,8 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.5;
+  transform: rotate(-1.2deg);
+  transform-origin: 0 100%;
 }
 
 /* ─── Correspondence room ───────────────────────────────────────────────

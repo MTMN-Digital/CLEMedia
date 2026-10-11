@@ -408,3 +408,41 @@ THE RULE NOW:
 row is six interchangeable glyphs in matched boxes standing in for categories.
 A set of drawn artefacts, at different sizes, some repeating because the work
 repeats, is not that.
+
+### The hand got craft, settled 2026-10-11
+
+The client's verdict on the drawings as they stood: "some drawings are still
+sub par ... and some don't fully encapsulate what it is they are trying to."
+
+The cause was the same every time, and it was not the metaphor. Every drawing
+was authored as an **icon**: one uniform 2px stroke, perfect geometry, outline
+only, no tone, no weight hierarchy. Any individual drawing could be swapped
+for a better idea and the page would still read as a line-icon set, because
+icon-ness was a property of the hand, not of any one picture.
+
+Three things were added centrally rather than per drawing, so that one change
+fixes every drawing including the ones nobody flagged:
+
+**1. A wobble, applied at paint time.** `components/draw/InkDefs.tsx` holds one
+SVG turbulence and displacement filter, mounted once in `Layout`, and `.ink`
+references it. Paths stay exact in the source, which is what keeps them
+editable; the hand-drawn quality is added when they are painted. Never bake
+wobble into coordinates and never add a second filter. `.ink--exact` is the
+opt-out and exists for one case: a drawing whose whole point is a ruled
+straight line, where the displacement shows as a half-pixel step rather than
+a bend.
+
+**2. A tone wash.** `.ink-wash` and `.ink-wash--deep` are flat tone fills drawn
+under the line work. This is the biggest single lift available to a drawing.
+Outline-only is why a page of these read flat: every object carried the same
+value, so nothing was in front of anything. Tone, never colour, and never the
+accent: a drawing says one thing in red and that thing is a stroke.
+
+**3. A weight hierarchy that means something.** `.ink-edge` (2.8) is an
+object's own silhouette, `.ink-line` (2) is ordinary line, `.ink-thin` (1.4 at
+55%) is detail inside an object. **A drawing authored entirely in `.ink-line`
+has thrown this away and will look like an icon whatever else is done to it.**
+This is now the first thing to check in a drawing review.
+
+The round's own brief, with the five redraws it commissioned, is in
+`.parallel/HAND-2026-10-11.md`.

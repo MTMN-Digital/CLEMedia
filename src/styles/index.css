@@ -1288,92 +1288,10 @@ body > * { position: relative; z-index: 1; }
    one page. See components/team/StandsAt.tsx. */
 .standsat { max-width: 150px; margin-top: 0.85rem; }
 
-/* ─── The production line, flat ───────────────────────────────────────────
-   See components/ethical-ai/ProductionFlat.tsx and the 2,700px vertical
-   chain it replaced. Marks in components/draw/draw.css; layout only here.
-   ─────────────────────────────────────────────────────────────────────── */
-.pline { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
-.pline__art { max-width: 100%; }
-
-.pline__gates {
-  list-style: none;
-  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
-  padding: 0;
-  display: grid;
-  gap: clamp(1.5rem, 3vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
-}
-@media (min-width: 680px) { .pline__gates { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1100px) { .pline__gates { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-.pline__gate { border-top: 1px solid var(--color-rule); padding-top: 0.9rem; }
-.pline__gate--hold { border-top-color: var(--color-red-deep); }
-.pline__gate h3 {
-  margin-top: 0.5rem;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.0625rem;
-  line-height: 1.25;
-  color: var(--color-ink);
-}
-.pline__mark { margin-top: 0.6rem; --stagemark-h: 40px; }
-.pline__who { margin-top: 0.3rem; font-size: 0.9375rem; font-weight: 600; color: var(--color-ink); }
-.pline__body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 42ch; }
-.pline__faces { list-style: none; margin: 0.7rem 0 0; padding: 0; display: flex; gap: 0.4rem; }
-.pline__faces > li {
-  width: 40px;
-  border-radius: 6px;
-  padding: 2px;
-  background: var(--color-raised);
-  border: 1px solid var(--color-rule);
-}
-
-.pline__detail {
-  margin-top: clamp(2rem, 4vw, 3rem);
-  padding-top: clamp(1.5rem, 3vw, 2rem);
-  border-top: 1px solid var(--color-rule);
-  display: grid;
-  gap: clamp(1.75rem, 3vw, 3rem);
-}
-@media (min-width: 900px) { .pline__detail { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
-.pline__tools ul,
-.pline__never ul { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 1rem; }
-.pline__tools h4 {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--color-ink);
-}
-.pline__tools h4 span {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  /* Same trap as .ink-label: muted is a paper-only floor and this sits on
-     the well, where it measured 4.40:1. */
-  color: var(--color-body);
-  margin-left: 0.5rem;
-}
-.pline__tools p { margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 48ch; }
-.pline__never li {
-  position: relative;
-  padding-left: 1.1rem;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--color-body);
-  max-width: 48ch;
-}
-.pline__never li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.62em;
-  width: 9px;
-  height: 1px;
-  background: var(--color-red-deep);
-}
-.pline__case { margin-top: clamp(2rem, 4vw, 3rem); }
-
+/* The production line on /ethical-ai lived here until 2026-10-11 and now
+   lives in components/ethical-ai/pline.css, beside the component it dresses.
+   It was moved so one worker could own the drawing and its layout together
+   without editing this file, which every page depends on. */
 /* ─── One headline, arriving in order ─────────────────────────────────────
    Used once, on the hero. The words of "Watch. Play. Learn." are a sequence,
    so they land as one: each rises a little and settles, a tenth of a second

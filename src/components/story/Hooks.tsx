@@ -2,102 +2,212 @@ import "@/components/draw/draw.css";
 import "./wrap.css";
 
 /* ============================================================================
-   The next hook, arriving.
+   Beside a small child, watching it.
 
-   The paragraph this sits in says, in the founder's own words: "What struck
-   me was the speed. Cuts every second or so. Colours turned up past anything
-   in the real world. A new hook arriving before the last one had finished
-   landing."
+   The paragraph this sits in says, in the founder's own words: "I started
+   paying proper attention to children's media the way most people do, by
+   sitting beside a small child who was watching it. What struck me was the
+   speed. Cuts every second or so. Colours turned up past anything in the
+   real world. A new hook arriving before the last one had finished landing."
 
-   WHAT IT DRAWS. The last sentence, as a shape. A ground, and things thrown
-   onto it in arcs. Each arc leaves the ground before the one in front of it
-   has come down, so by the third one the air is full and nothing has landed.
-   The final arc runs out of the frame still in the air, and it is the one
-   accent: the hook that has not landed yet, which is the one the sentence is
-   about.
+   WHAT IT DRAWS. The scene the paragraph is written from, and the speed.
+   A small child, seen from behind, sitting on the floor in front of a
+   television. The child is the nearest thing and the only solid one: deep
+   tone, the heaviest line, a neck and a shoulder line so it is a person
+   and not a pebble. The set stands on the same floor, its cabinet in tone
+   and its screen left as bare paper, because it is on. Behind the screen,
+   stacked up and off to the side of it, are the frames that have not
+   settled yet: three ghosts of the screen, each a step further out, thin
+   line, the picture changing faster than anyone can follow. The one accent
+   is a pair of short speed dashes on the outermost ghost, the frame that is
+   still arriving: a small mark on the thing that is moving too fast, and
+   nothing pointed at the child.
 
-   NO NUMBER IS GIVEN AND NONE IS IMPLIED. The arcs are not seconds, cuts or
-   anything else countable; three is simply enough to read as "one after
-   another" and few enough to read as a drawing. No axis, no scale, nothing
-   measured. The arcs are all the same height because the sentence says
-   nothing about any of them being bigger.
+   WHY IT IS LEGIBLE ON ITS OWN. A head on shoulders on a seated body is a
+   person, and a small one in front of a large set is a small child. A
+   screen on a stand is a television. A shape with ghosts of itself trailing
+   off it is a shape moving fast. The paragraph is not needed to read it; it
+   says whose child and whose evening.
 
-   HOW IT ARRIVES. The ground draws, then the arcs draw in order, and each
-   one STARTS before the last has finished, so the animation is the sentence
-   as well as the picture. Once, on entry, and it stops. It sits inside the
-   letter's Settle, whose armed-but-not-entered state pauses the kit's
-   animations, so it is held until it is seen.
+   THE TWO ATTEMPTS BEFORE THIS, so it is not re-litigated.
+
+   1. THE ARCS. Three equal arcs on a baseline, the last one cut by the
+      frame and red, for "a new hook arriving before the last one had
+      finished landing". Three smooth arcs on a baseline at 150 by 105 are
+      a line chart whatever they are meant to be. It drew one clause as a
+      diagram.
+
+   2. THE FLASHES. The same child and set as now, with three jagged red
+      bolts flung from the screen at the back of the child. At 2x it read
+      as the television attacking the child: a lightning silhouette, in
+      the one colour this site uses for a thing being stopped (the held
+      release on /ethical-ai, the sign-off stamp, the barred exits on
+      /app), aimed at a figure who cannot see it coming. On the story page
+      of a children's media company, inside the founder's own letter, that
+      cannot be the read. The paragraph is about speed, not harm, so the
+      drawing now draws speed, and the red is a mark on the moving thing.
+
+   NO NUMBER IS GIVEN AND NONE IS IMPLIED. Three ghosts is enough to read as
+   "one after another" and few enough to read as a drawing; they are not
+   cuts, seconds or anything countable. No axis, no scale, nothing measured.
+
+   HOW IT ARRIVES. The floor draws, the set draws and its screen comes on,
+   the child draws, and then the ghosts land one on the heels of the last,
+   and the dashes mark the outermost, which is the sentence as well as the
+   picture. Once, on entry, and it stops. It sits inside the letter's
+   Settle, whose armed-but-not-entered state pauses the kit's animations,
+   so it is held until it is seen.
 
    THE TEXT RUNS AROUND IT. It floats right of its paragraph above 700px,
-   and the outline the prose follows is the rise of the first arc (see
-   wrap.css). Decorative: the sentence beside it says everything it says, so
-   it is hidden from assistive technology rather than described twice.
+   and the outline the prose follows is the child's back, shoulder and head,
+   then the climb of the ghost frames to the dashes (see wrap.css).
+   Decorative, like Thread beside it: it floats inside the very sentence it
+   draws, so it is hidden from assistive technology rather than read twice.
    ========================================================================== */
 
 /* The viewBox is the width it is drawn at, so stroke-width 2 is 2px. */
 const W = 150;
 const H = 105;
-const GROUND = 96;
-/* Each arc spans SPAN, and the launches are closer together than that, which
-   is the whole drawing: every arc leaves the ground 28 short of where the one
-   before it comes down. The control point sits below zero so the apex lands
-   at y 25 with the quadratic's halving. */
-const SPAN = 76;
-const CTRL_Y = -46;
-const LAUNCHES = [3, 51, 99];
+const FLOOR = 98;
 
-const arc = (x0: number) => `M${x0} ${GROUND} Q${x0 + SPAN / 2} ${CTRL_Y} ${x0 + SPAN} ${GROUND}`;
+/* The child, from behind: a head, a neck, a shoulder line, and a seated
+   body that widens to the floor. One path for the body so the edge draws as
+   one stroke; the head is its own circle on top. */
+const CHILD_BODY = [
+  "M17 72 C17 68.5 19.5 67 23 67",
+  "L27 67 L27 63 L33 63 L33 67 L37 67",
+  "C40.5 67 43 68.5 43 72",
+  "C43 80 44.5 86 48 92",
+  `C49.5 95 48.5 ${FLOOR} 46 ${FLOOR}`,
+  `L14 ${FLOOR}`,
+  `C11.5 ${FLOOR} 10.5 95 12 92`,
+  "C15.5 86 17 80 17 72 Z",
+].join(" ");
+const CHILD_HEAD = "M39.5 54 a9.5 9.5 0 1 1 -19 0 a9.5 9.5 0 1 1 19 0 Z";
+const CHILD = `${CHILD_BODY} ${CHILD_HEAD}`;
 
-/* The last arc would land past the frame, so it is cut at the right edge
-   while still coming down: the quadratic split (de Casteljau) at the
-   parameter where it crosses x = W. With the control point centred, x runs
-   linearly in t, so that parameter is simply the fraction of the span
-   inside the frame. */
-const LAST = (() => {
-  const x0 = LAUNCHES[LAUNCHES.length - 1];
-  const p0 = { x: x0, y: GROUND };
-  const p1 = { x: x0 + SPAN / 2, y: CTRL_Y };
-  const p2 = { x: x0 + SPAN, y: GROUND };
-  const t = (W - x0) / SPAN;
-  const q0 = { x: p0.x + t * (p1.x - p0.x), y: p0.y + t * (p1.y - p0.y) };
-  const q1 = { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) };
-  const r = { x: q0.x + t * (q1.x - q0.x), y: q0.y + t * (q1.y - q0.y) };
-  const f = (n: number) => Math.round(n * 10) / 10;
-  return `M${p0.x} ${p0.y} Q${f(q0.x)} ${f(q0.y)} ${f(r.x)} ${f(r.y)}`;
+/* The set. Cabinet, screen inset in it, a stand down to the floor. */
+const TV = { x: 68, y: 40, w: 64, h: 46 };
+const SCREEN = { x: TV.x + 4, y: TV.y + 4, w: TV.w - 8, h: TV.h - 8 };
+const CABINET = (() => {
+  const { x, y, w, h } = TV;
+  const r = 3;
+  return [
+    `M${x + r} ${y}`,
+    `H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r}`,
+    `V${y + h - r} Q${x + w} ${y + h} ${x + w - r} ${y + h}`,
+    `H${x + r} Q${x} ${y + h} ${x} ${y + h - r}`,
+    `V${y + r} Q${x} ${y} ${x + r} ${y} Z`,
+  ].join(" ");
 })();
+const TV_STAND = (() => {
+  const cx = TV.x + TV.w / 2;
+  const bottom = TV.y + TV.h;
+  return `M${cx} ${bottom} V${FLOOR - 1} M${cx - 14} ${FLOOR - 1} H${cx + 14}`;
+})();
+const TV_EDGE = `${CABINET} ${TV_STAND}`;
+
+/* The frames that have not settled: the screen again, each one a step up
+   and out from the last, drawn behind the cabinet so the set covers their
+   near corners and they read as trailing off it. */
+const GHOST_STEP = 6;
+const GHOSTS = [1, 2, 3].map((n) => ({
+  x: SCREEN.x + GHOST_STEP * n,
+  y: SCREEN.y - GHOST_STEP * n,
+}));
+const OUTER = GHOSTS[GHOSTS.length - 1];
+
+/* Two short dashes just above the top edge of the outermost frame, by its
+   right corner, along the line it is arriving on. One mark, one element,
+   and inside the box so the float's edge is the drawing's edge. */
+const DASHES = [
+  `M${OUTER.x + SCREEN.w - 16} ${OUTER.y - 4} l5 -4`,
+  `M${OUTER.x + SCREEN.w - 7} ${OUTER.y - 4} l5 -4`,
+].join(" ");
 
 const d = (delay: string, dur?: string) =>
   ({ "--d": delay, ...(dur ? { "--dur": dur } : {}) }) as React.CSSProperties;
 
 export function Hooks() {
   return (
-    <span className="wrap wrap--right wrap--hooks" aria-hidden="true">
-      <svg className="ink wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false">
-        {/* The ground everything is supposed to land on. */}
+    <span
+      className="wrap wrap--right wrap--hooks"
+      /* DECORATIVE, like Thread beside it. The kit's rule is that a drawing is
+         a new way to read a claim and never a new claim, and this one floats
+         inside the very sentence it draws. Announcing it would read the same
+         statement to a screen reader twice, once as the author's prose and
+         once as a description of a picture of that prose. */
+      aria-hidden="true"
+    >
+      <svg className="ink wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false" aria-hidden="true">
+        {/* The floor they are both on. */}
         <path
-          d={`M2 ${GROUND} H${W - 2}`}
+          d={`M3 ${FLOOR} H${W - 3}`}
           pathLength="1"
           className="ink-line ink-heavy ink-draw"
           style={d("0.1s", "0.7s")}
         />
-        {/* The ones on their way down. Each starts drawing 0.45s after the
-            last, against a 0.8s draw, so none of them has finished when the
-            next one leaves. */}
-        {LAUNCHES.slice(0, -1).map((x0, i) => (
-          <path
-            key={x0}
-            d={arc(x0)}
-            pathLength="1"
-            className="ink-line ink-draw"
-            style={d(`${0.5 + i * 0.45}s`, "0.8s")}
+
+        {/* The frames still arriving, behind the set, fast, one on the
+            heels of the last. */}
+        {GHOSTS.map((g, i) => (
+          <rect
+            key={i}
+            x={g.x}
+            y={g.y}
+            width={SCREEN.w}
+            height={SCREEN.h}
+            rx="1.5"
+            className="ink-line ink-thin ink-in"
+            style={d(`${1.5 + i * 0.12}s`)}
           />
         ))}
-        {/* The one that has not landed. */}
+
+        {/* The set: paper then tone on the cabinet so it covers the ghosts,
+            the screen left as paper because it is on, its own edge the
+            heavier line, the screen's edge the thin one. */}
+        <path d={CABINET} className="ink-fill ink-in" style={d("0.4s")} />
+        <path d={CABINET} className="ink-wash ink-in" style={d("0.4s")} />
         <path
-          d={LAST}
+          d={TV_EDGE}
+          pathLength="1"
+          className="ink-line ink-edge ink-draw"
+          style={d("0.4s", "0.9s")}
+        />
+        <rect
+          x={SCREEN.x}
+          y={SCREEN.y}
+          width={SCREEN.w}
+          height={SCREEN.h}
+          rx="1.5"
+          className="ink-fill ink-in"
+          style={d("0.9s")}
+        />
+        <rect
+          x={SCREEN.x}
+          y={SCREEN.y}
+          width={SCREEN.w}
+          height={SCREEN.h}
+          rx="1.5"
+          className="ink-line ink-thin ink-in"
+          style={d("0.9s")}
+        />
+
+        {/* The child, nearest and solid. */}
+        <path d={CHILD} className="ink-wash ink-wash--deep ink-in" style={d("0.8s")} />
+        <path
+          d={CHILD}
+          pathLength="1"
+          className="ink-line ink-edge ink-draw"
+          style={d("0.8s", "0.8s")}
+        />
+
+        {/* The mark on the frame that is moving too fast. The one accent. */}
+        <path
+          d={DASHES}
           pathLength="1"
           className="ink-line ink-accent ink-draw"
-          style={d(`${0.5 + (LAUNCHES.length - 1) * 0.45}s`, "0.55s")}
+          style={d("1.95s", "0.3s")}
         />
       </svg>
     </span>

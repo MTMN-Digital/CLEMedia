@@ -9,8 +9,8 @@
    the prose actually flows around breaks the block itself, which is the
    thing being asked for. So these two sit inside their paragraph as floats,
    and `shape-outside` gives the text the drawing's real outline rather than
-   its box: the first lines tuck in over the rise of the first hook, and the
-   lines beside the script follow the lean of the sheet.
+   its box: the lines beside the child follow the child's back and head, and
+   the lines beside the script follow the lean of the sheet.
 
    THE OUTLINE IS TRACED. Each polygon below is the drawing's own silhouette
    in percent of its content box, so it scales with the svg. The reference
@@ -59,19 +59,29 @@
     margin: 0.35rem 0.75rem 0.75rem 0;
     shape-margin: 12px;
   }
-  /* The hooks, 150 by 105. The left edge is the rise of the first arc from
-     the ground to its apex, then the top runs level across the apexes. The
-     ground is the full width, so the lowest lines get the least room. */
+  /* The child and the set, 150 by 105. The edge the text follows is the
+     child's back from the floor up to the shoulder, round the head, then
+     up to the top of the set and on up the climb of the ghost frames to
+     the dashes at the top right. The floor is the full width, so the lowest
+     lines get the least room. Traced from the paths in Hooks.tsx: the body's
+     left edge runs from (12,98) up to the shoulder at (17,72), the head is a
+     circle at (30,54) r9.5, the set's top left is (68,40), the outermost
+     ghost's top left is (90,26) and the dashes top out at about (144,18). */
   .wrap--hooks {
     shape-outside: polygon(
       0 93%,
-      0 90%,
-      7% 67%,
-      12% 48%,
-      17% 35%,
-      22% 26.5%,
-      27% 22.5%,
-      100% 22.5%,
+      8% 93%,
+      8% 88%,
+      11% 76%,
+      11% 68%,
+      15% 64%,
+      14% 52%,
+      20% 42.5%,
+      26% 44%,
+      45% 38%,
+      60% 25%,
+      86% 17%,
+      100% 17%,
       100% 93%
     ) content-box;
   }

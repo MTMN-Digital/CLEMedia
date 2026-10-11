@@ -2,12 +2,13 @@
    See components/home/EpisodeRings.tsx. Marks come from components/draw/
    draw.css; this file is layout and the entry gate only.
 
-   THE ALIGNMENT RULE. The drawing's three stages sit in the vertical thirds
+   THE ALIGNMENT RULE. The drawing's three scenes sit in the vertical thirds
    of its viewBox. The captions sit in the vertical thirds of the SAME height:
    the list is stretched to the drawing's row and divided into three equal
-   tracks, each caption centred in its track. So Watch is level with the
-   screen, Play with the jump, Learn with the sheet, at every width, without
-   a legend and without anything positioned by hand.
+   tracks, each caption centred in its track. So Watch is level with the two
+   heads in front of the screen, Play with the child in the air, Learn with
+   the sheet, at every width, without a legend and without anything
+   positioned by hand.
 
    The drawing is `height: 100%` with `slice`, so if a caption ever runs
    taller than its third the drawing scales up to the taller rows rather than
@@ -15,10 +16,16 @@
    sideways only, a few pixels into the gutter, and the kit's `overflow:
    visible` lets it paint.
 
-   TWO ARRANGEMENTS. Under 820px the wide plan would be 110px tall on a phone,
-   which is not a drawing, so a strip authored at 150 units wide stands beside
-   the captions instead, at the width it really gets. Above 820px the strip
-   is swapped for the 420 by 560 plan.
+   TWO ARRANGEMENTS. Under 820px the wide drawing would be 110px tall on a
+   phone, which is not a drawing, so a strip authored at 150 by 600 stands
+   beside the captions instead, at the width it really gets. Above 820px the
+   strip is swapped for the 420 by 560 drawing. Measured 2026-10-11: from
+   820px up the row IS the drawing's natural height (440 by 587 at 1440), so
+   `slice` scales nothing there and the only way a mark gets clipped is by
+   being authored past the viewBox edge. Every mark in the wide drawing now
+   sits inside the box with margin. On a 320px phone the three captions run
+   taller than the strip and it scales up about 1.16x, so the strip keeps
+   its content within x 27 to 123 and loses only margin to the sides.
    ─────────────────────────────────────────────────────────────────────── */
 .trail {
   display: grid;
