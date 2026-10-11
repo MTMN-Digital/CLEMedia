@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { NAV, SITE } from "@/lib/site";
+import { useState, useEffect, useRef } from "react";
+import { Link, Outlet, useLocation, NavLink } from "react-router-dom";
+import { SITE, NAV } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
 import navMark from "@/assets/brand/cle-nav.webp";
-import { IconExternal, IconMail } from "@/components/icons";
-import { Container, TextLink } from "@/components/ui";
+import { IconMail, IconExternal } from "@/components/icons";
+import { TextLink, Container } from "@/components/ui";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { InkDefs } from "@/components/draw/InkDefs";
 
@@ -32,10 +32,74 @@ function ShowSiteLink({ className = "" }: { className?: string }) {
 function Header() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const bar = useRef<HTMLElement>(null);
+  /* Two states, not one. `over` is the header floating on the hero film with
+     cream type; `solid` is the cream bar with its hairline. They are not
+     opposites: at the top of an ordinary page the header is neither, which is
+     the "softer until you scroll" half of this. */
+  const [over, setOver] = useState(false);
+  const [solid, setSolid] = useState(false);
   useEffect(() => setOpen(false), [pathname]);
 
+  /* MEASURED FROM THE FILM, not from a scroll offset. A threshold in pixels
+     would have to know the hero's height, which is `100svh` minus a gutter
+     and therefore different on every device and different again when a mobile
+     browser's address bar collapses. Asking the element where its bottom edge
+     is costs one `getBoundingClientRect` per frame of scrolling and is right
+     by construction. A page with no film falls back to the 8px test, which is
+     all an ordinary page needs to know. */
+  useEffect(() => {
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const h = bar.current?.getBoundingClientRect().height ?? 76;
+      const film = document.querySelector(".film-hero");
+      /* Under 820 the hero puts its copy on paper below the picture and the
+         header would be cream type on cream. Same breakpoint as the stylesheet. */
+      const wide = window.matchMedia("(min-width: 821px)").matches;
+      if (film && wide) {
+        /* THREE HEADER HEIGHTS, not one. The obvious test is whether any film
+           is left under the bar, and it is wrong: the hero's headline and its
+           lead sit at the BOTTOM of the picture, so as the film scrolls up
+           they climb into the navigation, and for about two hundred pixels of
+           scroll there was cream hero copy and cream nav links printed over
+           each other. Handing the bar its cream back while the last sliver of
+           film is still passing is the lesser of the two, and the sliver is
+           dark, so the slab the client objected to never reappears. */
+        const onFilm = film.getBoundingClientRect().bottom > h * 3;
+        setOver(onFilm);
+        setSolid(!onFilm);
+      } else {
+        setOver(false);
+        setSolid(window.scrollY > 8);
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    read();
+    /* And once more after paint: on a route change into the hero the film is
+       not in the DOM yet when this effect runs. */
+    const first = requestAnimationFrame(read);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(first);
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
+
+  /* An open menu panel is opaque cream, so the bar above it has to be too. */
+  const isOver = over && !open;
+  const isSolid = solid || open;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--color-rule)] bg-[rgba(245,236,217,0.94)] backdrop-blur-[14px]">
+    <header
+      ref={bar}
+      className={`site-header ${isSolid ? "is-solid" : ""} ${isOver ? "is-over" : ""}`}
+    >
       <Container width="wide" className="flex items-center gap-6 py-4">
         {/* The felted mark itself, cropped to the three characters: no ropes
             above them and no FAMILY MEDIA below, because at header height the
@@ -94,7 +158,7 @@ function Header() {
         </button>
       </Container>
 
-      <div aria-hidden="true" className="hairline" />
+      {isSolid && <div aria-hidden="true" className="hairline" />}
 
       {open && (
         <nav id="mobile-nav" aria-label="Main" className="border-b border-[var(--color-rule)] bg-[rgba(245,236,217,0.97)] lg:hidden">

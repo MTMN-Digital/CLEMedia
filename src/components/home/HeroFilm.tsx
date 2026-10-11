@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui";
 import { IconArrow, IconExternal, IconRestart } from "@/components/icons";
 import { SITE } from "@/lib/site";
@@ -39,6 +39,21 @@ export function HeroFilm() {
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [sound, setSound] = useState(false);
+
+  /* A film nobody is looking at should not be decoding.
+
+     THE OBSERVER MUST NOT RESTART A FILM THE VIEWER STOPPED. Its `pause()`
+     fires the same `pause` event a viewer's press does, so the two cannot be
+     told apart after the fact. The flag therefore records the one thing only
+     the viewer can do: press the control. A ref, not state, so the observer
+     is installed once and never reads a stale value.
+
+     It is the viewer's intent that is tracked, not the observer's, because
+     the observer is no longer the only reason the film can be sitting
+     paused. A browser that refused the autoplay leaves it paused too, and
+     that one SHOULD start when it scrolls into view, which the old
+     `stoppedByScroll` flag could never allow because it had never run. */
+  const viewerPaused = useRef(false);
 
   /* Decided once, before the first paint, so the element is COMPLETE in the
      markup: source, autoplay and muted all present when the browser first
@@ -93,34 +108,41 @@ export function HeroFilm() {
        presses play on is a perfectly good outcome. */
     if (start.autoplay) el.play().catch(() => {});
 
+    /* And a third, when there is finally something to play.
+
+       The two attempts above both happen on mount, which on a cold load is
+       before a single frame has been decoded, and a browser is entitled to
+       refuse a play() on an element with no data. Nothing then ever asked
+       again: the poster sat there for the rest of the visit and the film
+       looked broken rather than refused. `canplay` fires the moment the
+       element could start, so this is the first attempt that is made at a
+       time the browser can say yes to.
+
+       It is guarded by `viewerPaused` so a film somebody deliberately stopped
+       is not restarted by its own buffering, and it is harmless when the film
+       is already running, because then it is not paused. */
+    const retry = () => {
+      if (start.autoplay && el.paused && !viewerPaused.current) el.play().catch(() => {});
+    };
+    el.addEventListener("canplay", retry);
+
     return () => {
       el.removeEventListener("play", sync);
       el.removeEventListener("pause", sync);
+      el.removeEventListener("canplay", retry);
     };
   }, [start.autoplay]);
 
-  /* A film nobody is looking at should not be decoding.
-
-     THE OBSERVER MUST REMEMBER THAT IT WAS THE ONE WHO PAUSED. Its `pause()`
-     fires the same `pause` event a viewer's press does, which set `playing`
-     to false; the effect then re-ran with that false captured, and scrolling
-     back to the hero left the film stopped for good. A ref, not state, so
-     the observer is installed once and never reads a stale value. */
-  const stoppedByScroll = useRef(false);
+  /* Paused while it is off screen. The flag it reads is at the top of the
+     component, because the mount effect above reads it too. */
   useEffect(() => {
     const el = video.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          if (stoppedByScroll.current) {
-            stoppedByScroll.current = false;
-            el.play().catch(() => {});
-          }
+          if (start.autoplay && el.paused && !viewerPaused.current) el.play().catch(() => {});
         } else if (!el.paused) {
-          /* Only a film that was actually running is resumed. One the viewer
-             stopped stays stopped. */
-          stoppedByScroll.current = true;
           el.pause();
         }
       },
@@ -128,14 +150,16 @@ export function HeroFilm() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [start.autoplay]);
 
   const togglePlay = () => {
     const el = video.current;
     if (!el) return;
     if (el.paused) {
+      viewerPaused.current = false;
       el.play().then(() => setPlaying(true)).catch(() => {});
     } else {
+      viewerPaused.current = true;
       el.pause();
       setPlaying(false);
     }
@@ -150,6 +174,7 @@ export function HeroFilm() {
   const restart = () => {
     const el = video.current;
     if (!el) return;
+    viewerPaused.current = false;
     el.currentTime = 0;
     el.play().then(() => setPlaying(true)).catch(() => {});
   };
@@ -159,6 +184,7 @@ export function HeroFilm() {
     if (!el) return;
     if (el.muted) {
       /* From the top, and once only. See the note above. */
+      viewerPaused.current = false;
       el.muted = false;
       el.loop = false;
       el.currentTime = 0;

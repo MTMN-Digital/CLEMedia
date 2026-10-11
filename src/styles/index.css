@@ -842,6 +842,81 @@ body > * { position: relative; z-index: 1; }
    own arrival). No JS touches a style except those three.
 --------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------
+   THE HEADER, which has three states and used to have one.
+
+   It was an opaque cream bar with a hairline, always, on every page. Over the
+   hero that put a hard cream slab directly above a dark full bleed film: the
+   single highest contrast edge on the home page, and it was between the
+   furniture and the picture rather than anywhere the eye was meant to go.
+
+   The three states, set by `Header` in components/Layout.tsx:
+   - bare (neither class): no background, no rule. This is an ordinary page
+     before you have scrolled. The page is already cream, so the only thing
+     that changes is that the hairline is not drawn under an untouched page.
+   - `is-over`: floating on the film, type in cream, with its own scrim so the
+     type is readable whatever frame the film is on.
+   - `is-solid`: the cream bar, as it always was.
+
+   TRANSITIONS ARE ON COLOUR ONLY. The header must not move, resize or blur in
+   and out as you scroll past the hero: a header that animates its own box on
+   scroll is the thing this site's motion rule exists to forbid.
+--------------------------------------------------------------------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  transition:
+    background-color 360ms var(--ease-out),
+    border-color 360ms var(--ease-out),
+    color 360ms var(--ease-out);
+}
+.site-header.is-solid {
+  background: rgba(245, 236, 217, 0.94);
+  border-bottom-color: var(--color-rule);
+  backdrop-filter: blur(14px);
+}
+
+/* The scrim under the header while it is on the film. The film's own
+   `.film-scrim` already holds the top of the picture down, but it was
+   measured for copy that started BELOW the header, and the header now sits
+   where that gradient is strongest. This is a second, shorter hold so the
+   header's own type does not depend on which frame is playing. It is a
+   pseudo element rather than a background so the bar can still fade its
+   cream in over the top of it. */
+.site-header.is-over::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(14, 11, 9, 0.58) 0%,
+    rgba(14, 11, 9, 0.34) 58%,
+    rgba(14, 11, 9, 0) 100%
+  );
+}
+.site-header > * { position: relative; }
+
+/* Cream type on the film. Every colour in here is stated, because the links
+   carry `text-ink` and the pill carries a border from the paper palette, and
+   an unstated one is ink on a dark picture. */
+.site-header.is-over,
+.site-header.is-over a,
+.site-header.is-over button {
+  color: var(--color-raised);
+}
+.site-header.is-over a:hover { color: #ffffff; }
+/* The active link is `--color-red-deep`, which measures 1.46:1 on this film.
+   #ffb9bb is the light red this site already uses for the brand red on a dark
+   ground: the drawing kit and the hero headline both take it. */
+.site-header.is-over .text-red-deep { color: #ffb9bb; }
+.site-header.is-over a[class*="border"],
+.site-header.is-over button[class*="border"] { border-color: rgba(253, 248, 237, 0.45); }
+.site-header.is-over a[class*="border"]:hover { border-color: rgba(253, 248, 237, 0.85); }
+
+/* ---------------------------------------------------------------------------
    THE HERO: the mission film, full bleed.
 
    No pin, no scroll choreography, nothing driven by a scroll listener. The
@@ -860,6 +935,11 @@ body > * { position: relative; z-index: 1; }
      behind them is the colour you see in the gaps, and cream gaps around a
      dark film read as a mistake. */
   background: var(--color-ink);
+  /* UP, BEHIND THE HEADER. The header is sticky and therefore in flow, so
+     without this the film starts below it and a transparent header would be
+     floating on the page's own cream rather than on the picture. The header
+     paints above at z-50 and keeps its place in the scroll. */
+  margin-top: calc(-1 * var(--header-h, 76px));
 }
 
 .film-frame {
@@ -868,7 +948,11 @@ body > * { position: relative; z-index: 1; }
      reference runs its frame at 0.95 of the viewport with the nav floating
      over the top of it; this site has a real header in flow, so the frame
      takes what is left. */
-  height: calc(100svh - var(--header-h, 76px) - var(--film-gutter) * 2);
+  /* The whole window less its gutters. It used to subtract the header too,
+     because the header sat above it; the film now runs under the header, so
+     subtracting it a second time would leave a header's worth of ink at the
+     bottom of the screen. */
+  height: calc(100svh - var(--film-gutter) * 2);
   min-height: 30rem;
   overflow: hidden;
   isolation: isolate;
@@ -901,9 +985,21 @@ body > * { position: relative; z-index: 1; }
                     rgba(14, 11, 9, 0) 56%),
     /* The top corners carry text too, and this film's top half is a sunrise
        that goes very nearly white: at 0.62 the eyebrow measured 3.26:1 and
-       the note 2.26:1 against the brightest frame. */
-    linear-gradient(to bottom, rgba(14, 11, 9, 0.80) 0%, rgba(14, 11, 9, 0.42) 16%,
-                    rgba(14, 11, 9, 0) 34%),
+       the note 2.26:1 against the brightest frame.
+
+       RETUNED 2026-10-11, and the reason is worth keeping. The header now
+       floats on this film instead of sitting in a cream bar above it, so the
+       copy's top row was pushed down by a header's height to clear it, out of
+       the part of this gradient that was holding it: the eyebrow fell to
+       3.14:1 and the note to 3.07:1 at 39.6 seconds, which is the brightest
+       frame in the loop. The hold therefore has to reach further down the
+       frame, not just be stronger at the very top. Solved for the measured
+       worst case: the copy sits between 14% and 24% of the frame's height and
+       the film there runs to about #c2c2c2, which needs 0.45 of this ink
+       behind cream type to clear AA. */
+    linear-gradient(to bottom, rgba(14, 11, 9, 0.80) 0%, rgba(14, 11, 9, 0.62) 12%,
+                    rgba(14, 11, 9, 0.50) 24%, rgba(14, 11, 9, 0.22) 34%,
+                    rgba(14, 11, 9, 0) 46%),
     linear-gradient(to right, rgba(14, 11, 9, 0.34) 0%, rgba(14, 11, 9, 0) 46%);
 }
 
@@ -916,6 +1012,10 @@ body > * { position: relative; z-index: 1; }
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 1.5rem;
   padding: clamp(1.5rem, 2.8vw, 2.75rem);
+  /* The top row clears the header, which is now over this picture. Without it
+     the eyebrow sits under the navigation and the sound control sits under
+     the show site pill. */
+  padding-top: calc(clamp(1.5rem, 2.8vw, 2.75rem) + var(--header-h, 76px));
   color: var(--color-raised);
   pointer-events: none;
 }
@@ -1032,7 +1132,9 @@ body > * { position: relative; z-index: 1; }
   /* Paper, because the copy leaves the picture here and sits under it: left on
      ink it was dark ink text on a dark ink panel, and the headline was simply
      not there. The corners collapse into one ordinary column. */
-  .film-hero { background: var(--color-raised); padding: var(--film-gutter) var(--film-gutter) 0; }
+  /* Paper here, and back in flow: under this width the header stays the cream
+     bar and the copy leaves the picture, so there is nothing to float on. */
+  .film-hero { background: var(--color-raised); padding: var(--film-gutter) var(--film-gutter) 0; margin-top: 0; }
   .film-frame { height: auto; min-height: 0; overflow: visible; background: transparent; border-radius: 0; }
   .film-stage { position: relative; inset: auto; }
   .film-media { position: relative; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); }

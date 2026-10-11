@@ -104,7 +104,15 @@ const items = await page.evaluate(() => {
   const ownsText = (el) =>
     Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent.trim());
   const out = [];
-  document.querySelectorAll(".film-copy span, .film-copy p, .film-copy a, .film-btn").forEach((el) => {
+  // The header joined this list on 2026-10-11. It used to be an opaque cream
+  // bar sitting above the film; it now floats ON the film while the hero is in
+  // view, which makes its links exactly the same problem as the hero copy: type
+  // over a picture that runs from a dark wood to a near white sunrise.
+  document
+    .querySelectorAll(
+      ".film-copy span, .film-copy p, .film-copy a, .film-btn, .site-header.is-over a, .site-header.is-over button",
+    )
+    .forEach((el) => {
     const text = (el.textContent || "").trim();
     if (!text || !ownsText(el)) return;
     const cs = getComputedStyle(el);
