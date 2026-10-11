@@ -7,11 +7,13 @@
 .pline__art { max-width: 100%; }
 
 /* The sentence inside the return loop. Positioned in the drawing's own
-   proportions: the loop's rail is at 50/250 of the height and the track at
-   128/250, and the rail runs from the tools (x 388) to the last gate
-   (x 1130) of a 1200-wide box, so the centre of the loop is at 63% across
-   and 36% down. Below 900px the loop is about 20px tall and the caption
-   under the drawing carries the same sentence, so the label goes. */
+   proportions: the loop's rail is at 25/125 of the height and the track at
+   64/125, and the rail runs from the tools (x 194) to the last gate
+   (x 565) of a 600-wide box, so the centre of the loop is at 63% across
+   and 36% down. (The box was halved on 2026-10-11 for the graphite; the
+   proportions, and so these percentages, did not move.) Below 900px the
+   loop is about 20px tall and the caption under the drawing carries the
+   same sentence, so the label goes. */
 .pline__return {
   display: none;
   position: absolute;

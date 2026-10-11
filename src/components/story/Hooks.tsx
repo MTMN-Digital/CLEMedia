@@ -65,7 +65,19 @@ import "./wrap.css";
    draws, so it is hidden from assistive technology rather than read twice.
    ========================================================================== */
 
-/* The viewBox is the width it is drawn at, so stroke-width 2 is 2px. */
+/* The viewBox is the width it is drawn at, so stroke-width 2 is 2px.
+
+   WHY IT TAKES `.ink--fine`. The float's width is set by the prose measure
+   and not by the drawing (see wrap.css: 150 wide keeps 45 to 49 characters
+   to the line, and the measure is the client's copy, which is never cut),
+   so it cannot be given more room. Re-authoring it at half size against the
+   same 150px, the only ratio that would give the graphite its two device
+   pixels per unit, does not survive: the child's neck (6 by 4) and head
+   (r 9.5) are then smaller than the 2.8 edge stroke that draws them, the
+   two speed dashes become dots, and the screen's inset is narrower than the
+   two strokes that bound it. So it keeps the wobble and drops the tooth, as
+   does Thread, which floats in the same letter a page down: one float with
+   graphite beside one without would be visible. */
 const W = 150;
 const H = 105;
 const FLOOR = 98;
@@ -139,7 +151,7 @@ export function Hooks() {
          once as a description of a picture of that prose. */
       aria-hidden="true"
     >
-      <svg className="ink wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false" aria-hidden="true">
+      <svg className="ink ink--fine wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false" aria-hidden="true">
         {/* The floor they are both on. */}
         <path
           d={`M3 ${FLOOR} H${W - 3}`}

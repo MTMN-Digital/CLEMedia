@@ -34,7 +34,12 @@ import "./wrap.css";
    assistive technology rather than described twice.
    ========================================================================== */
 
-/* The viewBox is the width it is drawn at, so stroke-width 2 is 2px. */
+/* The viewBox is the width it is drawn at, so stroke-width 2 is 2px.
+
+   It takes `.ink--fine`, the wobble without the graphite, for the reason
+   set out in Hooks.tsx: a float's width is the prose measure's to give and
+   it cannot grow, and the two floats in this letter make the same call so
+   they read as one hand. */
 const W = 140;
 const H = 150;
 
@@ -93,7 +98,7 @@ const d = (delay: string, dur?: string) =>
 export function Thread() {
   return (
     <span className="wrap wrap--left wrap--thread" aria-hidden="true">
-      <svg className="ink wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false">
+      <svg className="ink ink--fine wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false">
         {/* The sheet: its paper first, then its edge drawing itself. */}
         <path d={EDGE} className="ink-fill ink-in" style={d("0.1s")} />
         <path

@@ -2,10 +2,12 @@
    No way out, on /app. See components/app/NoWayOut.tsx.
 
    Marks come from components/draw/draw.css; this file is layout only. The
-   drawing is a 1100-unit landscape plate and it takes the full column, the
+   drawing is a 550-unit landscape plate and it takes the full column, the
    same way the production line on /ethical-ai does: it sits under a display
    sentence that runs most of the column, and the previous 400px cap left
-   three quarters of the box as empty paper.
+   three quarters of the box as empty paper. 550 units at 1376px is 2.5 CSS
+   pixels per unit, which is what the kit's graphite needs; there is no cap
+   here on purpose, and adding one would put the tooth back to dirt.
 
    The hold-until-seen gate is the kit's own global rule, keyed on the
    `.is-armed:not(.is-in)` ancestor the page's Settle provides. Nothing here

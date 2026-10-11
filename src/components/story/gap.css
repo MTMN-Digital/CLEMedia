@@ -4,9 +4,14 @@
 
    It sits in the margin column of the founder's letter: 14rem on lg, 16rem on
    xl, and stacked above its paragraph under 1024px where the column is gone.
-   The viewBox is 240 wide because that is the width it really gets, so the
-   cap keeps it at drawn size when the margin is wider than the drawing, and
-   it is left aligned so it sits on the prose axis when stacked.
+   The cap is the width the margin really gives it at its widest, so the
+   drawing stays at that size when stacked rather than growing to the prose
+   measure, and it is left aligned so it sits on the prose axis.
+
+   The viewBox is 120 wide against those 256px, about 2.1 device pixels to
+   the unit, which is what the graphite in the hand filter needs (see
+   TheGap.tsx). It was 240 and one to one, and at that size the tooth read
+   as noise. The cap did not change; the geometry did.
 
    Held until seen by its ancestor: the letter's Spread is a Settle, and the
    kit pauses `.ink-draw` and `.ink-in` under any `.is-armed:not(.is-in)`

@@ -23,31 +23,48 @@ import "./nostrip.css";
    The slots arrive left to right, the shelf draws under them, and it stops.
    ========================================================================== */
 
-/* 6 slots at 104 wide with 20 between them is 724, which is the viewBox: the
-   first version used 720 and the sixth slot hung off the right edge, where
-   `.ink`'s `overflow: visible` happily drew it outside the box. */
+/* 6 slots at 52 wide with 10 between them is 362, which is the viewBox: the
+   first version used 720 (then 724) and the sixth slot hung off the right
+   edge, where `.ink`'s `overflow: visible` happily drew it outside the box.
+
+   AUTHORED AT HALF SCALE ON PURPOSE. The strip renders at 724px (capped in
+   nostrip.css, see there for why), so 362 units across is 2.0 CSS pixels
+   per unit, which is what the graphite in InkDefs needs: the 2 unit shelf is
+   4 device pixels, the 1.4 unit slot outline is 2.8. At the old 724 units it
+   was 1.0 per unit and the tooth had no room inside the line. The rendered
+   slot is still 104 by 56 pixels. Stroke widths come from the kit in user
+   units and were NOT halved; that is the point. */
 const SLOTS = 6;
+const SLOT_W = 52;
+const SLOT_H = 28;
+const GAP = 10;
+const VB_W = SLOTS * SLOT_W + (SLOTS - 1) * GAP;
 
 export function NoStrip() {
   return (
     <figure className="nostrip">
       <svg
         className="ink"
-        viewBox="0 0 724 108"
+        viewBox={`0 0 ${VB_W} 54`}
         role="img"
         aria-label="A publication logo strip with six empty slots, because no publication has written about the company yet."
       >
         {Array.from({ length: SLOTS }, (_, i) => {
-          const w = 104;
-          const gap = 20;
-          const x = i * (w + gap);
+          const x = i * (SLOT_W + GAP);
           return (
             <g key={i} className="ink-in" style={{ "--d": `${0.15 + i * 0.1}s` } as React.CSSProperties}>
-              <rect x={x} y="18" width={w} height="56" rx="4" className="ink-fill" />
+              <rect x={x} y="9" width={SLOT_W} height={SLOT_H} rx="2" className="ink-fill" />
+              {/* The dash array is in user units too, so it was halved with
+                  the geometry ("5 6" became "2.5 3") or the dashes would have
+                  doubled on the page. The gap then went up a little: round
+                  caps are stroke units, and a 1.4 unit cap now covers twice
+                  the device pixels, so a straight halving closed the gap to
+                  about 3px and the outline read as nearly solid. Not an
+                  `.ink-draw` path, so the attribute is honoured. */}
               <rect
-                x={x} y="18" width={w} height="56" rx="4"
+                x={x} y="9" width={SLOT_W} height={SLOT_H} rx="2"
                 className="ink-line ink-thin"
-                strokeDasharray="5 6"
+                strokeDasharray="2.4 3.6"
               />
             </g>
           );
@@ -56,7 +73,7 @@ export function NoStrip() {
             sit on is real. */}
         <path
           pathLength="1"
-          d="M0 96 H 724"
+          d={`M0 48 H ${VB_W}`}
           className="ink-line ink-draw"
           style={{ "--d": "0.85s", "--dur": "0.9s" } as React.CSSProperties}
         />

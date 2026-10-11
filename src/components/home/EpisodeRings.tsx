@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import { Settle } from "@/components/Settle";
 import "@/components/draw/draw.css";
 import "./rings.css";
@@ -52,19 +52,31 @@ import "./rings.css";
    rings.css keeps it at frame zero until the observer releases it. Each
    caption settles as its scene starts.
 
-   TWO ARRANGEMENTS, one drawing. Wide: 420 by 560, the three scenes in the
-   vertical thirds at 187 and 373. Narrow: 150 by 600, thirds at 200, the
-   same three scenes rebuilt for a strip 100 units wide so the stroke is
-   still 2px at the width it really gets. Every mark sits inside the box with
-   margin, because the art is `slice` inside a clipped frame (see rings.css)
-   and a mark authored past the edge is a mark nobody sees. In the strip the
-   content stays within x 27 to 123, which is what survives the sideways
-   overspill on a 320px phone.
+   TWO ARRANGEMENTS, one drawing. Wide: 210 by 280, the three scenes in the
+   vertical thirds at 93 and 187. Narrow: 66 by 264, thirds at 88, the same
+   three scenes rebuilt for a strip 42 units wide. Every mark sits inside
+   the box with margin, because the art is `slice` inside a clipped frame
+   (see rings.css) and a mark authored past the edge is a mark nobody sees.
+   In the strip the content stays within x 12 to 54, which is what survives
+   the sideways overspill on a 320px phone.
+
+   WHY THE UNITS ARE SMALL. Grown 2026-10-11 for the graphite (see
+   .parallel/GROW-2026-10-11.md): the tooth in the hand's filter needs about
+   four device pixels of stroke, and this drawing was authored at one unit
+   per pixel, so its 2 unit line came out at 2px and the tooth read as dirt.
+   Both plans are now authored at half their old coordinates against the
+   same or a wider column, so the kit's 2 unit stroke lands at 4 to 5px:
+   2.0 px per unit at 820 and on a 390 phone, 2.57 at 1440. Stroke widths
+   come from the kit and were not halved; that is the point. The few details
+   that were sized for a hairline (the sun and its rays on the screens, the
+   pause bars, the ruled lines and the crayon bands) carry a floor in units
+   so they do not clog now that the line is twice as heavy relative to the
+   geometry around it.
 
    No copy was cut: the client's three sentences are the captions, verbatim.
    ========================================================================== */
 
-type Rect = { x: number; y: number; w: number; h: number };
+type Rect = { w: number; x: number; h: number; y: number };
 
 const at = (d: number, dur?: number) =>
   ({ "--d": `${d}s`, ...(dur ? { "--dur": `${dur}s` } : {}) }) as React.CSSProperties;
@@ -91,7 +103,7 @@ function circle(cx: number, cy: number, r: number): string {
    silhouette on top in the edge weight. The silhouette either draws itself
    or lands with the paper. */
 function Solid({ d, tone, draw, delay, dur = 0.9 }: {
-  d: string; tone?: "wash" | "deep"; draw?: boolean; delay: number; dur?: number;
+  draw?: boolean; d: string; dur?: number; tone?: "wash" | "deep"; delay: number;
 }) {
   return (
     <g>
@@ -109,7 +121,7 @@ function Solid({ d, tone, draw, delay, dur = 0.9 }: {
 }
 
 /* The floor a scene stands on. */
-function Ground({ x1, x2, y, delay }: { x1: number; x2: number; y: number; delay: number }) {
+function Ground({ x1, x2, y, delay }: { x2: number; x1: number; y: number; delay: number }) {
   return (
     <path d={`M${x1} ${y} H${x2}`} pathLength="1" className="ink-line ink-heavy ink-draw" style={at(delay, 0.7)} />
   );
@@ -117,24 +129,40 @@ function Ground({ x1, x2, y, delay }: { x1: number; x2: number; y: number; delay
 
 /* The screen, on a stand, standing on the ground at `g`. It shows the
    garden and its sun in thin ink. Paused, two bars cross the garden. */
-function Screen({ r, g, paused, t }: { r: Rect; g: number; paused?: boolean; t: number }) {
+function Screen({ r, g, paused, t }: { t: number; paused?: boolean; r: Rect; g: number }) {
   const cx = r.x + r.w / 2, bottom = r.y + r.h;
   const foot = r.w * 0.3;
   const hill =
     `M${f(r.x + r.w * 0.08)} ${f(r.y + r.h * 0.74)} ` +
     `q ${f(r.w * 0.2)} ${f(-r.h * 0.26)} ${f(r.w * 0.45)} ${f(-r.h * 0.08)} ` +
     `q ${f(r.w * 0.18)} ${f(r.h * 0.12)} ${f(r.w * 0.4)} ${f(-r.h * 0.18)}`;
-  const sun = { x: r.x + r.w * 0.76, y: r.y + r.h * 0.32, r: r.w * 0.058 };
+  /* The sun is proportional to the screen down to a floor: under about 2.6
+     units of radius a 1.4 unit ring has no hole left in it. Its rays run
+     from just outside the disc to about one radius out, again with a floor
+     so they stay a mark and not a nub, and on a screen too small for the
+     proportional position the sun steps down and in so the rays clear the
+     frame. */
+  const sunR = Math.max(r.w * 0.058, 2.6);
+  const rayIn = sunR + Math.max(sunR * 0.45, 1.0), rayOut = sunR + Math.max(sunR * 0.95, 3.0);
+  const sun = {
+    x: r.x + Math.min(r.w * 0.76, r.w - rayOut - 1.4),
+    y: r.y + Math.max(r.h * 0.32, rayOut + 1.4),
+    r: sunR,
+  };
   const rays = Array.from({ length: 8 }, (_, i) => {
     const a = (i / 8) * Math.PI * 2 + 0.3;
     const c = Math.cos(a), s = Math.sin(a);
-    return `M${f(sun.x + c * sun.r * 1.45)} ${f(sun.y + s * sun.r * 1.45)} L${f(sun.x + c * sun.r * 1.95)} ${f(sun.y + s * sun.r * 1.95)}`;
+    return `M${f(sun.x + c * rayIn)} ${f(sun.y + s * rayIn)} L${f(sun.x + c * rayOut)} ${f(sun.y + s * rayOut)}`;
   }).join(" ");
   /* Pause bars: narrow rounded rects in the edge weight, so the stroke
-     closes over the inside and each bar paints solid at every size. */
-  const barH = r.h * 0.3, barW = r.w * 0.028, barGap = r.w * 0.055;
+     closes over the inside and each bar paints solid at every size. Their
+     gap has a floor of 3.4 units, which with a 2.8 unit edge on each bar is
+     the least that still reads as two. They sit at the centre of the screen
+     unless the sun would touch them there, in which case they step left. */
+  const barH = r.h * 0.3, barW = Math.max(r.w * 0.028, 1), barGap = Math.max(r.w * 0.055, 3.4);
   const barY = r.y + r.h / 2 - barH / 2;
-  const bar = (bx: number) => rr({ x: bx - barW / 2, y: barY, w: barW, h: barH }, 1);
+  const barCx = Math.min(cx, sun.x - rayOut - barGap - barW / 2 - 2.8);
+  const bar = (bx: number) => rr({ x: bx - barW / 2, y: barY, w: barW, h: barH }, Math.min(1, barW / 2));
   return (
     <g>
       {/* Stand first, so the screen's own paper sits over the stem's top. */}
@@ -151,7 +179,7 @@ function Screen({ r, g, paused, t }: { r: Rect; g: number; paused?: boolean; t: 
         <path d={rays} className="ink-line ink-thin" />
       </g>
       {paused && (
-        <path d={`${bar(cx - barGap)} ${bar(cx + barGap)}`} className="ink-line ink-edge ink-in" style={at(t + 0.7)} />
+        <path d={`${bar(barCx - barGap)} ${bar(barCx + barGap)}`} className="ink-line ink-edge ink-in" style={at(t + 0.7)} />
       )}
     </g>
   );
@@ -172,8 +200,11 @@ function viewer(x: number, g: number, r: number): string {
 }
 
 /* The child, up in the air: arms out, legs apart, feet at `fy` which is
-   above the ground. `s` scales the whole figure, 1 being the wide plan. */
-function Child({ cx, fy, s, t }: { cx: number; fy: number; s: number; t: number }) {
+   above the ground. `s` scales the whole figure, 1 being the old wide plan
+   and 0.5 the current one. `reach` is how far out the hands go, in the
+   figure's own units; the strip pulls it in a little so the hand tips stay
+   inside what a 320px phone shows. */
+function Child({ cx, fy, s, t, reach = 38 }: { fy: number; reach?: number; cx: number; s: number; t: number }) {
   const u = (n: number) => n * s;
   const headR = u(14), headY = fy - u(97);
   const top = fy - u(83), hip = fy - u(39);
@@ -184,8 +215,8 @@ function Child({ cx, fy, s, t }: { cx: number; fy: number; s: number; t: number 
     `H${f(cx - hw + c)} q${f(-c)} 0 ${f(-c)} ${f(-c)} ` +
     `L${f(cx - sw)} ${f(top + c)} q0 ${f(-c)} ${f(c)} ${f(-c)} Z`;
   const arms =
-    `M${f(cx - sw + 1)} ${f(top + u(4))} L${f(cx - u(38))} ${f(fy - u(114))} ` +
-    `M${f(cx + sw - 1)} ${f(top + u(4))} L${f(cx + u(38))} ${f(fy - u(114))}`;
+    `M${f(cx - sw + 1)} ${f(top + u(4))} L${f(cx - u(reach))} ${f(fy - u(114))} ` +
+    `M${f(cx + sw - 1)} ${f(top + u(4))} L${f(cx + u(reach))} ${f(fy - u(114))}`;
   const legs =
     `M${f(cx - u(10))} ${f(hip - 1)} L${f(cx - u(17))} ${f(fy)} M${f(cx - u(24))} ${f(fy)} h${f(u(12))} ` +
     `M${f(cx + u(10))} ${f(hip - 1)} L${f(cx + u(17))} ${f(fy)} M${f(cx + u(12))} ${f(fy)} h${f(u(12))}`;
@@ -201,7 +232,7 @@ function Child({ cx, fy, s, t }: { cx: number; fy: number; s: number; t: number 
 /* The sheet on the table, seen from above, the sun on it in crayon and the
    crayon across the corner. `k` scales the marks on the sheet. */
 function Sheet({ r, tilt, k, crayon, t }: {
-  r: Rect; tilt: number; k: number; crayon: { x: number; y: number; a: number; len: number }; t: number;
+  k: number; r: Rect; t: number; crayon: { a: number; x: number; y: number; len: number }; tilt: number;
 }) {
   const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
   const sun = { x: r.x + r.w * 0.47, y: r.y + r.h * 0.6, r: 23 * k };
@@ -216,15 +247,19 @@ function Sheet({ r, tilt, k, crayon, t }: {
     const c = Math.cos(a), s = Math.sin(a);
     return `M${f(sun.x + c * sun.r * 1.35)} ${f(sun.y + s * sun.r * 1.35)} L${f(sun.x + c * sun.r * 1.75)} ${f(sun.y + s * sun.r * 1.75)}`;
   }).join(" ");
-  const cw = 6.5 * k, tip = 12 * k;
+  /* The crayon's half-width, its tip and the gap between its two bands have
+     floors: under them the edge stroke closes over the body and the bands
+     merge into one. So do the inset and the spacing of the ruled lines. */
+  const cw = Math.max(6.5 * k, 2.6), tip = Math.max(12 * k, 4.5), band = Math.max(9 * k, 3.6);
   const crayonBody =
     `M0 0 L${f(tip)} ${f(-cw)} H${f(crayon.len - cw)} a${f(cw)} ${f(cw)} 0 0 1 0 ${f(2 * cw)} H${f(tip)} Z`;
-  const crayonBands = `M${f(tip)} ${f(-cw)} V${f(cw)} M${f(tip + 9 * k)} ${f(-cw)} V${f(cw)}`;
+  const crayonBands = `M${f(tip)} ${f(-cw)} V${f(cw)} M${f(tip + band)} ${f(-cw)} V${f(cw)}`;
+  const inset = Math.max(14 * k, 4.5), rule1 = Math.max(18 * k, 6), rule2 = rule1 + Math.max(12 * k, 4.5);
   return (
     <g transform={`rotate(${tilt} ${f(cx)} ${f(cy)})`}>
       <Solid d={rr(r, 2)} delay={t} />
       <path
-        d={`M${f(r.x + 14 * k)} ${f(r.y + 18 * k)} h${f(r.w - 28 * k)} M${f(r.x + 14 * k)} ${f(r.y + 30 * k)} h${f(r.w * 0.5)}`}
+        d={`M${f(r.x + inset)} ${f(r.y + rule1)} h${f(r.w - 2 * inset)} M${f(r.x + inset)} ${f(r.y + rule2)} h${f(r.w * 0.5)}`}
         className="ink-line ink-thin ink-in"
         style={at(t + 0.2)}
       />
@@ -247,53 +282,57 @@ function Sheet({ r, tilt, k, crayon, t }: {
 const T = { watch: 0, play: 1.25, learn: 2.5 };
 
 type Plan = {
+  watch: { adult: { x: number; r: number }; child: { x: number; r: number }; ground: { y: number; x1: number; x2: number }; screen: Rect };
+  play: { screen: Rect; ground: { y: number; x1: number; x2: number }; child: { reach?: number; s: number; cx: number; fy: number } };
+  learn: { sheet: Rect; k: number; crayon: { a: number; x: number; y: number; len: number }; tilt: number };
   box: string;
-  watch: { ground: { x1: number; x2: number; y: number }; screen: Rect; adult: { x: number; r: number }; child: { x: number; r: number } };
-  play: { ground: { x1: number; x2: number; y: number }; screen: Rect; child: { cx: number; fy: number; s: number } };
-  learn: { sheet: Rect; tilt: number; k: number; crayon: { x: number; y: number; a: number; len: number } };
 };
 
-/* Wide: 420 by 560, thirds at 187 and 373. */
+/* Wide: 210 by 280, thirds at 93 and 187. The 2026-10-10 plan at exactly
+   half, so the same drawing at twice the stroke. */
 const W: Plan = {
-  box: "0 0 420 560",
+  box: "0 0 210 280",
   watch: {
-    ground: { x1: 48, x2: 372, y: 170 },
-    screen: { x: 95, y: 28, w: 190, h: 116 },
-    adult: { x: 152, r: 21 },
-    child: { x: 208, r: 15 },
+    ground: { x1: 24, x2: 186, y: 85 },
+    screen: { x: 47.5, y: 14, w: 95, h: 58 },
+    adult: { x: 76, r: 10.5 },
+    child: { x: 104, r: 7.5 },
   },
   play: {
-    ground: { x1: 48, x2: 372, y: 352 },
-    screen: { x: 72, y: 246, w: 146, h: 92 },
-    child: { cx: 300, fy: 338, s: 1 },
+    ground: { x1: 24, x2: 186, y: 176 },
+    screen: { x: 36, y: 123, w: 73, h: 46 },
+    child: { cx: 150, fy: 169, s: 0.5 },
   },
   learn: {
-    sheet: { x: 136, y: 388, w: 128, h: 152 },
+    sheet: { x: 68, y: 194, w: 64, h: 76 },
     tilt: -4,
-    k: 1,
-    crayon: { x: 232, y: 512, a: 24, len: 72 },
+    k: 0.5,
+    crayon: { x: 116, y: 256, a: 24, len: 36 },
   },
 };
 
-/* Narrow: 150 by 600, thirds at 200 and 400. Content within x 27 to 123. */
+/* Narrow: 66 by 264, thirds at 88 and 176. Content within x 12 to 54. The
+   child's right hand is the one thing allowed a unit past that, as it was
+   in the old strip: it is line, not paper, and on a 320px phone it is the
+   last three pixels of a stroke that go. */
 const N: Plan = {
-  box: "0 0 150 600",
+  box: "0 0 66 264",
   watch: {
-    ground: { x1: 30, x2: 120, y: 134 },
-    screen: { x: 30, y: 60, w: 90, h: 58 },
-    adult: { x: 58, r: 12 },
-    child: { x: 90, r: 9 },
+    ground: { x1: 12, x2: 54, y: 59 },
+    screen: { x: 13, y: 26, w: 40, h: 26 },
+    adult: { x: 25.5, r: 5.4 },
+    child: { x: 39.5, r: 4.1 },
   },
   play: {
-    ground: { x1: 30, x2: 120, y: 342 },
-    screen: { x: 28, y: 286, w: 60, h: 40 },
-    child: { cx: 98, fy: 332, s: 0.7 },
+    ground: { x1: 12, x2: 54, y: 150 },
+    screen: { x: 12, y: 124, w: 27, h: 19 },
+    child: { cx: 47, fy: 146, s: 0.25, reach: 34 },
   },
   learn: {
-    sheet: { x: 31, y: 444, w: 88, h: 106 },
+    sheet: { x: 14, y: 195, w: 38, h: 47 },
     tilt: -4,
-    k: 0.69,
-    crayon: { x: 78, y: 528, a: 22, len: 42 },
+    k: 0.3,
+    crayon: { x: 34, y: 232, a: 22, len: 19 },
   },
 };
 

@@ -17,19 +17,40 @@
    visible` lets it paint.
 
    TWO ARRANGEMENTS. Under 820px the wide drawing would be 110px tall on a
-   phone, which is not a drawing, so a strip authored at 150 by 600 stands
+   phone, which is not a drawing, so a strip authored at 66 by 264 stands
    beside the captions instead, at the width it really gets. Above 820px the
-   strip is swapped for the 420 by 560 drawing. Measured 2026-10-11: from
-   820px up the row IS the drawing's natural height (440 by 587 at 1440), so
+   strip is swapped for the 210 by 280 drawing. Measured 2026-10-11: from
+   820px up the row IS the drawing's natural height (540 by 720 at 1440), so
    `slice` scales nothing there and the only way a mark gets clipped is by
-   being authored past the viewBox edge. Every mark in the wide drawing now
+   being authored past the viewBox edge. Every mark in the wide drawing
    sits inside the box with margin. On a 320px phone the three captions run
-   taller than the strip and it scales up about 1.16x, so the strip keeps
-   its content within x 27 to 123 and loses only margin to the sides.
+   taller than the strip and it scales up about 1.56x, so the strip keeps
+   its content within x 12 to 54 and loses only margin to the sides.
+
+   THE COLUMN IS SIZED FOR THE GRAPHITE. The hand's filter needs about four
+   device pixels of stroke for its tooth to read (see InkDefs.tsx), which is
+   at least 2 CSS px per user unit. The wide drawing is 210 units across, so
+   the art column never drops under 420px, and it takes 40% of the row up to
+   540px so the drawing is a drawing at 1440 (2.57 px per unit there) rather
+   than a thumbnail beside a paragraph. The captions keep at least 295px at
+   820px, wider than they had before, and their measure is capped at 46ch,
+   so nothing in the client's copy gets narrower to pay for it. The strip's
+   width is set by the phone, so under 820px the viewBox did the work
+   instead: 66 units in the 134px it gets at 390 is 2.02 px per unit, and
+   on a taller caption stack `slice` only raises that.
    ─────────────────────────────────────────────────────────────────────── */
 .trail {
   display: grid;
-  grid-template-columns: minmax(112px, 2fr) minmax(0, 3fr);
+  /* CAPPED, not a fraction, and the cap is what stops the strip running
+     away. The strip is 66 by 264, a 1 to 4 column, and it is `height: 100%`
+     with `slice`, so its WIDTH drives the row's height. At `2fr` of the row
+     the column was 289px just under the 820 breakpoint, which made the row
+     1,155px tall: three small scenes with a screen's worth of empty paper
+     between them, drawn in 8px strokes. 160px holds the strip at 640px tall
+     at every width from 700 up, which is the same proportion a phone gets,
+     and 160 over 66 units is 2.4 CSS pixels per unit, comfortably over the
+     2.0 the graphite needs. */
+  grid-template-columns: minmax(112px, 160px) minmax(0, 1fr);
   column-gap: clamp(1rem, 4vw, 2.5rem);
   margin-top: clamp(2rem, 4vw, 3rem);
   align-items: stretch;
@@ -71,7 +92,7 @@
 
 @media (min-width: 820px) {
   .trail {
-    grid-template-columns: minmax(300px, 440px) minmax(0, 1fr);
+    grid-template-columns: minmax(420px, min(40%, 540px)) minmax(0, 1fr);
     column-gap: clamp(2.5rem, 5vw, 5rem);
   }
   .trail__art--wide { display: block; }

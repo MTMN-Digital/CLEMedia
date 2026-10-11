@@ -88,21 +88,36 @@ import "./gap.css";
    IntersectionObserver and reduced motion all get the finished drawing.
    ========================================================================== */
 
-/* The viewBox is the width the margin column really gives it, so
-   stroke-width 2 is 2px on screen. Everything below is in those units. */
-const W = 240;
-const H = 190;
-const FLOOR = 172;
+/* THE UNITS. The margin column gives this drawing 256px at its widest, and
+   it was first authored 240 units wide, one unit to the pixel, which put the
+   kit's 2 unit line at 2 device pixels: half what the graphite in the hand
+   filter needs to read as graphite rather than noise (see InkDefs.tsx and
+   .parallel/GROW-2026-10-11.md). The page cannot give the margin more room,
+   so the geometry was re-authored at half size instead: 120 by 95, at the
+   same 256px, so every stroke is now about 2.1 device pixels per unit and
+   the drawing itself has not moved. Stroke widths come from the kit and
+   were NOT halved; that is the point.
+
+   Three measures below are set against the stroke rather than halved,
+   because at half size they would have been eaten by the line: the stand's
+   height, the inset of a screen inside its cabinet, and the gap between the
+   floor and the mark under the kept set. Each is the same number of device
+   pixels it was before. */
+const W = 120;
+const H = 95;
+const FLOOR = 86;
 
 /* One television set: a cabinet, a screen inset in it, and a short stand.
    `h` follows `w` so every set has the same proportions and reads as the
    same kind of thing at any size. */
-type Set = { x: number; y: number; w: number; tilt: number };
-const STAND = 6;
+type Set = { tilt: number; x: number; w: number; y: number };
+/* Four units, not three: the stem has to show clear of the cabinet's own
+   stroke and the bar's, or the stand is a bar glued to the set. */
+const STAND = 4;
 const setH = (w: number) => Math.round(w * 0.7);
 const cabinet = ({ x, y, w }: Set) => {
   const h = setH(w);
-  const r = 3;
+  const r = 1.5;
   return [
     `M${x + r} ${y}`,
     `H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r}`,
@@ -119,7 +134,9 @@ const stand = ({ x, y, w }: Set) => {
 };
 const outline = (s: Set) => `${cabinet(s)} ${stand(s)}`;
 const centre = (s: Set) => `${s.x + s.w / 2} ${s.y + setH(s.w) / 2}`;
-const SCREEN_INSET = 3.5;
+/* A strip of paper about a line's width between the cabinet's stroke and
+   the dark screen, so the set keeps its bezel. */
+const SCREEN_INSET = 2.25;
 
 /* The heap. Hand placed and drawn back to front, so the ones behind are
    mostly hidden. Nothing in it is square to anything else: some lean hard,
@@ -128,22 +145,27 @@ const SCREEN_INSET = 3.5;
    again. A pile that was dropped, not a stack that was built. */
 const HEAP: Set[] = [
   /* on the floor: two upright, one on its side between them */
-  { x: 96, y: 132, w: 54, tilt: 5 },
-  { x: 0, y: 128, w: 56, tilt: -8 },
-  { x: 52, y: 120, w: 48, tilt: 90 },
+  { x: 48, y: 66, w: 27, tilt: 5 },
+  { x: 0, y: 64, w: 28, tilt: -8 },
+  { x: 26, y: 60, w: 24, tilt: 90 },
   /* resting on those, leaning out, stands poking out of the pile's sides */
-  { x: 84, y: 94, w: 50, tilt: -16 },
-  { x: 14, y: 90, w: 52, tilt: 24 },
+  { x: 42, y: 47, w: 25, tilt: -16 },
+  { x: 7, y: 45, w: 26, tilt: 24 },
   /* and on those: one upside down at the left, its stand in the air */
-  { x: 8, y: 60, w: 44, tilt: 212 },
-  { x: 42, y: 58, w: 52, tilt: -6 },
+  { x: 4, y: 30, w: 22, tilt: 212 },
+  { x: 21, y: 29, w: 26, tilt: -6 },
   /* on top, upside down, its stand in the air */
-  { x: 74, y: 28, w: 46, tilt: 170 },
+  { x: 37, y: 14, w: 23, tilt: 170 },
 ];
 
 /* The one kept. Upright, on the same floor, apart from the heap, and the
-   largest thing on the sheet because it is the nearest. */
-const KEPT: Set = { x: 162, y: 119, w: 68, tilt: 0 };
+   largest thing on the sheet because it is the nearest. Its stand bar lands
+   exactly on the floor: y + setH(w) + STAND = FLOOR. */
+const KEPT: Set = { x: 81, y: 58, w: 34, tilt: 0 };
+/* Its screen sits a little deeper in than the heap's: the kept set has the
+   heaviest edge and the screen has its own thin line, and the strip of deep
+   tone between the two is what reads as a cabinet rather than a frame. */
+const KEPT_INSET = 3.25;
 
 /* The crossing-out: one stroke, four loose passes back and forth over the
    heap, the way a hand scribbles out a block it is done with. Four and not
@@ -154,12 +176,12 @@ const KEPT: Set = { x: 162, y: 119, w: 68, tilt: 0 };
    leg bows a little so none of it is ruled. */
 const SCRIBBLE = (() => {
   const pts: [number, number][] = [
-    [62, 36], [140, 56], [4, 86], [154, 118], [6, 154],
+    [31, 18], [70, 28], [2, 43], [75, 59], [3, 77],
   ];
   return pts.reduce((acc, [x, y], i) => {
     if (i === 0) return `M${x} ${y}`;
     const [px, py] = pts[i - 1];
-    const bow = i % 2 === 0 ? 7 : -7;
+    const bow = i % 2 === 0 ? 3.5 : -3.5;
     return `${acc} Q${(px + x) / 2} ${(py + y) / 2 + bow} ${x} ${y}`;
   }, "");
 })();
@@ -191,7 +213,7 @@ export function TheGap() {
       >
         {/* The floor everything is on. */}
         <path
-          d={`M4 ${FLOOR} H${W - 4}`}
+          d={`M2 ${FLOOR} H${W - 2}`}
           pathLength="1"
           className="ink-line ink-heavy ink-draw"
           style={d(FLOOR_AT, 0.6)}
@@ -213,7 +235,7 @@ export function TheGap() {
                 y={s.y + SCREEN_INSET}
                 width={s.w - SCREEN_INSET * 2}
                 height={h - SCREEN_INSET * 2}
-                rx="1.5"
+                rx="0.75"
                 className="ink-wash ink-wash--deep ink-in"
                 style={d(at)}
               />
@@ -249,26 +271,29 @@ export function TheGap() {
           style={d(KEPT_AT, KEPT_DUR)}
         />
         <rect
-          x={KEPT.x + 4.5}
-          y={KEPT.y + 4.5}
-          width={KEPT.w - 9}
-          height={keptH - 9}
-          rx="2"
+          x={KEPT.x + KEPT_INSET}
+          y={KEPT.y + KEPT_INSET}
+          width={KEPT.w - KEPT_INSET * 2}
+          height={keptH - KEPT_INSET * 2}
+          rx="1"
           className="ink-fill ink-in"
           style={d(ON_AT)}
         />
         <rect
-          x={KEPT.x + 4.5}
-          y={KEPT.y + 4.5}
-          width={KEPT.w - 9}
-          height={keptH - 9}
-          rx="2"
+          x={KEPT.x + KEPT_INSET}
+          y={KEPT.y + KEPT_INSET}
+          width={KEPT.w - KEPT_INSET * 2}
+          height={keptH - KEPT_INSET * 2}
+          rx="1"
           className="ink-line ink-thin ink-in"
           style={d(ON_AT)}
         />
-        {/* Kept: one short stroke under it on the floor. The one accent. */}
+        {/* Kept: one short stroke under it on the floor. The one accent.
+            4.5 below the floor, not 3.5: the floor is the heavy line and
+            the mark needs a strip of paper between them to be its own
+            stroke. */}
         <path
-          d={`M${KEPT.x + 8} ${FLOOR + 7} H${KEPT.x + KEPT.w - 8}`}
+          d={`M${KEPT.x + 4} ${FLOOR + 4.5} H${KEPT.x + KEPT.w - 4}`}
           pathLength="1"
           className="ink-line ink-accent ink-draw"
           style={d(MARK_AT, 0.4)}

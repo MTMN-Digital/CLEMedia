@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from "react";
+import type { ReactElement, CSSProperties } from "react";
 import "@/components/draw/draw.css";
 import "./noway.css";
 
@@ -19,9 +19,25 @@ import "./noway.css";
    every mark was the same 2-unit line, so the wall, the child, the plate and
    the price tag were all the same value and nothing was in front of anything.
 
-   WHAT IS HERE NOW. One landscape plate, 1100 units wide, taking the full
-   column the way the production line on /ethical-ai does, so the drawing is
-   the width of the sentence above it rather than a stamp in its corner.
+   WHAT IS HERE NOW. One landscape plate taking the full column the way the
+   production line on /ethical-ai does, so the drawing is the width of the
+   sentence above it rather than a stamp in its corner.
+
+   THE UNIT (2026-10-11, later the same day). The plate is authored at 550
+   units across and renders at 1376px, so one user unit is 2.5 CSS pixels and
+   the kit's 2-unit line is 5px wide. It was 1100 units at the same width,
+   1.25px per unit, and the graphite tooth the kit now composites into every
+   stroke needs about four device pixels of line to sit in: at 1.25 it read
+   as dirt on the line rather than as pencil. The page could not give the
+   drawing more room (it already has the whole column), so every coordinate
+   was halved against the same rendered width instead. Stroke widths are the
+   kit's and were NOT halved: that is the whole trick, the line keeps its
+   device size while the geometry gets finer around it. The wobble and the
+   tooth are in user units too, so they also doubled in CSS pixels, which is
+   what brings this plate to the same hand as the rest of the site. Two
+   things were re-tuned rather than halved because they are stroke-relative:
+   the dash array on the exit paths and the tag's hole. Both are noted where
+   they sit.
 
    Inside the boundary, a room. Three real things stand on one floor:
      An EPISODE, the landscape plate the walkthrough shows four of, with a
@@ -87,19 +103,28 @@ const at = (d: number, dur?: number): CSSProperties =>
   ({ "--d": `${d}s`, ...(dur !== undefined ? { "--dur": `${dur}s` } : {}) }) as CSSProperties;
 
 /* The room. */
-const VB_W = 1100;
-const VB_H = 430;
-const WALL = { x: 230, y: 110, w: 640, h: 300, rx: 40 };
-const FLOOR_Y = 368;
+const VB_W = 550;
+const VB_H = 215;
+const WALL = { x: 115, y: 55, w: 320, h: 150, rx: 20 };
+const FLOOR_Y = 184;
+
+/* The exit paths are dashed in user units, like everything else, so the
+   dash kept its proportion to the stroke when the unit halved (a 5-unit dash
+   under a 2-unit round-capped line is still a dash and not a dot). What did
+   change is how many of them fit: the shortest path is 28 units, which at
+   the old "5 7" is two dashes and a stub. "4 5" puts three to four dashes on
+   each path, and a 4-unit dash with its caps is still three stroke widths
+   long. */
+const DASH = "4 5";
 
 /* The three exits. Each `path` runs from the thing inside to just short of
    its bar, each `stop` is the bar, and each `beyond` is the thing outside
    the wall the path was heading for. `d` is when the exit starts. */
-const EXITS: { key: string; path: string; stop: string; d: number; beyond: () => ReactElement }[] = [
+const EXITS: { beyond: () => ReactElement; path: string; key: string; d: number; stop: string }[] = [
   {
     key: "autoplay",
-    path: "M422 244 V 162",
-    stop: "M392 155 H 452",
+    path: "M211 122 V 81",
+    stop: "M196 77.5 H 226",
     d: 2.0,
     /* The next things, queued. Three plates stacked up and back beyond the
        top wall, the front one carrying the play mark. The two behind are
@@ -108,34 +133,42 @@ const EXITS: { key: string; path: string; stop: string; d: number; beyond: () =>
        on this ground it read as the brightest thing in the drawing. */
     beyond: () => (
       <>
-        <path d="M386 18 V 14 a6 6 0 0 1 6 -6 H 500 a6 6 0 0 1 6 6 V 72 a6 6 0 0 1 -6 6 H 494" className="ink-line ink-thin" />
-        <path d="M374 28 V 24 a6 6 0 0 1 6 -6 H 488 a6 6 0 0 1 6 6 V 82 a6 6 0 0 1 -6 6 H 482" className="ink-line ink-thin" />
-        <rect x="362" y="28" width="120" height="70" rx="6" className="ink-line ink-edge" />
-        <path d="M410 50 L436 63 L410 76 Z" className="ink-line" />
+        <path d="M193 9 V 7 a3 3 0 0 1 3 -3 H 250 a3 3 0 0 1 3 3 V 36 a3 3 0 0 1 -3 3 H 247" className="ink-line ink-thin" />
+        <path d="M187 14 V 12 a3 3 0 0 1 3 -3 H 244 a3 3 0 0 1 3 3 V 41 a3 3 0 0 1 -3 3 H 241" className="ink-line ink-thin" />
+        <rect x="181" y="14" width="60" height="35" rx="3" className="ink-line ink-edge" />
+        <path d="M205 25 L218 31.5 L205 38 Z" className="ink-line" />
       </>
     ),
   },
   {
     key: "purchase",
-    path: "M314 310 H 258",
-    stop: "M252 284 V 336",
+    path: "M157 155 H 129",
+    stop: "M126 142 V 168",
     d: 2.2,
     /* A price tag, point and hole towards the room, with a euro mark on it.
        Two label lines read as a luggage tag; the currency mark is what makes
        it a price. It is drawn, not set as <text>, so it stays in the hand
-       and takes the wobble with the rest. */
+       and takes the wobble with the rest.
+
+       The hole is `.ink-thin` at r 3 rather than `.ink-line` at the halved
+       r 2.25: a 2-unit stroke on a 2.25 radius leaves no hole in the middle,
+       it is a dot. It is detail inside the tag, so the thin weight is the
+       right one anyway. The euro keeps its halved geometry: the arc is 7.5
+       in radius and the two bars sit 4 units apart under a 2-unit line,
+       which leaves a 2-unit gap of paper between them, enough to read as two
+       bars and not one thick one. */
     beyond: () => (
       <>
-        <path d="M70 288 H156 L196 310 L156 332 H70 Z" className="ink-line ink-edge" />
-        <circle cx="166" cy="310" r="4.5" className="ink-line" />
-        <path d="M130 299 A 15 15 0 1 0 130 321 M100 306 H 128 M100 314 H 126" className="ink-line" />
+        <path d="M35 144 H78 L98 155 L78 166 H35 Z" className="ink-line ink-edge" />
+        <circle cx="83" cy="155" r="3" className="ink-line ink-thin" />
+        <path d="M65 149.5 A 7.5 7.5 0 1 0 65 160.5 M50 153 H 64 M50 157 H 63" className="ink-line" />
       </>
     ),
   },
   {
     key: "advert",
-    path: "M772 300 H 842",
-    stop: "M848 274 V 326",
+    path: "M386 150 H 421",
+    stop: "M424 137 V 163",
     d: 2.4,
     /* A hoarding: a portrait board with a visible frame, on ONE post set
        off centre, standing on its own ground. The first pass was a landscape
@@ -144,11 +177,11 @@ const EXITS: { key: string; path: string; stop: string; d: number; beyond: () =>
        sets. Taller than wide, framed, and one-legged, it cannot be a screen. */
     beyond: () => (
       <>
-        <rect x="948" y="196" width="100" height="138" rx="3" className="ink-line ink-edge" />
-        <rect x="957" y="205" width="82" height="120" rx="2" className="ink-line ink-thin" />
-        <path d="M964 334 V 368" className="ink-line" />
-        <path d={`M940 ${FLOOR_Y} H 1056`} className="ink-line ink-heavy" />
-        <path d="M968 236 H1028 M968 256 H1012 M968 276 H1024 M968 296 H1002" className="ink-line ink-thin" />
+        <rect x="474" y="98" width="50" height="69" rx="1.5" className="ink-line ink-edge" />
+        <rect x="478.5" y="102.5" width="41" height="60" rx="1" className="ink-line ink-thin" />
+        <path d="M482 167 V 184" className="ink-line" />
+        <path d={`M470 ${FLOOR_Y} H 528`} className="ink-line ink-heavy" />
+        <path d="M484 118 H514 M484 128 H506 M484 138 H512 M484 148 H501" className="ink-line ink-thin" />
       </>
     ),
   },
@@ -172,7 +205,7 @@ export function NoWayOut() {
 
         {/* The floor everything inside stands on. */}
         <path
-          d={`M270 ${FLOOR_Y} H 830`}
+          d={`M135 ${FLOOR_Y} H 415`}
           pathLength="1"
           className="ink-line ink-heavy ink-draw"
           style={at(0.7, 0.6)}
@@ -180,17 +213,17 @@ export function NoWayOut() {
 
         {/* The episode: a landscape plate with a play mark, washed deep. */}
         <g className="ink-in" style={at(1.0)}>
-          <rect x="320" y="250" width="205" height="116" rx="8" className="ink-wash ink-wash--deep" />
-          <rect x="320" y="250" width="205" height="116" rx="8" className="ink-line ink-edge" />
-          <path d="M402 286 L440 307 L402 328 Z" className="ink-line" />
-          <path d="M334 352 H 511" className="ink-line ink-thin" />
+          <rect x="160" y="125" width="102.5" height="58" rx="4" className="ink-wash ink-wash--deep" />
+          <rect x="160" y="125" width="102.5" height="58" rx="4" className="ink-line ink-edge" />
+          <path d="M201 143 L220 153.5 L201 164 Z" className="ink-line" />
+          <path d="M167 176 H 255.5" className="ink-line ink-thin" />
         </g>
 
         {/* The child, between the two, a hand on each. */}
         <g className="ink-in" style={at(1.2)}>
-          <circle cx="590" cy="220" r="19" className="ink-line ink-edge" />
+          <circle cx="295" cy="110" r="9.5" className="ink-line ink-edge" />
           <path
-            d={`M590 239 V 300 M590 300 L572 ${FLOOR_Y} M590 300 L608 ${FLOOR_Y} M590 256 L530 274 M590 256 L650 298`}
+            d={`M295 119.5 V 150 M295 150 L286 ${FLOOR_Y} M295 150 L304 ${FLOOR_Y} M295 128 L265 137 M295 128 L325 149`}
             className="ink-line"
           />
         </g>
@@ -198,13 +231,13 @@ export function NoWayOut() {
         {/* The printable: a sheet with a folded corner, a title line and the
             puzzle grid, washed light. */}
         <g className="ink-in" style={at(1.4)}>
-          <path d="M655 262 H741 L765 286 V366 H655 Z" className="ink-wash" />
-          <path d="M655 262 H741 L765 286 V366 H655 Z" className="ink-line ink-edge" />
-          <path d="M741 262 V286 H765" className="ink-line" />
-          <path d="M670 288 H 716" className="ink-line" />
+          <path d="M327.5 131 H370.5 L382.5 143 V183 H327.5 Z" className="ink-wash" />
+          <path d="M327.5 131 H370.5 L382.5 143 V183 H327.5 Z" className="ink-line ink-edge" />
+          <path d="M370.5 131 V143 H382.5" className="ink-line" />
+          <path d="M335 144 H 358" className="ink-line" />
           <g className="ink-line ink-thin">
-            <rect x="672" y="302" width="60" height="54" />
-            <path d="M692 302 V356 M712 302 V356 M672 320 H732 M672 338 H732" />
+            <rect x="336" y="151" width="30" height="27" />
+            <path d="M346 151 V178 M356 151 V178 M336 160 H366 M336 169 H366" />
           </g>
         </g>
 
@@ -215,7 +248,7 @@ export function NoWayOut() {
         {EXITS.map((x) => (
           <g key={x.key}>
             <g className="ink-in" style={at(x.d)}>
-              <path d={x.path} strokeDasharray="5 7" className="ink-line" />
+              <path d={x.path} strokeDasharray={DASH} className="ink-line" />
               {x.beyond()}
             </g>
             <path

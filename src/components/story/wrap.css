@@ -28,6 +28,11 @@
    fonts: beside the hooks the lines keep 45 to 49 characters, the two beside
    the ground being the narrowest; beside the script, 48 to 53. That is why
    the hooks are 150 wide and not 200.
+
+   AND WHY THEY TAKE `.ink--fine`. The measure sets the float's width, so a
+   stroke here is about one device pixel to the unit, half what the hand
+   filter's graphite needs; the two drawings keep the wobble and drop the
+   tooth (see Hooks.tsx for why they were not re-authored smaller instead).
    ─────────────────────────────────────────────────────────────────────── */
 .wrap-flow {
   /* A float escapes its paragraph when the paragraph is shorter than the

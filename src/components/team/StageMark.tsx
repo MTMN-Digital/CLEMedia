@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from "react";
+import type { ReactElement, CSSProperties } from "react";
 import "@/components/draw/draw.css";
 import "./stagemark.css";
 
@@ -96,7 +96,7 @@ import "./stagemark.css";
    host can push the whole choreography later with `--stagemark-delay`.
    ========================================================================== */
 
-export type StageNumber = 1 | 2 | 3 | 4 | 5 | 6;
+export type StageNumber = 6 | 5 | 4 | 1 | 2 | 3;
 
 /* A delay inside the mark, offset by whatever the host asks for. */
 const at = (d: number, dur?: number): CSSProperties =>
@@ -105,7 +105,19 @@ const at = (d: number, dur?: number): CSSProperties =>
     ...(dur !== undefined ? { "--dur": `${dur}s` } : {}),
   }) as CSSProperties;
 
-const SVG = { className: "ink stagemark", "aria-hidden": true, focusable: "false" } as const;
+/* `.ink--fine`, ALL SIX, decided 2026-10-11. The kit's default filter now
+   carries a graphite tooth that needs about four device pixels of stroke to
+   sit in. These marks are 48 units tall rendered at 56px, so a user unit is
+   1.17 CSS pixels and the 2-unit line is 2.3px: at that size the tooth is
+   not graphite, it is a speckled smudge along every edge (photographed on
+   the /team slips before this change). Neither route to a bigger unit is
+   open to a mark inside a card. Growing the box to the 96px the tooth needs
+   crowds the portraits beside it and makes the card worse to fix a texture
+   nobody sees at 56px. Halving the coordinates instead would put the
+   script's seven 1.4-unit print lines on a 2.25-unit pitch, which does not
+   read as text. So the six keep the hand's wobble and drop the tooth, as
+   one set: half the marks on one filter and half on the other would show. */
+const SVG = { className: "ink ink--fine stagemark", "aria-hidden": true, focusable: "false" } as const;
 
 /* One page, the size every page in the set shares. The script (02, 04) and
    the first page (01) are the same sheet so the family reads across the
@@ -116,7 +128,7 @@ const SHADOW = 2.5;
 
 /* An object with its own paper, its own edge, and a toned shadow under it.
    Rendered in that order so the wash is under the line work. */
-function Sheet({ x, y, width, height, rx }: { x: number; y: number; width: number; height: number; rx: number }) {
+function Sheet({ x, y, width, height, rx }: { width: number; height: number; y: number; rx: number; x: number }) {
   return (
     <>
       <rect x={x + SHADOW} y={y + SHADOW} width={width} height={height} rx={rx} className="ink-wash--deep" />

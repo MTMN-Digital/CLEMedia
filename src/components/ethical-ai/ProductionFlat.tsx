@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
-import { STATIONS, PLATFORMS, DO_NOT } from "./stations";
+import { PLATFORMS, STATIONS, DO_NOT } from "./stations";
 import { StageMark } from "@/components/team/StageMark";
 import "@/components/draw/draw.css";
 import "./pline.css";
@@ -42,15 +42,25 @@ import "./pline.css";
    ========================================================================== */
 
 /* Geometry. The track is the full viewBox width; the six gates sit at even
-   intervals along it with a margin at each end for the first and last label. */
-const VB_W = 1200;
+   intervals along it with a margin at each end for the first and last label.
+
+   HALVED 2026-10-11, for the graphite. The box was 1200 by 250 and rendered
+   in a 1376px column, so one user unit was 1.15 CSS pixels and the kit's
+   2-unit stroke was a 2.3px line: half what the tooth in InkDefs needs to
+   read as pencil rather than noise. The drawing is already full width, so
+   the page could not give it more room; instead every coordinate in here is
+   half what it was and the box is 600 by 125. Same rendered size, same
+   shape, and a user unit is now 2.3 CSS pixels (0.58 on a 390 phone, up
+   from 0.29). The stroke widths come from the kit and were NOT halved: that
+   is the point. */
+const VB_W = 600;
 /* Sized to what is drawn and no more. The first pass left 70px of empty box
    under the tools and pushed the return arc off the top edge, where the
    section clipped it. */
-const VB_H = 250;
-const TRACK_Y = 128;
-const X0 = 70;
-const X1 = VB_W - 70;
+const VB_H = 125;
+const TRACK_Y = 64;
+const X0 = 35;
+const X1 = VB_W - 35;
 const gateX = (i: number, n: number) => X0 + ((X1 - X0) * i) / (n - 1);
 
 /* THE RETURN, REDRAWN 2026-10-11. The client's words: "the weird looking
@@ -61,14 +71,14 @@ const gateX = (i: number, n: number) => X0 + ((X1 - X0) * i) / (n - 1);
    What it is now: a conveyor return. Up from the final gate, straight back
    along a rail above the track, down onto the track at the tools, with a
    head big enough to read at the size the drawing actually renders (about
-   1.15px per unit in a 1376px column, a third of that on a phone). Two
+   2.3px per unit in a 1376px column, a quarter of that on a phone). Two
    right-angle corners, rounded, because a belt that goes back is a loop
    with corners, not an arc. The rail sits at RETURN_Y, well inside the box:
    nothing in this drawing may leave its own box. */
-const RETURN_Y = 50;
-const RETURN_CORNER = 22;
-const RETURN_HEAD_LENGTH = 24;
-const RETURN_HEAD_HALF_WIDTH = 12;
+const RETURN_Y = 25;
+const RETURN_CORNER = 11;
+const RETURN_HEAD_LENGTH = 12;
+const RETURN_HEAD_HALF_WIDTH = 6;
 
 function arrowHeadFromEndTangent(
   endX: number,
@@ -95,11 +105,21 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
 
   /* The return leaves the top of the final gate's ring, runs up to the rail,
      back along it, and down onto the track at the tools. The dashed run stops
-     short of the track so the head is the only thing that touches it. */
+     short of the track so the head is the only thing that touches it.
+
+     WHERE THE RUN ENDS IS A DASH-PHASE QUESTION. The run is 419.2 units long
+     (measured with getTotalLength) against a 21-unit dash period, so it ends
+     9.2 units into a gap: the last whole dash stops just above the head and
+     the head reads as the next mark in the rhythm. It used to overrun the
+     head's back by 2 units, which made it 421.2 long and left a 1.2-unit
+     stub of dash under two round caps, a dot sitting on top of the chevron.
+     Invisible at 1.15px per unit; a blot at 2.3. Anyone who moves a gate,
+     the rail or the corner radius changes this length and should check the
+     landing again. */
   const r = RETURN_CORNER;
-  const returnStartY = TRACK_Y - 16;
-  const returnTipY = TRACK_Y - 3;
-  const returnRunEndY = returnTipY - RETURN_HEAD_LENGTH + 4;
+  const returnStartY = TRACK_Y - 8;
+  const returnTipY = TRACK_Y - 1.5;
+  const returnRunEndY = returnTipY - RETURN_HEAD_LENGTH;
   const returnPath = [
     `M${lastX} ${returnStartY}`,
     `V ${RETURN_Y + r}`,
@@ -109,13 +129,13 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
     `V ${returnRunEndY}`,
   ].join(" ");
   /* The head lands on the track pointing down. End tangent is vertical. */
-  const returnHead = arrowHeadFromEndTangent(toolX, returnTipY, toolX, returnTipY - 10);
-  /* A second chevron halfway along the rail, pointing left: the rail is 740
+  const returnHead = arrowHeadFromEndTangent(toolX, returnTipY, toolX, returnTipY - 5);
+  /* A second chevron halfway along the rail, pointing left: the rail is 370
      units long and without it the direction of travel is only stated at the
      far end. Same stroke, same accent; it is one path's direction said twice,
      not a second accent. */
   const railMidX = (toolX + lastX) / 2;
-  const railChevron = arrowHeadFromEndTangent(railMidX - 12, RETURN_Y, railMidX, RETURN_Y);
+  const railChevron = arrowHeadFromEndTangent(railMidX - 6, RETURN_Y, railMidX, RETURN_Y);
 
   return (
     <div className="pline">
@@ -149,12 +169,12 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
               className="ink-in"
               style={{ "--d": `${0.5 + i * 0.1}s` } as React.CSSProperties}
             >
-              <circle cx={x} cy={TRACK_Y} r={isGate ? 12 : 8} className="ink-fill" />
+              <circle cx={x} cy={TRACK_Y} r={isGate ? 6 : 4} className="ink-fill" />
               <circle
-                cx={x} cy={TRACK_Y} r={isGate ? 12 : 8}
+                cx={x} cy={TRACK_Y} r={isGate ? 6 : 4}
                 className={`ink-line ink-edge ${isGate ? "ink-accent" : ""}`}
               />
-              {isGate && <circle cx={x} cy={TRACK_Y} r="4.5" className="ink-accent-fill" />}
+              {isGate && <circle cx={x} cy={TRACK_Y} r="2.25" className="ink-accent-fill" />}
             </g>
           );
         })}
@@ -163,11 +183,11 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
             has its own edge and a wash so it sits forward of the ground; the
             voice trace inside it is detail and stays thin. */}
         <g className="ink-in" style={{ "--d": "1.15s" } as React.CSSProperties}>
-          <path d={`M${toolX} ${TRACK_Y} V ${TRACK_Y + 48}`} className="ink-line ink-thin" />
-          <rect x={toolX - 54} y={TRACK_Y + 48} width="108" height="46" rx="6" className="ink-fill" />
-          <rect x={toolX - 54} y={TRACK_Y + 48} width="108" height="46" rx="6" className="ink-wash" />
-          <rect x={toolX - 54} y={TRACK_Y + 48} width="108" height="46" rx="6" className="ink-line ink-edge" />
-          <path d={`M${toolX - 38} ${TRACK_Y + 71} h 8 l 5 -11 6 20 6 -16 4 7 h 9`} className="ink-line ink-thin" />
+          <path d={`M${toolX} ${TRACK_Y} V ${TRACK_Y + 24}`} className="ink-line ink-thin" />
+          <rect x={toolX - 27} y={TRACK_Y + 24} width="54" height="23" rx="3" className="ink-fill" />
+          <rect x={toolX - 27} y={TRACK_Y + 24} width="54" height="23" rx="3" className="ink-wash" />
+          <rect x={toolX - 27} y={TRACK_Y + 24} width="54" height="23" rx="3" className="ink-line ink-edge" />
+          <path d={`M${toolX - 19} ${TRACK_Y + 35.5} h 4 l 2.5 -5.5 3 10 3 -8 2 3.5 h 4.5`} className="ink-line ink-thin" />
         </g>
 
         {/* The return. It leaves the final gate, goes back along the rail
@@ -180,7 +200,14 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
             dashed (the class sets its own dash array), so the run is an
             `.ink-in` with the dash on the attribute, and the head is the part
             that draws. Edge weight, and the only accent stroke in the
-            drawing. */}
+            drawing.
+
+            The dash array is in user units and was deliberately NOT halved
+            with the geometry: the stroke it sits on was not halved either,
+            and a dash that is four strokes long with a gap of three and a
+            half is what reads as a dash. Halving it under a stroke twice as
+            thick would have left two round caps touching, which is a dotted
+            line. */}
         <path
           d={returnPath}
           strokeDasharray="11 10"

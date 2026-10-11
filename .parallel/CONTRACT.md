@@ -446,3 +446,45 @@ This is now the first thing to check in a drawing review.
 
 The round's own brief, with the five redraws it commissioned, is in
 `.parallel/HAND-2026-10-11.md`.
+
+### The graphite, and the unit, settled 2026-10-11
+
+The wobble was not enough on its own. The client's verdict: "they feel a tiny
+bit off, because they are solid lines that are trying to look handdrawn. i
+think the solution is making the drawings larger so then we can apply like a
+pencil texture to the strokes." He was right about both halves.
+
+**The tooth.** `InkDefs.tsx` now carries a second, finer noise, turned into
+an alpha mask and composited into the stroke, so the ink is eaten away along
+its edge the way graphite misses the troughs in paper. Four erosion settings
+were photographed side by side before one was picked: gentler is merely soft,
+stronger turns the washes dirty and dissolves a red accent into pink dots.
+
+**THE UNIT IS NOW A DESIGN CONSTRAINT, and this is the part to remember.**
+A stroke needs about four device pixels for the tooth to sit in. Every
+drawing on the site was authored at roughly one user unit per CSS pixel,
+which put a 2 unit line at 2 pixels: half. So each drawing was either given
+more room or re-authored at half its coordinates against the same rendered
+width, which gets the same result with no layout change at all. Stroke
+widths come from the kit and are NEVER scaled with the geometry; that is the
+whole trick, the stroke keeps its device size while the drawing gets finer
+around it.
+
+Three things do not halve with everything else, and all three were caught by
+looking rather than by typechecking: **a dash array**, because the dash is
+measured against a stroke that did not change, so a halved dash becomes a
+dotted line; **a gap between two strokes**, which closes up and reads as one
+mark; and **a hole**, which fills in. Each of those is set against the stroke
+rather than against the drawing.
+
+**`.ink--fine`** is the kit's answer for a drawing whose size is set by
+something other than the drawing: a float bounded by the prose measure, a
+mark inside a card. It keeps the wobble and drops the tooth. Using it is a
+real answer, not a failure; shipping a 2 pixel stroke full of noise is the
+failure. The six stage marks and the two letter floats take it.
+
+**There is no mobile fallback and there must not be one.** A full width
+drawing at 390 looks like noise in a screenshot, and the screenshot is wrong:
+it is taken at a device pixel ratio of 1, real phones are 2 or 3, the filter
+rasterises at device resolution, and at `deviceScaleFactor: 3` the tooth is
+clean. Measure in DEVICE pixels before adding a breakpoint.
