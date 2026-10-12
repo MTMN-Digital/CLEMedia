@@ -4,14 +4,15 @@ import "@/components/draw/draw.css";
 /* ============================================================================
    Where one person stands on the six.
 
-   The roster is seven biographies of three or four paragraphs each, which is
+   The roster is eight biographies of two to four paragraphs each, which is
    the largest block of unbroken prose left on the site. This goes in its
    margin, beside the name, and answers in one look the question an investor
    actually has about a named individual: what is this one accountable for.
 
    DELIBERATELY PLAIN. The client's note was to keep it "fairly simple,
-   intuitive, and not too large", and he is right: it repeats seven times down
-   one page, so anything with personality becomes wallpaper by the third. Six
+   intuitive, and not too large", and he is right: it repeats the whole way
+   down the page, so anything with personality becomes wallpaper by the third.
+   Six
    nodes on a track, filled where this person stands, hollow where they do
    not. No labels, no key, no legend. The numbers under the filled ones are
    the only text, and they are there because "which three" is the whole

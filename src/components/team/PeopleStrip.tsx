@@ -27,15 +27,18 @@ import type { Member } from "./people";
    studio wall's is: a rotation function applied down a row is visible as a
    function.
 
-   The portraits themselves are still the client's six, unretouched. The open
+   The portraits themselves are still the client's own, unretouched. The open
    question about them, that they were taken in six different places and do not
    sit together, is a photography problem and is logged in CONTENT-NEEDED.md.
    Lighting them consistently here is the most that can honestly be done to it
    without altering how six real people look.
    ========================================================================== */
 
-/* Six positions under one lamp up and to the left. The far end of the row
-   sits a little deeper, which is what stops it reading as a straight line. */
+/* One position per portrait, under one lamp up and to the left. The far end
+   of the row sits a little deeper, which is what stops it reading as a
+   straight line. A seventh was written when Victoria joined, rather than
+   wrapping back to the first, because a repeat at the end of a short row is
+   as visible as a rotation function would have been. */
 const MOUNT = [
   { roll: -0.7, tilt: 2.4, depth: 0.38 },
   { roll: 0.5, tilt: 1.8, depth: 0.46 },
@@ -43,6 +46,7 @@ const MOUNT = [
   { roll: 0.65, tilt: 2.0, depth: 0.52 },
   { roll: -0.5, tilt: 2.3, depth: 0.44 },
   { roll: 0.3, tilt: 1.9, depth: 0.56 },
+  { roll: -0.45, tilt: 2.1, depth: 0.42 },
 ];
 
 /* One lamp up and left of the bench, the same geometry StageSequence and the
@@ -63,7 +67,12 @@ export function PeopleStrip({ people }: { people: Member[] }) {
       /* Scrolls sideways on a phone rather than wrapping to two ragged rows or
          shrinking six faces to thumbnails again. `-mx-` plus matching padding
          so the row bleeds to the band's edge as it scrolls. */
-      className="-mx-[var(--gutter)] mt-12 flex gap-4 overflow-x-auto px-[var(--gutter)] pb-1 sm:gap-5 lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0"
+      className="-mx-[var(--gutter)] mt-12 flex gap-4 overflow-x-auto px-[var(--gutter)] pb-1 sm:gap-5 lg:mx-0 lg:mt-16 lg:grid lg:overflow-visible lg:px-0"
+      /* ONE COLUMN PER FACE. This was `lg:grid-cols-6` while the row happened
+         to hold six; the seventh portrait would have dropped to a second row
+         on its own. Inline rather than a Tailwind class because the count is
+         data, and inert below `lg`, where the element is a flex row. */
+      style={{ gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` }}
     >
       {shown.map((p, i) => {
         const m = MOUNT[i % MOUNT.length];

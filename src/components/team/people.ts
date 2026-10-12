@@ -125,6 +125,27 @@ export const TEAM: Member[] = [
       "Mansi holds the schedule together, so that a note raised at one review stage reaches the people who have to act on it.",
     ],
   },
+  {
+    name: "Victoria",
+    role: "Graphic Designer and Illustrator",
+    asset: "person.victoria",
+    /* ADDED 2026-10-13 from the client's own email introducing her. The two
+       lines below are that email's two sentences; nothing is added to them,
+       and no surname was given, as with Kirstie.
+
+       NOT `team: true`. The two shared stages are the episode review stages
+       the company's account gives to the team as a whole, and the email
+       places her on the activity books and learning materials rather than in
+       the episode sequence. Marking her there would be our claim, not the
+       company's, so the roster says she is not at a review stage. Asked in
+       QUESTIONS.md. */
+    named: [],
+    team: false,
+    bio: [
+      "Victoria is a graphic designer and illustrator specialising in children's activity books and educational materials.",
+      "She creates engaging designs that make learning fun.",
+    ],
+  },
 ];
 
 export const ADVISORS: Member[] = [

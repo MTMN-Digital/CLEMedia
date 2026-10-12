@@ -668,3 +668,39 @@ episodes rather than that four are available, and six slates now sit above it.
    a tile with nowhere to go is rendered as plain markup rather than as a
    disabled link, so it stays out of the tab order.
 3. **The one-line synopsis**, in the show's own words.
+
+## Victoria, and the revised home page deck (2026-10-13)
+
+Two things arrived together from Conor: a headshot and two sentences
+introducing Victoria, and a sixteen-slide PDF, "CLE Media Home Page, Revised",
+which is his creative director's notes on this site.
+
+### Victoria
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| Headshot | ✅ | `/team`, `person.victoria` | Supplied as a 1302x1545 phone portrait. Cropped square on the face to match the other six, AVIF/WebP/JPG at 440 and 880, metadata stripped |
+| Two lines of biography | ✅ | `/team` | The email's own two sentences, unedited. Shorter than everyone else's three, because that is all there is |
+| Surname | ❌ | `/team` | None given, as with Kirstie. Listed as "Victoria". QUESTIONS.md #34 |
+| Job title, confirmed | ⚠️ | `/team` | "Graphic Designer and Illustrator", taken from her own sentence, not supplied as a title |
+| Whether she is in the review sequence | ⚠️ | `/team` | The email puts her on activity books and learning materials, not on episodes, so the roster says she is not at a review stage and shows no track beside her name. Correct it the moment the company says otherwise |
+
+### What the deck asks for and nobody can write yet
+
+The deck is a revision of one page. Most of its sections already exist here in
+some form. These four do not, and every one of them is a claim this site is not
+allowed to invent. Full account in QUESTIONS.md #35.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **The four testing figures** | ❌ | Proposed "Tested in homes and schools" section | The deck leaves them as `[__]`: average share of an episode watched, how many families, how many schools, and the share of children described as hard to settle who watched to the end. The strongest claims on the proposed page. Nothing ships until the real numbers arrive, with a line on how each was measured |
+| **The three research citations, verified** | ⚠️ | Proposed "The evidence" section | *Pediatrics* 2011, WHO guidelines 2019, *Developmental Science* 2025. Real literature, but each sentence needs checking against the actual paper before it goes on the site whose argument is honesty, and each needs somewhere to link |
+| **The research page the deck links to** | ❌ | "Read the research behind our approach" | No such page exists. Either it gets written, or the link goes to `/ethical-ai` and the deck's wording changes |
+| **Aistear or EYFS** | ❌ | Proposed learning resources section | The deck writes `[Aistear / EYFS]`. Which framework the materials are actually linked to, or both |
+| **Safeguarding email address** | ❌ | Footer | The deck's footer lists one. There is no such address yet |
+
+**Two things in the deck that are not instructions.** Its team portraits are
+AI-generated cartoon avatars standing in for the real photographs this site
+already carries, and the whole thing is set on a tan gradient with a green
+accent rather than the approved palette. Both are mockup chrome. Following
+either would break a hard rule in CLAUDE.md.

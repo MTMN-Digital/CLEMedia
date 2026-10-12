@@ -387,6 +387,69 @@ page they sat on, and publishing a child's face needs that child's parents to
 have agreed to it in writing on a site whose whole argument is child wellbeing.
 Held, not deleted. Say the word if any is wanted and the consent exists.
 
+### 34. Victoria: surname, title, and whether she signs off an episode
+Her introduction arrived by email on 2026-10-13: "Victoria is a graphic designer
+and illustrator specialising in children's activity books and educational
+materials. She creates engaging designs that make learning fun." Those two
+sentences are her whole entry on the team page, unedited, with the headshot that
+came with them.
+
+Three gaps, none of them guessed at:
+
+1. **Surname.** None given, as with Kirstie. She is listed as "Victoria".
+2. **Title.** None given. "Graphic Designer and Illustrator" is taken from the
+   sentence itself and needs her confirmation, the same way Alan's, Lydia's and
+   Paula's do in question 32.
+3. **The review sequence.** The email places her on activity books and learning
+   materials, not on episodes, so the roster says she is not at a review stage.
+   If she in fact shares the two stages the company gives to the team as a
+   whole, say so and the track appears beside her name. We will not put her
+   there on our own reading of one sentence.
+
+Separately: the revised home page deck (question 35) shows a sixth team tile
+reading `[Name] [Role]`. If that slot is Victoria, this answers it.
+
+### 35. The revised home page deck (2026-10-13), what in it is a decision
+A sixteen-slide PDF, "CLE Media Home Page, Revised", arrived from Conor as his
+creative director's notes, with the covering line that the team is happy with
+the structure and these are suggestions. It is a mockup of one page, not a
+redesign of the site, and most of it matches what is built. What it introduces
+that this site has never had, and cannot write on its own:
+
+1. **A research section.** Three cited claims: a 2011 *Pediatrics* study on
+   four-year-olds after nine minutes of fast fantastical cartoon; the WHO's 2019
+   one-hour daily ceiling for ages two to four; and a 2025 *Developmental
+   Science* meta-analysis pooling 35 studies. Plus a "read the research behind
+   our approach" link, which implies a page that does not exist. Each citation
+   needs checking against the actual paper before it goes on the site that
+   argues about honesty, and the links need to point somewhere.
+2. **"Tested in homes and schools", with four figures left as `[__]`.** Average
+   share of an episode watched, how many families, how many schools, and the
+   share of children described as hard to settle who watched to the end. These
+   are the strongest claims on the proposed page and the site cannot invent one
+   of them. Nothing ships here until the real numbers arrive, with a line on how
+   they were measured.
+3. **`[Aistear / EYFS]`**, in the learning resources section. Which curriculum
+   framework the materials are actually linked to, or both, or neither yet.
+4. **A different six sign-offs.** The deck lists them by role, starting with an
+   "Educational content advisor" who sets the learning goal. The site's six come
+   from the company's own written account and start with Conor and Alan on
+   concept and story. They are not the same list. The company's account wins
+   unless Conor says it has changed.
+5. **Team names that disagree with the October handoff.** The deck says Conor
+   and Lydia **Sexton** and Kirstie **Harding**; the bio handoff this site was
+   built on says Lydia Harding and gives Kirstie no surname (question 32). The
+   deck also writes "Al Compton", which the handoff corrected to Alan. One of
+   the two documents is out of date and we need to know which.
+6. **A safeguarding email address** in the footer, which does not exist yet.
+
+Two things in the deck that are mockup filler rather than instruction, flagged
+so nobody reads them as a brief: the team portraits in it are AI-generated
+cartoon avatars, where this site uses the real photographs the client supplied,
+and the whole deck is set on a tan gradient with a green accent, where the site
+has an approved palette. Taking either literally would break the hard rules this
+build was given.
+
 ## For the deploy, not for Conor (2026-10-08)
 
 **`/api/contact` needs rate limiting in front of the function.** The code now
