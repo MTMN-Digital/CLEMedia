@@ -1,9 +1,9 @@
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { Button, Container, Kicker, Lead, Section } from "@/components/ui";
+import { Button, Kicker, Section, Container, Lead } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { ADVISORS, STAGES, TEAM } from "@/components/team/people";
+import { TEAM, STAGES, ADVISORS } from "@/components/team/people";
 import { StageSequence } from "@/components/team/StageSequence";
 import { Roster } from "@/components/team/Roster";
 import { PeopleStrip } from "@/components/team/PeopleStrip";
@@ -62,8 +62,16 @@ export default function Team() {
           is within a few percent of the paper above it, so mounted portraits
           with real shadows had nothing to stand out from: the shadows fell on
           a ground the same value as the thing casting them. On the bench the
-          faces are lit. */}
-      <Section className="bench" pad="open">
+          faces are lit.
+
+          AND IN THE GROVE, 2026-10-13. The olive is the green of the knitted
+          jumpers Finn and Fia wear in every render, which makes it the right
+          room for the people who make them: this is the one band on the site
+          where the company's own faces are the content. It is the same band in
+          a second hue, not a second band, so nothing above changes. Measured
+          equal to the umber it replaces, cream at 6.44:1 flat against 6.41 and
+          5.39:1 under the lamp against 5.38. See `.grove` in index.css. */}
+      <Section className="bench grove" pad="open">
         <Container width="wide">
           {/* A spread, not a heading with a note parked at the far right. The
               first build put the lead under the h1 and the mono note in a 21rem
@@ -96,7 +104,10 @@ export default function Team() {
                     stages were a matrix of marks against a legend until
                     2026-10-03, and the paragraph describing how to read it
                     outlived two rebuilds of the thing it described. */}
-                <p className="mt-6 max-w-[44ch] border-t border-rule pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
+                {/* `border-white/22`, not `border-rule`: `--color-rule` is an
+                    ink alpha, so on a dark band it drew nothing at all. The
+                    value is the measured one the home and media bands use. */}
+                <p className="mt-6 max-w-[44ch] border-t border-white/22 pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
                   Below, the six stages as the slips they are signed off on, then the same fact
                   from the other side: each person, and what they answer for. Two of the stages
                   the company gives to the team as a whole, and those say so rather than naming

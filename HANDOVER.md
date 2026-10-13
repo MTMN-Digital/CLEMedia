@@ -209,8 +209,19 @@ section ground sat between 0.94 and 0.57 relative luminance, then jumped to
 navy at 0.033. Nothing in between. That is why adding objects never fixed the
 flatness: cream cards on tan, with shadows falling on a ground the same value
 as the thing casting them. `.bench` (warm umber, luminance 0.11) fills the gap
-and is on `/journal`, `/team` and home. Cream on it is 5.3:1 with a thin
+and is on home, `/journal` and `/shop`. Cream on it is 5.3:1 with a thin
 margin, so do not dim text with `opacity` on it and do not brighten its lamp.
+
+**`.grove` is the same band in the show's green**, added 2026-10-13 from the
+creative director's revision and spread on the same day. It is written
+`className="bench grove"` and all it does is re-point `--color-bench`, so every
+bench rule (cream headings, the 0.88 eyebrow, the inverted ink hand, a card
+keeping its own ink) follows it across without a second copy of any of it. It
+measures equal to the umber, cream at 6.44:1 flat against 6.41 and 5.39:1 under
+the lamp against 5.38. It is on home ("An online and offline balance"), `/team`
+(the opening band, where the faces are) and `/media` (the statement band). The
+two hues run three bands each on purpose: olive is a second room, not a
+replacement for the umber.
 
 **mtmn.ie's render style, for reference**, since David asked for it by name:
 `internal/mtmn-digital` builds layered coded renders, a base plus "part" layers

@@ -353,8 +353,15 @@ export default function Media() {
           because it is the page's argument and because it was also its
           emptiest, 885 pixels carrying one sentence and six slots. Dark, the
           sentence is the thing in the room. The ink hand inverts on the bench
-          on its own (see draw.css), so the strip came with it. */}
-      <Section pad="open" labelledBy="statement-h" className="bench">
+          on its own (see draw.css), so the strip came with it.
+
+          IN THE GROVE rather than the umber, 2026-10-13. This band and the
+          home page's "An online and offline balance" are the same kind of
+          thing, the company stating a position about children and screens
+          rather than describing its work, and the olive is now the register
+          those two share. `.grove` only re-points `--color-bench`, so every
+          rule above still applies unchanged. */}
+      <Section pad="open" labelledBy="statement-h" className="bench grove">
         <Container width="wide">
           <h2 id="statement-h" className="sr-only">What this page will not do</h2>
           <Wipe>
