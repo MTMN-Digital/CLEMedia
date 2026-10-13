@@ -24,11 +24,37 @@ import { ASSETS, type AssetKey } from "@/lib/brand";
    left the big monitors cropped.
 
    SO THE FRAME STOPPED BEING A BAND. David's call: not full bleed, rounded,
-   the whole image, smaller. It sits in the standard column, which is 960
-   pixels of content at desktop, so the squarest of them is 720 tall and the
-   two 2:1 series frames are 480. Nothing is cropped at any width on any
-   screen, because the box is the picture's own shape and there is nothing for
-   `object-cover` to do.
+   the whole image. Nothing is cropped at any width on any screen, because the
+   box is the picture's own shape and there is nothing for `object-cover` to do.
+
+   HOW BIG, settled 2026-10-13 after two passes. The brief was "the largest we
+   can make them without disrupting the flow of the pages, or losing bits of
+   them", and those two limits point at different measurements:
+
+   - Losing bits of them is already solved: the picture sets its own box.
+   - Disrupting the flow is a HEIGHT problem, not a width one. A frame taller
+     than the window stops being a beat in the page and becomes a wall you
+     scroll through with nothing either side of it for context.
+
+   So height is the limit and width follows each frame's own shape. `max-height`
+   is in `vh` because the thing being protected is the reader's window, not a
+   number somebody picked: on a short laptop the frames come down with it. The
+   first attempt put every frame in the standard 960 column, which made the 2:1
+   series frames 480 tall and far too small, because a fixed width punishes
+   exactly the frames that are widest and shortest.
+
+   Measured, not estimated. At 1440x900 the two series frames reach the column
+   cap at 1376x688, and the squarer ones stop on height: 1224x765 for the
+   chicken and pugs, 1148x765 for the garden, 1020x765 for the bluebells. At
+   1920x1080 they go to 1496x748, 1469x918, 1377x918 and 1224x918. On a 1366x768
+   laptop they come down to 1302x651 and 653 tall, which is the point of using
+   vh. Every one is bigger than the 960 column gave, the worst case (the
+   bluebells, the squarest) fills exactly one window including its caption, and
+   the band under it is still visible at the bottom of the screen.
+
+   `w-fit` on the figure, not just the image: when a frame stops on height it is
+   narrower than the column, and a figure that stayed full width would leave its
+   caption stranded out to the left of the picture it captions.
 
    IT ALSO TAKES TWO GRADIENTS OFF THE SITE. Three of these carried a caption
    over the image on a black-to-transparent scrim. A caption under a plate
@@ -56,9 +82,22 @@ export function ShowFrame({
 
   return (
     <Section as="div" pad="tight">
-      <Container>
+      <Container width="wide">
         <Wipe>
-          <figure>
+          {/* The figure, not the image, carries the width, and it is the lesser
+              of the column and whatever the height limit allows this shape.
+              Stated as a width rather than as `max-height` on the image for one
+              reason: `height: auto` never scales a picture ABOVE its own pixel
+              size, so on a 1920 monitor the garden and the chicken stopped dead
+              at 1200 and 1280, their 1x widths, leaving 120 pixels of room
+              unused. This way the box is sized first and the 2x file fills it.
+
+              Sizing the figure also keeps the caption under the picture's own
+              left edge when a frame is narrower than the column. */}
+          <figure
+            className="mx-auto"
+            style={{ width: `min(100%, calc(85vh * ${a.width} / ${a.height}))` }}
+          >
             <Figure
               asset={asset}
               /* Only the placeholder reads this. A real image carries its own
@@ -66,9 +105,9 @@ export function ShowFrame({
                  picture's shape and nothing crops. */
               ratio={`${a.width}/${a.height}`}
               priority={priority}
-              sizes="(min-width: 1024px) 960px, 100vw"
+              sizes="(min-width: 1024px) 1376px, 100vw"
             />
-            <figcaption className="mt-3.5 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
+            <figcaption className="mt-3.5 max-w-[68ch] font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
               {caption}
             </figcaption>
           </figure>

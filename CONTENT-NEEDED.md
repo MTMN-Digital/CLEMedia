@@ -775,9 +775,16 @@ antennae and the end of its trail.
 A taller band could not fix it, because a full-bleed image only shows all of
 itself when the band is `viewport / ratio` tall: the 4:3 garden frame on a 1920
 monitor would want 1440 pixels, more than a screen. So on David's instruction
-the frames stopped being bands. They now sit in the standard column, rounded,
-at their own shape, which is 960 pixels of picture at desktop and complete at
-every width on every screen. See `src/components/ShowFrame.tsx`.
+the frames stopped being bands. They are contained and rounded, at their own
+shape, and complete at every width on every screen.
+
+Sized on the second pass to "the largest we can make them without disrupting the
+flow of the pages, or losing bits of them". Losing bits is settled by the shape;
+disrupting the flow is a height problem, so the height is capped against the
+reader's own window and the width follows each frame's proportions. At 1440x900
+that is 1376x688 for the two series frames and 1020 to 1224 wide by 765 tall for
+the squarer three, all larger than the first pass, none taller than one screen.
+See `src/components/ShowFrame.tsx`.
 
 It also took two gradient scrims off the site, because a caption under a plate
 does not need one.
