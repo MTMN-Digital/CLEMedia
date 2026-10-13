@@ -763,3 +763,30 @@ corrected in the same commit:
   "no email gate" row now says the address is kept and why, and the "no mailing
   list" row stands on its own footing: there is no list, so there is nothing to
   unsubscribe from.
+
+## The frames stopped being bands, 2026-10-13
+
+Every edge-to-edge frame on the site was a hand-tuned pixel height with
+`object-cover` over it. Measured at 1440 the five bands kept **57 to 65 percent**
+of their picture, and at 1920 only **43 to 48 percent**. The meadow lost the
+bottom half of the leaf the whole composition stands on; the snail lost its
+antennae and the end of its trail.
+
+A taller band could not fix it, because a full-bleed image only shows all of
+itself when the band is `viewport / ratio` tall: the 4:3 garden frame on a 1920
+monitor would want 1440 pixels, more than a screen. So on David's instruction
+the frames stopped being bands. They now sit in the standard column, rounded,
+at their own shape, which is 960 pixels of picture at desktop and complete at
+every width on every screen. See `src/components/ShowFrame.tsx`.
+
+It also took two gradient scrims off the site, because a caption under a plate
+does not need one.
+
+**What this needs from CLÉ.** Nothing, for the frames already here to be
+correct. But two of the five are cropped in the file we were given, not by the
+site, and only an original fixes those:
+
+| Item | Status | Where | Notes |
+|---|---|---|---|
+| **A wider original of the chicken and pugs frame** | ❌ | `/app` | `home.characters` is 1280x800 and Fia, the black pug, is cut off at the right edge **in the supplied file**. Nothing the site does can put her back. The frame at its native 16:9 would |
+| **Native-resolution originals of the meadow and the snail** | ⚠️ | Home | Both were lifted from the revised home page deck at 3200x1600 and cropped to 2:1 on export. They are sharp and they work, but they are a screenshot of a slide rather than a frame out of the edit. The originals from the BRAND TOOL KIT would be better |

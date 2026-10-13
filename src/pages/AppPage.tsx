@@ -1,6 +1,6 @@
 import { NotifyForm } from "@/components/NotifyForm";
 import { Seo } from "@/components/Seo";
-import { Figure } from "@/components/Figure";
+import { ShowFrame } from "@/components/ShowFrame";
 import { StageBoard, type BoardSlip } from "@/components/app/StageBoard";
 import { ReviewerRoom } from "@/components/app/ReviewerRoom";
 import { NoWayOut } from "@/components/app/NoWayOut";
@@ -221,26 +221,19 @@ export default function AppPage() {
         </Container>
       </Section>
 
-      {/* ═══ IMAGE MOMENT. The garden the series is set in, edge to edge, so
-          the page leaves the drawn interface and shows something that exists.
+      {/* ═══ IMAGE MOMENT. The page leaves the drawn interface and shows
+          something that exists. It ran edge to edge until 2026-10-13, where
+          the band kept 58 percent of the frame at 1440; see ShowFrame.tsx.
           Captioned as what it is, a frame from the show. ═══ */}
-      <Section pad="none" as="div">
-        <Wipe>
-          <figure>
-            <div className="h-[clamp(260px,38vw,520px)] overflow-hidden">
-              <Figure asset="home.characters" fill rounded="rounded-none" position="center 48%" sizes="100vw" />
-            </div>
-            <Container width="wide">
-              <figcaption className="max-w-[58ch] pb-2 pt-4">
-                <p className="font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
-                  Finn, Fia and the hen. A frame from The Pawsitive Pugs &amp; Pals&reg;, which is
-                  what the player holds.
-                </p>
-              </figcaption>
-            </Container>
-          </figure>
-        </Wipe>
-      </Section>
+      <ShowFrame
+        asset="home.characters"
+        caption={
+          <>
+            Finn, Fia and the hen. A frame from The Pawsitive Pugs &amp; Pals&reg;, which is what
+            the player holds.
+          </>
+        }
+      />
 
       {/* ═══ 3. THE THREE STAGES, one row each. Watch, Play, Learn is the spine
           of the company, so it is the spine of the page: the stage in the

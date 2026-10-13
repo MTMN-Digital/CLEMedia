@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
+import { ShowFrame } from "@/components/ShowFrame";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
@@ -284,37 +285,20 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ MOMENT TWO. The garden, edge to edge and taller than it is wide on
-          a phone, because this is the world the company built and a thumbnail in
-          a text column says the opposite. Brought down from a 760px ceiling to
-          620px: at 760 it filled a 900px laptop screen on its own and the page
-          lost the caption and the band under it in one scroll. Captioned as what
-          it is, a frame from the show and not a photograph. ═══ */}
-      <Section pad="none" as="div">
-        <Wipe>
-          <figure>
-            <div className="h-[clamp(300px,46vw,620px)] overflow-hidden">
-              <Figure
-                asset="story.garden"
-                fill
-                rounded="rounded-none"
-                position="center 62%"
-                sizes="100vw"
-              />
-            </div>
-            <Container width="wide">
-              {/* The caption needs clearance under it as well as over it: the
-                  ledger card in the next band crosses this boundary, and at
-                  pt-4/pb-0 its top corner landed on the same line as the
-                  caption and read as a collision rather than as a slip of
-                  paper laid down. */}
-              <figcaption className="max-w-[58ch] pb-8 pt-4 sm:pb-10">
-                <Note>The garden the series is set in, with its rope swing. A frame from The Pawsitive Pugs &amp; Pals&reg;.</Note>
-              </figcaption>
-            </Container>
-          </figure>
-        </Wipe>
-      </Section>
+      {/* ═══ MOMENT TWO. The garden: the world the company built, and the
+          one moment where the letter stops and shows the reader something. It
+          ran edge to edge until 2026-10-13, where the band kept 65 percent of
+          the frame at 1440 and 48 percent at 1920; see ShowFrame.tsx. Captioned
+          as what it is, a frame from the show and not a photograph. ═══ */}
+      <ShowFrame
+        asset="story.garden"
+        caption={
+          <>
+            The garden the series is set in, with its rope swing. A frame from The Pawsitive Pugs
+            &amp; Pals&reg;.
+          </>
+        }
+      />
 
       {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width.
           MOMENT THREE is the route itself, which is no longer a second list in

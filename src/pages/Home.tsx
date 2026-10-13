@@ -1,4 +1,5 @@
 import { Seo, organizationJsonLd } from "@/components/Seo";
+import { ShowFrame } from "@/components/ShowFrame";
 import { NotifyForm } from "@/components/NotifyForm";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
@@ -85,38 +86,25 @@ export default function Home() {
           m.ind.coach open. See HeroFilm. ═══ */}
       <HeroFilm />
 
-      {/* The garden, edge to edge, as the horizon the rest of the page sits
-          under. It does not drift: one thing moving against a fixed ground is
-          an object, two things moving against each other is a scroll effect.
+      {/* The garden. It was edge to edge until 2026-10-13 and the band cut
+          43 percent off the frame on a 1920 monitor; see ShowFrame.tsx. It is
+          now the whole picture, in the column, rounded.
 
           The caption is not decoration. This is a frame from the animation,
           not a photograph of a real garden, and a company whose Responsible AI
           page turns on being straight about how the work is made cannot put an
           uncaptioned rendered image at the top of its home page. It is also
           the page's first use of the registered mark. */}
-      <Section as="div" pad="none">
-        {/* The caption sits ON the frame. It used to have a band of its own
-            below the image: a strip of bare paper carrying one right-aligned
-            mono line and nothing else, which read as a stray label floating
-            between two sections. A caption belongs on the thing it captions. */}
-        <div className="relative h-[clamp(260px,44vw,620px)] overflow-hidden">
-          <Figure
-            asset="home.hero"
-            fill
-            rounded="rounded-none"
-            position="center 46%"
-            priority
-            sizes="100vw"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
-            <Container width="wide">
-              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
-                A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">®</sup>
-              </p>
-            </Container>
-          </div>
-        </div>
-      </Section>
+      <ShowFrame
+        asset="home.hero"
+        priority
+        caption={
+          <>
+            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">&reg;</sup>. The
+            garden the show&rsquo;s world is built from, animated, not photographed.
+          </>
+        }
+      />
 
       {/* ═══ 2. THE ARGUMENT, on the wall.
 
@@ -228,29 +216,16 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* The meadow, edge to edge, as the way into the series. The page's
-          second full-bleed frame and the first sight of Finn and Fia on it:
-          everything above this point is the company talking about its work,
-          and this is the work. Captioned for the same reason the garden above
-          is: it is a frame from the animation, not a photograph. */}
-      <Section as="div" pad="none">
-        <div className="relative h-[clamp(220px,34vw,460px)] overflow-hidden">
-          <Figure
-            asset="show.meadow"
-            fill
-            rounded="rounded-none"
-            position="center 42%"
-            sizes="100vw"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
-            <Container width="wide">
-              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
-                Finn and Fia. A frame from the series
-              </p>
-            </Container>
-          </div>
-        </div>
-      </Section>
+      {/* The meadow: the way into the series, and the first sight of Finn
+          and Fia on the page. Everything above this point is the company
+          talking about its work, and this is the work. The old band sliced the
+          leaf the composition stands on clean in half. Captioned for the same
+          reason the garden above is: it is a frame from the animation, not a
+          photograph. */}
+      <ShowFrame
+        asset="show.meadow"
+        caption="Finn and Fia. A frame from the series."
+      />
 
       {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the
           trade. The felted show wordmark is a photograph of a real object on a
@@ -333,28 +308,11 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* The snail, edge to edge. The page's third and last frame, and the
-          one that argues the company's pace without a word: it is a garden
-          path at a snail's speed, directly above the band about how the work
-          is actually produced. */}
-      <Section as="div" pad="none">
-        <div className="relative h-[clamp(220px,34vw,460px)] overflow-hidden">
-          <Figure
-            asset="show.snail"
-            fill
-            rounded="rounded-none"
-            position="center 48%"
-            sizes="100vw"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
-            <Container width="wide">
-              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
-                A frame from the series
-              </p>
-            </Container>
-          </div>
-        </div>
-      </Section>
+      {/* The snail. The page's third and last frame, and the one that argues
+          the company's pace without a word: a garden path at a snail's speed,
+          directly above the band about how the work is actually produced. The
+          old band cropped off its antennae. */}
+      <ShowFrame asset="show.snail" caption="A frame from the series." />
 
       {/* ═══ 5. THE AI POSITION. The site's single most important trust
           claim, and it used to be the quietest block on the page: an h2 over
