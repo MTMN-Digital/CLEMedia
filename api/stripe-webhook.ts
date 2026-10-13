@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import Stripe from "stripe";
-import { adminClient, requireEnv, json } from "./_lib/admin";
+import { requireEnv, adminClient, json } from "./_lib/admin";
 
 /**
  * Stripe signs the exact bytes it sent, so the body must reach constructEvent
@@ -83,6 +83,17 @@ export async function POST(request: Request) {
       max_downloads: MAX_DOWNLOADS,
       amount_cents: session.amount_total,
       currency: session.currency,
+      /* The only handle on this order is a token inside an email Stripe sent.
+         Without the address, a buyer who loses that email cannot be found:
+         there is no account here and nothing else to search on. Stripe already
+         collected it for its own receipt. `customer_details` is the address
+         used at checkout; `customer_email` is only set when the session was
+         pre-filled, which ours never is. */
+      payer_email: session.customer_details?.email ?? session.customer_email ?? null,
+      /* Stamped by create-checkout-session, which refuses to open a session
+         without the Article 16(m) acknowledgement. Kept on the order because
+         the trader is the one who has to be able to show consent was given. */
+      withdrawal_consent_at: session.metadata?.withdrawal_consent_at ?? null,
     });
 
     // A unique violation means a concurrent delivery won the race. Still fine.

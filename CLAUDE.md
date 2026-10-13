@@ -215,4 +215,10 @@ WCAG 2.1 AA verified. Four weeks of build, joint launch with the app mid-October
 
 ## Current state
 
-Stage 0. `QUESTIONS.md` and `CONTENT-NEEDED.md` exist. No application code yet, the token gate is not passed because the brand kit has not been read.
+Stale since stage 1. **`HANDOVER.md` is the live state document, read it first**,
+then `CONTENT-NEEDED.md` for what the client still owes and `QUESTIONS.md` for
+what has been asked. All thirteen routes are built and the design is signed off
+as of 2026-10-13. What is not done is product rather than design: the admin
+panel's controls do nothing, so the CMS Conor is meant to run from his phone is
+not wired, and David's call on 2026-10-13 was that this does not block launch
+and MTMN edits for him at first.

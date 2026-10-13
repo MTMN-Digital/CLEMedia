@@ -344,12 +344,24 @@ export default function Media() {
       </Section>
 
       {/* The statement. The page's honesty at display size, with room around
-          it. It is the company's own line about itself, not a quotation. */}
-      <Section pad="open" labelledBy="statement-h">
+          it. It is the company's own line about itself, not a quotation.
+
+          ON THE BENCH, 2026-10-13. It was the third paper band in a row: the
+          index, this and the subjects ran from 1739 to 4221 on one flat
+          ground, 2482 pixels, nearly half the page, which is what made this
+          page read thin when nothing on it is. This is the band to lift,
+          because it is the page's argument and because it was also its
+          emptiest, 885 pixels carrying one sentence and six slots. Dark, the
+          sentence is the thing in the room. The ink hand inverts on the bench
+          on its own (see draw.css), so the strip came with it. */}
+      <Section pad="open" labelledBy="statement-h" className="bench">
         <Container width="wide">
           <h2 id="statement-h" className="sr-only">What this page will not do</h2>
           <Wipe>
-            <p className="t-h1 max-w-[24ch] border-y border-rule py-14 font-display text-ink sm:py-20">
+            {/* No `text-ink`: `.bench` sets cream, and the hairline is the
+                measured one from the home page's evidence band, because
+                `--color-rule` is an ink alpha and disappears on a dark band. */}
+            <p className="t-h1 max-w-[24ch] border-y border-white/22 py-14 font-display sm:py-20">
               No logo strip of publications that have not written about us, and no quote nobody
               said.
             </p>

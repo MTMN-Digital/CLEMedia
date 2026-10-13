@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, useMemo, type ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Container, DisclosurePanel, Kicker, Section, TextLink } from "@/components/ui";
+import { Container, DisclosurePanel, Section, TextLink, Kicker } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -33,12 +33,20 @@ import { IconArrow } from "@/components/icons";
    paper of the sheet and the other two sitting behind it. That is the page's
    signature, and it is the folder these three things actually live in.
 
-   STILL OPEN, and logged in CONTENT-NEEDED.md: the registered company details
-   the privacy policy itself promises at the foot of the page. They are not
-   invented here.
+   THE COMPANY DETAILS, CLOSED 2026-10-13. The registered name, number and
+   office now head every one of the three documents, taken from the signed
+   proposal CFM-02. See `COMPANY` below. The draft notice that used to sit in
+   that slot came out in the same edit, on David's instruction: these are
+   published terms now, and the exposure sits with CLÉ and MTMN rather than
+   with a solicitor who has not seen them.
+
+   STILL OPEN: a public email address. The documents send every request
+   through /contact, which works, but a privacy policy that names no address
+   for a data request is thinner than it should be, and the safeguarding
+   address does not exist either. Both are logged in CONTENT-NEEDED.md.
    ========================================================================== */
 
-type DocId = "privacy" | "terms" | "cookies";
+type DocId = "cookies" | "privacy" | "terms";
 
 interface Doc {
   title: string;
@@ -54,14 +62,41 @@ interface Doc {
 }
 
 /** The day the wording was last written. Not today, and never a live date. */
-const DRAFTED = "2026-09-20";
+const DRAFTED = "2026-10-13";
+
+/* The trader's identity, from the signed proposal CFM-02 and nowhere else.
+   Not guessed, not looked up, not reconstructed from the brand name: these are
+   the words in the contract both companies put their names to.
+
+   WHY IT IS ON THE PAGE. The privacy policy named itself the data controller
+   and then promised the registration details "at the foot of this page once
+   registration details are confirmed", which is a policy pointing at a blank.
+   Article 6 of the Consumer Rights Directive wants a trading name, a
+   geographic address and an identity before a consumer buys anything, and the
+   shop takes money for digital files.
+
+   WHY THERE IS NO VAT LINE. CLÉ's VAT position is not in the proposal and the
+   brief is explicit that VAT on digital goods belongs to the client and their
+   accountant. An absent VAT number says nothing; a guessed one is a false
+   statement on a legal page.
+
+   WHY NOT IN THE GLOBAL FOOTER. David's call, 2026-10-13: the registered
+   office is a family home, it satisfies the Directive where the law actually
+   looks, and it does not need to sit on all thirteen pages to do that. */
+const COMPANY = {
+  legal: "CLE Family Media 25 Limited",
+  cro: "820427",
+  office: "Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9",
+};
 
 const ORDER: DocId[] = ["privacy", "terms", "cookies"];
 
 /**
- * Draft policies, written to be reviewed by a solicitor before launch rather
- * than published as they stand. An Irish company selling digital goods into
- * the EU has obligations these drafts summarise but do not settle.
+ * The three policies as published. They were drafted here, not by a solicitor,
+ * and David's instruction on 2026-10-13 was to publish them as they stand
+ * rather than carry a draft notice to launch. An Irish company selling digital
+ * goods into the EU has obligations these summarise; a solicitor reading them
+ * later may want more, and the place to change the wording is this object.
  */
 const DOCS: Record<DocId, Doc> = {
   privacy: {
@@ -79,11 +114,12 @@ const DOCS: Record<DocId, Doc> = {
     ],
     sections: [
       { h: "Who we are", p: [
-        "CLÉ Family Media is the data controller for this website. Our registered company details and address are set out at the foot of this page once registration details are confirmed. You can reach us through the contact page for any question about your data.",
+        "CLE Family Media 25 Limited, trading as CLÉ Family Media, is the data controller for this website. Our company number and registered office are set out at the head of this document. You can reach us through the contact page for any question about your data.",
       ]},
       { h: "What we collect", p: [
         "If you send us an enquiry, we collect your name, email address, any organisation you give us and the content of your message. If you ask to be told when the app launches, we collect your email address and nothing else.",
-        "If you buy a printable, Stripe handles your payment and collects your email for its own receipt. We never see or store your card details. We store a record of the purchase and a download token so we can deliver the file you paid for.",
+        "If you buy a printable, Stripe handles your payment and collects your email for its own receipt. We never see or store your card details. We store a record of the purchase, a download token so we can deliver the file you paid for, the email address you gave Stripe, and the time you confirmed you understood the download starts immediately.",
+        "We keep that email address for one reason: your download link lives for 24 hours and there is no account here, so if you lose it, the address you paid with is the only way we can find your order and send it again. Nothing else reads it, and it is never used to contact you otherwise.",
         "We do not ask anyone to create an account, and we do not knowingly collect personal data from children.",
       ]},
       { h: "Why we collect it", p: [
@@ -125,7 +161,8 @@ const DOCS: Record<DocId, Doc> = {
         "Printables are licensed for personal, family, classroom or childcare setting use. You may print as many copies as that use needs. You may not resell them, redistribute the files, or include them in a paid product of your own.",
       ]},
       { h: "Refunds and withdrawal", p: [
-        "Digital downloads are supplied immediately, and under EU consumer rules the right of withdrawal ends once the download begins. That said, if a file is faulty, wrong, or will not open, contact us and we will fix it or refund you.",
+        "Digital downloads are supplied immediately. Before you pay, the product page asks you to confirm you understand the download starts straight away and that you lose the right to cancel once it does, and checkout will not open until you have. That is what EU consumer rules require us to ask, and it is why the right of withdrawal does not apply afterwards.",
+        "That said, if a file is faulty, wrong, or will not open, contact us and we will fix it or refund you.",
       ]},
       { h: "Intellectual property", p: [
         "The Pawsitive Pugs & Pals®, PupsPlayer™, the characters, artwork and all content on this site belong to CLÉ Family Media unless stated otherwise.",
@@ -221,8 +258,8 @@ function Contents({
   active,
   onPick,
 }: {
-  sections: { h: string }[];
   active: string;
+  sections: { h: string }[];
   onPick?: () => void;
 }) {
   return (
@@ -423,16 +460,18 @@ export default function Legal({ doc }: { doc: DocId }) {
                 </div>
 
                 <div ref={body} className="max-w-[68ch]">
-                  {/* The notice. It used to be a card with a red left edge,
-                      which is the house's own anti-pattern; a document that is
-                      not yet law should be stamped, not boxed. */}
+                  {/* Who the trader is, in the slot where the draft stamp
+                      stood until 2026-10-13. Same stamp, not a box: the
+                      house's own anti-pattern is the card with a coloured left
+                      edge, and this is a fact about the document rather than a
+                      warning about it. */}
                   <div className="border-y border-rule py-5">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-red-deep">
-                      Draft, pending legal review
+                    <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+                      Who you are dealing with
                     </p>
                     <p className="mt-2.5 text-[15px] leading-relaxed text-ink">
-                      This is a working draft written to be reviewed by a solicitor before launch.
-                      It should not be relied on as it stands.
+                      {COMPANY.legal}, registered in Ireland, company number {COMPANY.cro}.
+                      Registered office: {COMPANY.office}. Trading as CL&Eacute; Family Media.
                     </p>
                   </div>
 

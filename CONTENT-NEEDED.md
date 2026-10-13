@@ -718,3 +718,48 @@ AI-generated cartoon avatars standing in for the real photographs this site
 already carries, and the whole thing is set on a tan gradient with a green
 accent rather than the approved palette. Both are mockup chrome. Following
 either would break a hard rule in CLAUDE.md.
+
+## Compliance and the legal pages, 2026-10-13
+
+### Closed in this pass
+
+| Item | Where it came from |
+|---|---|
+| **Registered company details** | The signed proposal CFM-02, not a guess and not the CRO register: CLE Family Media 25 Limited, registered in Ireland, company number 820427, registered office Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9. They now head all three legal documents, which is where the Consumer Rights Directive wants a trader's identity and a geographic address. David's call on 2026-10-13: legal pages only, not the global footer, because the registered office is a family home and it does not need to sit on all thirteen pages to satisfy the Directive |
+| **The draft notice** | Removed on David's instruction the same day. The three policies were drafted in this repo, not by a solicitor, and they are now published as they stand rather than carrying a stamp to launch. If a solicitor reviews them later, the wording lives in the `DOCS` object in `src/pages/Legal.tsx` |
+
+### Still open
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| **A public email address** | ❌ | Privacy policy, terms, footer | Every document routes data requests and purchase problems through `/contact`, which works. A privacy policy that names no address for a subject access request is thinner than it should be |
+| **The safeguarding address** | ❌ | Footer | Unchanged from the deck's list above |
+| **CLÉ's VAT position** | ❌ | Terms, and the shop | Not in the proposal, and the brief is explicit that VAT on digital goods belongs to the client and their accountant. No VAT line is stated anywhere rather than a guessed one. Needed before the shop takes real money |
+| **A solicitor reading the three policies** | ⚠️ | All three | Not a blocker any more, by instruction, but worth saying plainly: nobody with a practising certificate has read them |
+
+### What was built, and what it means for the privacy wording
+
+The shop could not take real money as it stood. Two gaps, both closed:
+
+1. **Article 16(m) of the Consumer Rights Directive.** Digital content supplied
+   immediately loses the right of withdrawal only where the buyer gave prior
+   express consent and acknowledged losing it. The terms page already stated
+   the right ends on download, which is the rule and not the step. There is now
+   an acknowledgement above the Buy button, the API refuses to open a checkout
+   session without it, and the time is stamped on the order by the server.
+2. **The payer's email was never stored.** A buyer who lost the download link
+   inside 24 hours could not be found, because there is no account on this site
+   and the token is the only handle on an order. Stripe already collected the
+   address for its receipt; it is now kept on the order.
+
+Storing that address changed what two pages are allowed to say, and both were
+corrected in the same commit:
+
+- The privacy policy's "What we collect" now lists the email and the consent
+  time, and says why the address is kept and that nothing else reads it.
+- `/shop`'s refusals ledger claimed `api/stripe-webhook.ts writes the order and
+  nothing else`. That sentence became false the moment the webhook changed.
+  Every line in that ledger is meant to be checkable against the code, so the
+  "no email gate" row now says the address is kept and why, and the "no mailing
+  list" row stands on its own footing: there is no list, so there is nothing to
+  unsubscribe from.

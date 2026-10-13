@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconDownload } from "@/components/icons";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconDownload, IconArrow } from "@/components/icons";
 import { Settle } from "@/components/Settle";
 import { Docket } from "@/components/shop/Docket";
 import { SheetBench } from "@/components/shop/PrintedSheet";
-import { formatPrice, paragraphs, useProduct } from "@/components/shop/catalogue";
+import { paragraphs, formatPrice, useProduct } from "@/components/shop/catalogue";
 
 /* ============================================================================
    One product, rebuilt 2026-10-06.
@@ -46,6 +46,10 @@ const TERMS = [
   { k: "Link valid for", v: "24 hours", strong: true },
   { k: "Downloads allowed", v: "5", strong: true },
   { k: "Account created", v: "none" },
+  /* The consequence of "straight away", stated where the other terms are
+     rather than left to the policy page. Added 2026-10-13 with the
+     acknowledgement above the button. */
+  { k: "Right to cancel", v: "ends on download", strong: true },
 ];
 
 export default function ShopProduct() {
@@ -54,6 +58,14 @@ export default function ShopProduct() {
   const q = useProduct(slug);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /* Article 16(m) of the Consumer Rights Directive. Digital content delivered
+     immediately loses the right of withdrawal only where the buyer gave prior
+     express consent and acknowledged losing it, and the seller is the one who
+     has to be able to show it was given. The terms already said the right ends
+     on download, which is the correct rule and not the required step: nobody
+     consents by reading a policy. The API refuses to open a session without
+     this flag, so the box is the gate rather than a formality beside one. */
+  const [ack, setAck] = useState(false);
 
   // Stripe's cancel_url sends a buyer back here with this flag. Saying so
   // plainly is the difference between a cancelled checkout and a site that
@@ -61,14 +73,14 @@ export default function ShopProduct() {
   const cancelled = params.get("checkout") === "cancelled";
 
   async function buy() {
-    if (!slug) return;
+    if (!slug || !ack) return;
     setBusy(true);
     setError(null);
     try {
       const r = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug }),
+        body: JSON.stringify({ slug, withdrawalAck: true }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.url) {
@@ -245,11 +257,30 @@ export default function ShopProduct() {
               )}
 
               <div className="mt-9">
-                <Button onClick={() => void buy()} disabled={busy} size="large">
+                {/* Above the button, because it is the thing that unlocks it
+                    and because the order the page is read in should be the
+                    order the buyer acts in. */}
+                <label className="tickbox max-w-[46ch]">
+                  <input
+                    type="checkbox"
+                    checked={ack}
+                    onChange={(e) => {
+                      setAck(e.target.checked);
+                      if (e.target.checked) setError(null);
+                    }}
+                  />
+                  <span className="text-[15px] leading-[1.55] text-body">
+                    I understand the download starts straight away, and that once it does I lose
+                    the right to cancel.
+                  </span>
+                </label>
+
+                <Button onClick={() => void buy()} disabled={busy || !ack} size="large" className="mt-6">
                   {busy ? "Opening Stripe…" : `Buy for ${formatPrice(p.price_cents, p.currency)}`}
                   <IconDownload size={17} />
                 </Button>
                 <p className="mt-4 max-w-[44ch] text-[14.5px] leading-[1.6] text-body">
+                  {!ack && "Tick the box above to continue. "}
                   Card payment is handled by Stripe. You are not asked to make an account, and
                   buying never puts you on a mailing list.
                 </p>

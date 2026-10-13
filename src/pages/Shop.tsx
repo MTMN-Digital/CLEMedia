@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconExternal } from "@/components/icons";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconExternal, IconArrow } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
 import { Shelf } from "@/components/shop/Shelf";
 import { EmptyShelf } from "@/components/shop/EmptyShelf";
 import { NotAsked } from "@/components/shop/NotAsked";
 import { SheetBench } from "@/components/shop/PrintedSheet";
 import { useProducts } from "@/components/shop/catalogue";
-import { APP_LAUNCHED, SITE } from "@/lib/site";
+import { SITE, APP_LAUNCHED } from "@/lib/site";
 
 /* ============================================================================
    The shop, rebuilt 2026-10-06.
@@ -46,7 +46,7 @@ import { APP_LAUNCHED, SITE } from "@/lib/site";
 
 /* Each line is checkable against the code, which is the only reason it is on
    the page. `where` names the file that makes it true. */
-const REFUSALS: { title: string; body: string; where: string }[] = [
+const REFUSALS: { body: string; where: string; title: string }[] = [
   {
     title: "No account",
     body: "There is nothing to sign up to and no password to forget. Nothing on this site has a login except the admin panel the team writes from.",
@@ -54,13 +54,13 @@ const REFUSALS: { title: string; body: string; where: string }[] = [
   },
   {
     title: "No email gate",
-    body: "Stripe asks for an address so it can send you its own receipt. We never ask for one, and your file does not wait behind it.",
-    where: "api/create-checkout-session.ts",
+    body: "Stripe asks for an address so it can send you its own receipt. We never ask for one, and your file does not wait behind it. We do keep the address Stripe collected, because your link lasts a day and it is the only way to find your order if you lose it.",
+    where: "api/stripe-webhook.ts stores it on the order",
   },
   {
     title: "No mailing list",
-    body: "Buying something here never adds you to one. There is no box to untick, because there is no list to be added to.",
-    where: "api/stripe-webhook.ts writes the order and nothing else",
+    body: "Buying something here never adds you to one. There is no list to be added to, so there is nothing to unsubscribe from later.",
+    where: "nothing in api/ reads that address",
   },
   {
     title: "One payment",
@@ -237,14 +237,23 @@ export default function Shop() {
         </Container>
       </Section>
 
-      {/* ═══ THE TERMS. A different room: the wall, and the narrow column.
-          The docket is a receipt, so it is set the width of one. ═══ */}
-      <Section labelledBy="terms-h" className="wall">
+      {/* ═══ THE TERMS. A different room, and from 2026-10-13 a dark one.
+          The docket is a receipt, so it is set the width of one.
+
+          WHY THE BENCH. This band was the page's weakest: 633 pixels carrying
+          a four word heading, two lines and a narrow card, on a ground barely
+          distinguishable from the two paper bands above it. It is also the
+          only page of the five long ones that never used the site's strongest
+          surface. A cream receipt under a lamp is what the drawing already
+          pretends to be, so the room caught up with the object. ═══ */}
+      <Section labelledBy="terms-h" className="bench">
         <Container>
           <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
             <div>
               <h2 id="terms-h" className="t-h2 max-w-[14ch]">What a purchase is</h2>
-              <p className="t-lead mt-6 max-w-[38ch] text-ink">
+              {/* `.bench` sets cream on everything it contains, so the lead
+                  takes it rather than naming a colour of its own. */}
+              <p className="t-lead mt-6 max-w-[38ch]">
                 These terms are true before the first file is uploaded, so they are stated before
                 you have anything to buy.
               </p>
@@ -258,6 +267,9 @@ export default function Shop() {
                 { k: "Link valid for", v: "24 hours", strong: true },
                 { k: "Downloads allowed", v: "5", strong: true },
                 { k: "Account created", v: "none" },
+                /* The one box there is. Named here so the product page's
+                   acknowledgement is not the first a buyer hears of it. */
+                { k: "Right to cancel", v: "ends on download", strong: true },
               ]}
               foot={
                 <>

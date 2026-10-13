@@ -396,6 +396,32 @@ body > * { position: relative; z-index: 1; }
   }
   .chip[data-on]:hover { color: #fdf8ed; }
 
+  /* The Article 16(m) acknowledgement on a product page, and the site's first
+     checkbox. It is the native control wearing the brand accent rather than a
+     styled div with a tick drawn in it: a real checkbox is announced to a
+     screen reader, operable from the keyboard and associated with its label
+     for free, and nothing about this one needs more than a colour. The label
+     wraps the input, so the whole sentence is the hit area. */
+  .tickbox {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.7rem;
+    cursor: pointer;
+  }
+  .tickbox input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15rem;
+    accent-color: var(--color-red-deep);
+    cursor: pointer;
+  }
+  .tickbox:has(:focus-visible) {
+    outline: 2px solid var(--color-red);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
   /* The one deep band per page. */
   .deep {
     background: var(--color-navy);
@@ -483,18 +509,20 @@ body > * { position: relative; z-index: 1; }
      strand titles disappeared completely. Real classes, not `:where()`, so
      these outrank `.bench h3` instead of tying with it and losing on source
      order, which is the same trap `.deep .link-draw` was written to escape. */
-  .deep .card, .deep .card-stock, .deep .tile, .deep .well,
-  .bench .card, .bench .card-stock, .bench .tile, .bench .well {
+  .deep .card, .deep .card-stock, .deep .tile, .deep .well, .deep .docket,
+  .bench .card, .bench .card-stock, .bench .tile, .bench .well, .bench .docket {
     color: var(--color-body);
   }
   .deep .card h1, .deep .card h2, .deep .card h3, .deep .card h4,
   .deep .card-stock h1, .deep .card-stock h2, .deep .card-stock h3, .deep .card-stock h4,
   .bench .card h1, .bench .card h2, .bench .card h3, .bench .card h4,
-  .bench .card-stock h1, .bench .card-stock h2, .bench .card-stock h3, .bench .card-stock h4 {
+  .bench .card-stock h1, .bench .card-stock h2, .bench .card-stock h3, .bench .card-stock h4,
+  .deep .docket h1, .deep .docket h2, .deep .docket h3, .deep .docket h4,
+  .bench .docket h1, .bench .docket h2, .bench .docket h3, .bench .docket h4 {
     color: var(--color-ink);
   }
-  .deep .card .eyebrow, .deep .card-stock .eyebrow,
-  .bench .card .eyebrow, .bench .card-stock .eyebrow {
+  .deep .card .eyebrow, .deep .card-stock .eyebrow, .deep .docket .eyebrow,
+  .bench .card .eyebrow, .bench .card-stock .eyebrow, .bench .docket .eyebrow {
     color: var(--color-red-deep);
   }
   .deep .card .link-draw, .deep .card-stock .link-draw,
@@ -512,6 +540,18 @@ body > * { position: relative; z-index: 1; }
   }
   .btn-primary { background: var(--color-red); color: #fdf8ed; }
   .btn-primary:hover { background: var(--color-red-deep); }
+  /* Until 2026-10-13 nothing on the site styled a disabled button, because the
+     only disabled state was the half-second after a click and the label
+     changed to say so. The purchase acknowledgement makes the Buy button
+     genuinely inert until a box is ticked, and a button that looks live and is
+     not is worse than no button. Muted rather than faded: cream on
+     `--color-muted` measures 7.14:1, where dropping the red to half opacity
+     would have put cream on pink. Hover is suppressed for the same reason. */
+  .btn-primary:disabled,
+  .btn-primary:disabled:hover {
+    background: var(--color-muted);
+    cursor: not-allowed;
+  }
   .btn-quiet {
     background: transparent;
     border: 1px solid var(--color-rule);

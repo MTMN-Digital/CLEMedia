@@ -1,19 +1,36 @@
 import Stripe from "stripe";
-import { adminClient, requireEnv, json } from "./_lib/admin";
+import { requireEnv, adminClient, json } from "./_lib/admin";
 
 /**
  * Creates a Stripe Checkout session for one product.
  *
- * The client sends a slug and nothing else. Price, currency and title are read
- * from the database. A browser can send any number it likes, so it is never
- * asked for one.
+ * The client sends a slug and the Article 16(m) acknowledgement, and nothing
+ * else. Price, currency and title are read from the database. A browser can
+ * send any number it likes, so it is never asked for one.
  */
 export async function POST(request: Request) {
   try {
-    const { slug } = (await request.json().catch(() => ({}))) as { slug?: string };
+    const { slug, withdrawalAck } = (await request.json().catch(() => ({}))) as {
+      slug?: string;
+      withdrawalAck?: boolean;
+    };
     if (!slug || typeof slug !== "string") {
       return json({ error: "A product slug is required." }, 400);
     }
+
+    /* Article 16(m) of the Consumer Rights Directive. Digital content supplied
+       immediately loses the right of withdrawal only where the consumer gave
+       prior express consent and acknowledged the loss, and the trader is the
+       one who has to be able to show it. So the acknowledgement gates session
+       creation rather than being described somewhere on the page: without it
+       there is no session, no payment and no order.
+
+       The time is the server's, not the browser's. The browser is only ever
+       trusted to say the box was ticked, which is the consumer's own act. */
+    if (withdrawalAck !== true) {
+      return json({ error: "Please confirm you understand the download starts immediately." }, 400);
+    }
+    const consentAt = new Date().toISOString();
 
     const supabase = adminClient();
     const { data: product, error } = await supabase
@@ -58,7 +75,7 @@ export async function POST(request: Request) {
       // Stripe collects an email for its own receipt. We do not require an
       // account, do not gate the download on it, and never add anyone to a
       // mailing list from a purchase.
-      metadata: { product_id: product.id, slug },
+      metadata: { product_id: product.id, slug, withdrawal_consent_at: consentAt },
       success_url: `${site}/download/pending?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${site}/shop/${slug}?checkout=cancelled`,
     });

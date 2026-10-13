@@ -455,7 +455,48 @@ and the whole deck is set on a tan gradient with a green accent, where the site
 has an approved palette. Taking either literally would break the hard rules this
 build was given.
 
+### 36. Before the shop takes a real payment (2026-10-13)
+Three things, raised by the compliance pass that added the Article 16(m)
+acknowledgement and started storing the payer's email. None of them blocks the
+site going live; all three block taking money.
+
+1. **VAT on digital goods.** CLÉ has no VAT number in the signed proposal, and
+   the brief says the treatment belongs to Conor and his accountant. Nothing on
+   the site states a VAT position, which is the right answer until somebody
+   tells us one. Needed: is CLÉ VAT registered, and is VAT included in the
+   EUR 3 to 4 price or added at checkout? Stripe has to be configured either
+   way, and a price that turns out to be VAT exclusive changes every product.
+2. **The registered office is now published.** CLE Family Media 25 Limited,
+   company number 820427, Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9, at
+   the head of the privacy, terms and cookies pages, taken from the proposal.
+   The Consumer Rights Directive requires a trader's geographic address before
+   a consumer buys, and it is already public on the CRO register. It is NOT in
+   the global footer, by David's instruction, because it looks like a family
+   home. Conor should know it is there and say if any of it has changed.
+3. **The three policies are published, not reviewed.** They were drafted in
+   this repo. The draft notice came off on 2026-10-13 by instruction, so the
+   pages now read as the company's terms. Nobody with a practising certificate
+   has read them, and Conor is entitled to know that before launch.
+
+Separately, and not a question: the policies and the shop both still route
+every contact through /contact, because no public email address exists. See
+CONTENT-NEEDED.md.
+
 ## For the deploy, not for Conor (2026-10-08)
+
+**Run migration 0006 BEFORE deploying the webhook change (2026-10-13).**
+`0006_order_consent_and_email.sql` adds `payer_email` and
+`withdrawal_consent_at` to `orders`, and `api/stripe-webhook.ts` now writes
+both. Deploy the function first and every insert fails on a column that does
+not exist, which returns a 500, which tells Stripe to retry: a customer who has
+already paid gets no token and no file until the migration lands. The
+acknowledgement in `api/create-checkout-session.ts` is safe in either order,
+because it only ever refuses to open a session.
+
+There is no admin screen for either column. Recovering a lost download is a
+query against `orders` by `payer_email`, run by us. That is the honest ceiling
+of what was built, and it is the right one while the admin panel's controls do
+nothing anyway.
 
 **`/api/contact` needs rate limiting in front of the function.** The code now
 throttles five submissions per email address per ten minutes, which stops a

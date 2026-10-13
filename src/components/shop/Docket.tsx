@@ -31,10 +31,10 @@ export function Docket({
   foot,
   className = "",
 }: {
+  className?: string;
   label: string;
   rows: DocketRow[];
   foot?: ReactNode;
-  className?: string;
 }) {
   return (
     <div className={className}>
@@ -50,7 +50,12 @@ export function Docket({
           backgroundPosition: "bottom",
         }}
       />
-      <div className="border border-t-0 border-rule bg-raised px-5 py-6 sm:px-7">
+      {/* `docket` carries no styling of its own. It is the marker that tells
+          index.css this is a light surface, so the cream a dark band sets on
+          its descendants stops at the edge of the receipt. Every colour below
+          is named outright except the eyebrow, which inherits, and which went
+          cream on cream the first time this sat on the bench. */}
+      <div className="docket border border-t-0 border-rule bg-raised px-5 py-6 sm:px-7">
         <p className="eyebrow">{label}</p>
 
         <dl className="mt-5 font-mono text-[13px] leading-[1.5]">
