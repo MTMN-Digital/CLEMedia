@@ -57,19 +57,30 @@ export interface BrandAsset {
 const assets = {
   "home.hero": {
     base: "/brand/home-hero",
-    /* RE-CUT TO 2:1 on 2026-10-13, from 1400x1050. At 4:3 this was the tallest
-       picture on the site, and once the frames stopped being cropped by CSS it
-       filled a whole window. David's call was to move it down the page and run
-       it edge to edge, which a 4:3 cannot do: full bleed on a 1920 monitor
-       would want 1440 pixels of height. The crop is deliberate and taken once,
-       biased to keep the cottage roof and the sun and to spend the loss on
-       blank sky above and blurred foreground below. It also puts this frame on
-       the same 2:1 as `show.meadow` and `show.snail`.
+    /* RE-CUT TO A 3:1 RIBBON on 2026-10-13, from 1400x1050.
 
-       It is a crop of our own optimised export, because the BRAND TOOL KIT
+       At 4:3 this was the squarest picture on the site, so once the frames
+       stopped being cropped by CSS it was also the tallest, and it filled a
+       whole window directly under a hero film of the same garden. It was moved
+       down the page, and the shape went with it: it is a quiet texture with no
+       subject sitting between two bands of argument, so it is a divider rather
+       than a third feature image, and a divider is wide and short.
+
+       It briefly shipped at 2:1 and full bleed, which was wrong twice over:
+       still nearly as tall, and square-edged next to two rounded frames, which
+       read as a different kind of object on the same page. It is contained and
+       rounded like the other two now, and 3:1 instead of their 2:1 so it is
+       visibly subordinate to the frames that carry characters.
+
+       The crop is taken ONCE, here, and never again by CSS. Biased 0.36 from
+       the top, which keeps the cottage roof, the sun and the arcing stem and
+       spends the loss on blank sky above and blurred foreground below. Cut
+       from the original 4:3 master, not from the 2:1 that shipped in between.
+
+       Still a crop of our own optimised export, because the BRAND TOOL KIT
        original is on Alan's Mac. A native cut is on the CONTENT-NEEDED list. */
     alt: "Bluebells and dew in the garden at sunrise, a scene from The Pawsitive Pugs and Pals",
-    width: 1400, height: 700,
+    width: 1400, height: 467,
     label: "The garden that inspired the show's world, or the founders at work",
   },
   "home.company": {

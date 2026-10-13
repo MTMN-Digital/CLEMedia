@@ -28,8 +28,10 @@ import { IconMail, IconArrow } from "@/components/icons";
    placeholder frames instead, including a placeholder for the felted wordmark
    that is already in the repo. That is why the page read as a blank sheet.
 
-   So: the artwork is the content. It is used large and full bleed, because
-   that is how pawsitivepugs.com carries its own pages. And an empty frame is
+   So: the artwork is the content. It is used large, because that is how
+   pawsitivepugs.com carries its own pages. Not full bleed any more: see
+   ShowFrame.tsx for why the bands became contained, rounded, uncropped
+   frames. And an empty frame is
    never rendered on this page. Where an asset is missing, the section is built
    from what exists instead, and the gap is listed in CONTENT-NEEDED.md.
 
@@ -41,7 +43,7 @@ import { IconMail, IconArrow } from "@/components/icons";
    1560px container, almost all of them on the same cream. Blur the text and
    four of them were indistinguishable.
 
-   It now runs: a full-bleed frame, then ONE tall band on the deeper wall that
+   It now runs: the mission film, then ONE tall band on the deeper wall that
    holds the whole argument (the thesis and the three stages, as a set page
    rather than as two sections), then the two big objects the page already had
    and never bettered (the film, then the filmstrip running off the right
@@ -50,10 +52,16 @@ import { IconMail, IconArrow } from "@/components/icons";
    close. Updated 2026-10-09: the call sheet stopped being a third copy of the
    team's faces, and the AI band stopped being the quietest block on the page.
 
+   Updated 2026-10-13: the garden frame no longer sits under the film. The
+   film's own poster is Finn and Fia at a puddle in that garden, so the page
+   was opening on two views of one place before a word of the argument. It is
+   a 3:1 ribbon between the research band and the testing band now, and the
+   page opens on the film straight into the thesis.
+
    Removed rather than restyled:
-     - the second garden picture. The page opens on a full-bleed garden frame
-       and then showed a smaller crop of the same garden twelve hundred pixels
-       later. /story owns the swing-tree print.
+     - the second garden picture. The page showed a smaller crop of the same
+       garden twelve hundred pixels after the first. /story owns the
+       swing-tree print.
      - the six-row running order. It was the third copy of one idea on the
        site, and the faces underneath it were the same six people again. The
        two are one list now; see CallSheet.
@@ -210,14 +218,16 @@ export default function Home() {
           site admits it has no figures yet, and a wide quiet picture between
           them is a breath rather than a second hero.
 
-          It runs full bleed because it was re-cut to 2:1 to allow it (see
-          brand.ts). The caption still says what it is: a frame from the
+          It is cut to a 3:1 ribbon (see brand.ts) so it reads as a divider
+          rather than a third feature image, and it wears the same column and
+          the same rounding as the other two, because a square-edged full-bleed
+          band next to two rounded frames read as a different kind of object on
+          the same page. The caption still says what it is: a frame from the
           animation, not a photograph of a real garden, which a company whose
           Responsible AI page turns on being straight about how the work is
           made does not get to leave off. */}
       <ShowFrame
         asset="home.hero"
-        bleed
         caption={
           <>
             A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">&reg;</sup>. The
