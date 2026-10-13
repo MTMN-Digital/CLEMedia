@@ -412,12 +412,23 @@ export default function Contact() {
                         <dt className="font-semibold text-ink">Writing to:</dt>
                         <dd>CLÉ Family Media, an Irish company.</dd>
                       </div>
+                      {/* This read "not published yet" until 2026-10-13, which
+                          stopped being true the moment the legal pages started
+                          carrying the registration. A page that invites
+                          investors to write is the worst place on the site to
+                          be caught saying the company has not published
+                          something it has.
+
+                          The registered office is NOT repeated here. David's
+                          call was legal pages only, because it is a family
+                          home; the entity and the number are not the address,
+                          and naming them is what a reader of this page wants. */}
                       <div className="mt-1.5 flex flex-wrap gap-x-2">
                         <dt className="font-semibold text-ink">Registered details:</dt>
                         <dd>
-                          not published yet. They go here and at the foot of the{" "}
-                          <TextLink to="/privacy">privacy policy</TextLink> once registration is
-                          confirmed.
+                          CLE Family Media 25 Limited, registered in Ireland, company number
+                          820427. The registered office is at the head of the{" "}
+                          <TextLink to="/privacy">privacy policy</TextLink>.
                         </dd>
                       </div>
                     </dl>

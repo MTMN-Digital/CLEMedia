@@ -81,7 +81,7 @@ export function ShowFrame({
   const a = ASSETS[asset];
 
   return (
-    <Section as="div" pad="tight">
+    <Section as="div" pad="close">
       <Container width="wide">
         <Wipe>
           {/* The figure, not the image, carries the width, and it is the lesser

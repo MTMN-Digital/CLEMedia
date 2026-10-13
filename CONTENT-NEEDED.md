@@ -413,7 +413,7 @@ on 2026-10-06. Nothing below has been guessed at on the pages themselves.
 
 | Item | Status | Needed for | Notes |
 |---|---|---|---|
-| **Registered company details** | ❌ | `/contact`, `/privacy` | Company number and registered office. The slot is BUILT AND VISIBLY EMPTY on the closing band of `/contact` ("not published yet"), because the privacy policy already promises both "at the foot of this page once registration details are confirmed". Two lines of data fills it, and the privacy policy's own promise stops being outstanding |
+| **Registered company details** | ✅ | `/contact`, `/privacy` | CLOSED 2026-10-13 from the signed proposal CFM-02. The legal pages carry the entity, the number and the registered office; `/contact` carries the entity and the number and links to the office rather than repeating a family home on a third page. See the 2026-10-13 section at the foot of this file |
 | **Who reads each enquiry route** | ❌ | `/contact` | The form marks a message as partnership, educator, press or general, and that is all anyone has told us. The page therefore says nothing about who opens which, and names no person against any route. If Conor wants "partnership enquiries reach Conor directly" on the page, he has to say it is true first |
 | **A reply time** | ❌ | `/contact` | Deliberately absent. No "we reply within two working days" anywhere, because nobody has committed to one. It is the cheapest credibility line on the page and the easiest to break |
 | **A postal address, a phone number, office hours** | ❌ | `/contact` | None supplied, none invented. An address is the one of the three an investor actually looks for; see registered company details above |
