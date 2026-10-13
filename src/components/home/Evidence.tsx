@@ -106,7 +106,13 @@ export function Evidence({ headingId }: { headingId: string }) {
             <p className="font-display text-[clamp(3rem,2rem+3.4vw,4.75rem)] leading-[0.92] tracking-[-0.03em]">
               {f.figure}
               {f.unit && (
-                <span className="ml-2.5 align-baseline font-body text-[clamp(1rem,0.85rem+0.5vw,1.25rem)] font-normal tracking-normal opacity-80">
+                <span /* NO `opacity-80` SINCE 2026-10-13. It was fine on the olive and fails on
+                     the garden ground this band now stands on: the mobile sweep caught it
+                     at 4.42 against rgb(97,99,77), under AA. 0.88 is the lowest that
+                     passes and clears the worst pixel by 0.02, which is not a margin.
+                     The unit is full cream instead: a 1rem body label beside a 4.75rem
+                     display numeral was never relying on opacity to be subordinate. */
+                  className="ml-2.5 align-baseline font-body text-[clamp(1rem,0.85rem+0.5vw,1.25rem)] font-normal tracking-normal">
                   {f.unit}
                 </span>
               )}

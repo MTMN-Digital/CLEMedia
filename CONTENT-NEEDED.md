@@ -764,6 +764,29 @@ corrected in the same commit:
   list" row stands on its own footing: there is no list, so there is nothing to
   unsubscribe from.
 
+## The garden became the ground, 2026-10-13
+
+The bluebells frame was the weakest thing on the home page and three attempts
+at sizing it did not fix that, because the problem was that it was a block at
+all: the hero film is already this garden, so a second view of it read as a
+repeat with air on both sides.
+
+It is now the ground the research figures stand on, and the standalone block is
+gone. The tint over it is a flat forest green at 74 percent, which is the
+lightest any green can be and still carry cream at 5.3:1 against the brightest
+pixel in the photograph. Measured, not picked: the show's own olive needs 93
+percent, which hides the picture completely.
+
+**The olive did not disappear with it.** It moved to "An online and offline
+balance", which is a better home for it anyway: the section about getting a
+child off the screen and into play, in the colour of Finn and Fia's jumpers. It
+also breaks what had become 2,644 pixels of unbroken paper across three blocks.
+
+One rule this had to respect. `brand.ts` records that every one of these frames
+carries a visible line saying it is a frame from the animation, because they are
+rendered and the Responsible AI page turns on being straight about that. A
+background is still a frame on the page, so the band is captioned at its foot.
+
 ## The frames stopped being bands, 2026-10-13
 
 Every edge-to-edge frame on the site was a hand-tuned pixel height with
@@ -797,4 +820,4 @@ site, and only an original fixes those:
 |---|---|---|---|
 | **A wider original of the chicken and pugs frame** | ❌ | `/app` | `home.characters` is 1280x800 and Fia, the black pug, is cut off at the right edge **in the supplied file**. Nothing the site does can put her back. The frame at its native 16:9 would |
 | **Native-resolution originals of the meadow and the snail** | ⚠️ | Home | Both were lifted from the revised home page deck at 3200x1600 and cropped to 2:1 on export. They are sharp and they work, but they are a screenshot of a slide rather than a frame out of the edit. The originals from the BRAND TOOL KIT would be better |
-| **A native 3:1 cut of the bluebells frame** | ⚠️ | Home | `home.hero` was 1400x1050, the squarest and therefore tallest picture on the site. On 2026-10-13 it moved down the page and was re-cut to a 1400x467 ribbon, so it reads as a divider between two bands rather than a third feature image. The crop was taken from our own optimised export rather than from the original, which is on Alan's Mac. It is sharp at 2800x934, but a cut from the master would be cleaner, and whoever made the frame may want to choose the crop themselves |
+| **A native cut of the bluebells frame** | ⚠️ | Home | `home.hero` stopped being a picture in the column on 2026-10-13 and became the ground the research figures stand on, so it is back at its 4:3 master and `object-cover` takes what the band needs. No crop of ours ships any more. Still worth having the original from the BRAND TOOL KIT rather than our optimised export, because a background at 1920 wide is asking more of the file than a 960 column did |

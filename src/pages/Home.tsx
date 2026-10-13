@@ -196,45 +196,57 @@ export default function Home() {
           page is now: what we believe, how an episode is shaped, and then what
           anyone else has found. See Evidence.tsx for why the third figure is
           not the one the client's deck printed. ═══ */}
-      <Section labelledBy="evidence-h" pad={["open", "normal"]} className="bench grove">
-        <Container width="wide">
+      {/* THE GARDEN IS THE GROUND, 2026-10-13.
+
+          The research figures used to sit on the olive, with a picture of the
+          garden in its own block underneath. That picture was the weakest
+          thing on the page: the hero film is already this garden, so a second
+          view of it read as a repeat, and whatever shape it was cut to it
+          needed air on both sides and got 192 pixels of it. Three goes at
+          sizing it did not fix that, because the problem was that it was a
+          block at all.
+
+          So it stopped being a block and became the room. One fewer section,
+          the picture is finally doing work, and the figures gain a ground that
+          argues for them: this is the world the series is set in, and these
+          are the findings the company builds it on.
+
+          THE TINT IS MEASURED, NOT PICKED. Cream type has to clear 5.3:1
+          against the BRIGHTEST pixel in the photograph, which is the sun at
+          rgb(254,255,252). Solving for the lightest overlay that does it:
+          the show's own olive needs 93 percent and hides the picture
+          completely; navy needs 71; this forest green needs 74 and leaves a
+          quarter of the picture showing, which is the most any tint in the
+          green family can give. Flat, one hue, no gradient. The real contrast
+          sampler agrees at 1440 and at 390.
+
+          THE CAPTION IS NOT OPTIONAL. brand.ts records the rule: every one of
+          these frames carries a visible line saying it is a frame from the
+          animation, because they are rendered and this company's Responsible
+          AI page turns on being straight about that. A background is still a
+          frame on the page, so it is captioned at the foot of the band. */}
+      <Section
+        labelledBy="evidence-h"
+        pad={["open", "normal"]}
+        className="bench relative overflow-hidden !bg-none !bg-transparent"
+      >
+        <div aria-hidden="true" className="absolute inset-0">
+          <Figure asset="home.hero" fill rounded="rounded-none" position="center 44%" sizes="100vw" />
+          <div className="absolute inset-0" style={{ background: "rgba(44, 53, 38, 0.74)" }} />
+        </div>
+        <Container width="wide" className="relative">
           <Evidence headingId="evidence-h" />
+          {/* #eee9df, not `text-muted` and not a dimmed cream. On the worst
+              pixel of this ground, rgb(99,106,94), the muted token is dark on
+              dark and a 0.78 cream measures 4.35, under AA. This is the
+              darkest step of the cream that still clears it, at 4.62. */}
+          <p className="mt-14 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-[#eee9df] lg:mt-20">
+            Behind this, a frame from The Pawsitive Pugs &amp; Pals
+            <sup className="text-[0.7em]">&reg;</sup>. The garden the show&rsquo;s world is built
+            from, animated, not photographed.
+          </p>
         </Container>
       </Section>
-
-      {/* The garden, edge to edge. MOVED HERE 2026-10-13, from directly under
-          the hero film.
-
-          It was the wrong picture in the wrong place. The film's own poster is
-          Finn and Fia at a puddle in this same garden with this same cottage
-          behind them, so the page opened on two full-screen views of one
-          garden before a word of the argument. And at 4:3 it was the squarest
-          frame on the site, which once the frames stopped being cropped made
-          it the tallest: a whole window of flowers under a whole window of
-          film.
-
-          Down here it does the job it is actually good for. The three bands
-          before it are solid argument, the band after it is the one place the
-          site admits it has no figures yet, and a wide quiet picture between
-          them is a breath rather than a second hero.
-
-          It is cut to a 3:1 ribbon (see brand.ts) so it reads as a divider
-          rather than a third feature image, and it wears the same column and
-          the same rounding as the other two, because a square-edged full-bleed
-          band next to two rounded frames read as a different kind of object on
-          the same page. The caption still says what it is: a frame from the
-          animation, not a photograph of a real garden, which a company whose
-          Responsible AI page turns on being straight about how the work is
-          made does not get to leave off. */}
-      <ShowFrame
-        asset="home.hero"
-        caption={
-          <>
-            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">&reg;</sup>. The
-            garden the show&rsquo;s world is built from, animated, not photographed.
-          </>
-        }
-      />
 
       {/* ═══ 2d. OUR OWN MEASUREMENT, and it is not in yet.
 
@@ -325,7 +337,19 @@ export default function Home() {
 
       {/* ═══ 3b. BEYOND THE SCREEN. The Play and the Learn, which the page
           argued for at the top and then never showed. See BeyondScreen. ═══ */}
-      <Section labelledBy="beyond-h" pad="normal">
+      {/* ON THE OLIVE, 2026-10-13. The green was built for the research band
+          and lost its room when that band became the garden. It lands here,
+          and better than where it was: this is the section about getting a
+          child off the screen and into play, and the green is the colour of
+          Finn and Fia's own knitted jumpers.
+
+          It also breaks the longest flat run on the page. After the film band
+          this was 2,644 pixels of unbroken paper across three blocks. The
+          filmstrip above ends on its sprocket edge, which terminates the umber
+          cleanly, so two dark bands meeting here read as two rooms rather than
+          as mud. The two cards keep their own ink through the light-surface
+          guard in index.css. */}
+      <Section labelledBy="beyond-h" pad="normal" className="bench grove">
         <Container width="wide">
           <BeyondScreen headingId="beyond-h" />
         </Container>
