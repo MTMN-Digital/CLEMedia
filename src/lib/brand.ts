@@ -57,8 +57,19 @@ export interface BrandAsset {
 const assets = {
   "home.hero": {
     base: "/brand/home-hero",
+    /* RE-CUT TO 2:1 on 2026-10-13, from 1400x1050. At 4:3 this was the tallest
+       picture on the site, and once the frames stopped being cropped by CSS it
+       filled a whole window. David's call was to move it down the page and run
+       it edge to edge, which a 4:3 cannot do: full bleed on a 1920 monitor
+       would want 1440 pixels of height. The crop is deliberate and taken once,
+       biased to keep the cottage roof and the sun and to spend the loss on
+       blank sky above and blurred foreground below. It also puts this frame on
+       the same 2:1 as `show.meadow` and `show.snail`.
+
+       It is a crop of our own optimised export, because the BRAND TOOL KIT
+       original is on Alan's Mac. A native cut is on the CONTENT-NEEDED list. */
     alt: "Bluebells and dew in the garden at sunrise, a scene from The Pawsitive Pugs and Pals",
-    width: 1400, height: 1050,
+    width: 1400, height: 700,
     label: "The garden that inspired the show's world, or the founders at work",
   },
   "home.company": {

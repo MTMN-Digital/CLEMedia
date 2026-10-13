@@ -71,14 +71,52 @@ export function ShowFrame({
   asset,
   caption,
   priority = false,
+  bleed = false,
 }: {
   asset: AssetKey;
   /** Always says it is a frame. See the note above. */
   caption: ReactNode;
   /** Set on the one frame a page leads with, and nowhere else. */
   priority?: boolean;
+  /**
+   * Edge to edge, square corners, caption in the column underneath.
+   *
+   * Only for a frame cut wide enough that full width is still a band and not a
+   * screen: the bluebells is 2:1, so it is 720 tall on a 1440 window. A 4:3
+   * frame must never take this, because at full width it would want more
+   * height than the viewport has, which is the whole reason these stopped
+   * being bands in the first place. Nothing is cropped here either; the
+   * picture was cut to its shape once, on export.
+   */
+  bleed?: boolean;
 }) {
   const a = ASSETS[asset];
+
+  if (bleed) {
+    return (
+      <Section as="div" pad="tight">
+        <Wipe>
+          <figure>
+            <Figure
+              asset={asset}
+              ratio={`${a.width}/${a.height}`}
+              rounded="rounded-none"
+              priority={priority}
+              sizes="100vw"
+            />
+            {/* The caption comes back into the column, so it lines up with the
+                body copy above and below rather than hanging off the screen
+                edge. No scrim over the picture: that was a gradient. */}
+            <Container width="wide">
+              <figcaption className="mt-3.5 max-w-[68ch] font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
+                {caption}
+              </figcaption>
+            </Container>
+          </figure>
+        </Wipe>
+      </Section>
+    );
+  }
 
   return (
     <Section as="div" pad="tight">

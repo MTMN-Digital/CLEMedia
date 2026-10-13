@@ -86,26 +86,6 @@ export default function Home() {
           m.ind.coach open. See HeroFilm. ═══ */}
       <HeroFilm />
 
-      {/* The garden. It was edge to edge until 2026-10-13 and the band cut
-          43 percent off the frame on a 1920 monitor; see ShowFrame.tsx. It is
-          now the whole picture, in the column, rounded.
-
-          The caption is not decoration. This is a frame from the animation,
-          not a photograph of a real garden, and a company whose Responsible AI
-          page turns on being straight about how the work is made cannot put an
-          uncaptioned rendered image at the top of its home page. It is also
-          the page's first use of the registered mark. */}
-      <ShowFrame
-        asset="home.hero"
-        priority
-        caption={
-          <>
-            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">&reg;</sup>. The
-            garden the show&rsquo;s world is built from, animated, not photographed.
-          </>
-        }
-      />
-
       {/* ═══ 2. THE ARGUMENT, on the wall.
 
           One band, two movements, and the page's only change of room. The
@@ -121,7 +101,16 @@ export default function Home() {
           The wall is a stop deeper than the paper and no deeper: measured, the
           first version of this surface put body copy at 3.2:1. See index.css.
           ═══ */}
-      <Section labelledBy="thesis-h" pad={["normal", "none"]} className="wall">
+      {/* `none` at the bottom until 2026-10-13, so that this band and the one
+          under it would read as one wall. They never did: `.wall` carries its
+          own radial lamp positioned at `14% -14%` of its OWN box, so a second
+          wall section restarts the light and draws a visible line across the
+          page. All butting them achieved was putting that line 16 pixels under
+          the last line of body copy, with the descenders sitting on it. The
+          seam is unavoidable without merging two separately labelled sections
+          into one, so it is moved into open space instead, where a change of
+          light reads as light rather than as a rule. */}
+      <Section labelledBy="thesis-h" pad={["normal", "tight"]} className="wall">
           <Container width="wide">
             {/* A SPREAD, not a lone eyebrow over an empty half.
                 The eyebrow and the display line used to sit at the left with
@@ -204,6 +193,38 @@ export default function Home() {
           <Evidence headingId="evidence-h" />
         </Container>
       </Section>
+
+      {/* The garden, edge to edge. MOVED HERE 2026-10-13, from directly under
+          the hero film.
+
+          It was the wrong picture in the wrong place. The film's own poster is
+          Finn and Fia at a puddle in this same garden with this same cottage
+          behind them, so the page opened on two full-screen views of one
+          garden before a word of the argument. And at 4:3 it was the squarest
+          frame on the site, which once the frames stopped being cropped made
+          it the tallest: a whole window of flowers under a whole window of
+          film.
+
+          Down here it does the job it is actually good for. The three bands
+          before it are solid argument, the band after it is the one place the
+          site admits it has no figures yet, and a wide quiet picture between
+          them is a breath rather than a second hero.
+
+          It runs full bleed because it was re-cut to 2:1 to allow it (see
+          brand.ts). The caption still says what it is: a frame from the
+          animation, not a photograph of a real garden, which a company whose
+          Responsible AI page turns on being straight about how the work is
+          made does not get to leave off. */}
+      <ShowFrame
+        asset="home.hero"
+        bleed
+        caption={
+          <>
+            A frame from The Pawsitive Pugs &amp; Pals<sup className="text-[0.7em]">&reg;</sup>. The
+            garden the show&rsquo;s world is built from, animated, not photographed.
+          </>
+        }
+      />
 
       {/* ═══ 2d. OUR OWN MEASUREMENT, and it is not in yet.
 
