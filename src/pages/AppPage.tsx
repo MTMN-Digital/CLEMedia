@@ -109,8 +109,8 @@ const SLIPS: BoardSlip[] = STAGES.map((s, i) => ({
    parent and early years review. */
 const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[] = [
   { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula", line: "Reviews the learning intent of each episode and the offline activities that follow it, against early years practice." },
-  { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia", line: "Reads script and production from a parent's point of view, and from a child's." },
-  { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
+  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia", line: "Reads script and production from a parent's point of view, and from a child's." },
+  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
 ];
 
 

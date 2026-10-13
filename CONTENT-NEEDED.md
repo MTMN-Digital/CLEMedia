@@ -685,11 +685,23 @@ which is his creative director's notes on this site.
 | Job title, confirmed | ⚠️ | `/team` | "Graphic Designer and Illustrator", taken from her own sentence, not supplied as a title |
 | Whether she is in the review sequence | ⚠️ | `/team` | The email puts her on activity books and learning materials, not on episodes, so the roster says she is not at a review stage and shows no track beside her name. Correct it the moment the company says otherwise |
 
+### What was built from the deck, 2026-10-13
+
+| Item | Status | Notes |
+|---|---|---|
+| The evidence band | ✅ | Three published results, on the new green ground. Each citation links to the paper and all three were checked against it first |
+| Tested in homes and schools | ⚠️ | Built, mounted, and deliberately showing four empty brackets. See below |
+| Beyond the screen | ✅ | At home and In the classroom, two cards, each linking somewhere real |
+| Get in touch, split three ways | ✅ | Broadcasters, schools and press, replacing one band addressed to nobody |
+| The meadow and the snail | ✅ | Two frames cropped out of the deck itself at 3840 wide. Originals still wanted from the kit |
+| The green ground | ✅ | `--color-grove`, the deck's olive taken down until cream carries on it |
+| Nav and footer | ✅ | Two header labels renamed, footer regrouped into the deck's own headings. /media finally has a way in |
+| Lydia Sexton and Kirstie Harding | ✅ | The deck's names, applied everywhere |
+
 ### What the deck asks for and nobody can write yet
 
-The deck is a revision of one page. Most of its sections already exist here in
-some form. These four do not, and every one of them is a claim this site is not
-allowed to invent. Full account in QUESTIONS.md #35.
+These are claims this site is not allowed to invent. Full account in
+QUESTIONS.md #35.
 
 | Item | Status | Needed for | Notes |
 |---|---|---|---|
@@ -698,6 +710,8 @@ allowed to invent. Full account in QUESTIONS.md #35.
 | **The research page the deck links to** | ❌ | "Read the research behind our approach" | No such page exists. Either it gets written, or the link goes to `/ethical-ai` and the deck's wording changes |
 | **Aistear or EYFS** | ❌ | Proposed learning resources section | The deck writes `[Aistear / EYFS]`. Which framework the materials are actually linked to, or both |
 | **Safeguarding email address** | ❌ | Footer | The deck's footer lists one. There is no such address yet |
+
+| **hello@ and the postal address** | ❌ | Footer | The deck's fourth footer column is an email, a safeguarding address and a postal address. None of the three exists, so the footer ships with three columns of links and the two places that are not this site, and no brackets. A global footer is the wrong place to show a gap on every page |
 
 **Two things in the deck that are not instructions.** Its team portraits are
 AI-generated cartoon avatars standing in for the real photographs this site

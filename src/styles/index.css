@@ -98,6 +98,21 @@
      both without them reading as the same band twice. */
   --color-bench: #6b5840;
 
+  /* The grove: the same room in the show's green, added 2026-10-13 from the
+     client's creative director's revision of the home page. His deck sets it
+     at #667a5e, which carries cream at 4.40:1 and fails; this is the same hue
+     taken down until cream measures 6.44:1 flat, which is the bench's own
+     6.41. It is not a new colour on the brand: it is the green of the knitted
+     jumpers Finn and Fia wear in every render, which is why `--color-sage`
+     was already in this file as the pale version of it.
+
+     USED AS `bench grove`, NOT ON ITS OWN. Everything about how a cream band
+     behaves, from the heading colour to the ink hand's stroke to the quiet
+     button's border, is keyed to `.bench` in four files. `.grove` re-points
+     the one token those rules read, so the band changes hue and nothing else
+     has to know. */
+  --color-grove: #505f49;
+
   /* ─── Ink ramp, derived along the clay hue ──────────────────────────── */
   --color-ink:   #1a1614;
   --color-body:  #4a352a;
@@ -415,6 +430,41 @@ body > * { position: relative; z-index: 1; }
         color-mix(in srgb, var(--color-bench) 88%, #1a1614)
       );
   }
+  /* The grove, worn over the bench: `className="bench grove"`. One token, and
+     the whole bench system (cream headings, the 0.88 eyebrow, the inverted
+     ink hand, the relit quiet button, a card keeping its own ink) follows the
+     band into the green without a second copy of any of it.
+
+     MEASURED, not eyeballed. Flat, cream sits at 6.44:1. Under the lamp the
+     brightest corner is 5.39:1, which is the bench's own 5.38 to two decimal
+     places: the two rooms are the same room in two colours, and the audit
+     treats them alike. */
+  .grove { --color-bench: var(--color-grove); }
+
+  /* A NAVY BAND THAT STANDS ALONE may lift towards its foot. The creative
+     director's deck does this and it is worth having: a flat navy slab six
+     hundred pixels tall is the one surface on this site with no light in it
+     at all.
+
+     THE CAP IS THE POINT. His gradient runs #1c2851 to #556e8a, and at the
+     foot of it cream measures 4.98:1, which is a hair over AA and below every
+     other band on the site. This lifts by 14% of paper-3 and stops: cream at
+     the lightest point is 8.61:1, the band still reads as one colour, and the
+     wash is a single hue throughout. Never on type, and never two hues: see
+     CLAUDE.md.
+
+     NOT ON `.deep` ITSELF. Every page closes on a deep CTA band and then the
+     deep footer. Washing both would run the pair as light, dark, light, which
+     is a sawtooth down the end of every page rather than one slab with a
+     light in it. Only a navy band standing on its own takes this. */
+  .deep--wash {
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-navy),
+      color-mix(in srgb, var(--color-navy) 86%, var(--color-paper-3))
+    );
+  }
+
   /* Every page closes on a deep CTA band and then on the deep footer, so the
      two run together into one navy slab a thousand pixels tall with the
      wordmark floating somewhere in the middle of it. One hairline is enough to
@@ -1113,7 +1163,10 @@ body > * { position: relative; z-index: 1; }
   flex-direction: column;
   align-items: flex-end;
   gap: 1.4rem;
-  max-width: 30rem;
+  /* 34rem, not 30. The lead became the company's own description of itself on
+     2026-10-13 and is three times the length of the line it replaced; at 30rem
+     it set as seven ragged-left lines in the corner of a moving picture. */
+  max-width: 34rem;
   text-align: right;
 }
 .film-lead {

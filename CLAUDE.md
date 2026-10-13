@@ -93,8 +93,17 @@ typography. Sister brand to the show, not a new one.
 ### Hard rules
 
 - **Mobile first**, every section, every time. 320px to 2560px.
-- No gradients. No drop shadows on everything. No bouncing animations. No
-  auto-rotating carousels.
+- No gradients, with ONE bounded exception added 2026-10-13. A full-bleed band
+  may carry a vertical wash in a SINGLE hue, to give a tall flat surface some
+  light. It may never run across two hues, never sit on type, and the lightest
+  point of the band must measure at least 5.3:1 against the text it carries,
+  which is what the bench already measures at its brightest corner. The
+  client's creative director proposed one at #1c2851 to #556e8a; at the foot
+  of that, cream is 4.98:1, so it ships capped. See `.deep--wash` in
+  index.css. Everything else still holds: no gradient-filled headings, no
+  gradient as decoration, no second hue.
+- No drop shadows on everything. No bouncing animations. No auto-rotating
+  carousels.
 - Motion: one orchestrated entrance per page is expected, not one fade. A
   drawn line may draw itself, objects may assemble, a lamp may cross. What
   stays banned is anything that never stops: no ambient loops, no parallax

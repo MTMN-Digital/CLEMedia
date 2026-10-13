@@ -10,8 +10,8 @@ import { Hooks } from "@/components/story/Hooks";
 import { Thread } from "@/components/story/Thread";
 import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
-import { Button, Card, Container, Kicker, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconExternal } from "@/components/icons";
+import { Kicker, Card, Button, Section, TextLink, Container } from "@/components/ui";
+import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import type { AssetKey } from "@/lib/brand";
 
@@ -74,16 +74,16 @@ const LEDGER: { tag: string; line: string }[] = [
 
 /* The four people the prose names, in the order it names them. Six review
    stages exist and are linked, not restated: the Responsible AI page owns them. */
-const PEOPLE: { name: string; role: string; asset: AssetKey }[] = [
+const PEOPLE: { asset: AssetKey; role: string; name: string }[] = [
   { name: "Alan Compton", role: "Creative Director", asset: "person.alan" },
   { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
-  { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia" },
-  { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie" },
+  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia" },
+  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie" },
 ];
 
 /* Where the letter hands the reader. Three destinations, one line each, as
    rows on the deep band rather than cards. */
-const NEXT: { title: string; line: string; to?: string; href?: string }[] = [
+const NEXT: { href?: string; line: string; to?: string; title: string }[] = [
   { title: "The people who make it", line: "The full team and the advisory board, with their own biographies.", to: "/team" },
   { title: "How the work is made and reviewed", line: "The six stages an episode passes through, and where AI is and is not used.", to: "/ethical-ai" },
   { title: "The show itself", line: "Episodes and family activities live on the show's own site.", href: SITE.showUrl },
@@ -105,8 +105,8 @@ function Spread({
   className = "",
 }: {
   margin: ReactNode;
-  children: ReactNode;
   className?: string;
+  children: ReactNode;
 }) {
   return (
     /* Centred under 1024, where there is no margin column to sit against. A
@@ -132,7 +132,7 @@ function Spread({
    The width caps are lg-only on purpose. Under 1024px there is no margin
    column, the note is a full width line above the prose, and a 26ch cap there
    set a four word column down the left of a phone. */
-function Note({ children, className = "" }: { children: ReactNode; className?: string }) {
+function Note({ children, className = "" }: { className?: string; children: ReactNode }) {
   return <p className={`font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
 }
 

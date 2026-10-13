@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useLocation, NavLink } from "react-router-dom";
-import { SITE, NAV } from "@/lib/site";
+import { SITE, NAV, FOOTER_GROUPS } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
 import navMark from "@/assets/brand/cle-nav.webp";
 import { IconMail, IconExternal } from "@/components/icons";
@@ -200,8 +200,19 @@ function Header() {
  *
  * So it is two parts now. The real lockup hangs at the left on its own ropes,
  * from the top edge of the band, with the one sentence that says what the
- * company is. Everything a reader might click sits opposite it in two tight
- * groups: where to go on this site, and the two places that are not this site.
+ * company is. Everything a reader might click sits opposite it in tight
+ * groups rather than spread across the width.
+ *
+ * REGROUPED 2026-10-13, from the creative director's revision of the home
+ * page. He asks for four headed columns, which is the footer this one
+ * replaced and which his own client sent back. What is worth having is his
+ * GROUPING, not his grid: a reader does not want an alphabet of pages, they
+ * want the one their job is in. So the right pole now carries Explore,
+ * Company, Work with us and the two places that are not this site, still as
+ * a tight wrapped flex at the end of the band rather than four columns
+ * stretched over 1560px, and the real felted lockup stays where it is.
+ *
+ * It is no longer generated from NAV. See FOOTER_GROUPS in lib/site.ts.
  */
 function Footer() {
   return (
@@ -209,7 +220,7 @@ function Footer() {
        which is the difference between an object hung from the ceiling and an
        object floating. Clipped, so they stop at the band and do not reach up
        into whatever section the page happens to end on. */
-    <footer className="deep overflow-hidden">
+    <footer className="deep deep--wash overflow-hidden">
       <Container width="wide" className="pb-14 lg:pb-16">
         {/* Two poles, not four columns. The lockup and the sentence that says
             what the company is at one end, everything clickable at the other,
@@ -228,23 +239,24 @@ function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-x-14 gap-y-10 lg:pt-16">
-            <nav aria-label="Footer">
-              <p className="eyebrow">This site</p>
-              {/* Two columns of a single list, not two headed sections. Seven
-                  links in one tall column was most of the old footer's
-                  height, and splitting them under invented headings would be
-                  inventing an information architecture for a footer. */}
-              <ul className="mt-5 grid grid-cols-2 gap-x-10 gap-y-2.5">
-                {NAV.map((i) => (
-                  <li key={i.to}>
-                    <Link to={i.to} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
-                      {i.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          <div className="flex flex-wrap gap-x-12 gap-y-10 lg:pt-16">
+            {/* The headings are no longer invented: they are the client's
+                own, out of his deck. That is the difference between this and
+                the four columns that were sent back. */}
+            {FOOTER_GROUPS.map((g) => (
+              <nav key={g.title} aria-label={g.title}>
+                <p className="eyebrow">{g.title}</p>
+                <ul className="mt-5 space-y-2.5">
+                  {g.links.map((i) => (
+                    <li key={i.label}>
+                      <Link to={i.to} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
+                        {i.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
 
             <div>
               <p className="eyebrow">Elsewhere</p>

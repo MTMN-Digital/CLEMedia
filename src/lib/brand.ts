@@ -4,9 +4,11 @@
  * Filled 2026-09-20 from the BRAND TOOL KIT. Three image slots and all three
  * logos are live; the rest stay null deliberately.
  *
- * WHAT IS FILLED: `home.hero`, `story.garden` and `home.characters` are frames
- * from the animated show, and their alt text says so. They are not photographs
- * and must never be captioned as though they were.
+ * WHAT IS FILLED: `home.hero`, `story.garden`, `home.characters` and, from
+ * 2026-10-13, `show.meadow` and `show.snail` are frames from the animated
+ * show, and their alt text says so. They are not photographs and must never
+ * be captioned as though they were. Every one of them that appears full bleed
+ * carries a visible caption saying it is a frame.
  *
  * WHAT STAYS NULL, AND WHY: the stage 1 audit found the kit is almost entirely
  * AI-generated, including every file in PEOPLE/. So `story.lead`, `home.company`
@@ -83,10 +85,29 @@ const assets = {
   },
   "story.lead": {
     base: null,
-    alt: "Conor Sexton and Lydia Harding, founders of CLÉ Family Media",
+    alt: "Conor Sexton and Lydia Sexton, founders of CLÉ Family Media",
     width: 1680, height: 720,
     label: "Conor and Lydia. Real photography only: the kit has none.",
   },
+  /* Two frames the creative director's own revision of the home page carried,
+     cropped out of it at 3840 wide, 2026-10-13. They are not in the brand kit
+     as delivered and they are not on the show site, so this deck is the only
+     copy we hold; Alan has been asked for the originals. The deck burns a
+     label pill into the top left of every slide, so 240 rows come off the top,
+     which also leaves the 2:1 these are used at. */
+  "show.meadow": {
+    base: "/brand/show-meadow",
+    alt: "Finn and Fia looking over a leaf in a wildflower meadow at sunrise, with a ladybird on it, a scene from The Pawsitive Pugs and Pals",
+    width: 1600, height: 800,
+    label: "The meadow banner",
+  },
+  "show.snail": {
+    base: "/brand/show-snail",
+    alt: "A snail crossing a dewy garden path in low morning sun, a scene from The Pawsitive Pugs and Pals",
+    width: 1600, height: 800,
+    label: "The snail on the path",
+  },
+
   "story.garden": {
     base: "/brand/story-garden",
     alt: "The garden in The Pawsitive Pugs and Pals, with a rope swing hanging from an old tree",
@@ -165,8 +186,8 @@ const assets = {
   "person.conor": { base: "/brand/people/conor", alt: "Conor Sexton, founder of CLÉ Family Media", width: 440, height: 440, label: "Conor Sexton, portrait" },
   "person.alan": { base: "/brand/people/alan", alt: "Alan Compton, creative director", width: 440, height: 440, label: "Alan Compton, portrait" },
   "person.paula": { base: "/brand/people/paula", alt: "Paula Walshe PhD, education director", width: 440, height: 440, label: "Paula Walshe PhD, portrait" },
-  "person.lydia": { base: "/brand/people/lydia", alt: "Lydia Harding", width: 440, height: 440, label: "Lydia Harding, portrait" },
-  "person.kirstie": { base: "/brand/people/kirstie", alt: "Kirstie, child development consultant", width: 440, height: 440, label: "Kirstie, portrait" },
+  "person.lydia": { base: "/brand/people/lydia", alt: "Lydia Sexton", width: 440, height: 440, label: "Lydia Sexton, portrait" },
+  "person.kirstie": { base: "/brand/people/kirstie", alt: "Kirstie Harding, child development consultant", width: 440, height: 440, label: "Kirstie Harding, portrait" },
   "person.david": { base: "/brand/people/david", alt: "David Toth, strategic advisor", width: 440, height: 440, label: "David Toth, portrait" },
   "person.victoria": { base: "/brand/people/victoria", alt: "Victoria, graphic designer and illustrator", width: 440, height: 440, label: "Victoria, portrait" },
   /* Mansi is the one person in the review sequence the handoff sent no photo

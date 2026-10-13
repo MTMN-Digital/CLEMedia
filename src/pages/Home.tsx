@@ -8,6 +8,10 @@ import { EPISODES } from "@/lib/episodes";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
+import { Evidence } from "@/components/home/Evidence";
+import { Tested } from "@/components/home/Tested";
+import { BeyondScreen } from "@/components/home/BeyondScreen";
+import { GetInTouch } from "@/components/home/GetInTouch";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
 import {
   Button, Kicker, Section, Container, Lead,
@@ -199,6 +203,55 @@ export default function Home() {
         </Container>
       </Section>
 
+      {/* ═══ 2c. THE EVIDENCE, in the grove.
+
+          Three published results with the paper each comes from, and the
+          page's first use of the show's green as a room. It arrives here, on
+          the heels of the company's own argument, because the order of the
+          page is now: what we believe, how an episode is shaped, and then what
+          anyone else has found. See Evidence.tsx for why the third figure is
+          not the one the client's deck printed. ═══ */}
+      <Section labelledBy="evidence-h" pad={["open", "normal"]} className="bench grove">
+        <Container width="wide">
+          <Evidence headingId="evidence-h" />
+        </Container>
+      </Section>
+
+      {/* ═══ 2d. OUR OWN MEASUREMENT, and it is not in yet.
+
+          The one unfinished thing on the site, on purpose. Four figures drawn
+          as brackets at the size the real numbers will take, with a note that
+          removes itself when they land. See Tested.tsx. ═══ */}
+      <Section labelledBy="tested-h" pad="normal">
+        <Container width="wide">
+          <Tested headingId="tested-h" />
+        </Container>
+      </Section>
+
+      {/* The meadow, edge to edge, as the way into the series. The page's
+          second full-bleed frame and the first sight of Finn and Fia on it:
+          everything above this point is the company talking about its work,
+          and this is the work. Captioned for the same reason the garden above
+          is: it is a frame from the animation, not a photograph. */}
+      <Section as="div" pad="none">
+        <div className="relative h-[clamp(220px,34vw,460px)] overflow-hidden">
+          <Figure
+            asset="show.meadow"
+            fill
+            rounded="rounded-none"
+            position="center 42%"
+            sizes="100vw"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
+            <Container width="wide">
+              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
+                Finn and Fia. A frame from the series
+              </p>
+            </Container>
+          </div>
+        </div>
+      </Section>
+
       {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the
           trade. The felted show wordmark is a photograph of a real object on a
           lit felt backdrop, so it cannot be knocked out the way the CLE mark
@@ -264,12 +317,43 @@ export default function Home() {
         </div>
       </Section>
 
+      {/* ═══ 3b. BEYOND THE SCREEN. The Play and the Learn, which the page
+          argued for at the top and then never showed. See BeyondScreen. ═══ */}
+      <Section labelledBy="beyond-h" pad="normal">
+        <Container width="wide">
+          <BeyondScreen headingId="beyond-h" />
+        </Container>
+      </Section>
+
       {/* ═══ 4. WHO CHECKS IT. The sequence, not the staff list: see
           CallSheet for what it replaced and why. ═══ */}
       <Section labelledBy="people-h" pad={["tight", "normal"]}>
         <Container width="wide">
           <CallSheet headingId="people-h" />
         </Container>
+      </Section>
+
+      {/* The snail, edge to edge. The page's third and last frame, and the
+          one that argues the company's pace without a word: it is a garden
+          path at a snail's speed, directly above the band about how the work
+          is actually produced. */}
+      <Section as="div" pad="none">
+        <div className="relative h-[clamp(220px,34vw,460px)] overflow-hidden">
+          <Figure
+            asset="show.snail"
+            fill
+            rounded="rounded-none"
+            position="center 48%"
+            sizes="100vw"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pb-4 pt-16 sm:pb-5">
+            <Container width="wide">
+              <p className="text-right font-mono text-[11px] uppercase tracking-[0.16em] text-[#f3ece0]">
+                A frame from the series
+              </p>
+            </Container>
+          </div>
+        </div>
       </Section>
 
       {/* ═══ 5. THE AI POSITION. The site's single most important trust
@@ -340,27 +424,29 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 6. CONTACT, the one deep band. The two offers are different
-          things, so a rule stands between them rather than a gap. ═══ */}
-      <Section deep labelledBy="cta-h">
+      {/* ═══ 6. GET IN TOUCH, split three ways, on paper. The band it
+          replaces was one heading and one paragraph addressed to nobody; its
+          paragraph is still here, as the lead. See GetInTouch. ═══ */}
+      <Section labelledBy="cta-h" pad="normal">
         <Container width="wide">
-          <Settle className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <GetInTouch headingId="cta-h" />
+        </Container>
+      </Section>
+
+      {/* ═══ 7. THE CLOSE, and the page's one deep band. Just the sign-up:
+          it used to share the band with the contact copy, which is now a
+          section of its own, so this is a single short thing standing
+          between the page and the footer. ═══ */}
+      <Section deep labelledBy="updates-h" pad="tight">
+        <Container width="wide">
+          <Settle className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:items-start">
             <div>
-              <h2 id="cta-h" className="t-h2 max-w-[16ch]">Working with CLÉ Family Media</h2>
-              <p className="t-lead mt-6 max-w-[46ch]">
-                We are open to conversations with studios, distribution partners, educators and
-                press. If you are assessing the company, we would rather answer your questions
-                directly.
-              </p>
-              <div className="mt-9"><Button to="/contact">Send an enquiry<IconArrow size={16} /></Button></div>
-            </div>
-            <div className="lg:border-l lg:border-white/15 lg:pl-16">
-              <h3 className="t-h3">Occasional updates</h3>
-              <p className="t-body mt-3 max-w-[40ch]">
+              <h2 id="updates-h" className="t-h2 max-w-[14ch]">Occasional updates</h2>
+              <p className="t-body mt-4 max-w-[42ch]">
                 Production notes and company news, for adults. Infrequent, and easy to leave.
               </p>
-              <NotifyForm cta="Sign up" icon={<IconMail size={16} />} done="Thank you. We will be in touch when there is something worth sending." />
             </div>
+            <NotifyForm cta="Sign up" icon={<IconMail size={16} />} done="Thank you. We will be in touch when there is something worth sending." />
           </Settle>
         </Container>
       </Section>

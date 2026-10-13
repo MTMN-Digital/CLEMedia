@@ -10,10 +10,17 @@ import type { AssetKey } from "@/lib/brand";
    down but never embellished: no claim appears here that the handoff does not
    make, and the honours, titles and institutions are theirs verbatim.
 
-   Two things the handoff does not settle, both listed in QUESTIONS.md:
-   Kirstie's surname, which it never gives, and the job titles for Lydia, Alan
-   and Paula, which it leaves out while giving one for Conor, Kirstie and David.
-   The titles below are the ones the company was already using.
+   One thing the handoff does not settle, listed in QUESTIONS.md: the job
+   titles for Lydia, Alan and Paula, which it leaves out while giving one for
+   Conor, Kirstie and David. The titles below are the ones the company was
+   already using.
+
+   NAMES CORRECTED 2026-10-13 from the creative director's revision of the home
+   page, which is the newer document and which the client told us wins. It
+   gives Kirstie the surname the bio handoff never did, and it has Lydia as a
+   Sexton rather than a Harding. The one thing in it NOT applied is "Al
+   Compton": the bio handoff corrected that to Alan on 2026-10-01 and nothing
+   suggests it has changed back.
 
    MOVED HERE 2026-10-02 so the page can show the same information two ways:
    the stages with the faces answerable at each, and the people with the stages
@@ -90,7 +97,7 @@ export const TEAM: Member[] = [
     ],
   },
   {
-    name: "Lydia Harding",
+    name: "Lydia Sexton",
     role: "Executive Producer",
     asset: "person.lydia",
     named: [4],
@@ -102,7 +109,7 @@ export const TEAM: Member[] = [
     ],
   },
   {
-    name: "Kirstie",
+    name: "Kirstie Harding",
     role: "Child Development Consultant",
     asset: "person.kirstie",
     named: [4],

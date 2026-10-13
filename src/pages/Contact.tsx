@@ -1,12 +1,12 @@
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { type FormEvent, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
-import { Stage, useRoomEntry } from "@/components/render";
+import { useRoomEntry, Stage } from "@/components/render";
 import { Settle } from "@/components/Settle";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconExternal, IconMail } from "@/components/icons";
-import { Receipt, type Draft, type RouteId } from "@/components/contact/Receipt";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconExternal, IconArrow, IconMail } from "@/components/icons";
+import { type RouteId, Receipt, type Draft } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
 import type { AssetKey } from "@/lib/brand";
 
@@ -78,7 +78,7 @@ import type { AssetKey } from "@/lib/brand";
 /* `short` is what the pill carries and `label` is what the subject line and
    the confirmation say. A pill wide enough for "Partnerships and distribution"
    stops being a pill. */
-const ROUTES: { id: RouteId; short: string; label: string; blurb: string }[] = [
+const ROUTES: { label: string; blurb: string; short: string; id: RouteId }[] = [
   {
     id: "partnership",
     short: "Partnerships",
@@ -119,19 +119,19 @@ const ROUTES: { id: RouteId; short: string; label: string; blurb: string }[] = [
    Mansi has no portrait and gets no tile, no initial and no frame, which is
    the /team rule: an empty frame on a page about named people reads as a
    missing person. Her row is simply a different shape. */
-const FACES: { name: string; role: string; asset: AssetKey }[] = [
+const FACES: { asset: AssetKey; role: string; name: string }[] = [
   { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor" },
   { name: "Alan Compton", role: "Creative Director", asset: "person.alan" },
   { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
-  { name: "Lydia Harding", role: "Executive Producer", asset: "person.lydia" },
-  { name: "Kirstie", role: "Child Development Consultant", asset: "person.kirstie" },
+  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia" },
+  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie" },
 ];
 
 /* The four audiences the site is written for, each sent to the page that
    already answers them. Every destination is a real page of this site or the
    show's own; nothing here is a form, and nothing claims what the reader will
    find beyond what that page actually carries. */
-const ELSEWHERE: { who: string; title: string; line: string; to?: string; href?: string }[] = [
+const ELSEWHERE: { line: string; title: string; who: string; href?: string; to?: string }[] = [
   {
     who: "Investors and partners",
     title: "Our story",

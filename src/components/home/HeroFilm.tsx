@@ -308,9 +308,15 @@ export function HeroFilm() {
           aligned. Clustering it all bottom left, which is what this was,
           leaves three quarters of the picture doing nothing. */}
       <div className="film-copy">
+        {/* AGES, NOT THE COUNTRY, from 2026-10-13. The creative director's
+            revision marks the hero "children's edutainment · ages 3 to 5",
+            and he is right about which of the two a broadcaster scanning this
+            frame needs: Ireland is on the About page, in the footer and in the
+            schema, and the age band is the first thing anyone commissioning
+            children's media asks. */}
         <p className="film-eyebrow">
           Children&rsquo;s edutainment
-          <span>Ireland</span>
+          <span>Ages 3 to 5</span>
         </p>
 
         <div className="film-aside">
@@ -363,9 +369,17 @@ export function HeroFilm() {
         </h1>
 
         <div className="film-support">
+          {/* THE COMPANY, PLAINLY, from the creative director's revision. The
+              line this replaces described the work ("calm stories for young
+              children, and the activities that take them off the screen
+              afterwards") and never said what CLÉ is. The deck's whole thesis
+              is that this site should be less about the first show and more
+              about the company, and the hero is where that starts. The
+              headline above still carries the model. */}
           <p className="film-lead">
-            Calm stories for young children, and the activities that take them off the screen
-            afterwards.
+            CL&Eacute; Family Media is a children&rsquo;s production company led by specialists in
+            early childhood education and child development. We make calm, educational series for
+            ages 3 to 5, with play and learning materials for home and the classroom.
           </p>
           <div className="film-actions">
             <Button to="/ethical-ai">

@@ -370,6 +370,10 @@ Three things the document does not settle:
 
 1. **Kirstie's surname.** The document gives none. She is listed as "Kirstie"
    on the team page and the home page. The earlier handoff said Harding.
+   **ANSWERED 2026-10-13.** The creative director's home page revision names
+   her Kirstie Harding, which matches the earlier handoff. Applied everywhere.
+   That deck also moves Lydia from Harding to **Sexton**, which is applied on
+   the same instruction. **Resolved**, subject to Conor contradicting it.
 2. **Job titles for Alan, Lydia and Paula.** The document gives a title for
    Conor, Kirstie and David only. Creative Director, Executive Producer and
    Education Director are carried over from the earlier handoff and need each
@@ -436,11 +440,12 @@ that this site has never had, and cannot write on its own:
    from the company's own written account and start with Conor and Alan on
    concept and story. They are not the same list. The company's account wins
    unless Conor says it has changed.
-5. **Team names that disagree with the October handoff.** The deck says Conor
-   and Lydia **Sexton** and Kirstie **Harding**; the bio handoff this site was
-   built on says Lydia Harding and gives Kirstie no surname (question 32). The
-   deck also writes "Al Compton", which the handoff corrected to Alan. One of
-   the two documents is out of date and we need to know which.
+5. **Team names that disagree with the October handoff.**
+   **DECIDED 2026-10-13: the deck wins.** Lydia is now Lydia **Sexton** and
+   Kirstie is now Kirstie **Harding** everywhere on the site. The single thing
+   from the deck NOT applied is "Al Compton": the October bio handoff
+   explicitly corrected that to Alan, and a deck typo is the likelier
+   explanation than a man changing his name back. Say the word if it is not.
 6. **A safeguarding email address** in the footer, which does not exist yet.
 
 Two things in the deck that are mockup filler rather than instruction, flagged
