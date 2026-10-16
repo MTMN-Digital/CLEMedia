@@ -125,7 +125,14 @@ export function Evidence({ headingId }: { headingId: string }) {
               href={f.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="link-draw mt-6 inline-block font-mono text-[11.5px] uppercase tracking-[0.14em]"
+              /* `pt-4` with `mt-2` rather than `mt-6` on its own: the box is
+                 unchanged on the page and the target grows upward into the
+                 space that was margin. 11.5px of mono set a 19px high box,
+                 which is the one thing on this site measured under the 24px
+                 WCAG 2.2 target minimum. Top padding only, because
+                 `.link-draw` paints its rule at `background-position: 0 100%`
+                 and any bottom padding drops the underline off the word. */
+              className="link-draw mt-2 inline-block pt-4 font-mono text-[11.5px] uppercase tracking-[0.14em]"
             >
               {f.source}
             </a>

@@ -63,52 +63,71 @@ export function PeopleStrip({ people }: { people: Member[] }) {
   if (shown.length < 2) return null;
 
   return (
-    <ul
-      /* Scrolls sideways on a phone rather than wrapping to two ragged rows or
-         shrinking six faces to thumbnails again. `-mx-` plus matching padding
-         so the row bleeds to the band's edge as it scrolls. */
-      className="-mx-[var(--gutter)] mt-12 flex gap-4 overflow-x-auto px-[var(--gutter)] pb-1 sm:gap-5 lg:mx-0 lg:mt-16 lg:grid lg:overflow-visible lg:px-0"
-      /* ONE COLUMN PER FACE. This was `lg:grid-cols-6` while the row happened
-         to hold six; the seventh portrait would have dropped to a second row
-         on its own. Inline rather than a Tailwind class because the count is
-         data, and inert below `lg`, where the element is a flex row. */
-      style={{ gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` }}
-    >
-      {shown.map((p, i) => {
-        const m = MOUNT[i % MOUNT.length];
-        return (
-        <li key={p.name} className="w-[38vw] shrink-0 sm:w-[25vw] lg:w-auto">
-          <Stage
-            roll={m.roll}
-            tilt={m.tilt}
-            depth={m.depth}
-            /* ONE LAMP, 2026-10-09. The whole row was lit at -32, so six
-               portraits on one bench cast six parallel shadows and read as
-               six separate lights. Six columns above 1024; below that the
-               row scrolls, so the column index still reads left to right
-               along the strip, which is what the lamp is crossing. */
-            light={azimuthFor(i, shown.length)}
-            lift
-            radius="var(--radius-md)"
-          >
-            <Figure
-              asset={p.asset!}
-              rounded="rounded-[var(--radius-md)]"
-              className="aspect-square"
-              /* The source crops are 440 square, 880 at 2x, so a column on a
-                 1440 screen asks for about 200 and gets a real 2x image. */
-              sizes="(min-width: 1024px) 200px, 38vw"
-            />
-          </Stage>
-          {/* No hard-coded `text-ink`. The strip now sits on the bench, where
-              ink measured 2.17:1, and a component that names its own colour
-              cannot follow the surface it is put on. Inherited, it is ink on
-              paper and cream on the bench. */}
-          <p className="t-sm mt-4 font-bold leading-tight">{p.name}</p>
-          <p className="eyebrow eyebrow-xs mt-1">{p.role}</p>
-        </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul
+        /* Scrolls sideways on a phone rather than wrapping to two ragged rows or
+           shrinking six faces to thumbnails again. `-mx-` plus matching padding
+           so the row bleeds to the band's edge as it scrolls. */
+        className="-mx-[var(--gutter)] mt-12 flex gap-4 overflow-x-auto px-[var(--gutter)] pb-1 sm:gap-5 lg:mx-0 lg:mt-16 lg:grid lg:overflow-visible lg:px-0"
+        /* ONE COLUMN PER FACE. This was `lg:grid-cols-6` while the row happened
+           to hold six; the seventh portrait would have dropped to a second row
+           on its own. Inline rather than a Tailwind class because the count is
+           data, and inert below `lg`, where the element is a flex row. */
+        style={{ gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` }}
+      >
+        {shown.map((p, i) => {
+          const m = MOUNT[i % MOUNT.length];
+          return (
+          <li key={p.name} className="w-[38vw] shrink-0 sm:w-[25vw] lg:w-auto">
+            <Stage
+              roll={m.roll}
+              tilt={m.tilt}
+              depth={m.depth}
+              /* ONE LAMP, 2026-10-09. The whole row was lit at -32, so six
+                 portraits on one bench cast six parallel shadows and read as
+                 six separate lights. Six columns above 1024; below that the
+                 row scrolls, so the column index still reads left to right
+                 along the strip, which is what the lamp is crossing. */
+              light={azimuthFor(i, shown.length)}
+              lift
+              radius="var(--radius-md)"
+            >
+              <Figure
+                asset={p.asset!}
+                rounded="rounded-[var(--radius-md)]"
+                className="aspect-square"
+                /* The source crops are 440 square, 880 at 2x, so a column on a
+                   1440 screen asks for about 200 and gets a real 2x image. */
+                sizes="(min-width: 1024px) 200px, 38vw"
+              />
+            </Stage>
+            {/* No hard-coded `text-ink`. The strip now sits on the bench, where
+                ink measured 2.17:1, and a component that names its own colour
+                cannot follow the surface it is put on. Inherited, it is ink on
+                paper and cream on the bench. */}
+            <p className="t-sm mt-4 font-bold leading-tight">{p.name}</p>
+            <p className="eyebrow eyebrow-xs mt-1">{p.role}</p>
+          </li>
+          );
+        })}
+      </ul>
+      {/* The cue, below `lg` only, where the row scrolls. The face cut by
+          the band's edge is the real affordance, but it is also exactly
+          what a broken grid looks like, and the home page's filmstrip
+          already says this in the same voice. No `tabIndex` on the row to
+          go with it: there is nothing focusable inside it, and every name
+          and role in it is set out again in the dossier below, so a
+          keyboard never has to reach the end of the strip to get at
+          anything.
+
+          NO `opacity` ON IT. Dimmed to 0.7 this composites to 4.11:1 on
+          the olive, under AA, which is the trap `opacity-80` sprang on the
+          evidence band three days ago. Full cream is 6.44:1 flat and
+          5.39:1 under the lamp, and an 11px tracked mono line is already
+          subordinate to the 14px names above it without any help. */}
+      <p aria-hidden="true" className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] lg:hidden">
+        Scroll sideways for the rest
+      </p>
+    </>
   );
 }

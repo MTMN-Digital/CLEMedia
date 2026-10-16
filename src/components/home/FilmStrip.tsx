@@ -138,7 +138,10 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
               onClick={() => step(d)}
               disabled={d === -1 ? atStart : atEnd}
               aria-label={d === -1 ? "Previous episodes" : "Next episodes"}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-current/25 transition-opacity disabled:opacity-30"
+              /* 44px on a touch screen, 40 with a pointer. The rail is the
+                 one thing on the home page a thumb has to work, and these
+                 two are what it works it with. */
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-current/25 transition-opacity disabled:opacity-30 sm:h-10 sm:w-10"
             >
               <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
                 <path

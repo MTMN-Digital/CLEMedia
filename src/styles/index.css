@@ -1257,6 +1257,16 @@ body > * { position: relative; z-index: 1; }
   transition: border-color 220ms var(--ease-out), background 220ms var(--ease-out);
 }
 .film-restart:hover { border-color: rgba(253, 248, 237, 0.85); background: rgba(14, 11, 9, 0.85); }
+/* 44px once the pointer is a thumb. With a mouse these are 36 and 38, which
+   is a comfortable size for a cursor and a small one for a finger, and they
+   are the only controls on the page that sit over moving pictures: a missed
+   tap here restarts the film or unmutes it in a quiet room. The labels and
+   the ring are untouched, so the film does not get a heavier set of controls
+   on a desktop that did not need them. */
+@media (pointer: coarse) {
+  .film-btn { padding-block: 0.95rem; }
+  .film-restart { width: 2.75rem; height: 2.75rem; }
+}
 
 @media (max-width: 820px) {
   /* Paper, because the copy leaves the picture here and sits under it: left on

@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Button, Container, Section, TextLink } from "@/components/ui";
+import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { Contents, type ContentsRow } from "@/components/journal/Contents";
 import { Correction } from "@/components/journal/Correction";
-import { formatDate, resolveStrands, useJournal } from "@/components/journal/data";
+import { formatDate, useJournal, resolveStrands } from "@/components/journal/data";
 
 /* ============================================================================
    The journal index.
@@ -58,7 +58,12 @@ export default function Journal() {
             {/* Stacked below sm. Side by side, the two halves of the rail each
                 wrapped to two lines on a 390 screen and the right one lost its
                 alignment with the rule under it. */}
-            <div className="flex flex-col gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[11px]">
+            {/* 11.5px stacked, not 10.5. The size was taken down for a rail
+                that had to fit both halves on one 390 line, and then the rail
+                stopped doing that: stacked, each half has the whole sheet, so
+                the smallest type on the site was buying width nothing needed.
+                The side by side rail keeps the 11px it was set at. */}
+            <div className="flex flex-col gap-1.5 font-mono text-[11.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[11px]">
               <span>The journal of CL&Eacute; Family Media</span>
               <span className="tnum shrink-0 sm:text-right">
                 {posts.length > 0
@@ -264,7 +269,7 @@ export default function Journal() {
    is the only one already stated elsewhere on the site: the home page and the
    Responsible AI page both say nothing is generated and published
    automatically, and this applies the same rule to the writing. */
-const RULES: { title: string; line: string }[] = [
+const RULES: { line: string; title: string }[] = [
   {
     title: "Written by people here",
     line: "Every piece carries the name of whoever wrote it. Nothing on this journal is generated and published automatically, which is the same rule the episodes are made under.",

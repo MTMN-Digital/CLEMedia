@@ -270,6 +270,13 @@ reintroduces them:
    waits for the scroll to land.
 4. Failures print **after** their page's `h=` line. I misread this and spent a
    long time debugging `/shop`, which was never failing.
+5. **One sweep at a time, and never rebuild under a running one.** Added
+   2026-10-16. Two sweeps against one preview server, or a `vite build` while
+   a sweep is walking the pages it is about to photograph, produces nonsense
+   that looks exactly like real findings: one run that afternoon reported 23
+   contrast failures and 12 pages that never loaded, and the identical run on
+   its own a minute later returned 0 and 0. "Pages that never loaded" above
+   zero is the tell. Re-run before believing anything.
 
 Run it from a built preview:
 `npx vite preview --port 4318 --strictPort`, then
@@ -280,10 +287,31 @@ Run it from a built preview:
 
 ## 7. Current state
 
-Last full verification, 2026-10-09, from a built preview on port 4318: desktop
-and 390 sweeps both 0 overflow and 0 contrast failures across all thirteen
-pages, `hero.mjs` 0 failures over 8 frames, `hero-resume.mjs` PASS, typecheck
-and build clean including `api/`.
+Last full verification, 2026-10-16, from a built preview on port 4600: 1440,
+390 and 320 sweeps all 0 overflow and 0 contrast failures across all thirteen
+pages, typecheck and build clean including `api/`.
+
+**A mobile pass ran on 2026-10-16** and found four things the contrast and
+overflow sweeps cannot see, all now fixed. Worth knowing because the first is
+a trap anyone reusing the render kit will hit again:
+
+- `.rk-item::after` is the bench's shelf, absolutely positioned at the item's
+  bottom with `z-index: 1`. `.rk-corr` reuses `.rk-item` as a plain layout
+  column, so the shelf was being painted across the bottom of that column and
+  cutting the last line of text in it in half: on `/contact` at 390 the words
+  "Read who each of them is" were sliced through the middle. Killed on the
+  two rooms that are not benches.
+- The wall of faces was three across at every width, which on a phone is a
+  110px column. The portraits became thumbnails and, on `/app`, the sentence
+  under each reviewer set two or three words to the line. Two across below
+  30rem.
+- Three places set type below 11px: the mount captions at 9.5px, the journal
+  masthead rail at 10.5px, and the evidence citations in a 19px high box,
+  which is the only thing on the site that was under the 24px WCAG 2.2 target
+  size. All raised.
+- The team strip scrolls sideways on a phone and said so nowhere, so the face
+  cut by the band's edge read as a broken grid. It carries the filmstrip's
+  own cue now.
 
 Still open and waiting on Conor, both logged in `CONTENT-NEEDED.md`:
 

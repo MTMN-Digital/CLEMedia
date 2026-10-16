@@ -246,7 +246,14 @@ function Footer() {
             {FOOTER_GROUPS.map((g) => (
               <nav key={g.title} aria-label={g.title}>
                 <p className="eyebrow">{g.title}</p>
-                <ul className="mt-5 space-y-2.5">
+                {/* `space-y-4` on a phone, `space-y-2.5` once there is a
+                    pointer. A 14.5px link sets a 22px high box, and at 10px
+                    apart two of them are 32px centre to centre, which is
+                    inside the 24px WCAG 2.2 target spacing a thumb needs.
+                    Spacing rather than padding because `.link-draw` paints
+                    its rule at the bottom of the padding box, so padding
+                    drops the underline off the word. */}
+                <ul className="mt-5 space-y-4 sm:space-y-2.5">
                   {g.links.map((i) => (
                     <li key={i.label}>
                       <Link to={i.to} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
@@ -286,7 +293,7 @@ function Footer() {
             © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® and
             PupsPlayer™ are trade marks of CLÉ Family Media.
           </p>
-          <ul className="flex gap-6">
+          <ul className="flex flex-wrap gap-x-6 gap-y-3">
             {[
               ["/privacy", "Privacy"],
               ["/terms", "Terms"],

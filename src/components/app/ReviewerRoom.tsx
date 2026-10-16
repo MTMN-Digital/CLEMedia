@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { Figure } from "@/components/Figure";
-import { Stage, useRoomEntry } from "@/components/render";
+import { useRoomEntry, Stage } from "@/components/render";
 import type { AssetKey } from "@/lib/brand";
 
 /* The three reviewers mounted on the wall the way /contact mounts its five:
@@ -9,9 +9,13 @@ import type { AssetKey } from "@/lib/brand";
 
 export type Reviewer = { name: string; role: string; line: string; asset: AssetKey };
 
-/* Three across at every width: .rk-corr__people--row in render.css keeps the
+/* Three across from 30rem up: .rk-corr__people--row in render.css keeps the
    wide room from dropping to two, so a portrait's column is always
-   i % COLUMNS and the lamp reads it from there. */
+   i % COLUMNS and the lamp reads it from there. Below 30rem it IS two, since
+   a third of a phone is a 110px column and each of these carries a sentence
+   as well as a name: measured at 390 on 2026-10-16 that sentence was setting
+   two and three words to the line. The lamp keeps reading i % 3 there, which
+   is a few degrees of azimuth wrong on a 165px print and invisible. */
 const COLUMNS = 3;
 const LIGHT = [-26, -6, 16];
 
