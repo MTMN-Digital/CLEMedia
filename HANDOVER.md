@@ -325,6 +325,33 @@ Two traps found on the way, both now fixed and both worth knowing:
    placeholder: every null asset was a slot the page skipped. The Story page's
    two real dogs are the first, and the sweep caught it the same hour.
 
+**A layout pass ran on 2026-10-24**, after the review document went in, and
+four of its decisions are load bearing:
+
+- **Section eyebrows are gone.** Twenty-two of them: the mono uppercase label
+  parked above a heading ("What we believe", "The evidence", "Press"). David's
+  words were "the shit AI snarky eyebrows", and the global brief retired the
+  pattern by name on 2026-09-03. `Kicker` survives for four transactional
+  labels on `/download` and one on `/app`, which are status messages rather
+  than section furniture. Do not put them back.
+- **The header is a menu now.** Five items, with `About` holding Our story,
+  Our team, Responsible AI and Case study. It is a click menu, not a hover
+  one, with Escape, outside-click and route-change all closing it. The
+  alternative David asked about was merging `/story` and `/team`: measured at
+  about twenty-five phone screens, nearly double the longest page on the site,
+  so the pages stayed and the menu does the joining.
+- **The slip board centres its last row.** Five slips into three columns left
+  a hole at the right. The fix doubles the columns and spans two, which is
+  geometrically identical, and the selectors are written for any count so a
+  later edit to `PHASES` cannot silently break it. Watch the specificity: an
+  unbounded two-across rule also matched the fifth slip at the three-across
+  step and stacked the board down the left edge.
+- **The home page's contact band is no longer three equal columns.** Three
+  matched cards with three identical calls to action is the most recognisable
+  shape in generated web design, and the page was solving five sections as an
+  evenly divided grid. Broadcasters now takes the wide column because the
+  brief puts them first.
+
 **A mobile pass ran on 2026-10-16** and found four things the contrast and
 overflow sweeps cannot see, all now fixed. Worth knowing because the first is
 a trap anyone reusing the render kit will hit again:

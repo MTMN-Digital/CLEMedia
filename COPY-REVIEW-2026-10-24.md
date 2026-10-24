@@ -274,3 +274,40 @@ the obvious next piece of work and is not in this one.
 8. Everything the case study needs before the questionnaire can open:
    participant information, response handling and retention, and Paula's
    approval of the questions and of the Aistear and EYFS materials.
+
+---
+
+## Addendum: the layout pass, same day
+
+Four changes asked for after the review went in. No sentence was rewritten in
+this pass; it is layout and labels only.
+
+- **The eyebrows are gone.** Twenty-two of them, the small mono uppercase
+  label parked above a heading: "What we believe", "The evidence", "Press",
+  "Team and advisers", "Our story". Five survive, and all five are
+  transactional status rather than section furniture: four on the download
+  page after a payment, one naming the app.
+- **The header is a menu.** Five items instead of seven, with **About**
+  holding Our story, **Our team**, Responsible AI and Case study. It opens on
+  click rather than hover, so a thumb and a keyboard drive the same control,
+  and it closes on Escape, on an outside click and on arriving at a new page.
+- **Merging Our story and Our team was measured and rejected.** Together they
+  come to about twenty-five phone screens, nearly double the longest page on
+  the site, and most of the team page is seven full biographies that cannot be
+  cut. The pages stay and the menu does the joining.
+- **The five-slip board centres its last row** instead of leaving a hole at
+  the right of the second row.
+- **The home page's contact band is no longer three equal columns.**
+  Broadcasters now takes the wide column at heading size, with schools and
+  press beside it, because the brief puts distribution partners first. The
+  words "Get in touch" are no longer printed three times under three arrows.
+
+One thing deliberately left alone: the three research figures on the home page
+are also a row of three, but they are three real published results with their
+papers linked, and forcing a hierarchy on them would be inventing one.
+
+**The team page's heading changed as a consequence, not as a style choice.** It
+read "Who answers for every episode", which asserts the per-stage
+accountability the review withdrew. It now reads "The people who make every
+episode".
+

@@ -25,10 +25,11 @@ export const SITE = {
  *  that describes PupsPlayer's state changes together. */
 export const APP_LAUNCHED = false;
 
-/* The header. Two labels changed on 2026-10-13 to the creative director's own
-   wording, which is better: "About us" says what the page is where "Team" said
-   what is on it, and "Get in touch" is an invitation where "Contact" is a
-   filing category.
+/* The header. Labels follow the creative director's own wording from
+   2026-10-13 where it is better: "Get in touch" is an invitation where
+   "Contact" is a filing category. His "About us" held until 2026-10-24, when
+   the pair moved into a menu and "Our team" became the clearer of the two
+   inside it, with the menu itself carrying the "About".
 
    THREE OF HIS LABELS ARE NOT HERE, and it is not an oversight. "Our approach",
    "The series" and "Learning resources" have no page behind them anywhere in
@@ -36,15 +37,38 @@ export const APP_LAUNCHED = false;
    own home page. They are used in the footer, where a grouping belongs. If any
    of the three should become a real page, that is a sitemap decision and it is
    Conor's. QUESTIONS.md #35. */
+/* The header. One group and four links, from 2026-10-24.
+
+   WHY A GROUP AT ALL. It was seven flat links, which is one more than a 14.5px
+   bar holds comfortably and two more than it reads as a menu rather than a
+   list. The four pages about who the company is and how it works belong
+   together and now sit together, which also gives the case study a way in from
+   the top of the page instead of only from the footer.
+
+   THE ALTERNATIVE WAS MERGING /story AND /team into one page, which is what
+   David asked about. Measured before answering: 7,969px and 6,346px at 1440,
+   10,717px and 11,111px at 390. Merged that is about twenty-five phone
+   screens, nearly double the longest page on the site, and most of /team is
+   seven full biographies that cannot be cut. So the pages stay and the menu
+   does the joining. */
 export const NAV = [
-  { to: "/story", label: "Our story" },
-  { to: "/team", label: "About us" },
-  { to: "/ethical-ai", label: "Responsible AI" },
+  {
+    label: "About",
+    items: [
+      { to: "/story", label: "Our story" },
+      { to: "/team", label: "Our team" },
+      { to: "/ethical-ai", label: "Responsible AI" },
+      { to: "/case-study", label: "Case study" },
+    ],
+  },
   { to: "/journal", label: "Journal" },
   { to: "/app", label: "App" },
   { to: "/shop", label: "Shop" },
   { to: "/contact", label: "Get in touch" },
 ] as const;
+
+export type NavItem = { to: string; label: string };
+export type NavEntry = NavItem | { items: readonly NavItem[]; label: string };
 
 /* The footer, grouped the way the creative director's deck groups it:
    Explore / Company / Work with us, plus the two places that are not this
@@ -70,7 +94,7 @@ export const FOOTER_GROUPS = [
   {
     title: "Company",
     links: [
-      { to: "/team", label: "About us" },
+      { to: "/team", label: "Our team" },
       { to: "/ethical-ai", label: "How we use AI" },
       { to: "/journal", label: "Journal" },
     ],

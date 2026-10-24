@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { Button, Kicker, Section, Container, Lead } from "@/components/ui";
+import { Lead, Section, Container, Button } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { ADVISORS, PHASES, TEAM } from "@/components/team/people";
 import { StageSequence } from "@/components/team/StageSequence";
@@ -84,14 +84,13 @@ export default function Team() {
                 blank wall down the right of a tablet. */}
             <div className="mx-auto grid max-w-[64ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
               <div>
-                <Kicker>Team and advisers</Kicker>
                 {/* Three lines, not two. The right column of this spread is
                     345px of lead and note; a two line title left 250px of bare
                     wall under it whichever way the two were aligned. Set to
                     break at eleven characters the title is 210px tall, the two
                     columns very nearly match, and a display face gets to act
                     like one. */}
-                <h1 className="t-display mt-5 max-w-[11ch]">Who answers for every episode</h1>
+                <h1 className="t-display max-w-[13ch]">The people who make every episode</h1>
               </div>
               <div>
                 <Lead className="max-w-[46ch]">

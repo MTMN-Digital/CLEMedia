@@ -85,8 +85,7 @@ export function Evidence({ headingId }: { headingId: string }) {
     <>
       <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,30rem)] lg:items-end">
         <div>
-          <p className="eyebrow">The evidence</p>
-          <h2 id={headingId} className="t-h2 mt-5 max-w-[26ch]">
+          <h2 id={headingId} className="t-h2 max-w-[26ch]">
             What the research says about fast, chaotic media for young children
           </h2>
         </div>

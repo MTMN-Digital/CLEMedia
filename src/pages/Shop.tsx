@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
 import { Shelf } from "@/components/shop/Shelf";
@@ -101,8 +101,7 @@ export default function Shop() {
         <Container width="wide">
           <Settle className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-16 xl:gap-24">
             <div>
-              <Kicker>Shop</Kicker>
-              <h1 className="t-display mt-6 max-w-[13ch]">Things you print and put on the table.</h1>
+              <h1 className="t-display max-w-[13ch]">Things you print and put on the table.</h1>
               <Lead className="mt-7 max-w-[46ch]">
                 Colouring books, puzzle packs and activity sheets from{" "}
                 <em>The Pawsitive Pugs &amp; Pals&reg;</em>, for the kitchen table and for the

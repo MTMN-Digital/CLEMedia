@@ -5,7 +5,7 @@ import { Wipe } from "@/components/Wipe";
 import { ProductionFlat } from "@/components/ethical-ai/ProductionFlat";
 import { TheLine } from "@/components/ethical-ai/TheLine";
 import { ForTheChild } from "@/components/ethical-ai/ForTheChild";
-import { Container, Kicker, Button, Lead, Section, DisclosurePanel, TextLink } from "@/components/ui";
+import { Button, Section, Container, DisclosurePanel, Lead, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -131,8 +131,7 @@ export default function EthicalAi() {
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Settle>
-            <Kicker>Responsible AI</Kicker>
-            <h1 className="t-display mt-6 max-w-[17ch]">
+            <h1 className="t-display max-w-[17ch]">
               AI is a production tool. People remain responsible for the work.
             </h1>
             <div className="mt-9 grid gap-6 lg:grid-cols-2 lg:gap-16">

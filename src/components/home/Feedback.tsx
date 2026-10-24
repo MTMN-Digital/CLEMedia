@@ -1,5 +1,5 @@
 import { Settle } from "@/components/Settle";
-import { Lead, Kicker } from "@/components/ui";
+import { Lead } from "@/components/ui";
 
 /* ============================================================================
    Feedback from parents and educators.
@@ -48,8 +48,7 @@ export function Feedback({ headingId }: { headingId: string }) {
     <>
       <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,30rem)] lg:items-end">
         <div>
-          <Kicker>What people say</Kicker>
-          <h2 id={headingId} className="t-h2 mt-5 max-w-[24ch]">
+          <h2 id={headingId} className="t-h2 max-w-[24ch]">
             Feedback from parents and educators
           </h2>
         </div>

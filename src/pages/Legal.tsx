@@ -2,7 +2,7 @@ import { useRef, useState, useMemo, type ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Container, DisclosurePanel, Section, TextLink, Kicker } from "@/components/ui";
+import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -389,8 +389,7 @@ export default function Legal({ doc }: { doc: DocId }) {
         <Container width="wide">
           <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16">
             <div>
-              <Kicker>Legal</Kicker>
-              <h1 className="t-h1 mt-5 max-w-[16ch]">{d.title}</h1>
+              <h1 className="t-h1 max-w-[16ch]">{d.title}</h1>
               <p className="t-lead mt-6 max-w-[56ch] text-body">{d.intro}</p>
             </div>
             <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 font-mono text-[12px] leading-relaxed lg:pb-2 lg:text-right">

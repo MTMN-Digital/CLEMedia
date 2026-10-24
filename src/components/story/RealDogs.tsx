@@ -1,6 +1,6 @@
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
-import { Kicker, Card } from "@/components/ui";
+import { Card } from "@/components/ui";
 
 /* ============================================================================
    Meet the real Finn and Fia.
@@ -44,8 +44,7 @@ export function RealDogs({ headingId }: { headingId: string }) {
     <>
       <Settle className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,44ch)] lg:items-end lg:gap-16">
         <div>
-          <Kicker>The two they are named after</Kicker>
-          <h2 id={headingId} className="t-h2 mt-5 max-w-[18ch]">
+          <h2 id={headingId} className="t-h2 max-w-[18ch]">
             Meet the real Finn and Fia
           </h2>
         </div>

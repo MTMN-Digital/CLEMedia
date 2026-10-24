@@ -4,7 +4,7 @@ import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { useRoomEntry, Stage } from "@/components/render";
 import { Settle } from "@/components/Settle";
-import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type RouteId, Receipt, type Draft } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
@@ -225,8 +225,7 @@ export default function Contact() {
               their feet, which is the shape /team's opening already uses. */}
           <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
             <div>
-              <Kicker>Contact</Kicker>
-              <h1 className="t-display mt-5 max-w-[13ch]">Write to the people who make it</h1>
+              <h1 className="t-display max-w-[13ch]">Write to the people who make it</h1>
             </div>
             <Lead className="max-w-[46ch] lg:pb-1">
               Studios, distributors, investors, educators and press. Choose what this is about,

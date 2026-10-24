@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { useRoomEntry, Stage } from "@/components/render";
 import { Settle } from "@/components/Settle";
-import { Kicker, Lead, TextLink } from "@/components/ui";
+import { TextLink, Lead } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { PHASES } from "@/components/team/people";
 
@@ -62,8 +62,7 @@ export function CallSheet({ headingId }: { headingId: string }) {
           below arrives as a scene rather than as a box with a title in it. */}
       <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
         <div>
-          <Kicker>How the work gets made</Kicker>
-          <h2 id={headingId} className="t-h2 mt-4 max-w-[16ch]">
+          <h2 id={headingId} className="t-h2 max-w-[16ch]">
             Five people read every draft
           </h2>
         </div>

@@ -1,5 +1,5 @@
+import { Link } from "react-router-dom";
 import { Settle } from "@/components/Settle";
-import { TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -24,7 +24,25 @@ import { IconArrow } from "@/components/icons";
 
    ON PAPER. The deck puts it on tan and so does this. The site spends its one
    deep band on the close, which is now the sign-up directly above the footer.
-   ========================================================================== */
+
+   ── NOT THREE EQUAL COLUMNS ANY MORE, 2026-10-24 ──────────────────────────
+   It was three columns of a third each, every one carrying a heading, a
+   sentence and the words "Get in touch" under an arrow. Three matched cards
+   with three identical calls to action is the single most recognisable shape
+   in generated web design, and the home page was already solving four other
+   sections as an evenly divided grid, so the whole page read as one layout
+   applied five times.
+
+   WHAT REPLACED IT IS A DECISION, which is the only thing that ever fixes a
+   default. These three readers are not equal: the brief puts investors and
+   distribution partners at the top of the audience list and press at the
+   bottom. So broadcasters take the wide column at heading size and the other
+   two stack beside them, and the page says who it most wants to hear from
+   instead of pretending it does not mind.
+
+   THE WHOLE ROW IS THE LINK, so the words "Get in touch" are not printed
+   three times under three arrows. Same pattern as the routes on the 404 page,
+   which this site already had and should have been reusing. ========== */
 
 const ROUTES = [
   {
@@ -46,8 +64,7 @@ export function GetInTouch({ headingId }: { headingId: string }) {
     <>
       <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
         <div>
-          <p className="eyebrow">Get in touch</p>
-          <h2 id={headingId} className="t-display mt-6 max-w-[12ch]">
+          <h2 id={headingId} className="t-display max-w-[12ch]">
             Contact CLÉ Family Media.
           </h2>
         </div>
@@ -57,19 +74,39 @@ export function GetInTouch({ headingId }: { headingId: string }) {
         </p>
       </Settle>
 
-      <Settle className="hairline mt-14 grid gap-x-12 gap-y-10 pt-10 md:grid-cols-3 lg:mt-20 lg:gap-x-16">
-        {ROUTES.map((r) => (
-          <div key={r.who}>
-            <h3 className="t-h3 max-w-[16ch]">{r.who}</h3>
-            <p className="t-body mt-4 max-w-[34ch]">{r.line}</p>
-            <p className="mt-6">
-              <TextLink to="/contact">
-                Get in touch<IconArrow size={15} />
-              </TextLink>
-            </p>
-          </div>
-        ))}
+      <Settle className="hairline mt-14 grid gap-x-16 gap-y-10 pt-10 lg:mt-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        {/* The one the brief puts first, at the size that says so. */}
+        <Link to="/contact" className="group block">
+          {/* The arrow is INLINE, after the last word. Laid out as a flex
+              sibling it sat at the right edge of a 13ch block, which on a two
+              line heading left it stranded in the middle of the band with
+              nothing either side of it. */}
+          <span className="t-h2 block max-w-[14ch] font-display">
+            {ROUTES[0].who}
+            <span className="ml-3 inline-block translate-y-[0.1em] text-muted transition-colors group-hover:text-red-deep">
+              <IconArrow size={20} />
+            </span>
+          </span>
+          <span className="t-lead mt-5 block max-w-[38ch] text-body">{ROUTES[0].line}</span>
+        </Link>
+
+        <ul className="grid content-start gap-7">
+          {ROUTES.slice(1).map((r) => (
+            <li key={r.who} className="hairline pt-7 first:border-t-0 first:pt-0 lg:first:border-t lg:first:pt-7">
+              <Link to="/contact" className="group block">
+                <span className="flex items-start justify-between gap-5">
+                  <span className="t-h3 max-w-[18ch]">{r.who}</span>
+                  <span className="mt-1 shrink-0 text-muted transition-colors group-hover:text-red-deep">
+                    <IconArrow size={16} />
+                  </span>
+                </span>
+                <span className="t-body mt-3 block max-w-[34ch]">{r.line}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </Settle>
+
     </>
   );
 }

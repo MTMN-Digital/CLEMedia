@@ -36,8 +36,7 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
     <>
       <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
         <div>
-          <p className="eyebrow">Beyond the screen</p>
-          <h2 id={headingId} className="t-display mt-6 max-w-[11ch]">
+          <h2 id={headingId} className="t-display max-w-[11ch]">
             An online and offline balance.
           </h2>
         </div>

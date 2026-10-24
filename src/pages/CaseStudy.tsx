@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Section, TextLink, Container, Kicker, Lead } from "@/components/ui";
+import { Container, Section, Lead, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
 import { EpisodeSlate } from "@/components/home/EpisodeSlate";
@@ -67,8 +67,7 @@ export default function CaseStudy() {
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-end lg:gap-20">
             <div>
-              <Kicker>Case study · Ireland and England</Kicker>
-              <h1 id="cs-h" className="t-display mt-6 max-w-[14ch]">A case study across two curricula</h1>
+              <h1 id="cs-h" className="t-display max-w-[14ch]">A case study across two curricula</h1>
               <Lead className="mt-7 max-w-[54ch]">
                 CLÉ Family Media is running a case study with early years educators in Ireland and in
                 England. Educators use one episode of <em>The Pawsitive Pugs &amp; Pals</em>&reg;, and

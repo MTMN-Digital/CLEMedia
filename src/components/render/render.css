@@ -336,7 +336,11 @@
    1090px one. A 1024px screen stays two by two, where each plate is still
    wide enough for the felted lettering and the label card to read. */
 @container studio (min-width: 32rem) {
-  .rk-bench { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Four columns spanning two, for the same reason and with the same
+     geometry as the board rule further down: it is the only way to put a
+     lone trailing slip in the middle instead of hard left. */
+  .rk-bench { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .rk-bench > * { grid-column: span 2; }
 }
 @container studio (min-width: 58rem) {
   .rk-bench { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -363,6 +367,12 @@
 }
 @container studio (min-width: 32rem) and (max-width: 57.98rem) {
   .rk-item:nth-child(2n)::after { display: none; }
+  /* Centre a lone trailing slip. BOUNDED to this step on purpose: unbounded,
+     this also matched the fifth slip at the three-across step below, where
+     the board had already pinned the fourth to column 2. Two slips forced to
+     one column stack, and the board came out 3, then 1, then 1 down the left
+     edge. Photographed at 1440 on 2026-10-24. */
+  .rk-bench > :nth-child(2n + 1):last-child { grid-column: 2 / span 2; }
 }
 @container studio (min-width: 58rem) {
   .rk-item:not(:nth-child(4n + 1))::after { display: none; }
@@ -514,8 +524,25 @@
 .rk-board .rk-bench {
   counter-reset: none;
 }
+/* THE LAST ROW IS CENTRED, 2026-10-24. The board went from six slips to five
+   when the client's review replaced the six-stage account, and five into three
+   columns leaves a hole at the right of the second row that reads as a missing
+   card rather than as a short row.
+
+   DOUBLE THE COLUMNS AND SPAN TWO. Six columns of 1fr with every slip spanning
+   two is geometrically identical to three columns: a slip is `2 * col + gap`,
+   which works out to `(W - gap) / 2` either way, so nothing resizes. What it
+   buys is half-column positions, which is what centring an odd row needs.
+
+   WRITTEN FOR ANY COUNT, not for five. The first selector catches a row with
+   two left over, the second a row with one, so a board of 4, 5, 7 or 8 all
+   centre their tail and a board of 3, 6 or 9 is untouched. A later edit to
+   PHASES cannot silently break the layout. */
 @container studio (min-width: 58rem) {
-  .rk-board .rk-bench { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rk-board .rk-bench { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .rk-board .rk-bench > * { grid-column: span 2; }
+  .rk-board .rk-bench > :nth-child(3n + 1):nth-last-child(2) { grid-column: 2 / span 2; }
+  .rk-board .rk-bench > :nth-child(3n + 1):last-child { grid-column: 3 / span 2; }
   /* One ledge per row of three, and the wall's four-up rule has to be undone
      before this one lands or the second row loses its shelf. */
   .rk-board .rk-item:not(:nth-child(4n + 1))::after { display: block; }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconDownload, IconArrow } from "@/components/icons";
 import { Settle } from "@/components/Settle";
 import { Docket } from "@/components/shop/Docket";
@@ -126,8 +126,7 @@ export default function ShopProduct() {
         <Section>
           <Container width="wide">
             <div className="max-w-[46ch]">
-              <Kicker>Shop</Kicker>
-              <h1 className="t-display mt-6 max-w-[16ch]">We could not load this one</h1>
+              <h1 className="t-display max-w-[16ch]">We could not load this one</h1>
               {/* NOT "not on the shelf". A request that failed has established
                   nothing about whether this file exists, and telling somebody
                   their link is wrong when the database simply did not answer
@@ -163,8 +162,7 @@ export default function ShopProduct() {
           <Container width="wide">
             <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-center lg:gap-20">
               <div>
-                <Kicker>Shop</Kicker>
-                <h1 className="t-display mt-6 max-w-[14ch]">That one is not on the shelf</h1>
+                <h1 className="t-display max-w-[14ch]">That one is not on the shelf</h1>
                 <Lead className="mt-7 max-w-[46ch]">
                   Either the link is wrong, or the file has been taken off sale. Nothing was
                   charged, and if you already bought it your download link still works for its

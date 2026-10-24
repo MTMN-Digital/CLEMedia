@@ -15,7 +15,7 @@ import { BeyondScreen } from "@/components/home/BeyondScreen";
 import { GetInTouch } from "@/components/home/GetInTouch";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
 import {
-  Button, Kicker, Section, Container, Lead,
+  Lead, Section, Container, Button,
 } from "@/components/ui";
 import { IconMail, IconArrow } from "@/components/icons";
 
@@ -130,8 +130,7 @@ export default function Home() {
                 below is two columns rather than three. */}
             <Wipe className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-end xl:gap-x-24">
               <div>
-                <Kicker>What we believe</Kicker>
-                <h2 id="thesis-h" className="t-display mt-6 max-w-[17ch]">
+                <h2 id="thesis-h" className="t-display max-w-[17ch]">
                   We are not going to tell anyone their child watches too much television.
                 </h2>
               </div>
@@ -390,8 +389,7 @@ export default function Home() {
       <Section labelledBy="ai-h" pad="open" className="wall">
         <Container width="wide">
           <Settle>
-            <Kicker>Responsible AI</Kicker>
-            <h2 id="ai-h" className="t-display mt-6 max-w-[17ch]">
+            <h2 id="ai-h" className="t-display max-w-[17ch]">
               AI is a production tool. People remain responsible for the work.
             </h2>
           </Settle>

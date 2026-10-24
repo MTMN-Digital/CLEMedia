@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
-import { Container, Kicker, Section } from "@/components/ui";
-import { IconArrow, IconExternal } from "@/components/icons";
+import { Container, Section } from "@/components/ui";
+import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
@@ -34,7 +34,7 @@ import { SITE } from "@/lib/site";
    interruption, not a destination.
    ========================================================================== */
 
-const ROUTES_BACK: { title: string; line: string; to?: string; href?: string }[] = [
+const ROUTES_BACK: { href?: string; line: string; to?: string; title: string }[] = [
   { title: "The home page", line: "What the company is, and what it makes.", to: "/" },
   { title: "Our story", line: "Conor Sexton on why he started the company.", to: "/story" },
   { title: "Contact", line: "Partnership, press, educators, or anything else.", to: "/contact" },
@@ -47,7 +47,7 @@ const ROUTES_BACK: { title: string; line: string; to?: string; href?: string }[]
 
 /* The trail across the empty frame. Opacity falls to the right: the animal is
    on its way out of shot, which is the whole joke and the whole apology. */
-const PAWS: { x: number; y: number; r: number }[] = [
+const PAWS: { x: number; r: number; y: number }[] = [
   { x: 4, y: 112, r: -8 },
   { x: 48, y: 98, r: 6 },
   { x: 92, y: 106, r: -6 },
@@ -60,7 +60,7 @@ const PAWS: { x: number; y: number; r: number }[] = [
 ];
 
 /** One paw, at the same proportions as the trail in `graphics.tsx`. */
-function Paw({ x, y, r, o }: { x: number; y: number; r: number; o: number }) {
+function Paw({ x, y, r, o }: { o: number; r: number; x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y}) rotate(${r}) scale(2.1)`} opacity={o}>
       <ellipse cx="0" cy="4" rx="5" ry="4.3" />
@@ -116,8 +116,7 @@ export default function NotFound() {
         <Container width="wide">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:gap-20">
             <Settle>
-              <Kicker>404, page not found</Kicker>
-              <h1 className="t-display mt-5 max-w-[12ch]">That page has wandered off</h1>
+              <h1 className="t-display max-w-[12ch]">That page has wandered off</h1>
               <p className="t-lead mt-5 max-w-[42ch] text-body">
                 The link may be old, or we may have moved something. Everything below is still
                 where it should be.

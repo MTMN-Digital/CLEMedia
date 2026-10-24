@@ -12,7 +12,7 @@ import { Hooks } from "@/components/story/Hooks";
 import { Thread } from "@/components/story/Thread";
 import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
-import { Kicker, Card, Button, Section, TextLink, Container } from "@/components/ui";
+import { TextLink, Button, Container, Section, Card } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import { TEAM } from "@/components/team/people";
@@ -188,8 +188,7 @@ export default function Story() {
               </Note>
             </div>
             <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
-              <Kicker>Our story</Kicker>
-              <h1 className="t-display mt-5 max-w-[15ch]">I did not set out to start a media company.</h1>
+              <h1 className="t-display max-w-[15ch]">I did not set out to start a media company.</h1>
             </div>
           </Settle>
           {/* The rule takes the same cap as the masthead above it. Left at the
@@ -472,8 +471,7 @@ export default function Story() {
                 of prose here for a heading to track, and a sticky note beside a
                 600px film just slides about for no reason. */}
             <div className="lg:pt-12">
-              <p className="eyebrow">In his own words</p>
-              <p className="mt-4 font-mono text-[12px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
+              <p className="font-mono text-[12px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
                 The film starts muted. Turn the sound on when you are ready to, and the captions
                 are there whether you do or not. Nothing on this site starts talking at you.
               </p>

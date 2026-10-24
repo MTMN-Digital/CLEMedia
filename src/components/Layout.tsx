@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useLocation, NavLink } from "react-router-dom";
 import { SITE, NAV, FOOTER_GROUPS } from "@/lib/site";
+import type { NavEntry } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
 import navMark from "@/assets/brand/cle-nav.webp";
 import { IconMail, IconExternal } from "@/components/icons";
@@ -20,6 +21,88 @@ function ShowSiteLink({ className = "" }: { className?: string }) {
       <IconExternal size={13} />
       <span className="sr-only">(opens in a new tab)</span>
     </a>
+  );
+}
+
+/* ============================================================================
+   The one grouped item in the header.
+
+   A CLICK MENU, NOT A HOVER ONE. A hover menu has no equivalent on a touch
+   screen, opens by accident on the way to the link beside it, and gives a
+   keyboard nothing to open. This opens on click, closes on Escape, on an
+   outside click and on arrival at a new page, and reports its state through
+   `aria-expanded`, so a pointer, a thumb and a keyboard all drive the same
+   control.
+
+   IT KNOWS WHEN YOU ARE INSIDE IT. The trigger takes the active colour when
+   the current route is one of its own, which is the thing a grouped item
+   usually loses: on a flat bar the page you are on is underlined, and in a
+   menu it disappears behind a word that never changes.
+   ========================================================================== */
+function NavGroup({ label, items }: { items: readonly { to: string; label: string }[]; label: string }) {
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const box = useRef<HTMLDivElement>(null);
+  const inside = items.some((i) => pathname === i.to || pathname.startsWith(`${i.to}/`));
+
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: MouseEvent) => {
+      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", away);
+    document.addEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("mousedown", away);
+      document.removeEventListener("keydown", key);
+    };
+  }, [open]);
+
+  return (
+    <div ref={box} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className={`flex items-center gap-1.5 font-body text-[14.5px] font-medium transition-colors ${
+          inside ? "text-red-deep" : "hover:text-ink"
+        }`}
+      >
+        {label}
+        <svg
+          width="10" height="7" viewBox="0 0 10 7" aria-hidden="true"
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          <path d="M1 1.5L5 5.5L9 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && (
+        /* Raised paper on the bar's own cream, with the room's shadow under
+           it. Not glass: the header is the one surface on this site that must
+           never let what is beneath it read through. */
+        <ul
+          className="absolute left-0 top-[calc(100%+0.85rem)] z-20 min-w-[13rem] rounded-[var(--radius-sm)] border bg-raised py-1.5 shadow-[0_12px_28px_-12px_rgba(60,50,28,0.3)]"
+          style={{ borderColor: "var(--color-rule)" }}
+        >
+          {items.map((i) => (
+            <li key={i.to}>
+              <NavLink
+                to={i.to}
+                className={({ isActive }) =>
+                  `block px-4 py-2.5 font-body text-[14.5px] ${isActive ? "text-red-deep" : "text-body hover:text-ink"}`
+                }
+              >
+                {i.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -118,20 +201,26 @@ function Header() {
 
         <nav aria-label="Main" className="ml-auto hidden lg:block">
           <ul className="flex items-center gap-7">
-            {NAV.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `link-draw font-body text-[14.5px] font-medium transition-colors ${
-                      isActive ? "text-red-deep" : "hover:text-ink"
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
+            {(NAV as readonly NavEntry[]).map((item) =>
+              "items" in item ? (
+                <li key={item.label}>
+                  <NavGroup label={item.label} items={item.items} />
+                </li>
+              ) : (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `link-draw font-body text-[14.5px] font-medium transition-colors ${
+                        isActive ? "text-red-deep" : "hover:text-ink"
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ),
+            )}
           </ul>
         </nav>
 
@@ -164,18 +253,33 @@ function Header() {
         <nav id="mobile-nav" aria-label="Main" className="border-b border-[var(--color-rule)] bg-[rgba(245,236,217,0.97)] lg:hidden">
           <Container width="wide">
             <ul className="pb-3">
-              {NAV.map((item) => (
-                <li key={item.to} className="hairline">
-                  <NavLink
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `block py-3.5 font-body text-[16px] font-medium ${isActive ? "text-red-deep" : ""}`
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                </li>
-              ))}
+              {(NAV as readonly NavEntry[]).flatMap((item) =>
+                "items" in item
+                  ? item.items.map((i) => (
+                      <li key={i.to} className="hairline">
+                        <NavLink
+                          to={i.to}
+                          className={({ isActive }) =>
+                            `block py-3.5 font-body text-[16px] font-medium ${isActive ? "text-red-deep" : ""}`
+                          }
+                        >
+                          {i.label}
+                        </NavLink>
+                      </li>
+                    ))
+                  : [
+                      <li key={item.to} className="hairline">
+                        <NavLink
+                          to={item.to}
+                          className={({ isActive }) =>
+                            `block py-3.5 font-body text-[16px] font-medium ${isActive ? "text-red-deep" : ""}`
+                          }
+                        >
+                          {item.label}
+                        </NavLink>
+                      </li>,
+                    ],
+              )}
               <li className="py-4">
                 <ShowSiteLink className="link-draw inline-flex font-body text-[16px] font-bold text-red-deep" />
               </li>

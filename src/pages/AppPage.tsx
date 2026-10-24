@@ -12,7 +12,7 @@ import {
   PupsPlayerWalkthrough,
 } from "@/components/app/PupsPlayerWalkthrough";
 import { EPISODES, RELEASED } from "@/lib/episodes";
-import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconExternal, IconBell, IconArrow } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
 import { APP_LAUNCHED } from "@/lib/site";
@@ -148,8 +148,7 @@ export default function AppPage() {
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
             <div>
-              <Kicker>{APP_LAUNCHED ? "PupsPlayer™" : "PupsPlayer™ · In development"}</Kicker>
-              <h1 id="app-h" className="t-display mt-6 max-w-[14ch]">Watch, play and learn in one place</h1>
+              <h1 id="app-h" className="t-display max-w-[14ch]">Watch, play and learn in one place</h1>
               <Lead className="mt-6 max-w-[54ch]">
                 PupsPlayer™ will hold the whole Watch, Play, Learn model: ad-free episodes of{" "}
                 <em>The Pawsitive Pugs &amp; Pals</em>®, the songs, puzzles and games built from each

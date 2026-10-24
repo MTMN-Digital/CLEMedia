@@ -4,7 +4,7 @@ import { Settle } from "@/components/Settle";
 import { StudioWall } from "@/components/render";
 import { NoStrip } from "@/components/media/NoStrip";
 import { Wipe } from "@/components/Wipe";
-import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
 import type { MediaItem } from "@/lib/types";
@@ -212,8 +212,7 @@ export default function Media() {
         <Container>
           <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
             <div className="lg:pt-3">
-              <Kicker>Press</Kicker>
-              <p className="mt-4 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
+              <p className="font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
                 For anyone writing about the company or the series.
               </p>
             </div>

@@ -3,10 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { Button, Container, Section, TextLink } from "@/components/ui";
+import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { PostBody } from "@/components/journal/PostBody";
-import { STRANDS, formatDate, usePost } from "@/components/journal/data";
+import { STRANDS, usePost, formatDate } from "@/components/journal/data";
 import { SITE } from "@/lib/site";
 import type { Category, Post } from "@/lib/types";
 
@@ -58,7 +58,7 @@ export default function JournalPost() {
 /* ----------------------------------------------------------------------------
    The grid. Shared by the header and the body so they sit on one margin.
 ---------------------------------------------------------------------------- */
-function Spread({ margin, children }: { margin: ReactNode; children: ReactNode }) {
+function Spread({ margin, children }: { children: ReactNode; margin: ReactNode }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-16 xl:grid-cols-[15rem_minmax(0,1fr)] xl:gap-24">
       <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
@@ -81,7 +81,7 @@ function BackRail() {
   );
 }
 
-function MarginItem({ label, value }: { label: string; value: ReactNode }) {
+function MarginItem({ label, value }: { value: ReactNode; label: string }) {
   return (
     <div>
       <dt className="eyebrow eyebrow-sm">{label}</dt>
@@ -95,9 +95,9 @@ function Article({
   category,
   siblings,
 }: {
+  siblings: Post[];
   post: Post;
   category: Category | null;
-  siblings: Post[];
 }) {
   const date = formatDate(post.published_at);
   const strand = category?.name ?? null;
@@ -274,8 +274,7 @@ function Close() {
       <Container width="wide">
         <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end lg:gap-20">
           <div>
-            <p className="eyebrow">Notes from the studio</p>
-            <h2 className="t-h2 mt-5 max-w-[16ch]">The journal of CL&Eacute; Family Media</h2>
+            <h2 className="t-h2 max-w-[16ch]">The journal of CL&Eacute; Family Media</h2>
           </div>
           <div>
             <p className="t-body max-w-[46ch] opacity-85">
@@ -338,8 +337,7 @@ function Missing({ slug }: { slug?: string }) {
             </Settle>
 
             <div className="lg:pt-3">
-              <p className="eyebrow">The four strands</p>
-              <ul className="mt-4 border-t border-rule">
+              <ul className="border-t border-rule">
                 {STRANDS.map((s) => (
                   <li
                     key={s.slug}
