@@ -55,7 +55,7 @@ const SUBJECTS: { topic: string; to: string; line: string; cta: string }[] = [
   },
   {
     topic: "Watch, Play, Learn",
-    line: "Why an episode is the beginning of the thing rather than the whole of it, and what the education side of the company checks before a script exists.",
+    line: "Why an episode is written to start something rather than to fill the time, and what the education side of the company checks before a script exists.",
     to: "/story",
     cta: "Read the story",
   },

@@ -821,3 +821,74 @@ site, and only an original fixes those:
 | **A wider original of the chicken and pugs frame** | ❌ | `/app` | `home.characters` is 1280x800 and Fia, the black pug, is cut off at the right edge **in the supplied file**. Nothing the site does can put her back. The frame at its native 16:9 would |
 | **Native-resolution originals of the meadow and the snail** | ⚠️ | Home | Both were lifted from the revised home page deck at 3200x1600 and cropped to 2:1 on export. They are sharp and they work, but they are a screenshot of a slide rather than a frame out of the edit. The originals from the BRAND TOOL KIT would be better |
 | **A native cut of the bluebells frame** | ⚠️ | Home | `home.hero` stopped being a picture in the column on 2026-10-13 and became the ground the research figures stand on, so it is back at its 4:3 master and `object-cover` takes what the band needs. No crop of ours ships any more. Still worth having the original from the BRAND TOOL KIT rather than our optimised export, because a background at 1920 wide is asking more of the file than a 960 column did |
+
+---
+
+## The review document, 22 October 2026
+
+Conor's "CLE Family Media Website Review" and its covering email. What it
+settled, and what it opened. Applied to the site on 2026-10-24.
+
+### Closed by the document
+
+| Item | Now |
+|---|---|
+| **Victoria's surname** | **Buchkova.** Open since 2026-10-01, when she joined as "Victoria". Her title is confirmed as Graphic Designer and Illustrator, and her contribution as the games and the puzzles |
+| **Alan's title** | **Head of Creative Development**, replacing the Creative Director the site had been using unconfirmed |
+| **Paula's title** | **Chief Education Advisor**, replacing Education Director |
+| **Lydia's title** | **Company Secretary**, replacing Executive Producer. She also contributes to the script and episode reviews |
+| **Mansi** | **Production Assistant**, developing the nursery rhymes. The first public description of her the company has given |
+| **Aistear or EYFS** | **Both.** They are the two country routes of the cross-border case study, Ireland and England, and not a choice between frameworks |
+| **The six review stages** | **Withdrawn.** Replaced by the five-phase account the document sets out. See `src/components/team/people.ts` |
+| **The founder story** | **Supplied in full**, as wording to use. The site's own account, written before it, is replaced |
+
+### Still owed, and the site shows a marked hole for each
+
+| Item | Where | Notes |
+|---|---|---|
+| **The eight photographs of the real Finn and Fia** | `/story` | Four of each dog, named in the covering email as `B0026722` to `B0026782`. **The folder link did not arrive**, so no file has reached us. `dog.finn` and `dog.fia` in `brand.ts` are both null and the section renders the house placeholder at the right shape. It is finished the moment two files land |
+| **Parent and teacher quotations** | Home | The document says Conor has them ready. Needed: the exact approved wording, the attribution each person has agreed to, and their permission. The section ships empty rather than drafted, because a drafted quotation becomes a fabricated one the moment somebody forgets it was a draft |
+| **The Banteer workshop account** | Home | A completed school workshop, to be printed under the school's own name and kept separate from the planned study. The letter has not been supplied |
+| **Kirstie's displayed title** | `/team`, `/app`, `/ethical-ai` | The document describes her contribution and then says to agree the exact title. She reads as "Adviser" everywhere until it is agreed |
+| **David Toth's displayed title** | `/team`, `/story` | Same. He is "Adviser", and his script contribution is now stated, which the document asks for by name |
+| **Lydia's public surname** | Everywhere | The document says to confirm it before publication. The site prints **Lydia Sexton**, from the creative director's deck of 2026-10-13, which overrode the October handoff's "Lydia Harding". The new founder story calling her Conor's fiancée supports Sexton, but it has not been confirmed in as many words |
+| **Whether the launch month may be published** | `/app` | "Late November is the working launch target; do not publish an exact date." A month is not an exact date, but a target that slips is a broken promise on the page a parent checks, so nothing is published and the status still reads "In development" |
+| **Which features are tested and ready** | `/app` | The document asks to distinguish planned features from tested ones. Nobody has said which are which, so the page says the whole thing is the plan and that we will say which is which once testing is done |
+
+### The case study section, and what it needs before it can open
+
+Built at `/case-study` on 2026-10-24. The participant journey, both country
+routes, the episode, the materials and the questionnaire are all there. **The
+questionnaire cannot take a response**, by two independent gates: `STUDY_OPEN`
+in `src/components/casestudy/config.ts` keeps the form shut in a browser, and
+`STUDY_OPEN` in the Vercel environment makes `api/study-response.ts` refuse a
+POST outright. Migration `0007` is written and **must not be applied** until
+the items below are agreed.
+
+| Item | Notes |
+|---|---|
+| **The participant information sheet** | Required before the study opens. Who is running it, what is collected, why, how long it is kept, and how somebody asks for theirs to be removed |
+| **How responses are handled** | Who reads them, where they are stored, and the retention period. The privacy policy now says this will be published on the page before it opens, so that promise has to be kept |
+| **The approved questionnaire** | Every question currently on the page is a draft awaiting the education adviser. The wording, the scale and the fields all need Paula's approval |
+| **Who the study is for** | The age range and the kinds of setting. The intro currently says only "educators working with young children in Ireland or England" |
+| **How long it takes an educator** | Stated nowhere, because nobody has said |
+| **Paula's Aistear supporting notes** | Ireland route, as a downloadable file, subject to her final approval |
+| **Paula's EYFS supporting notes** | England route, same |
+| **The selected games** | With written instructions for each |
+| **The colouring materials** | With instructions |
+| **Paula's offline activity** | With step by step instructions |
+| **The date the study opens** | None published |
+| **Participant numbers** | How many schools or families. None stated, nothing invented |
+| **Clearance for episode 003** | Confirmation that it is acceptable to describe Chicken Vision with its existing synopsis and runtime on this page |
+| **Reviewed study findings** | Once the study has run. The slot is held open and says so |
+
+### Unchanged by this document, and still open
+
+The four testing figures are **gone rather than owed**: the document replaces
+the statistics panel with quotations, so the measurement block that carried
+them was deleted on 2026-10-24 and nothing on the site is waiting for them any
+more. Everything else from earlier passes stands: the first shop products with
+their PDFs, artwork and prices, CLE's VAT position, a public email address, the
+safeguarding address, PupsPlayer screenshots, the first journal piece, and the
+December podcast's show, host, date and link.
+

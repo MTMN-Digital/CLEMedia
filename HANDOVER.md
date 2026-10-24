@@ -287,9 +287,43 @@ Run it from a built preview:
 
 ## 7. Current state
 
-Last full verification, 2026-10-16, from a built preview on port 4600: 1440,
-390 and 320 sweeps all 0 overflow and 0 contrast failures across all thirteen
-pages, typecheck and build clean including `api/`.
+Last full verification, 2026-10-24, from a built preview on port 4700: 1440
+and 390 sweeps, all fourteen routes, typecheck and build clean including
+`api/`.
+
+**THE CLIENT'S REVIEW DOCUMENT OF 22 OCTOBER IS APPLIED**, 2026-10-24. Read
+`COPY-REVIEW-2026-10-24.md` first: it is the consolidated copy document the
+review asks for and it lists every change, page by page, with the eight things
+CLE still has to send. The three that change the code rather than the words:
+
+- **The six review stages are gone.** They were the spine of four pages and
+  came from the company's own written account; the review withdraws that
+  account for one of repeated whole-group reviews. Five phases now, from
+  `PHASES` in `src/components/team/people.ts`. Nothing carries a per-stage
+  owner, a "signed off by" line, or the red band saying a release can be held,
+  and `QUESTIONS.md` #37 explains what replaced each.
+- **`/case-study` is new**, and its questionnaire is shut by two independent
+  gates: `STUDY_OPEN` in `src/components/casestudy/config.ts` for the browser,
+  and `STUDY_OPEN` in the environment for `api/study-response.ts`, which
+  refuses a POST outright. **Migration `0007` must not be applied** until CLE
+  agrees the participant information and the handling of responses. The
+  privacy policy now promises that information will be published on the page
+  before it opens.
+- **The statistics panel is gone**, replaced by quotations from parents and
+  educators which have not been supplied. The four empty testing figures the
+  creative director's deck asked for no longer have a home on the site.
+
+Two traps found on the way, both now fixed and both worth knowing:
+
+1. **Playwright moved.** `scripts/qa/*.mjs` borrowed it from
+   `internal/M.ind/node_modules`, which is gone. They now borrow from
+   `internal/iacchus`. If a sweep dies with MODULE_NOT_FOUND, point them at
+   any repo on this machine that has Playwright.
+2. **`AssetPlaceholder` was failing AA and nobody had seen it.** Its source
+   line was `text-ink/55`, which measures 3.45:1 on the clay fill. It had
+   never been measured because no page had ever actually rendered a
+   placeholder: every null asset was a slot the page skipped. The Story page's
+   two real dogs are the first, and the sweep caught it the same hour.
 
 **A mobile pass ran on 2026-10-16** and found four things the contrast and
 overflow sweeps cannot see, all now fixed. Worth knowing because the first is

@@ -58,7 +58,10 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const require = createRequire("/home/david/Documents/GitHub/internal/M.ind/node_modules/playwright/package.json");
+/* Playwright is BORROWED, not a dependency of this repo. The path moved on
+   2026-10-24 when M.ind's node_modules went; if this throws MODULE_NOT_FOUND
+   again, point it at any repo on this machine that has playwright installed. */
+const require = createRequire("/home/david/Documents/GitHub/internal/iacchus/node_modules/playwright/package.json");
 const { chromium } = require("playwright");
 import { chromePath } from "./chrome.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -82,7 +85,7 @@ const CALIBRATE = process.argv.includes("--calibrate");
 const CAL = { fail: "CALIBRATION 3.0 to 1", pass: "CALIBRATION 7.0 to 1" };
 
 const PAGES = [
-  ["/", "home"], ["/story", "story"], ["/team", "team"], ["/ethical-ai", "ethical-ai"],
+  ["/", "home"], ["/story", "story"], ["/team", "team"], ["/ethical-ai", "ethical-ai"], ["/case-study", "case-study"],
   ["/journal", "journal"], ["/app", "app"], ["/media", "media"], ["/shop", "shop"],
   ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"],
   ["/cookies", "cookies"], ["/nope", "404"],

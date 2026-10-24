@@ -26,7 +26,7 @@ import "./pline.css";
    - at 2,700px nobody sees the shape of it at all, and the shape IS the
      argument.
 
-   SO IT IS FLAT AND IT IS DRAWN. One track left to right, six gates on it in
+   SO IT IS FLAT AND IT IS DRAWN. One track left to right, the phases on it in
    order, the two tools sitting BELOW the track at the single point they are
    used, and the return path looping back from the final gate along a rail
    above the track and down into the tools. Around 300px tall. The shape of the argument is visible in one look: people the whole
@@ -41,7 +41,7 @@ import "./pline.css";
    the held-release case. Not one word of it was cut.
    ========================================================================== */
 
-/* Geometry. The track is the full viewBox width; the six gates sit at even
+/* Geometry. The track is the full viewBox width; the phases sit at even
    intervals along it with a margin at each end for the first and last label.
 
    HALVED 2026-10-11, for the graphite. The box was 1200 by 250 and rendered
@@ -146,7 +146,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
         className="ink pline__art"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="Six review gates in a line, with the two production tools sitting below the line at one point, and a dashed return path from the final gate back along the top and down into production at the tools."
+        aria-label="The five phases of an episode in a line, with the two production tools sitting below the line at the one point they are used, and a dashed return path from the final sign-off back along the top and down into the animation."
       >
         {/* The track. People run the whole length of it. */}
         <path
@@ -229,7 +229,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
       {/* Said in words inside the loop, lifted from the hero paragraph above
           the drawing. Hidden on a phone, where the loop is 20px tall and the
           caption under the drawing says the same thing. */}
-      <p className="ink-label pline__return">The last gate can send the work back</p>
+      <p className="ink-label pline__return">The episode goes back until everyone is happy</p>
       </Settle>
 
       {/* The gates in words, under the track, in the same order. A reader who
@@ -240,7 +240,7 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
           <li key={s.index} className={s.kind === "gate" ? "pline__gate pline__gate--hold" : "pline__gate"}>
             <p className="ink-label">
               <span className="tnum">{s.index}</span>
-              {s.kind === "gate" ? " Can hold a release" : " Person decides"}
+              {s.kind === "gate" ? " Everyone signs off" : " Person decides"}
             </p>
             <h3>{s.title}</h3>
             {s.index && (

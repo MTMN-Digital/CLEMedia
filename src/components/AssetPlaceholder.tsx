@@ -50,8 +50,16 @@ export function AssetPlaceholder({
           Image needed
         </p>
         <p className="mt-2 font-body text-[13.5px] font-semibold leading-snug text-ink">{label}</p>
+        {/* `/70` on the source line below, not `/55`. At 55 percent it
+            composited to 3.45:1 on the clay fill, under AA, and it had never
+            been measured because until 2026-10-24 no page on this site
+            actually rendered a placeholder: every null asset was a slot the
+            page skipped instead. The Story page's two real dogs are the
+            first, and the sweep caught it the same hour. 70 measures 5.0:1 on
+            the same fill, and the hierarchy against the line above it is
+            carried by the weight, which is what was doing the work anyway. */}
         {source && (
-          <p className="mt-1.5 font-body text-[10px] uppercase tracking-[0.14em] text-ink/55">{source}</p>
+          <p className="mt-1.5 font-body text-[10px] uppercase tracking-[0.14em] text-ink/70">{source}</p>
         )}
       </div>
     </div>

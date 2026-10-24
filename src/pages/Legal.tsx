@@ -62,7 +62,7 @@ interface Doc {
 }
 
 /** The day the wording was last written. Not today, and never a live date. */
-const DRAFTED = "2026-10-13";
+const DRAFTED = "2026-10-24";
 
 /* The trader's identity, from the signed proposal CFM-02 and nowhere else.
    Not guessed, not looked up, not reconstructed from the brand name: these are
@@ -120,20 +120,21 @@ const DOCS: Record<DocId, Doc> = {
         "If you send us an enquiry, we collect your name, email address, any organisation you give us and the content of your message. If you ask to be told when the app launches, we collect your email address and nothing else.",
         "If you buy a printable, Stripe handles your payment and collects your email for its own receipt. We never see or store your card details. We store a record of the purchase, a download token so we can deliver the file you paid for, the email address you gave Stripe, and the time you confirmed you understood the download starts immediately.",
         "We keep that email address for one reason: your download link lives for 24 hours and there is no account here, so if you lose it, the address you paid with is the only way we can find your order and send it again. Nothing else reads it, and it is never used to contact you otherwise.",
+        "The educator questionnaire for our cross-border case study is not open yet. When it opens it will collect your answers about using an episode with a group of children, the country route you chose, and an email address only if you give us one so we can send you the findings. It will not collect anything about an individual child, and it will not record your IP address. Full participant information will be published on that page before it opens, and nothing on it can be submitted until then.",
         "We do not ask anyone to create an account, and we do not knowingly collect personal data from children.",
       ]},
       { h: "Why we collect it", p: [
-        "Enquiry details are used to reply to you. Launch notifications are used to send you one email at launch. Purchase records are used to deliver your file and to keep proper accounts.",
+        "Enquiry details are used to reply to you. Launch notifications are used to send you one email at launch. Purchase records are used to deliver your file and to keep proper accounts. Case study answers are used to understand how the episodes and the offline activities work in real settings, and are reported only in aggregate.",
         "We do not use any of it for advertising, we do not build profiles, and buying something from us does not add you to a mailing list.",
       ]},
       { h: "Legal basis", p: [
-        "We rely on legitimate interest to answer enquiries you send us, consent for launch notifications, contract for delivering a purchase, and legal obligation for keeping financial records.",
+        "We rely on legitimate interest to answer enquiries you send us, consent for launch notifications, contract for delivering a purchase, and legal obligation for keeping financial records. Taking part in the case study is entirely voluntary and we will rely on your consent, which you can withdraw.",
       ]},
       { h: "Who we share it with", p: [
         "Our hosting and database providers, our payment processor and our email delivery provider, each only to the extent needed to run the site. We do not sell or rent personal data to anyone, for any purpose.",
       ]},
       { h: "How long we keep it", p: [
-        "Enquiries are kept while the conversation is live and for a reasonable period afterwards. Purchase records are kept as long as accounting rules require. Launch notification addresses are deleted once the launch email has been sent.",
+        "Enquiries are kept while the conversation is live and for a reasonable period afterwards. Purchase records are kept as long as accounting rules require. Launch notification addresses are deleted once the launch email has been sent. How long case study answers are kept will be stated in the participant information before the study opens.",
       ]},
       { h: "Your rights", p: [
         "Under the GDPR you can ask us for a copy of your data, ask us to correct or delete it, object to how we use it, or ask us to restrict that use. Contact us and we will action it. If you are not satisfied you can complain to the Irish Data Protection Commission.",

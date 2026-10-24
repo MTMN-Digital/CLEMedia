@@ -49,7 +49,7 @@ export const STRANDS: Strand[] = [
     slug: "process",
     name: "How It's Made",
     blurb:
-      "Inside production: writing, animation, sound, and exactly where the tools sit in a process a person is answerable for at every stage.",
+      "Inside production: writing, animation, sound, and exactly where the tools sit in a process people lead from the first draft to the finished episode.",
   },
   {
     slug: "parents",
@@ -137,7 +137,7 @@ export function useJournal(): JournalData {
 
 export interface PostResult {
   /** `loading` only ever renders the page chrome, never a skeleton of a post. */
-  state: "loading" | "found" | "missing";
+  state: "found" | "loading" | "missing";
   post: Post | null;
   category: Category | null;
   /** Other published pieces in the same strand, newest first. */

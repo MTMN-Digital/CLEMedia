@@ -10,7 +10,7 @@ import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
 import { Evidence } from "@/components/home/Evidence";
-import { Tested } from "@/components/home/Tested";
+import { Feedback } from "@/components/home/Feedback";
 import { BeyondScreen } from "@/components/home/BeyondScreen";
 import { GetInTouch } from "@/components/home/GetInTouch";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
@@ -136,7 +136,7 @@ export default function Home() {
                 </h2>
               </div>
               <p className="max-w-[26ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep lg:pb-2">
-                We would rather make the episode the beginning of the thing than the whole of it.
+                We would rather an episode started something a child carries on with.
               </p>
             </Wipe>
 
@@ -248,14 +248,17 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* ═══ 2d. OUR OWN MEASUREMENT, and it is not in yet.
+      {/* ═══ 2d. WHAT PEOPLE SAY, and it is not in yet.
 
-          The one unfinished thing on the site, on purpose. Four figures drawn
-          as brackets at the size the real numbers will take, with a note that
-          removes itself when they land. See Tested.tsx. ═══ */}
+          This was four measurement figures drawn as empty brackets until
+          2026-10-24, when the client's review document replaced them with
+          quotations from parents and educators. Still the one deliberately
+          unfinished block on the site, for a better reason than before: a
+          quotation is a checkable claim where a figure nobody had measured was
+          not. See Feedback.tsx. ═══ */}
       <Section labelledBy="tested-h" pad="normal">
         <Container width="wide">
-          <Tested headingId="tested-h" />
+          <Feedback headingId="tested-h" />
         </Container>
       </Section>
 
@@ -427,8 +430,7 @@ export default function Home() {
                 <div className="pt-6">
                   <dt className="eyebrow eyebrow-sm">Before publication</dt>
                   <dd className="t-body mt-2 text-body">
-                    Our team directs, reviews and approves the work. Nothing is generated and
-                    published automatically.
+                    Our team writes, directs, reviews and approves the work.
                   </dd>
                 </div>
               </dl>

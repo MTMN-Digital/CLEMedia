@@ -1,33 +1,38 @@
 import type { CSSProperties } from "react";
-import { Stage, useRoomEntry } from "@/components/render";
+import { useRoomEntry, Stage } from "@/components/render";
 import { Settle } from "@/components/Settle";
 import { Kicker, Lead, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { STAGES } from "@/components/team/people";
+import { PHASES } from "@/components/team/people";
 
 /* ============================================================================
-   The call sheet: the sign-off sequence, standing on the bench.
+   The call sheet: how an episode is actually made, standing on the bench.
 
    WHAT THIS REPLACES, AND WHY. This block was a six-row list of the same six
    faces /team shows twice and /contact shows once, each with a role and a line
    of biography. It was the third copy of the company's faces on the site and
    it read as a staff directory, which is not what the home page is arguing.
 
-   The home page's claim is narrower: an episode passes through six stages in
-   a fixed order, a named person answers for each of the first four, and a
-   release can be held at the last. So the block now shows exactly that and
-   nothing else. Six slips on the review board's shelf, each carrying its
-   number, its stage and who signs it off, in words. No portraits and no
-   biographies: those are /team's job, and the link under the board goes there.
+   THE ARGUMENT CHANGED ON 2026-10-24. Until then this board said "a named
+   person at every stage", and the six slips under it named one. The client's
+   review document of 22 October withdraws that account: there is no gate per
+   person. Alan writes every script and animates every episode, the same five
+   people read every draft and feed back, and the work goes round three or
+   four times before a script is locked and again after the episode is cut,
+   until everyone is happy.
+
+   That is a better home page claim than the one it replaces, and it costs
+   nothing to make honestly: "five people read every draft" is checkable, where
+   "a named person is answerable at every stage" was an arrangement the company
+   has now told us it does not have.
 
    It is the review board's reading of the render kit (StageSequence.tsx), cut
-   down. /team's slips also carry the faces and what each stage checks; these
-   carry the sequence only, so a reader going Home to Team gets the argument
-   first and the people second rather than the same board twice.
+   down. /team's slips also carry a sentence on each phase; these carry the
+   sequence only, so a reader going Home to Team gets the shape first and the
+   detail second rather than the same board twice.
 
-   The stages, the names and the stage that can hold a release are read from
-   src/components/team/people.ts, the company's own account, so this board and
-   /team's can never disagree.
+   The phases are read from src/components/team/people.ts, the company's own
+   account, so this board and /team's can never disagree.
    ========================================================================== */
 
 /* How each slip stands. Hand-placed so no two neighbours match: lean, a small
@@ -39,7 +44,6 @@ const POSE = [
   { tilt: 4.9, turn: 2.1, roll: 0.15, depth: 0.44 },
   { tilt: 6.8, turn: -2.3, roll: -0.2, depth: 0.58 },
   { tilt: 5.2, turn: -0.3, roll: 0.34, depth: 0.46 },
-  { tilt: 6.3, turn: 1.6, roll: -0.26, depth: 0.55 },
 ];
 
 /* One lamp, up and left of the shelf. Each slip is lit from the angle to it,
@@ -59,13 +63,13 @@ export function CallSheet({ headingId }: { headingId: string }) {
       <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
         <div>
           <Kicker>How the work gets made</Kicker>
-          <h2 id={headingId} className="t-h2 mt-4 max-w-[14ch]">
-            A named person at every stage
+          <h2 id={headingId} className="t-h2 mt-4 max-w-[16ch]">
+            Five people read every draft
           </h2>
         </div>
         <Lead className="max-w-[46ch] lg:pb-1">
-          This is the sequence an episode goes through before it reaches a child, and who is
-          answerable at each point. Any one of these stages can hold a release back.
+          Alan writes the scripts and animates the episodes. Paula, Lydia, Kirstie, Conor and
+          David read each draft and give him their feedback, and he writes the next one from it.
         </Lead>
       </Settle>
 
@@ -76,13 +80,13 @@ export function CallSheet({ headingId }: { headingId: string }) {
         <span className="rk-rake" aria-hidden="true" />
 
         <div className="rk-head" aria-hidden="true">
-          <span>Sign-off sequence</span>
+          <span>How an episode is made</span>
           <span className="rk-head-rule" />
-          <span className="rk-head-meta">Every episode, before release</span>
+          <span className="rk-head-meta">Every episode, every draft</span>
         </div>
 
         <ol className="rk-bench">
-          {STAGES.map((s, i) => {
+          {PHASES.map((s, i) => {
             const pose = POSE[i % POSE.length];
             return (
               <li key={s.n} className="rk-item" style={{ "--i": i } as CSSProperties}>
@@ -98,16 +102,13 @@ export function CallSheet({ headingId }: { headingId: string }) {
                   >
                     <article className="rk-slip">
                       <p className="rk-slip__no tnum">
-                        <span className="sr-only">Stage </span>{s.n}
+                        <span className="sr-only">Phase </span>{s.n}
                       </p>
-                      <h3 className="rk-slip__title">{s.stage}</h3>
+                      <h3 className="rk-slip__title">{s.phase}</h3>
                       <p className="rk-slip__who">
-                        <span className="rk-slip__sign">Signed off by</span>
                         <span className="rk-slip__name">{s.who}</span>
                       </p>
-                      {s.hold && (
-                        <p className="rk-slip__hold">A release can be held here</p>
-                      )}
+                      {s.rounds && <p className="rk-slip__rounds">{s.rounds}</p>}
                     </article>
                   </Stage>
                 </div>
@@ -121,8 +122,8 @@ export function CallSheet({ headingId }: { headingId: string }) {
           the note and the link are read, so they do not stand in the room. */}
       <Settle className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-start lg:gap-16 xl:gap-24">
         <p className="t-body max-w-[52ch] text-body">
-          The last two stages are taken by the production team together, and a release has been
-          held back to make changes.
+          A script usually goes round three or four times before it is locked, and the finished
+          episode goes round again until everyone is happy with it.
         </p>
         <div>
           <TextLink to="/team">

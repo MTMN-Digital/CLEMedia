@@ -60,6 +60,10 @@ export const FOOTER_GROUPS = [
     links: [
       { to: "/story", label: "Our story" },
       { to: "/app", label: "Learning resources" },
+      /* Not in the header, deliberately. The header is already seven items
+         and the study has not opened: see STUDY_OPEN in
+         components/casestudy/config.ts. It goes up top when it opens. */
+      { to: "/case-study", label: "Case study" },
       { to: "/shop", label: "Shop" },
     ],
   },

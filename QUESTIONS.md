@@ -517,3 +517,51 @@ say so first, and that wording is Conor's to approve.
 enquiry notification is sent at all, and the function logs that it was not
 configured. It has to be an address on a domain verified in Resend. Until it is
 set, enquiries are still stored and still safe, but nobody is told they arrived.
+
+### 37. Raised by the review document (2026-10-22), applied 2026-10-24
+
+Everything in the document that could be built has been built. These are the
+points where it asks for a decision rather than gives one, or where following
+it literally would have meant inventing something.
+
+1. **Lydia's surname.** The document says to confirm her public surname before
+   publication. The site prints **Lydia Sexton**, which came from the creative
+   director's deck on 2026-10-13 and overrode the October handoff's "Lydia
+   Harding". The founder story in this document calls her Conor's fiancée,
+   which supports Sexton, but that is an inference and this build does not
+   publish inferences about people's names. Confirm it either way.
+2. **Kirstie's and David's displayed titles.** The document describes what both
+   of them contribute and then asks for the titles to be agreed. Both read
+   "Adviser" on the site, which is the document's own word, with the
+   contribution written out underneath. Send the titles and they go in.
+3. **May the launch month be published?** "Late November is the working launch
+   target; do not publish an exact date or final prices until confirmed." A
+   month is not an exact date, so this could go up, and it is the single most
+   useful line on `/app` for anyone deciding whether to wait. It is NOT up,
+   because a target that slips becomes a broken promise on the page a parent
+   checks. Say the word and it goes on in an hour.
+4. **Which features are tested and ready?** The document asks to distinguish
+   planned features from those tested and ready at launch. Nobody has said
+   which are which, so `/app` says the whole page is the plan and that we will
+   mark the tested ones once testing is done.
+5. **The case study cannot open yet, and that is deliberate.** Before the
+   questionnaire can take a single response we need the participant
+   information sheet, the retention period, who reads the answers, and Paula's
+   approval of the questions. Until then the form is shut by a flag in the
+   page AND refused by the API, and the database table is not created. The
+   privacy policy now promises the participant information will be published
+   on that page before it opens, so that promise is live on the site.
+6. **The eight dog photographs never arrived.** The covering email lists the
+   filenames and links a folder; the link did not come through. The Story page
+   section is built and waiting on two files.
+7. **The four testing figures are no longer owed.** The document replaces the
+   statistics panel with quotations from parents and educators, so the block
+   that held the four empty brackets is gone. If the testing did happen and
+   the figures exist, they now have nowhere to go on the site: say so and we
+   will find them a home rather than quietly drop them.
+8. **Quotations need permission, not just wording.** The document says to use
+   the exact approved wording and agreed attribution, with permission. The
+   section is built and empty. Nothing is drafted in the meantime, because a
+   drafted quotation is a fabricated one the moment somebody forgets it was a
+   draft.
+

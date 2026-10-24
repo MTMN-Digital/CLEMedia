@@ -1,8 +1,8 @@
-import type { Member, Stage } from "./people";
+import type { Phase, Member } from "./people";
 import "@/components/draw/draw.css";
 
 /* ============================================================================
-   Where one person stands on the six.
+   Where one person comes into the five phases.
 
    The roster is eight biographies of two to four paragraphs each, which is
    the largest block of unbroken prose left on the site. This goes in its
@@ -12,45 +12,23 @@ import "@/components/draw/draw.css";
    DELIBERATELY PLAIN. The client's note was to keep it "fairly simple,
    intuitive, and not too large", and he is right: it repeats the whole way
    down the page, so anything with personality becomes wallpaper by the third.
-   Six
-   nodes on a track, filled where this person stands, hollow where they do
-   not. No labels, no key, no legend. The numbers under the filled ones are
-   the only text, and they are there because "which three" is the whole
-   content.
+   A node per phase on a track, filled where this person comes into it,
+   hollow where they do not. No labels, no key, no legend.
 
    IT CANNOT DISAGREE WITH THE BOARD. Every value is read from `people.ts`:
-   `named` holds the stages the company's own account names this person at,
-   and `team` marks whether they share the two stages that account gives to
-   the team as a whole. The last component on this site that kept its own copy
-   of the six stages had them wrong and contradicted the company about its own
-   process; it was deleted on 2026-10-03. There is one source and this reads
-   it.
+   `phases` holds the phases the company's own account places this person in.
+   The last component on this site that kept its own copy of the sequence had
+   it wrong and contradicted the company about its own process; it was deleted
+   on 2026-10-03. There is one source and this reads it.
 
-   THE ADVISER GETS NOTHING. `outside` renders no track at all rather than a
-   track with six hollow nodes: six empty circles beside a person reads as
-   missing data, when the fact is that advisory input sits outside the
-   sequence entirely. The roster already says that in words.
+   NOBODY IN ANY PHASE GETS NO TRACK AT ALL, rather than a row of hollow
+   nodes: empty circles beside a person read as missing data, when the fact is
+   that the work sits outside the script and episode reviews entirely. The
+   roster says so in words.
    ========================================================================== */
 
-export function StandsAt({
-  member,
-  stages,
-  outside = false,
-}: {
-  member: Member;
-  stages: Stage[];
-  outside?: boolean;
-}) {
-  if (outside) return null;
-
-  const at = stages.map((s) => {
-    const n = Number(s.n);
-    return {
-      n: s.n,
-      /* Named at this stage, or it is one of the two the whole team takes. */
-      on: member.named.includes(n) || (member.team && Boolean(s.shared)),
-    };
-  });
+export function StandsAt({ member, phases }: { phases: Phase[]; member: Member }) {
+  const at = phases.map((s) => ({ n: s.n, on: member.phases.includes(Number(s.n)) }));
   if (!at.some((s) => s.on)) return null;
 
   const W = 150;

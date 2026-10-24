@@ -8,7 +8,7 @@ import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type RouteId, Receipt, type Draft } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
-import type { AssetKey } from "@/lib/brand";
+import { TEAM } from "@/components/team/people";
 
 /* ============================================================================
    Contact.
@@ -119,13 +119,17 @@ const ROUTES: { label: string; blurb: string; short: string; id: RouteId }[] = [
    Mansi has no portrait and gets no tile, no initial and no frame, which is
    the /team rule: an empty frame on a page about named people reads as a
    missing person. Her row is simply a different shape. */
-const FACES: { asset: AssetKey; role: string; name: string }[] = [
-  { name: "Conor Sexton", role: "Founder and CEO", asset: "person.conor" },
-  { name: "Alan Compton", role: "Creative Director", asset: "person.alan" },
-  { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
-  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia" },
-  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie" },
-];
+
+/* DERIVED, not retyped, from 2026-10-24. This was five hand-written rows, and
+   every one of their titles was out of date within an hour of the client
+   confirming them: Creative Director, Education Director, Executive Producer
+   and Child Development Consultant were all superseded in the same document
+   and all four were still being printed here. `people.ts` is the one source
+   and this reads it, in the order it lists them, taking the five who have a
+   portrait. */
+const FACES = TEAM.flatMap((m) =>
+  m.asset ? [{ name: m.name, role: m.role, asset: m.asset }] : [],
+).slice(0, 5);
 
 /* The four audiences the site is written for, each sent to the page that
    already answers them. Every destination is a real page of this site or the
@@ -141,13 +145,13 @@ const ELSEWHERE: { line: string; title: string; who: string; href?: string; to?:
   {
     who: "Broadcasters and distributors",
     title: "The team and the advisors",
-    line: "Who makes each episode, and who is answerable at each stage of the review.",
+    line: "Who makes each episode, and what each of them does.",
     to: "/team",
   },
   {
     who: "Educators and schools",
     title: "Responsible AI",
-    line: "The six stages an episode passes through, and where AI is and is not used in making one.",
+    line: "The five phases an episode goes through, and where AI is and is not used in making one.",
     to: "/ethical-ai",
   },
   {

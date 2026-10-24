@@ -27,7 +27,10 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const require = createRequire("/home/david/Documents/GitHub/internal/M.ind/node_modules/playwright/package.json");
+/* Playwright is BORROWED, not a dependency of this repo. The path moved on
+   2026-10-24 when M.ind's node_modules went; if this throws MODULE_NOT_FOUND
+   again, point it at any repo on this machine that has playwright installed. */
+const require = createRequire("/home/david/Documents/GitHub/internal/iacchus/node_modules/playwright/package.json");
 const { chromium } = require("playwright");
 import { chromePath } from "./chrome.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));

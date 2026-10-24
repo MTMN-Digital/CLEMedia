@@ -37,6 +37,9 @@
 @media (min-width: 1100px) { .pline__gates { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 .pline__gate { border-top: 1px solid var(--color-rule); padding-top: 0.9rem; }
+/* The last phase, in the accent. It used to mark the one gate that could
+   hold a release; from 2026-10-24 it marks the sign-off that releases the
+   episode, which is the same place on the line and the same emphasis. */
 .pline__gate--hold { border-top-color: var(--color-red-deep); }
 .pline__gate h3 {
   margin-top: 0.5rem;

@@ -10,7 +10,7 @@ import type { Member } from "./people";
    photograph of anyone was a 76px square some way down a table. The band now
    ends on the team at a size where they read as people rather than as row
    markers, and the matrix below answers the harder question of who is
-   answerable for what.
+   each person actually does.
 
    NOT A TEAM GRID. There are no cards, no hover states, no job titles repeated
    from the table under every face, and nothing is clickable. It is a row of

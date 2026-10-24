@@ -4,8 +4,8 @@ import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { ProductionFlat } from "@/components/ethical-ai/ProductionFlat";
 import { TheLine } from "@/components/ethical-ai/TheLine";
-import { CaseStudy } from "@/components/ethical-ai/CaseStudy";
-import { Button, Container, DisclosurePanel, Kicker, Lead, Section, TextLink } from "@/components/ui";
+import { ForTheChild } from "@/components/ethical-ai/ForTheChild";
+import { Container, Kicker, Button, Lead, Section, DisclosurePanel, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
 /* ============================================================================
@@ -87,7 +87,7 @@ const QUESTIONS = [
 /** One question. The panel is the shared `DisclosurePanel`; the button is here
  *  because it is a heading, and the open state belongs to the list so that
  *  opening one answer closes the last. */
-function Question({ id, q, a, open, onToggle }: { id: string; q: string; a: string; open: boolean; onToggle: () => void }) {
+function Question({ id, q, a, open, onToggle }: { open: boolean; onToggle: () => void; q: string; id: string; a: string }) {
   return (
     <li className="hairline">
       <h3>
@@ -121,7 +121,7 @@ export default function EthicalAi() {
     <>
       <Seo
         title="Responsible AI"
-        description="How CLÉ Family Media uses Runway and ElevenLabs inside a human-led production process: six stages, a named person at each, and a final gate that can send the work back before release."
+        description="How CLÉ Family Media uses Runway and ElevenLabs inside a human-led production process: five phases, the same five people reading every draft, and what the reviews are for."
         path="/ethical-ai"
       />
 
@@ -158,7 +158,7 @@ export default function EthicalAi() {
       <Section labelledBy="line-h" className="wall">
         <Container width="wide">
           <Settle className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
-            <h2 id="line-h" className="t-h2 max-w-[18ch]">Six stages, and one place for the tools</h2>
+            <h2 id="line-h" className="t-h2 max-w-[18ch]">Five phases, and one place for the tools</h2>
             <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[11px] uppercase tracking-[0.14em] text-body" aria-label="Key">
               <li className="flex items-center gap-2.5">
                 <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border border-rule bg-raised" />
@@ -170,7 +170,7 @@ export default function EthicalAi() {
               </li>
               <li className="flex items-center gap-2.5">
                 <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full bg-raised ring-2 ring-red/70" />
-                Gate, can hold a release
+                Everyone signs off
               </li>
             </ul>
           </Settle>
@@ -179,7 +179,7 @@ export default function EthicalAi() {
               of the return path keys off this element's own .is-armed.is-in, and
               a per-station Settle would arm seven separate clocks for one line. */}
           <Settle className="mt-14 sm:mt-16">
-            <ProductionFlat gateSlot={<CaseStudy />} />
+            <ProductionFlat gateSlot={<ForTheChild />} />
           </Settle>
 
           <Settle className="mt-14 flex max-w-[64ch] gap-4">

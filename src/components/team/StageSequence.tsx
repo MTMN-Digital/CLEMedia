@@ -1,11 +1,10 @@
 import type { CSSProperties } from "react";
-import { Figure } from "@/components/Figure";
-import { Stage, useRoomEntry } from "@/components/render";
+import { useRoomEntry, Stage } from "@/components/render";
 import { StageMark } from "./StageMark";
-import type { Stage as ReviewStage } from "./people";
+import type { Phase } from "./people";
 
 /* ============================================================================
-   The review board: six sign-off slips, standing on a lit bench.
+   The review board: the phases of an episode, as slips on a lit bench.
 
    TWO VERSIONS BEFORE THIS ONE, and both are why this one is shaped the way
    it is.
@@ -20,22 +19,31 @@ import type { Stage as ReviewStage } from "./people";
    Version 2 was a numbered vertical list with a marker, a drawn spine and the
    faces. The client's verdict was "a boring vertical list", and it was right
    again. Clear was the floor, not the goal. Worse, /ethical-ai already owns a
-   vertical chain of the same six stages with a return path drawn through it,
+   vertical chain of the same sequence with a return path drawn through it,
    so the team page was running a weaker second copy of a drawing that exists.
 
-   SO THIS IS A THIRD THING, not a correction of either. A review stage ends
-   in somebody putting their name to it, so each stage is the slip they sign:
-   the number printed large the way a filed document carries one, the stage,
-   the people answerable, what they check, and on the one stage the company's
-   account says can stop a release, a red band saying so. The slips stand on
-   the studio bench under the same lamp as every other object on this site,
-   which is what the client asked for by name: coded renders, no image
-   generation, in the mtmn.ie manner.
+   SO THIS IS A THIRD THING, not a correction of either. Each phase is a slip
+   off the production: the number printed large the way a filed document
+   carries one, what the phase is, who does it, and one sentence of what
+   happens. The slips stand on the studio bench under the same lamp as every
+   other object on this site, which is what the client asked for by name:
+   coded renders, no image generation, in the mtmn.ie manner.
 
-   NOTHING IS ENCODED. No key, no legend, no state carried by a border. The
-   two stages the company gives to the team as a whole say "the team" in
-   words, exactly as its own account does, and carry no faces, because drawing
-   five portraits there would assert who did the check.
+   FIVE SLIPS, NOT SIX, FROM 2026-10-24. The six-stage sign-off sequence this
+   board was built for was withdrawn by the client's review document, which
+   describes repeated whole-group reviews rather than one gate per person. See
+   the note at the top of people.ts. Three things went with it: the "Signed
+   off by" line, because nothing is signed off until the last phase; the
+   portraits on each slip, because the same five faces on four of five slips
+   is the "third copy of the company's faces" problem this site has already
+   solved once; and the red band saying a release can be held, which the
+   document asks for by name.
+
+   WHAT REPLACED THE FACES is the `rounds` line, on the two phases the
+   document says repeat. That is the genuinely unusual thing about this
+   process and it had no way of being said on the old board at all.
+
+   NOTHING IS ENCODED. No key, no legend, no state carried by a border.
 
    THE ORDER IS THE READING ORDER. Three across and two down on a desktop, two
    across on a tablet, one column on a phone. The numerals are set large
@@ -68,7 +76,7 @@ function azimuthFor(column: number, columns: number) {
   return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
 }
 
-export function StageSequence({ stages }: { stages: ReviewStage[] }) {
+export function StageSequence({ phases }: { phases: Phase[] }) {
   const { ref, armed, lit } = useRoomEntry();
 
   return (
@@ -81,11 +89,11 @@ export function StageSequence({ stages }: { stages: ReviewStage[] }) {
       <div className="rk-head" aria-hidden="true">
         <span>Review board</span>
         <span className="rk-head-rule" />
-        <span className="rk-head-meta">Every episode, every stage</span>
+        <span className="rk-head-meta">Every episode, every draft</span>
       </div>
 
       <ol className="rk-bench">
-        {stages.map((s, i) => {
+        {phases.map((s, i) => {
           const pose = POSE[i % POSE.length];
           /* Three across above 58rem, two across above 32rem, one below. The
              azimuth is picked for the widest of those, which is where the
@@ -105,49 +113,29 @@ export function StageSequence({ stages }: { stages: ReviewStage[] }) {
                 >
                   <article className="rk-slip">
                     {/* The number is read out, not hidden. It is the order of
-                        the six stages, and a reader who cannot see the
+                        the five phases, and a reader who cannot see the
                         board's layout needs it more than one who can. */}
                     <p className="rk-slip__no tnum">
-                      <span className="sr-only">Stage </span>{s.n}
+                      <span className="sr-only">Phase </span>{s.n}
                     </p>
-                    <h3 className="rk-slip__title">{s.stage}</h3>
+                    <h3 className="rk-slip__title">{s.phase}</h3>
 
-                    {/* What happens at this stage, drawn. Six marks that
-                        differ in kind rather than six icons in matched boxes;
-                        see components/team/StageMark.tsx. Decorative: the
-                        slip already carries the number, the stage, the people
-                        and the check as real text. */}
+                    {/* What happens in this phase, drawn. Marks that differ in
+                        kind rather than icons in matched boxes; see
+                        components/team/StageMark.tsx. Decorative: the slip
+                        already carries the number, the phase, who does it and
+                        the sentence as real text. */}
                     <div className="rk-slip__mark">
                       <StageMark n={s.n} />
                     </div>
 
-                    {s.faces.length > 0 && (
-                      <ul className="rk-slip__faces">
-                        {s.faces.map((f) => (
-                          <li key={f}>
-                            <Figure
-                              asset={f}
-                              rounded="rounded-[6px]"
-                              className="aspect-square"
-                              sizes="48px"
-                            />
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
                     <p className="rk-slip__who">
-                      {/* Said, not encoded. The matrix drew this distinction
-                          as a different border on a square. */}
-                      <span className="rk-slip__sign">Signed off by</span>
                       <span className="rk-slip__name">{s.who}</span>
                     </p>
 
-                    <p className="rk-slip__check">{s.checks}</p>
+                    <p className="rk-slip__check">{s.what}</p>
 
-                    {s.hold && (
-                      <p className="rk-slip__hold">A release can be held here</p>
-                    )}
+                    {s.rounds && <p className="rk-slip__rounds">{s.rounds}</p>}
                   </article>
                 </Stage>
               </div>

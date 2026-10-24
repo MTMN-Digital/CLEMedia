@@ -1,62 +1,68 @@
 import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
-   The people, and the review sequence they stand in.
+   The people, and the phases an episode passes through.
 
    REWRITTEN 2026-10-01 from the client's own "Team Bio & Photos" handoff. Up to
    that point the team page carried six seeded descriptions written from the
    production sequence, every one flagged unconfirmed, and six empty photo
-   frames. Everything below is the client's own account of each person, cut
-   down but never embellished: no claim appears here that the handoff does not
-   make, and the honours, titles and institutions are theirs verbatim.
-
-   One thing the handoff does not settle, listed in QUESTIONS.md: the job
-   titles for Lydia, Alan and Paula, which it leaves out while giving one for
-   Conor, Kirstie and David. The titles below are the ones the company was
-   already using.
+   frames. The biographies below are the client's own account of each person,
+   cut down but never embellished: no claim appears here that the handoff does
+   not make, and the honours, titles and institutions are theirs verbatim.
 
    NAMES CORRECTED 2026-10-13 from the creative director's revision of the home
-   page, which is the newer document and which the client told us wins. It
-   gives Kirstie the surname the bio handoff never did, and it has Lydia as a
-   Sexton rather than a Harding. The one thing in it NOT applied is "Al
-   Compton": the bio handoff corrected that to Alan on 2026-10-01 and nothing
-   suggests it has changed back.
+   page, which gave Kirstie the surname the bio handoff never did.
 
-   MOVED HERE 2026-10-02 so the page can show the same information two ways:
-   the stages with the faces answerable at each, and the people with the stages
-   against their names. `named` lists the stages where the company's own
-   six-stage account names the person. `team` marks the two stages that account
-   gives to the production team and the team as a whole, which every core
-   member shares and the adviser does not.
+   ── THE SIX STAGES ARE GONE, 2026-10-24 ───────────────────────────────────
+   Until this date this file carried a six-stage sign-off sequence: six named
+   gates, a different person answerable at each, two taken by the team, and one
+   where a release could be held. It came from the company's own written
+   account and QUESTIONS.md #35 reserved it against exactly this revision.
+
+   Conor's review document of 22 October withdraws it: "Our process involves
+   repeated team reviews, rather than one separate review assigned to each
+   person. Alan leads the writing, animation and creative direction
+   throughout." The five phases below are that document's own list, and the
+   sentences on them are close to its own words.
+
+   WHAT CHANGED IN THE DATA, not just the labels. The old shape asked "who
+   answers for this stage", so a person carried the stages they were named at
+   and a flag for the two the team shared. The new account has no per-stage
+   owner at all: one group reads every draft, Alan writes and animates, and
+   the whole team watches and signs off. So a person now carries the phases
+   the company's account places them in, and nothing else. Any page that still
+   wants to say "a named person at every stage" is making a claim this file no
+   longer supports.
+
+   THE DOCUMENT ALSO CONFIRMS THE ROLES, which were open since 2026-10-01: Alan
+   is Head of Creative Development, Paula is Chief Education Advisor, Lydia is
+   Company Secretary, Mansi is a Production Assistant developing nursery
+   rhymes, and Victoria has a surname, Buchkova. Two titles it leaves open on
+   purpose, Kirstie's and David's, so both read "Adviser" here and the
+   contribution is carried in words underneath. See QUESTIONS.md.
    ========================================================================== */
 
 export interface Member {
   name: string;
   role: string;
   asset?: AssetKey;
-  /* First line is the claim, the rest is the evidence for it. */
+  /* First line is what this person does here, in the company's own words from
+     the 22 October document. The rest is the evidence for it, from the bio
+     handoff, and is untouched by that revision. */
   bio: string[];
-  /* Stage numbers (1 to 6) where the person is named by the company's account. */
-  named: number[];
-  /* Whether the person shares the two team stages (5 and 6). */
-  team: boolean;
+  /** Phase numbers (1 to 5) the company's account places this person in. */
+  phases: number[];
 }
 
-export interface Stage {
+export interface Phase {
   n: string;
-  stage: string;
+  phase: string;
+  /** The line on the slip: who does this phase, in the company's own words. */
   who: string;
-  checks: string;
-  /* Portraits of the people the company's account NAMES at this stage. The
-     two team stages carry none: the account says "the production team" and
-     "the team" without naming anyone, and drawing five faces there would
-     assert who does that check. The track shows a team mark instead, and the
-     per-person marks carry the whole-team state. */
-  faces: AssetKey[];
-  /* The two stages the company's account gives to the team as a whole. */
-  shared?: boolean;
-  /* Where the account says a release can be delayed. */
-  hold?: boolean;
+  /** One sentence. The full account lives on the Responsible AI page. */
+  what: string;
+  /** Set where the company's account says the phase repeats, and how often. */
+  rounds?: string;
 }
 
 export const TEAM: Member[] = [
@@ -64,93 +70,81 @@ export const TEAM: Member[] = [
     name: "Conor Sexton",
     role: "Founder and CEO",
     asset: "person.conor",
-    named: [1],
-    team: true,
+    phases: [1, 2, 4, 5],
     bio: [
-      "Conor created The Pawsitive Pugs & Pals® and leads the company's strategy, commercial development, partnerships and audience research.",
-      "He came to it from thirteen years in food retail, progressing from apprentice to head butcher. After a life-changing accident in 2020 he returned to education as a mature student, took a QQI Level 6 in Marketing with distinction, and is completing a Bachelor of Business in Marketing at Munster Technological University, where he also went through the Student Inc. programme.",
-      "Becoming a father is what gave the company its purpose: building around what parents, educators and children actually need rather than around what the technology makes possible.",
+      "Conor created The Pawsitive Pugs & Pals® and leads the company's strategy, commercial development, partnerships and audience research. He reads every draft script and watches every episode before release.",
+      "He came to it from thirteen years in food retail, progressing from apprentice to head butcher. After a life-changing accident in 2020 he returned to education as a mature student, took a QQI Level 6 in Marketing with distinction, and is studying for a Bachelor of Business in Marketing at Munster Technological University, where he also went through the Student Inc. programme.",
+      "The company began while he was minding a friend's four-year-old son, and it is built around what parents, educators and children actually need rather than around what the technology makes possible.",
     ],
   },
   {
     name: "Alan Compton",
-    role: "Creative Director",
+    role: "Head of Creative Development",
     asset: "person.alan",
-    named: [1, 2],
-    team: true,
+    phases: [1, 2, 3, 4, 5],
     bio: [
-      "Alan writes and directs. The look of the world, the performances and the pace of an episode are his call.",
+      "Alan leads the scripts, the animation and the creative judgement throughout production. He writes each draft, revises it from the team's feedback, and animates the episode once the script is locked.",
       "He is an award-winning photographer and filmmaker with more than two decades across visual storytelling, design and creative direction, and over fifteen years in commercial film and television. He has worked with international NGOs and commercial clients across Africa, Europe, Asia, the Middle East and North America, on healthcare, humanitarian response and international development.",
       "His photography has been honoured several times at the Prix de la Photographie Paris, including Portrait Photographer of the Year, and his communications work with Nobody Left Outside won a SABRE Award. He has exhibited in London, Paris and Bangkok, most recently at the Royal Albert Hall as part of Nitin Sawhney's Journeys Festival.",
     ],
   },
   {
     name: "Paula Walshe PhD",
-    role: "Education Director",
+    role: "Chief Education Advisor",
     asset: "person.paula",
-    named: [3],
-    team: true,
+    phases: [1, 2, 4, 5],
     bio: [
-      "Paula reviews the learning intent of every episode and the offline activities that follow it.",
+      "Paula has been involved from the outset. She brings the educational expertise to the project and gives feedback on every draft script.",
       "She lectures in early childhood education at South East Technological University in Carlow. Her doctoral research was on STEM and STEAM in early childhood education, and her book Full STEAM Ahead is a practical guide to playful STEAM learning with young children.",
       "She co-chairs Ireland's Early Childhood STEAM Network, is a forum member of the Women in Digital European initiative, and sits on the EECERA College of Reviewers.",
     ],
   },
   {
     name: "Lydia Sexton",
-    role: "Executive Producer",
+    role: "Company Secretary",
     asset: "person.lydia",
-    named: [4],
-    team: true,
+    phases: [1, 2, 4, 5],
     bio: [
-      "Lydia reads every script and every production from a parent's point of view, and from a child's.",
+      "Lydia is the company secretary, and she reads the scripts and watches the episodes alongside the rest of the team.",
       "She has worked with children with intellectual disabilities, including through horse riding, where she saw how far confidence, communication and independence can go when a child is given the right support.",
       "Her brief here is inclusion: that every child has their own strengths, pace and way of understanding the world, and that an episode should help children recognise and respect difference rather than smooth it away.",
     ],
   },
   {
     name: "Kirstie Harding",
-    role: "Child Development Consultant",
+    /* "Adviser", not a fuller title. The 22 October document describes her
+       contribution and then says to agree the exact displayed title, so the
+       description below is hers and the title stays at the plain word the
+       document itself uses. QUESTIONS.md. */
+    role: "Adviser",
     asset: "person.kirstie",
-    named: [4],
-    team: true,
+    phases: [1, 2, 4, 5],
     bio: [
-      "Kirstie checks that what gets made is age-appropriate and grounded in real early years practice.",
+      "Kirstie advises on early years practice, drawing on her work in the sector and as an SNA, and contributes to the script and episode reviews.",
       "She has over thirty years of hands-on experience in childcare and early education, is qualified in Early Childhood Development and Education and is a fully qualified SNA. She has worked in Montessori and Steiner-based playgroups, outdoor preschools and community crèches.",
       "She is a mother of four grown children.",
     ],
   },
   {
     name: "Mansi",
-    role: "Production Coordination",
-    /* The one person in the review sequence the handoff sent no photograph or
-       biography for. Listed rather than dropped, because she appears in the
-       sequence on the home page and on Responsible AI. CONTENT-NEEDED.md. */
-    named: [],
-    team: true,
-    bio: [
-      "Mansi holds the schedule together, so that a note raised at one review stage reaches the people who have to act on it.",
-    ],
+    role: "Production Assistant",
+    /* No photograph and no biography. The 22 October document gives the public
+       description below and nothing more, so nothing more is printed.
+       CONTENT-NEEDED.md. */
+    phases: [],
+    bio: ["Mansi is a production assistant, and is developing the nursery rhymes."],
   },
   {
-    name: "Victoria",
+    name: "Victoria Buchkova",
     role: "Graphic Designer and Illustrator",
     asset: "person.victoria",
-    /* ADDED 2026-10-13 from the client's own email introducing her. The two
-       lines below are that email's two sentences; nothing is added to them,
-       and no surname was given, as with Kirstie.
-
-       NOT `team: true`. The two shared stages are the episode review stages
-       the company's account gives to the team as a whole, and the email
-       places her on the activity books and learning materials rather than in
-       the episode sequence. Marking her there would be our claim, not the
-       company's, so the roster says she is not at a review stage. Asked in
-       QUESTIONS.md. */
-    named: [],
-    team: false,
+    /* SURNAME SUPPLIED 2026-10-24, after three weeks as "Victoria" alone. The
+       22 October document also confirms the contribution below, which the
+       introductory email had left vaguer. */
+    phases: [],
     bio: [
-      "Victoria is a graphic designer and illustrator specialising in children's activity books and educational materials.",
-      "She creates engaging designs that make learning fun.",
+      "Victoria designs and illustrates the games and the puzzles.",
+      "She is a graphic designer and illustrator specialising in children's activity books and educational materials.",
     ],
   },
 ];
@@ -158,67 +152,68 @@ export const TEAM: Member[] = [
 export const ADVISORS: Member[] = [
   {
     name: "David Toth",
-    role: "Strategic Advisor",
+    /* As with Kirstie: the document describes the contribution and asks for
+       the displayed title to be agreed. */
+    role: "Adviser",
     asset: "person.david",
-    named: [],
-    team: false,
+    phases: [1, 2],
     bio: [
-      "David shapes platform strategy and the low-stimulation media framework that connects screen time to real-world creativity, nature and offline play.",
+      "David contributes to script development and gives industry advice drawn from his experience in children's shows. He reads every draft alongside the rest of the group.",
       "He is a children's media professional specialising in educational rubrics, content strategy and creator coaching, with over two decades advising youth brands including Nickelodeon, LEGO and BBC Kids on content quality and platform safety.",
       "He has also managed global operations for animation properties at Warner Bros. Studios, including Cartoon Network and DC Entertainment.",
     ],
   },
 ];
 
-/* The six stages are the company's own account. The full sentences for each
-   stage live on the Responsible AI page, which owns that account; here each
-   stage carries one clause, enough to label it on the track, so a reader
-   going Home to Team to Responsible AI does not read the same six sentences
-   three times. */
-export const STAGES: Stage[] = [
+/* The five phases are the company's own list from the 22 October document, in
+   its order and close to its words. Each slip carries one sentence; the full
+   account, including the names of the five who read every draft, lives on the
+   Responsible AI page, which owns it. A reader going Home to Team to
+   Responsible AI should not meet the same five sentences three times.
+
+   NOTE WHAT IS NOT HERE. No stage owner, no sign-off line per phase, and no
+   "a release can be held here". All three were true of the six-stage account
+   and none survives this one: the document asks in as many words for the
+   repeated language about being answerable and holding releases back to come
+   off the site. What replaces it is the thing that is actually unusual here,
+   which is that the same five people read every draft and the work goes round
+   again until they are all happy. */
+export const PHASES: Phase[] = [
   {
     n: "01",
-    stage: "Concept and story",
-    who: "Conor and Alan",
-    checks: "Concept, story and learning goal, set before production begins.",
-    faces: ["person.conor", "person.alan"],
+    phase: "First draft",
+    who: "Alan writes, five read",
+    what: "Alan writes the script, and Paula, Lydia, Kirstie, Conor and David Toth each read it and give feedback.",
   },
   {
     n: "02",
-    stage: "Script and direction",
-    who: "Alan Compton",
-    checks: "Script written, production directed, assets specified by the team.",
-    faces: ["person.alan"],
+    phase: "Revised drafts",
+    who: "Alan and the same five",
+    what: "Alan writes the next draft from that feedback, and the same group reads it again.",
+    rounds: "Three to four rounds before the script is locked",
   },
   {
     n: "03",
-    stage: "Educational review",
-    who: "Paula Walshe PhD",
-    checks: "Learning intent and the offline activities, against early years practice.",
-    faces: ["person.paula"],
+    phase: "Animation",
+    who: "Alan Compton",
+    what: "Once the script is locked Alan begins the animation, using his creative judgement throughout production.",
   },
   {
     n: "04",
-    stage: "Parent and early years review",
-    who: "Lydia and Kirstie",
-    checks: "Script and production read from a parent's point of view, and a child's.",
-    faces: ["person.lydia", "person.kirstie"],
+    phase: "Episode review",
+    who: "The team",
+    what: "The team watches the episode and gives feedback, and Alan makes the changes and shares the revised version.",
   },
   {
     n: "05",
-    stage: "Quality and suitability",
-    who: "The production team",
-    checks: "Voices and visuals checked for quality and suitability.",
-    faces: [],
-    shared: true,
-  },
-  {
-    n: "06",
-    stage: "Final review and approval",
+    phase: "Final sign-off",
     who: "The team",
-    checks: "The finished episode inspected, changes requested where needed.",
-    faces: [],
-    shared: true,
-    hold: true,
+    what: "The team watches and revises again until everyone is happy with the episode and signs it off for release.",
+    rounds: "Repeats until everyone is happy",
   },
 ];
+
+/* The five who read every draft, in the order the company's document lists
+   them. Used wherever a page shows the reading group as faces rather than as
+   a sentence, so the group can never drift between pages. */
+export const READERS = ["Paula Walshe PhD", "Lydia Sexton", "Kirstie Harding", "Conor Sexton", "David Toth"] as const;

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 
@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Story from "@/pages/Story";
 import Team from "@/pages/Team";
 import EthicalAi from "@/pages/EthicalAi";
+import CaseStudy from "@/pages/CaseStudy";
 import Journal from "@/pages/Journal";
 import JournalPost from "@/pages/JournalPost";
 import AppPage from "@/pages/AppPage";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="story" element={<Story />} />
         <Route path="team" element={<Team />} />
         <Route path="ethical-ai" element={<EthicalAi />} />
+        <Route path="case-study" element={<CaseStudy />} />
         <Route path="journal" element={<Journal />} />
         <Route path="journal/:slug" element={<JournalPost />} />
         <Route path="app" element={<AppPage />} />

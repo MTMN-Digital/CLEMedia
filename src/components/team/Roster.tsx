@@ -1,55 +1,42 @@
 import { Settle } from "@/components/Settle";
-import type { Member, Stage } from "./people";
+import type { Phase, Member } from "./people";
 import { StandsAt } from "./StandsAt";
 
 /* ============================================================================
-   The people, and the stages each of them stands at, in words.
+   The people, and the phases each of them comes into, in words.
 
-   This is the other half of `StageSequence`. The sequence answers "who stands
-   at stage three"; this answers "what is Paula answerable for", which is the
-   question an investor asks about a named individual. The matrix it replaces
-   tried to answer both at once with a grid of squares and answered neither
-   quickly.
+   This is the other half of `StageSequence`. The sequence answers "what
+   happens at the revised drafts"; this answers "what does Paula actually do
+   here", which is the question an investor asks about a named individual.
 
-   THE STAGES ARE WRITTEN OUT. A person's stages used to be six small boxes in
-   three states against a legend. They are now the stage names, in a sentence.
-   It costs a line of text per person and removes the key entirely, and it is
-   the version a screen reader was already being given, so the two readings
-   finally match.
+   THE PHASES ARE WRITTEN OUT, not encoded. They used to be small boxes in
+   three states against a legend. It costs a line of text per person, removes
+   the key entirely, and it is the version a screen reader was already being
+   given, so the two readings match.
 
-   WHOEVER IS NOT NAMED ANYWHERE SAYS SO. Mansi holds the schedule and stands
-   at no review stage; the adviser sits outside the sequence altogether. Both
-   state it, because an empty row of dashed boxes reads as missing data rather
-   than as a deliberate fact about the company's account.
+   WHOEVER IS IN NO PHASE SAYS SO. Mansi is a production assistant on the
+   nursery rhymes and Victoria designs the games and puzzles; neither is in
+   the script and episode reviews, and both state it, because an empty row
+   reads as missing data rather than as a deliberate fact.
+
+   THE `outside` PROP IS GONE, 2026-10-24. It rendered advisers as sitting
+   outside the sequence entirely, which was true of the six-stage account and
+   is not true of this one: the 22 October document puts David Toth in the
+   reading group for every draft and says in as many words that he must be
+   recognised for his script input. A person is now in the phases their own
+   row says they are in, adviser or not.
    ========================================================================== */
 
-function standsAt(m: Member, stages: Stage[]): string {
-  const named = stages.filter((s) => m.named.includes(Number(s.n)));
-  const shared = m.team ? stages.filter((s) => s.shared) : [];
-  const parts: string[] = [];
-  if (named.length) parts.push(named.map((s) => s.stage.toLowerCase()).join(", "));
-  if (shared.length) {
-    parts.push(
-      `${named.length ? "and " : ""}the ${shared.length} stages the team takes together`,
-    );
-  }
-  return parts.join(" ");
+function comesInto(m: Member, phases: Phase[]): string {
+  const at = phases.filter((s) => m.phases.includes(Number(s.n)));
+  return at.map((s) => s.phase.toLowerCase()).join(", ");
 }
 
-export function Roster({
-  people,
-  stages,
-  outside = false,
-}: {
-  people: Member[];
-  stages: Stage[];
-  /** Advisers sit outside the six stages entirely. */
-  outside?: boolean;
-}) {
+export function Roster({ people, phases }: { phases: Phase[]; people: Member[] }) {
   return (
     <ul className="grid gap-y-10 lg:gap-y-12">
       {people.map((m) => {
-        const at = outside ? "" : standsAt(m, stages);
+        const at = comesInto(m, phases);
         return (
           <Settle as="li" key={m.name}>
             <div className="hairline grid gap-5 pt-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-14 lg:pt-10 xl:gap-20">
@@ -68,18 +55,14 @@ export function Roster({
                     name. The sentence below still spells it out; this is for
                     the reader scanning the whole roster for the one person
                     they came to check. */}
-                <StandsAt member={m} stages={stages} outside={outside} />
+                {at && <StandsAt member={m} phases={phases} />}
               </div>
 
               <div className="min-w-0">
                 <p className="font-mono text-[12px] uppercase tracking-[0.14em]">
-                  {outside
-                    ? "Outside the six review stages"
-                    : at
-                      ? "Stands at"
-                      : "Not at a review stage"}
+                  {at ? "Takes part in" : "Not in the script and episode reviews"}
                 </p>
-                {!outside && at && <p className="t-prose mt-1.5 first-letter:uppercase">{at}</p>}
+                {at && <p className="t-prose mt-1.5 first-letter:uppercase">{at}</p>}
                 {m.bio.map((line, i) => (
                   <p key={i} className={i === 0 ? "t-prose mt-5" : "t-prose mt-4"}>
                     {line}

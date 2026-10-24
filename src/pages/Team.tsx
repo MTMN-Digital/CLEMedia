@@ -3,7 +3,7 @@ import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { Button, Kicker, Section, Container, Lead } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { TEAM, STAGES, ADVISORS } from "@/components/team/people";
+import { ADVISORS, PHASES, TEAM } from "@/components/team/people";
 import { StageSequence } from "@/components/team/StageSequence";
 import { Roster } from "@/components/team/Roster";
 import { PeopleStrip } from "@/components/team/PeopleStrip";
@@ -11,7 +11,7 @@ import { PeopleStrip } from "@/components/team/PeopleStrip";
 /* ============================================================================
    Team and advisers.
 
-   The site's argument is "named, and answerable". This is the page where that
+   The site's argument is "the same people read everything". This is the page where that
    has to be visible rather than asserted.
 
    REBUILT 2026-10-06 ON ONE STRUCTURE. The page used to be two: a band at the
@@ -49,7 +49,7 @@ export default function Team() {
     <>
       <Seo
         title="Team and advisers"
-        description="The people behind CLÉ Family Media: the six review stages every episode passes through, the named person answerable at each, the core team's own biographies, and the strategic adviser who shapes the model."
+        description="The people behind CLÉ Family Media: the five phases an episode goes through from first draft to release, the five who read every draft, and the core team's own biographies."
         path="/team"
       />
 
@@ -96,22 +96,22 @@ export default function Team() {
               <div>
                 <Lead className="max-w-[46ch]">
                   A small core team. Between them they decide what gets made, how it gets made and
-                  what it is supposed to do for the child watching. Each of them stands at a point
-                  in the review sequence an episode passes through before a child sees it, and any
-                  stage can hold a release back.
+                  what it is supposed to do for the child watching. Alan writes and animates, and
+                  the rest of them read every draft and watch every episode before it is released.
                 </Lead>
                 {/* Was an account of a table that no longer exists: the six
                     stages were a matrix of marks against a legend until
                     2026-10-03, and the paragraph describing how to read it
-                    outlived two rebuilds of the thing it described. */}
+                    outlived two rebuilds of the thing it described. Rewritten
+                    again on 2026-10-24, when the six stages themselves went:
+                    see the note at the top of components/team/people.ts. */}
                 {/* `border-white/22`, not `border-rule`: `--color-rule` is an
                     ink alpha, so on a dark band it drew nothing at all. The
                     value is the measured one the home and media bands use. */}
                 <p className="mt-6 max-w-[44ch] border-t border-white/22 pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
-                  Below, the six stages as the slips they are signed off on, then the same fact
-                  from the other side: each person, and what they answer for. Two of the stages
-                  the company gives to the team as a whole, and those say so rather than naming
-                  anyone.
+                  Below, the five phases an episode goes through, then the same work from the
+                  other side: each person, and the phases they come into. Nobody is claimed for a
+                  phase the company's own account does not place them in.
                 </p>
               </div>
             </div>
@@ -128,39 +128,39 @@ export default function Team() {
         <Container width="wide">
           <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
             <h2 id="dossier-h" className="t-h2 max-w-[20ch]">
-              Six stages, and who stands at each
+              How an episode gets made
             </h2>
             <p className="t-body">
-              In the order an episode passes through them. Every stage names the people answerable
-              there, and the last one can send the work back.
+              In order, from the first draft to the finished episode. Two of the five repeat: a
+              script usually goes round three or four times, and the cut episode goes round again
+              until everyone is happy with it.
             </p>
           </Settle>
-          <StageSequence stages={STAGES} />
+          <StageSequence phases={PHASES} />
         </Container>
       </Section>
 
       {/* ═══ 3. THE PEOPLE. The same fact from the other side: what each
-          person is answerable for, written out, with their own biography. ═══ */}
+          person actually does, written out, with their own biography. ═══ */}
       <Section labelledBy="people-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
             <h2 id="people-h" className="t-h2 max-w-[20ch]">
-              The people, and what each answers for
+              The people, and what each of them does
             </h2>
             <p className="t-body">
               The biographies are the team's own, cut down and never added to. Where the company's
-              account does not name a person at a stage, nothing is claimed for them there.
+              account does not place a person in a phase, nothing is claimed for them there.
             </p>
           </Settle>
-          <Roster people={TEAM} stages={STAGES} />
+          <Roster people={TEAM} phases={PHASES} />
           <div className="mt-16 border-t border-rule pt-10 lg:mt-20 lg:pt-14">
-            <p className="eyebrow">Strategic adviser</p>
+            <p className="eyebrow">Adviser</p>
             <p className="t-body mt-3 max-w-[62ch]">
-              Advisers are not employees, and advisory input sits outside the six review stages.
-              Each adviser is described only as they have approved it.
+              Advisers are not employees. Each is described only as they have approved it.
             </p>
             <div className="mt-10">
-              <Roster people={ADVISORS} stages={STAGES} outside />
+              <Roster people={ADVISORS} phases={PHASES} />
             </div>
           </div>
         </Container>
@@ -175,8 +175,8 @@ export default function Team() {
                 Every episode passes through these people before a child sees it
               </h2>
               <p className="t-lead mt-5 max-w-[46ch] opacity-85">
-                How the work is made, stage by stage, and where AI is and is not used, is set out
-                in full on the Responsible AI page.
+                How an episode is written, reviewed and made, and where AI is and is not used, is
+                set out in full on the Responsible AI page.
               </p>
             </div>
             {/* The quiet button is ink on a hairline, which disappears on navy.

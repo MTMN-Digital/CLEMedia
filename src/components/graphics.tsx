@@ -21,7 +21,7 @@
  *   HumanLedDiagram and EthicsOrbit both animated forever, and EthicsOrbit used
  *   gradients. Both are against the house rules the rest of the site follows.
  *
- * The six stages now live in exactly two places: ProductionLine on the
+ * The review sequence now lives in exactly two places: ProductionFlat on the
  * Responsible AI page, which owns the full account, and the home page's review
  * section, which carries the titles and the names only.
  */

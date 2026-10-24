@@ -50,7 +50,12 @@ export const STAGES: { title: string; id: Stage; line: string }[] = [
   {
     id: "play",
     title: "Play",
-    line: "A pause for a short movement or breathing prompt, so the episode becomes something a child does rather than only sees.",
+    /* REWRITTEN 2026-10-24. "The current story makes Play sound mainly like a
+       movement or breathing break, which does not reflect the full offer."
+       The prompt is still in it, as one of the things Play holds rather than
+       as the whole of it. The games below are the client's own list from the
+       same document. */
+    line: "Songs, puzzles, matching, recall and jigsaw games built from the episode, plus a short movement or breathing prompt, so the episode becomes something a child does rather than only sees.",
   },
   {
     id: "learn",

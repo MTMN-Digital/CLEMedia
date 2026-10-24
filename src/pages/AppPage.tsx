@@ -75,6 +75,18 @@ const ITEMS: Record<string, { title: string; body: string }> = {
     title: "Play that follows the story",
     body: "Each episode has activities built from what just happened in it, so the play reinforces the idea rather than sitting beside it as a separate game.",
   },
+  /* ADDED 2026-10-24 from the client's review document, which lists what the
+     planned first release actually holds. Until then this page described Play
+     as a movement or breathing prompt and nothing else, which the document
+     says does not reflect the full offer. */
+  games: {
+    title: "Games, songs and a drawing canvas",
+    body: "Songs, puzzles, tasks, matching, recall and jigsaw games, colouring sheets and a blank canvas to draw on. The interactive games are being built for families at home and for classroom boards.",
+  },
+  mindful: {
+    title: "A mindfulness guide, and the offline activities",
+    body: "Paula's offline activities and a mindfulness guide, so the time after an episode has somewhere to go that is not another screen.",
+  },
   hands: {
     title: "Built for small hands",
     body: "Large targets, simple navigation and no dark patterns.",
@@ -85,7 +97,7 @@ const ITEMS: Record<string, { title: string; body: string }> = {
   },
   control: {
     title: "Parents stay in control",
-    body: "Clear settings, no surprise purchases inside the app, and no advertising to children anywhere in it.",
+    body: "Clear settings, no advertising to children anywhere in it, no purchases inside a game, and nothing recommending the next thing to watch.",
   },
   grounded: {
     title: "Grounded in the learning",
@@ -94,8 +106,8 @@ const ITEMS: Record<string, { title: string; body: string }> = {
 };
 const STAGE_ITEMS: Record<Stage, string[]> = {
   watch: ["adFree", "hands", "control"],
-  play: ["follows"],
-  learn: ["printables", "grounded"],
+  play: ["follows", "games"],
+  learn: ["printables", "mindful", "grounded"],
 };
 const SLIPS: BoardSlip[] = STAGES.map((s, i) => ({
   n: String(i + 1),
@@ -108,9 +120,12 @@ const SLIPS: BoardSlip[] = STAGES.map((s, i) => ({
    The same three review stages the episodes pass: educational review, and
    parent and early years review. */
 const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[] = [
-  { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula", line: "Reviews the learning intent of each episode and the offline activities that follow it, against early years practice." },
-  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia", line: "Reads script and production from a parent's point of view, and from a child's." },
-  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
+  /* Titles corrected 2026-10-24 from the client's review document. Kirstie's
+     is the plain "Adviser" the document itself uses, because it describes her
+     contribution and then asks for the displayed title to be agreed. */
+  { name: "Paula Walshe PhD", role: "Chief Education Advisor", asset: "person.paula", line: "Brings the educational expertise, and gives feedback on every draft script and on the activities that follow an episode." },
+  { name: "Lydia Sexton", role: "Company Secretary", asset: "person.lydia", line: "Reads every draft from a parent's point of view, and from a child's." },
+  { name: "Kirstie Harding", role: "Adviser", asset: "person.kirstie", line: "Thirty years in childcare and early education. Checks that what is made is age-appropriate." },
 ];
 
 
@@ -121,7 +136,7 @@ export default function AppPage() {
     <>
       <Seo
         title={APP_LAUNCHED ? "PupsPlayer app" : "PupsPlayer app, in development"}
-        description="PupsPlayer™ from CLÉ Family Media holds the Watch, Play, Learn model in one place: ad-free episodes of The Pawsitive Pugs & Pals, the movement or breathing prompt that follows each one, and the printable activities underneath. In development."
+        description="PupsPlayer™ from CLÉ Family Media holds the Watch, Play, Learn model in one place: ad-free episodes of The Pawsitive Pugs & Pals, the songs, puzzles and games built from each one, and the printable and offline activities underneath. In development."
         path="/app"
       />
 
@@ -137,11 +152,12 @@ export default function AppPage() {
               <h1 id="app-h" className="t-display mt-6 max-w-[14ch]">Watch, play and learn in one place</h1>
               <Lead className="mt-6 max-w-[54ch]">
                 PupsPlayer™ will hold the whole Watch, Play, Learn model: ad-free episodes of{" "}
-                <em>The Pawsitive Pugs &amp; Pals</em>®, the movement or breathing prompt that follows
-                each one, and the printable activities underneath.
+                <em>The Pawsitive Pugs &amp; Pals</em>®, the songs, puzzles and games built from each
+                one, and the printable and offline activities underneath. There are no purchases
+                inside a game and nothing recommending the next thing to watch.
                 {APP_LAUNCHED
                   ? ""
-                  : " It is in development and not yet available. Everything drawn below is the plan, not a screenshot."}
+                  : " It is in development and not yet available. Everything on this page is the first release as it is planned, not as it has been tested, and we will say which is which once testing is done."}
               </Lead>
               {APP_LAUNCHED && liveLinks.length > 0 ? (
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -279,9 +295,9 @@ export default function AppPage() {
               Checked by the people who check the episodes
             </h2>
             <p className="t-body mt-4 text-body">
-              Every activity in the app maps back to the early years objective behind its episode
-              and passes the same review the episode does: educational review, then parent and
-              early years review. Nothing is generated and published automatically.
+              Every activity in the app maps back to the early years objective behind its episode,
+              and it is read by the same people who read the scripts before Paula gives it her
+              final word.
             </p>
           </Settle>
 
@@ -315,6 +331,13 @@ export default function AppPage() {
               <dl className="mt-8 max-w-[52ch]">
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
                   <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Status</dt>
+                  {/* NO DATE, and not because none exists. The client's review
+                      document of 22 October gives a working launch target and
+                      says in the same sentence not to publish an exact date
+                      until it is confirmed. A target that slips is a broken
+                      promise on the one page a parent checks, so this row says
+                      what is true today and QUESTIONS.md asks whether the
+                      month may go up. */}
                   <dd className="t-body">{APP_LAUNCHED ? "Available now" : "In development"}</dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">

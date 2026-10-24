@@ -96,7 +96,7 @@ import "./stagemark.css";
    host can push the whole choreography later with `--stagemark-delay`.
    ========================================================================== */
 
-export type StageNumber = 6 | 5 | 4 | 1 | 2 | 3;
+export type PhaseNumber = 5 | 4 | 2 | 1 | 3;
 
 /* A delay inside the mark, offset by whatever the host asks for. */
 const at = (d: number, dur?: number): CSSProperties =>
@@ -244,37 +244,6 @@ function ScriptRead() {
    shape draws, then the dots land and the hand traces the first stretch.
    The dotted line is an `.ink-in`, not a draw, because the kit's draw
    overrides any dash. */
-function ActivitySheet() {
-  return (
-    <svg {...SVG} viewBox="0 0 62 48">
-      <g className="ink-in" style={at(0)}>
-        <Sheet x={2} y={4} width={56} height={38} rx={1} />
-      </g>
-      <circle cx="15.5" cy="19" r="8.5" className="ink-wash--deep ink-in" style={at(0.25)} />
-      <circle cx="15.5" cy="19" r="8.5" pathLength="1" className="ink-line ink-draw" style={at(0.25, 0.45)} />
-      <rect x="31" y="10.5" width="17" height="17" rx="0.5" pathLength="1" className="ink-line ink-draw" style={at(0.55, 0.45)} />
-      <path
-        d="M8 35 H52"
-        strokeDasharray="1.6 2.6"
-        className="ink-line ink-thin ink-in"
-        style={at(0.9)}
-      />
-      <path
-        d="M8 35 q5 -2.4 10 0 t9 0"
-        pathLength="1"
-        className="ink-line ink-draw"
-        style={at(1.05, 0.45)}
-      />
-    </svg>
-  );
-}
-
-/* 05. The finished episode: picture and sound together. A 16:9 frame with
-   the garden's horizon inside it and the ground under the horizon toned,
-   so it reads as a picture and not a box with a line in it. The voice take
-   is a hand-drawn trace under it at the same width, drawing itself at the
-   pace of being played through. Both halves at once because the stage
-   checks both. */
 function Episode() {
   return (
     <svg {...SVG} viewBox="0 0 62 48">
@@ -307,7 +276,7 @@ function Episode() {
    post rises, and last the arm comes down from the hinge: the arm's path
    starts at the post so `.ink-draw` swings it out from there. The arm and
    the hinge are the only accent in the set. */
-function Held() {
+function SignedOff() {
   return (
     <svg {...SVG} viewBox="0 0 64 48">
       <path d="M2 45 H62" className="ink-line ink-heavy ink-in" style={at(0)} />
@@ -323,19 +292,30 @@ function Held() {
   );
 }
 
-const MARKS: Record<StageNumber, () => ReactElement> = {
+/* REMAPPED 2026-10-24, when the six sign-off stages became the five phases of
+   the client's own account (see the note at the top of people.ts). The
+   drawings are unchanged; what each one stands for moved:
+
+     01 First draft     one page
+     02 Revised drafts  a stack of pages with writing on it, the rounds
+     03 Animation       a frame with its soundtrack under it
+     04 Episode review  a page of reading marks, which is what feedback is
+     05 Final sign-off  a line struck through, which is what signing is
+
+   `ActivitySheet` lost its stage and is gone with it rather than left
+   unreferenced. It is in the history if a later section wants it. */
+const MARKS: Record<PhaseNumber, () => ReactElement> = {
   1: FirstPage,
   2: ScriptWritten,
-  3: ActivitySheet,
+  3: Episode,
   4: ScriptRead,
-  5: Episode,
-  6: Held,
+  5: SignedOff,
 };
 
-/* `n` is the company's own stage number, 1 to 6, as a number or as the
+/* `n` is the company's own phase number, 1 to 5, as a number or as the
    two-digit string the data files carry ("01"). Anything else renders
    nothing rather than a wrong drawing. */
-export function StageMark({ n }: { n: StageNumber | number | string }) {
+export function StageMark({ n }: { n: PhaseNumber | number | string }) {
   const k = typeof n === "string" ? Number.parseInt(n, 10) : n;
   const Mark = (MARKS as Partial<Record<number, () => ReactElement>>)[k];
   if (!Mark) return null;

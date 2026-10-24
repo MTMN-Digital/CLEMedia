@@ -119,6 +119,30 @@ const assets = {
     label: "The snail on the path",
   },
 
+  /* THE REAL DOGS, 2026-10-24. Conor supplied eight original photographs with
+     his review document, four of each, and asked for them on the Story page
+     "alongside the animated characters" with the two clearly labelled. The
+     files have not reached this machine yet, so both are `null` and the page
+     renders its marked placeholder. Nothing else about the section is
+     waiting: the moment a file lands at these paths the slot fills.
+
+     NOT an exception to the no-AI-imagery rule and not an exception to the
+     no-stock rule either. These are photographs of two real dogs, taken by
+     the client, which is the kind of asset this site has been asking for from
+     the start. CONTENT-NEEDED.md. */
+  "dog.finn": {
+    base: null,
+    alt: "Finn, the real fawn pug the character is based on",
+    width: 1200, height: 1200,
+    label: "Finn, the real fawn pug, one of four supplied photographs",
+  },
+  "dog.fia": {
+    base: null,
+    alt: "Fia, the real black pug the character is based on",
+    width: 1200, height: 1200,
+    label: "Fia, the real black pug, one of four supplied photographs",
+  },
+
   "story.garden": {
     base: "/brand/story-garden",
     alt: "The garden in The Pawsitive Pugs and Pals, with a rope swing hanging from an old tree",

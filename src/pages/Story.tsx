@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { ShowFrame } from "@/components/ShowFrame";
+import { RealDogs } from "@/components/story/RealDogs";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
@@ -14,7 +15,7 @@ import { Wipe } from "@/components/Wipe";
 import { Kicker, Card, Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
-import type { AssetKey } from "@/lib/brand";
+import { TEAM } from "@/components/team/people";
 
 /* ============================================================================
    The founder's story.
@@ -65,28 +66,30 @@ import type { AssetKey } from "@/lib/brand";
 const LEDGER: { tag: string; line: string }[] = [
   { tag: "Food retail", line: "Thirteen years, from apprentice to head butcher." },
   { tag: "2020", line: "A life-changing accident ends that direction." },
-  { tag: "Mature student", line: "Back to education, choosing again from the beginning." },
+  { tag: "Mature student", line: "Back to education, and the chance to build something new." },
   { tag: "QQI Level 6", line: "Marketing, with distinction." },
-  { tag: "MTU", line: "A Bachelor of Business in Marketing at Munster Technological University, now being finished." },
+  { tag: "MTU", line: "Currently studying for a Bachelor of Business in Marketing." },
   { tag: "Student Inc.", line: "The programme at MTU I went through." },
-  { tag: "A father", line: "The question stops being interesting and becomes urgent." },
+  { tag: "A year of research", line: "Children's media, and an approach to a low-stimulation educational cartoon." },
   { tag: "CLÉ Family Media", line: "Founder and CEO." },
 ];
 
-/* The four people the prose names, in the order it names them. Six review
-   stages exist and are linked, not restated: the Responsible AI page owns them. */
-const PEOPLE: { asset: AssetKey; role: string; name: string }[] = [
-  { name: "Alan Compton", role: "Creative Director", asset: "person.alan" },
-  { name: "Paula Walshe PhD", role: "Education Director", asset: "person.paula" },
-  { name: "Lydia Sexton", role: "Executive Producer", asset: "person.lydia" },
-  { name: "Kirstie Harding", role: "Child Development Consultant", asset: "person.kirstie" },
-];
+/* The four people the prose names, in the order it names them. How an episode
+   is made is linked, not restated: the Responsible AI page owns that account.
+
+   DERIVED FROM people.ts, 2026-10-24. These were four hand-written rows and
+   all four titles were stale the moment the client confirmed the real ones. */
+const PEOPLE = TEAM.flatMap((m) =>
+  m.asset && m.name !== "Conor Sexton" && m.name !== "Victoria Buchkova"
+    ? [{ name: m.name, role: m.role, asset: m.asset }]
+    : [],
+);
 
 /* Where the letter hands the reader. Three destinations, one line each, as
    rows on the deep band rather than cards. */
 const NEXT: { href?: string; line: string; to?: string; title: string }[] = [
   { title: "The people who make it", line: "The full team and the advisory board, with their own biographies.", to: "/team" },
-  { title: "How the work is made and reviewed", line: "The six stages an episode passes through, and where AI is and is not used.", to: "/ethical-ai" },
+  { title: "How the work is made and reviewed", line: "The five phases an episode goes through, and where AI is and is not used.", to: "/ethical-ai" },
   { title: "The show itself", line: "Episodes and family activities live on the show's own site.", href: SITE.showUrl },
 ];
 
@@ -204,29 +207,28 @@ export default function Story() {
           <Spread
             margin={
               <>
-                <h2 id="saw-h" className="t-h2">What I saw</h2>
-                <Note className="mt-4 lg:max-w-[26ch]">Beside a small child, before any of this was a company.</Note>
+                <h2 id="saw-h" className="t-h2">Where it started</h2>
+                <Note className="mt-4 lg:max-w-[26ch]">Minding a friend's four-year-old, before any of this was a company.</Note>
               </>
             }
           >
             {/* The prose runs AROUND the first drawing rather than beside
                 it: the hooks float right of the opening paragraph and the
                 second paragraph carries on around them. See
-                components/story/Hooks.tsx. The block is its own formatting
-                context so the float cannot run on into the next Spread. */}
+                components/story/Hooks.tsx. */}
             <div className="wrap-flow space-y-5">
               <p>
                 <Hooks />
-                I started paying proper attention to children's media the way most people do, by
-                sitting beside a small child who was watching it. What struck me was the speed.
-                Cuts every second or so. Colours turned up past anything in the real world. A new
-                hook arriving before the last one had finished landing.
+                The idea for CL&Eacute; Family Media began while I was minding a friend's
+                four-year-old son. He was watching YouTube when something came up that was not
+                appropriate for his age. My fianc&eacute;e, Lydia, was pregnant with our little
+                girl at the time.
               </p>
               <p>
-                None of it was malicious. You could see the logic plainly enough: attention is
-                what gets measured, so attention is what gets designed for. But watching a child
-                come off forty minutes of it, wired and brittle and somehow tired at the same
-                time, I could not accept that this was simply how children's content had to work.
+                I spent a year researching children's media and developing an approach for a
+                low-stimulation educational cartoon. I knew I could not build it alone, so I began
+                bringing together people with the creative and educational experience the project
+                needed.
               </p>
             </div>
           </Spread>
@@ -235,15 +237,16 @@ export default function Story() {
             className="mt-16 sm:mt-[4.5rem]"
             margin={
               <>
-                <h2 id="parent-h" className="t-h2">Becoming a parent</h2>
-                <Note className="mt-4 lg:max-w-[26ch]">What I went looking for, and how little of it there was.</Note>
+                <h2 id="parent-h" className="t-h2">Education, from the outset</h2>
+                <Note className="mt-4 lg:max-w-[26ch]">The first person I brought in, and why.</Note>
               </>
             }
           >
             <p>
-              Becoming a parent changes the question from an interesting one into an urgent one.
-              It stops being about media in general and becomes about the specific twenty
-              minutes in front of you, and whether you are glad about them afterwards.
+              Paula was involved from the beginning. We had never met in person, but I spoke to
+              her online and shared my vision and ambition. She wanted to be involved while the
+              early work on production tools, pacing and voices was still taking shape. Education
+              was part of the project from the outset.
             </p>
           </Spread>
         </Container>
@@ -261,8 +264,8 @@ export default function Story() {
               <Bluebell size={132} className="story-bell hidden text-red-deep lg:block" />
               <p className="t-h1 max-w-[26ch] pl-[0.45em] font-display text-ink [text-indent:-0.45em]">
                 <span className="text-red-deep" aria-hidden="true">&ldquo;</span>
-                I was not looking for something to keep her quiet. I was looking for something I
-                would be glad she had watched.
+                I knew I could not build it alone, so I began bringing together people with the
+                creative and educational experience the project needed.
                 <span className="text-red-deep" aria-hidden="true">&rdquo;</span>
               </p>
             </blockquote>
@@ -276,10 +279,9 @@ export default function Story() {
               components/story/TheGap.tsx. */}
           <Spread margin={<TheGap />}>
             <p>
-              So I went looking, and there was less of it than I expected. Plenty of shows were
-              gentle. Plenty were educational. Very few were both, and fewer still would tell
-              you anything about who had made them or who had checked them before they reached
-              a child.
+              There was less of it than I expected. Plenty of shows were gentle. Plenty were
+              educational. Very few were both, and fewer still would tell you anything about who
+              had made them or who had checked them before they reached a child.
             </p>
           </Spread>
         </Container>
@@ -299,6 +301,16 @@ export default function Story() {
           </>
         }
       />
+
+      {/* ═══ THE REAL FINN AND FIA, on paper, straight after the frame from
+          the series. The order is the argument: the drawn garden, then the two
+          dogs it was drawn for. Asked for by the client on 2026-10-24; see
+          components/story/RealDogs.tsx for why each plate is labelled. ═══ */}
+      <Section labelledBy="dogs-h" pad="tight">
+        <Container width="wide">
+          <RealDogs headingId="dogs-h" />
+        </Container>
+      </Section>
 
       {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width.
           MOMENT THREE is the route itself, which is no longer a second list in
@@ -334,12 +346,11 @@ export default function Story() {
                 <p>
                   A life-changing accident in 2020 ended that direction. I went back to education
                   as a mature student instead, took a QQI Level 6 in Marketing with distinction,
-                  and I am finishing a Bachelor of Business in Marketing at Munster Technological
-                  University, where I also went through the Student Inc. programme.
+                  and I am studying for a Bachelor of Business in Marketing at Munster
+                  Technological University, where I also went through the Student Inc. programme.
                 </p>
                 <p className="text-ink">
-                  So the company is not a pivot from somewhere adjacent. It is the thing I built
-                  once I had to choose again from the beginning.
+                  Returning to education gave me the opportunity to build something new.
                 </p>
               </div>
             </div>
@@ -393,7 +404,7 @@ export default function Story() {
                   ))}
                 </ul>
                 <div className="mt-5">
-                  <TextLink to="/ethical-ai">The six review stages<IconArrow size={15} /></TextLink>
+                  <TextLink to="/ethical-ai">How an episode is made<IconArrow size={15} /></TextLink>
                 </div>
               </>
             }
@@ -401,10 +412,10 @@ export default function Story() {
             <p>
               I could not have made this on my own, and I did not try. The company came
               together around people who knew far more than I did: Alan on the creative side,
-              who writes and directs and sets the pace of an episode; Paula on the educational
-              side, who reviews the learning intent before a script exists; Lydia and Kirstie
-              bringing the parent and early years perspectives that catch what a production read
-              misses.
+              who writes the scripts, directs and sets the pace of an episode; Paula on the
+              educational side, who brings the learning expertise and reads every draft; Lydia,
+              Kirstie and David bringing the parent, early years and industry perspectives that
+              catch details which may be missed during production.
             </p>
             {/* The second drawing the prose runs around: the script with the
                 learning stitched through it from the first line, floated
@@ -413,10 +424,11 @@ export default function Story() {
             <div className="wrap-flow">
               <p>
                 <Thread />
-                <em>The Pawsitive Pugs &amp; Pals</em> is our first original series. Finn, the fawn
-                pug, and Fia, the black pug, came out of that work. The learning was built in from
-                the start rather than added once the scripts were finished, which is a slower way
-                to make a show and, as far as we can tell, the only way to make this one.
+                That work became <em>The Pawsitive Pugs &amp; Pals</em>, our first original series.
+                Finn, the fawn pug, and Fia, the black pug, came out of it. The learning was built
+                in from the start rather than added once the scripts were finished, which is a
+                slower way to make a show and, as far as we can tell, the only way to make
+                this one.
               </p>
             </div>
             <figure className="!mt-8 w-[min(100%,300px)] sm:ml-auto">
@@ -432,9 +444,9 @@ export default function Story() {
               </figcaption>
             </figure>
             <p className="!mt-8">
-              Being a small studio is not something we are apologising for. It means the people
-              who set the story are the same people who check it before release, and that any
-              of them can hold a release back. That is worth more to me than volume.
+              Being a small studio is not something we are apologising for. The people who set
+              the story are the same people who read every draft of it, and the work goes round
+              between us until we are all happy with it. That is worth more to me than volume.
             </p>
           </Spread>
         </Container>
@@ -490,10 +502,10 @@ export default function Story() {
             }
           >
             <p>
-              The model is Watch, Play, Learn, and it is more literal than it sounds. Watch an
-              episode together. Pause for a movement or a breathing prompt. Then carry on with a
-              printable or an educator-designed activity, away from the screen entirely. The
-              episode is the beginning of the thing, not the whole of it.
+              The model is Watch, Play, Learn, and it is more literal than it sounds. Our Watch,
+              Play, Learn approach connects calm stories with interactive games, creative tasks
+              and practical activities children can explore beyond the screen. Each episode
+              introduces ideas children can then explore through games and practical activities.
             </p>
             <p>
               In practice, families find us free on YouTube, which is simply where
@@ -523,7 +535,7 @@ export default function Story() {
                   <p className="eyebrow eyebrow-sm mt-1">Founder and CEO</p>
                 </div>
               </div>
-              <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">If you are weighing up the company</h2>
+              <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">Interested in working with us?</h2>
               <p className="t-lead mt-5 max-w-[42ch] opacity-85">
                 I would rather answer your questions directly than have you guess at them from a
                 website.
