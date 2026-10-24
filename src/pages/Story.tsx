@@ -94,7 +94,7 @@ const NEXT: { href?: string; line: string; to?: string; title: string }[] = [
 ];
 
 /* ----------------------------------------------------------------------------
-   The margin grid. Margin left, prose right, stacked on anything under 1024px.
+   The margin grid. Margin left, prose centre, objects right.
    The margin is sticky on desktop so the heading stays with the paragraph it
    belongs to, which is a layout property and not motion.
 
@@ -102,13 +102,40 @@ const NEXT: { href?: string; line: string; to?: string; title: string }[] = [
    as a border on the MARGIN column stretches to the margin's own height and a
    sticky margin is short: it drew a 90px stub beside a 400px paragraph. On the
    prose column it is always exactly as long as the prose it is annotating.
+
+   ── A THIRD TRACK, 2026-10-24 ──────────────────────────────────────────────
+   The letter used to run in its own 1024px box, centred in the viewport, while
+   the garden, the dogs, the biography band and the film beside it all ran at
+   the 1560 cap. Five changes of left edge down one page, and none of them
+   agreed with the header, which starts its own content 208px further left. The
+   letter now starts where the header starts, like everything else.
+
+   Aligning it that way frees about 450px down the right, and the page already
+   had three objects with nowhere good to be: the four faces and the gap drawing
+   were squeezed into a 224px margin that was also carrying a heading and a
+   note, and the characters frame was pushed to the right edge of a 560px
+   measure. They go in the third track. The prose measure itself did not move,
+   because 69 characters is already right.
+
+   The two drawings the text WRAPS around (the hooks, the thread) deliberately
+   stay in the prose. Their whole job is to interrupt the measure, and a drawing
+   parked in a column beside the text interrupts nothing.
+
+   The prose track is 38rem flat rather than a fraction: 35rem is the measured
+   width of the 56ch cap at the prose's own 17px, plus the 3rem the rule and its
+   padding cost. A fractional track would have let the measure drift with the
+   viewport, which is the thing the cap exists to stop.
 ---------------------------------------------------------------------------- */
 function Spread({
   margin,
+  aside,
   children,
   className = "",
 }: {
-  margin: ReactNode;
+  /** Optional: the gap drawing's spread has no heading to carry. */
+  margin?: ReactNode;
+  /** Objects that belong beside the letter rather than inside it. */
+  aside?: ReactNode;
   className?: string;
   children: ReactNode;
 }) {
@@ -118,7 +145,7 @@ function Spread({
        paper down the right of every screen, which is the exact complaint this
        pass exists to answer. On a phone the cap is wider than the screen, so
        nothing changes there. */
-    <Settle className={`mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)] ${className}`}>
+    <Settle className={`mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_38rem_minmax(0,1fr)] ${className}`}>
       <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
       <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
         {/* 56ch, not 62. Measured in the browser rather than guessed: the ch
@@ -127,6 +154,10 @@ function Spread({
             anything past about 75 reads cheap. 56ch lands at 69. */}
         <div className="max-w-[56ch] space-y-5 t-prose text-body">{children}</div>
       </div>
+      {/* Spans both tracks on the two column step, where there is no third one
+          to sit in, so it falls under the letter instead of beside it. Between
+          1024 and 1280 a third track would have been 32 pixels wide. */}
+      {aside && <div className="lg:col-span-2 xl:col-span-1">{aside}</div>}
     </Settle>
   );
 }
@@ -156,7 +187,7 @@ export default function Story() {
           the wide container while the letter ran in the default one, so the
           page had two different left edges in its first two screens. ═══ */}
       <Section pad={["tight", "none"]}>
-        <Container>
+        <Container width="wide">
           <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-end lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
             <div>
               <div className="flex items-center gap-4 lg:block">
@@ -202,7 +233,7 @@ export default function Story() {
           rather than three, because three sections meant three lots of 112px
           of padding doing nothing between four paragraphs of prose. ═══ */}
       <Section labelledBy="saw-h" pad="tight">
-        <Container>
+        <Container width="wide">
           <Spread
             margin={
               <>
@@ -271,12 +302,13 @@ export default function Story() {
           </Wipe>
         </Container>
 
-        <Container>
-          {/* The margin column carries the drawing of the sentence beside it.
-              "Plenty were gentle, plenty were educational, very few were
-              both" is a shape before it is a sentence. See
-              components/story/TheGap.tsx. */}
-          <Spread margin={<TheGap />}>
+        <Container width="wide">
+          {/* The drawing of the sentence sits in the object column, not in the
+              margin. "Plenty were gentle, plenty were educational, very few
+              were both" is a shape before it is a sentence, and in a 224px
+              margin the heap of sets it is drawn as was smaller than the
+              paragraph's own first word. See components/story/TheGap.tsx. */}
+          <Spread aside={<TheGap />}>
             <p>
               There was less of it than I expected. Plenty of shows were gentle. Plenty were
               educational. Very few were both, and fewer still would tell you anything about who
@@ -378,34 +410,63 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ BUILDING AN ALTERNATIVE. The margin carries the four faces the
-          prose names, so "people who knew far more than I did" has people in
-          it. It is now the ONLY list in the margin on this page. The characters
-          appear once, small, as a placed object beside the paragraph that
-          introduces them: supporting cast, on this site. ═══ */}
+      {/* ═══ BUILDING AN ALTERNATIVE. The object column carries the four faces
+          the prose names, so "people who knew far more than I did" has people
+          in it, and the characters appear once beside the paragraph that
+          introduces them: supporting cast, on this site. Both of them were in
+          the margin and the prose respectively until 2026-10-24; see the note
+          on `Spread` for why they moved and what the margin keeps. ═══ */}
       <Section labelledBy="build-h" pad="tight">
-        <Container>
+        <Container width="wide">
           <Spread
             margin={
               <>
                 <h2 id="build-h" className="t-h2">Building an alternative</h2>
-                <ul className="mt-5 space-y-3">
-                  {PEOPLE.map((p) => (
-                    <li key={p.name} className="flex items-center gap-3">
-                      <div className="w-[40px] shrink-0">
-                        <Figure asset={p.asset} rounded="rounded-[6px]" className="aspect-square" sizes="40px" />
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-semibold leading-tight text-ink">{p.name}</p>
-                        <Note className="mt-0.5 text-[11px]">{p.role}</Note>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
                 <div className="mt-5">
                   <TextLink to="/ethical-ai">How an episode is made<IconArrow size={15} /></TextLink>
                 </div>
               </>
+            }
+            /* The four faces and the frame both moved out of the letter on
+               2026-10-24. The faces were under a heading in a 224px margin, at
+               40px each with their roles wrapping to three lines; the frame was
+               pushed to the right edge of a 560px measure at `sm:ml-auto`,
+               where it read as a paragraph that had been nudged aside rather
+               than as the one picture in this part of the page. Both of them
+               now stand in the object column, at the size they were drawn for,
+               beside the paragraph that names them. */
+            aside={
+              <div className="lg:max-w-[22rem] xl:max-w-none">
+                <ul className="space-y-4">
+                  {PEOPLE.map((p) => (
+                    <li key={p.name} className="flex items-center gap-3.5">
+                      <div className="w-[52px] shrink-0">
+                        <Figure asset={p.asset} rounded="rounded-[7px]" className="aspect-square" sizes="52px" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[14.5px] font-semibold leading-tight text-ink">{p.name}</p>
+                        <Note className="mt-1 text-[11px]">{p.role}</Note>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <figure className="mt-9">
+                  <Card className="card-still tilt-a overflow-hidden p-2">
+                    <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="(min-width: 1280px) 420px, 352px" />
+                  </Card>
+                  {/* `text-body`, not the page's muted `Note`. Measured after
+                      the frame moved into this column: muted is #6b4e3a, and
+                      at the foot of this band the paper has washed down to
+                      #d4c5a8, where it comes out at 4.45:1 against a 4.5
+                      floor. It passed where the frame used to sit, 200px
+                      higher up the same band. Body is 6.74:1 on the same
+                      stop. The token's own note in index.css calls muted "the
+                      floor", and this is where the floor gives way. */}
+                  <figcaption className="mt-2.5 pl-1 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-body">
+                    Finn and Fia, with a hen. A frame from the series.
+                  </figcaption>
+                </figure>
+              </div>
             }
           >
             <p>
@@ -430,19 +491,7 @@ export default function Story() {
                 this one.
               </p>
             </div>
-            <figure className="!mt-8 w-[min(100%,300px)] sm:ml-auto">
-              <Card className="card-still tilt-a overflow-hidden p-2">
-                <Figure
-                  asset="home.characters"
-                  rounded="rounded-[var(--radius-md)]"
-                  sizes="300px"
-                />
-              </Card>
-              <figcaption className="mt-2.5 pl-1">
-                <Note>Finn and Fia, with a hen. A frame from the series.</Note>
-              </figcaption>
-            </figure>
-            <p className="!mt-8">
+            <p>
               Being a small studio is not something we are apologising for. The people who set
               the story are the same people who read every draft of it, and the work goes round
               between us until we are all happy with it. That is worth more to me than volume.
@@ -482,7 +531,7 @@ export default function Story() {
 
       {/* ═══ HOW IT REACHES YOU ═══ */}
       <Section labelledBy="reach-h" pad="tight">
-        <Container>
+        <Container width="wide">
           <Spread
             margin={
               <>

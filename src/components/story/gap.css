@@ -2,11 +2,17 @@
    See components/story/TheGap.tsx. Marks come from components/draw/draw.css;
    this file is layout only.
 
-   It sits in the margin column of the founder's letter: 14rem on lg, 16rem on
-   xl, and stacked above its paragraph under 1024px where the column is gone.
-   The cap is the width the margin really gives it at its widest, so the
-   drawing stays at that size when stacked rather than growing to the prose
-   measure, and it is left aligned so it sits on the prose axis.
+   It sits in the OBJECT column of the founder's letter, which is the third
+   track from 1280px up and about 416px wide at 1440; under that it stacks
+   below its paragraph. It was in the 14rem margin until 2026-10-24, where it
+   had to share the column with a heading and a note and came out smaller than
+   the first word of the sentence it draws.
+
+   The cap stayed at 256px when it moved. The column is wider than that now,
+   but the viewBox is 120 units and the graphite in the hand filter is in user
+   space, so stretching the drawing stretches its tooth with it: at 416px the
+   grain goes back to reading as noise, which is the thing the geometry change
+   below was made to fix. Left aligned, so it sits on its column's own axis.
 
    The viewBox is 120 wide against those 256px, about 2.1 device pixels to
    the unit, which is what the graphite in the hand filter needs (see

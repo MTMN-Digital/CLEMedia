@@ -311,3 +311,28 @@ read "Who answers for every episode", which asserts the per-stage
 accountability the review withdrew. It now reads "The people who make every
 episode".
 
+
+## Addendum: the reading width, same day
+
+Two further things were raised and both turned out to be one measurable fault
+each rather than a matter of taste. Neither changed a word of the copy.
+
+- **Pages were sitting in a narrow column in the middle of the screen.** The
+  header and the footer run the full width of the page, starting their content
+  32 pixels in. Several sections ran in a narrower box that was centred in the
+  window instead, starting 240 pixels in, so the page appeared to step in and
+  out as you scrolled. The founder's story did it five times down its length.
+  Every section now starts where the header starts. Sections that want a
+  narrower column still have one; it is simply an indent from the page's own
+  edge rather than a separate box floating in the middle of it.
+- **The team biographies were running 103 to 140 characters to the line.**
+  Anything past about 75 is hard to read, and nothing else on the site was over
+  80. They now run at the same width as the founder's letter, which makes them
+  comfortable but taller, so each biography shows its opening paragraph and
+  puts the career history behind a "More about" control. **Nothing was cut.**
+  Every word the team supplied is still on the page, and the page is a third
+  shorter.
+
+The founder's story also gained a column down its right-hand side for the
+drawings and the photographs of the team, which were previously squeezed into
+the narrow notes column or pushed against the edge of the text.

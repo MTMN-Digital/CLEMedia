@@ -13,15 +13,29 @@ import { Link } from "react-router-dom";
 
 type Width = "default" | "wide" | "text" | "measure";
 
+/* ONE LEFT EDGE FOR THE WHOLE SITE, 2026-10-24.
+
+   These used to be four independently centred boxes, so a narrower section was
+   centred in the viewport rather than aligned to anything. Measured at 1440:
+   the header and footer run at the 1560 cap and start their content at x=32,
+   while every `default` section started at x=240. Two hundred and eight pixels
+   of mismatch, on nine sections across six pages, and /story alternated between
+   the two FIVE times down its length. That is the "weirdly confined to a
+   central column" complaint, and it was never about the measure of the text: a
+   62ch paragraph is the right measure. It was about the box around it floating
+   free of the page.
+
+   So the shell is now always the wide one, always the same gutter, and the
+   width names only cap the content INSIDE it, left aligned. A narrow section
+   now reads as an indented column of a page rather than as a separate page.
+
+   `className` lands on the inner box, which is the content box and what every
+   call site was already styling. */
 const WIDTHS: Record<Width, string> = {
-  measure: "mx-auto w-full max-w-[64ch]",
-  text: "mx-auto w-full max-w-3xl",
-  default: "mx-auto w-full max-w-5xl",
-  /* 1560px, the house content cap. Raised from 1248 on 2026-10-02: on a 1905px
-     screen the old cap left a third of the viewport empty on each side and the
-     page read as a column floating in the middle of a monitor. Text measures
-     are set per block and did not move, so nothing got harder to read. */
-  wide: "mx-auto w-full max-w-[97.5rem]",
+  measure: "max-w-[64ch]",
+  text: "max-w-3xl",
+  default: "max-w-5xl",
+  wide: "max-w-full",
 };
 
 export function Container({
@@ -33,7 +47,14 @@ export function Container({
   width?: Width;
   children: ReactNode;
 }) {
-  return <div className={`${WIDTHS[width]} px-5 sm:px-8 ${className}`}>{children}</div>;
+  /* 1560px, the house content cap. Raised from 1248 on 2026-10-02: on a 1905px
+     screen the old cap left a third of the viewport empty on each side and the
+     page read as a column floating in the middle of a monitor. */
+  return (
+    <div className="mx-auto w-full max-w-[97.5rem] px-5 sm:px-8">
+      <div className={`${WIDTHS[width]} ${className}`}>{children}</div>
+    </div>
+  );
 }
 
 export function Section({

@@ -277,6 +277,20 @@ reintroduces them:
    contrast failures and 12 pages that never loaded, and the identical run on
    its own a minute later returned 0 and 0. "Pages that never loaded" above
    zero is the tell. Re-run before believing anything.
+6. **A loaded machine brings trap 1 back, and it has its own tell.** Added
+   2026-10-24. Zeroing the durations settles reveals on an idle box; with the
+   load average over 20, because other sessions are running `tsc`, `vitest`
+   and a game, the sweep intermittently samples text that is still fading.
+   `/team` returned 0, 11, 0, 19, 0, 0 and 1 across seven identical runs that
+   evening. **The tell is the reported foreground colour.** A real failure
+   names a token: muted is `#6b4e3a`, red-deep is `#8e2428`. A phantom names a
+   lightened near-miss of one, `#755945` or `#9a3f3d`, which is the token
+   composited at partial opacity, and a different element flakes each run.
+   When in doubt, read the hex out of `index.css` and do the arithmetic by
+   hand rather than re-running the sweep for a third opinion. **Do not try to
+   fix this by exempting the header from the sticky flattening.** That was
+   tried the same evening on a hunch about the home page's nav, and it added
+   two new phantom failures of its own.
 
 Run it from a built preview:
 `npx vite preview --port 4318 --strictPort`, then
@@ -351,6 +365,40 @@ four of its decisions are load bearing:
   shape in generated web design, and the page was solving five sections as an
   evenly divided grid. Broadcasters now takes the wide column because the
   brief puts them first.
+
+**A second layout pass ran on 2026-10-24**, on David's words "some screens,
+most prominently the our story page, are weirdly confined to a central column"
+and "we still have issues with too much text and just blocks of text". Both
+turned out to be one measurable fault each, and the measurements are the point:
+
+- **`Container` had four independently centred widths, so a narrow section was
+  centred in the VIEWPORT rather than aligned to anything.** At 1440 the header
+  and footer run at the 1560 cap and start their content at x=32, while every
+  `default` section started at x=240. Two hundred and eight pixels of mismatch,
+  on nine sections across six pages, and `/story` alternated between the two
+  five times down its length. The shell is now always the wide one with the
+  same gutter, and the width names only cap the content inside it, left
+  aligned. `className` moved to the inner box, which is what every call site
+  was already styling. **If a section needs a narrower measure, it still asks
+  for one; it just no longer floats free of the page while it does.**
+- **`/story`'s letter has a third track.** Aligning it freed about 450px down
+  the right, and the page already had three objects with nowhere good to be:
+  the four faces and the gap drawing were squeezed into a 224px margin that was
+  also carrying a heading and a note, and the characters frame was pushed to
+  the right edge of a 560px measure. The prose track is 38rem flat, which is
+  35rem of measured 56ch plus the 3rem its rule and padding cost; a fractional
+  track would let the measure drift, which is what the cap exists to stop. The
+  two drawings the text WRAPS around stayed in the prose on purpose.
+- **The `/team` biographies were the blocks of text, and it was measurable:
+  103 to 140 characters to the line, in a 1,056px column with nothing in it but
+  prose.** Nothing else on the site is over 80. They now run at the same 38rem
+  as the letter, the phase list moved out of the top of that column into a
+  third track, and the career history behind each opening paragraph is a
+  disclosure. **Nothing was cut**: every word the team supplied is still on the
+  page. `/team` went from 6,295px to 5,307px at 1440.
+- **The roster still has no portraits**, and that was re-confirmed rather than
+  overlooked: it was offered on 2026-10-24 and declined. The face strip in the
+  opening band is the page's one face list.
 
 **A mobile pass ran on 2026-10-16** and found four things the contrast and
 overflow sweeps cannot see, all now fixed. Worth knowing because the first is
