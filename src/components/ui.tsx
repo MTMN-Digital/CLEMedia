@@ -124,7 +124,12 @@ export function Lead({ children, className = "" }: { className?: string; childre
      a Lead on the bench measured 1.68:1. Pages worked around it by hand
      rolling `t-lead` instead of using the primitive, which is how a shared
      component quietly stops being shared. */
-  return <p className={`t-lead max-w-[58ch] ${className}`}>{children}</p>;
+  /* The cap is a DEFAULT, not a floor. Eleven call sites passed a max-w of
+     their own next to this one; two utilities setting the same property are
+     resolved by the order Tailwind emits them, not by the order they are
+     written, so each of those measures was a coin toss. */
+  const cap = /\bmax-w-/.test(className) ? "" : "max-w-[58ch]";
+  return <p className={`t-lead ${cap} ${className}`}>{children}</p>;
 }
 
 /* ---------------------------------------------------------------------------

@@ -250,15 +250,21 @@ body > * { position: relative; z-index: 1; }
      named `p` only, and a third of what the sweep found was in a list item
      or a caption. */
   p, li, dd, dt, figcaption, blockquote { text-wrap: pretty; }
-  .t-body, .t-lead, .t-sm, .t-h3, figcaption, dd, dt, .eyebrow { text-wrap: balance; }
+  /* PARAGRAPHS DO NOT BALANCE, reversed the same day it was added. Balancing
+     a three or four line paragraph does not shorten its last line, it
+     shortens EVERY line: the lead on /contact is capped at 58ch and was
+     setting 45 characters to the line, so every paragraph on the site stood
+     as a narrow ragged block with a strip of blank paper down its right side.
+     That reads as text put somewhere odd rather than as text set to a
+     measure, which is the complaint this rule was meant to answer.
+     `balance` is kept for the things that really are one or two lines, a
+     caption, a label, a definition, a sub-head, where evening the lines is
+     the whole point and there is no measure to fill. */
+  .t-h3, figcaption, dd, dt, .eyebrow { text-wrap: balance; }
   /* `.t-prose` is the one that must NOT balance: it is the long-form reading
      class, and an even block is the wrong shape for a column a reader goes
      down rather than scans. The split falls out of the type scale itself,
      `.t-body` is the short block, `.t-prose` is the running text. */
-  /* For a block the sweep finds and these rules cannot reach, usually because
-     the text sits in a span inside a flex row, so the wrapping is decided by
-     a box the selectors above do not name. */
-  .wrap-even { text-wrap: balance; }
   :focus-visible {
     outline: 2px solid var(--color-red);
     outline-offset: 3px;
