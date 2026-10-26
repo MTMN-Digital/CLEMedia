@@ -62,13 +62,11 @@ const ROUTES = [
 export function GetInTouch({ headingId }: { headingId: string }) {
   return (
     <>
-      <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-        <div>
-          <h2 id={headingId} className="t-display max-w-[12ch]">
-            Contact CLÉ Family Media.
-          </h2>
-        </div>
-        <p className="t-lead lg:pb-1">
+      <Settle>
+        <h2 id={headingId} className="t-display max-w-[12ch]">
+          Contact CLÉ Family Media.
+        </h2>
+        <p className="t-lead mt-6 max-w-[56ch]">
           We are open to conversations with studios, distribution partners, educators and press. If
           you are assessing the company, we would rather answer your questions directly.
         </p>

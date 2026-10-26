@@ -73,13 +73,11 @@ const ratio = (a: AssetKey) => ASSETS[a].width / ASSETS[a].height;
 export function RealDogs({ headingId }: { headingId: string }) {
   return (
     <>
-      <Settle className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-16">
-        <div>
-          <h2 id={headingId} className="t-h2 max-w-[18ch]">
-            Meet the real Finn and Fia
-          </h2>
-        </div>
-        <p className="t-body lg:pb-1">
+      <Settle>
+        <h2 id={headingId} className="t-h2 max-w-[18ch]">
+          Meet the real Finn and Fia
+        </h2>
+        <p className="t-body mt-5 max-w-[58ch]">
           Finn and Fia in the series are drawn. <strong className="font-semibold text-ink">The
           eight below are photographs</strong> of the fawn pug and the black pug they are named
           after.

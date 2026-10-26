@@ -219,15 +219,16 @@ export default function Contact() {
           below arrives as a scene rather than as a box with a title in it. ═══ */}
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
-          {/* A spread, not a left column with 600px of bare paper beside it.
-              The title holds the left edge and the whole of the voice sits at
-              the right, both flush to the band's own edges and aligned at
-              their feet, which is the shape /team's opening already uses. */}
-          <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
-            <div>
-              <h1 className="t-display max-w-[13ch]">Write to the people who make it</h1>
-            </div>
-            <Lead className="max-w-[46ch] lg:pb-1">
+          {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
+             site opened with the heading alone in the left column and a lone
+             paragraph parked at the right, bottom aligned to the heading's
+             last line. On a wide screen that leaves the sentence floating in
+             the middle of the band with blank paper above it, and the reader
+             has to jump right and down to find the words the heading was
+             asking for. Heading, then its sentence under it, one left edge. */}
+          <Settle>
+            <h1 className="t-display max-w-[17ch]">Write to the people who make it</h1>
+            <Lead className="mt-7">
               Studios, distributors, investors, educators and press. Choose what this is about,
               and the message arrives marked as that, with the company that makes the series.
             </Lead>
@@ -451,9 +452,9 @@ export default function Contact() {
       <Section pad={["none", "normal"]} labelledBy="else-h">
         <Container width="wide">
           <div className="hairline pt-14 sm:pt-16">
-            <Settle className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+            <Settle>
               <h2 id="else-h" className="t-h2 max-w-[18ch]">What the site already sets out</h2>
-              <Lead className="lg:pb-1">
+              <Lead className="mt-5">
                 Some of this is answered better by a page than by us. Who is asking, and where it
                 is written down.
               </Lead>

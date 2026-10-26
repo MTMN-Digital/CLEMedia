@@ -118,12 +118,12 @@ export function CallSheet({ headingId }: { headingId: string }) {
 
       {/* Off the wall and back on the paper, where muted and body both pass:
           the note and the link are read, so they do not stand in the room. */}
-      <Settle className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-start lg:gap-16 xl:gap-24">
-        <p className="t-body max-w-[52ch] text-body">
+      <Settle className="mt-10">
+        <p className="t-body max-w-[56ch] text-body">
           A script usually goes round three or four times before it is locked, and the finished
           episode goes round again until everyone is happy with it.
         </p>
-        <div>
+        <div className="mt-6">
           <TextLink to="/team">
             Who each of them is, and the advisory board
             <IconArrow size={15} />

@@ -83,13 +83,11 @@ const FINDINGS: Finding[] = [
 export function Evidence({ headingId }: { headingId: string }) {
   return (
     <>
-      <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,30rem)] lg:items-end">
-        <div>
-          <h2 id={headingId} className="t-h2 max-w-[26ch]">
-            What the research says about fast, chaotic media for young children
-          </h2>
-        </div>
-        <p className="t-lead lg:pb-1">
+      <Settle>
+        <h2 id={headingId} className="t-h2 max-w-[26ch]">
+          What the research says about fast, chaotic media for young children
+        </h2>
+        <p className="t-lead mt-5 max-w-[56ch]">
           None of this is ours. Three published results, with the paper each one comes from, because
           a company that says it builds on research should let you read the research.
         </p>

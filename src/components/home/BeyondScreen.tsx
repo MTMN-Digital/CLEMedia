@@ -34,13 +34,11 @@ import { IconArrow } from "@/components/icons";
 export function BeyondScreen({ headingId }: { headingId: string }) {
   return (
     <>
-      <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-        <div>
-          <h2 id={headingId} className="t-display max-w-[11ch]">
-            An online and offline balance.
-          </h2>
-        </div>
-        <p className="t-lead lg:pb-1">
+      <Settle>
+        <h2 id={headingId} className="t-display max-w-[11ch]">
+          An online and offline balance.
+        </h2>
+        <p className="t-lead mt-6 max-w-[56ch]">
           The real value is not in watching. It is in the play, talk and learning that happen
           afterwards, and every episode comes with materials to support it.
         </p>

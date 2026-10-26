@@ -142,18 +142,19 @@ export default function EthicalAi() {
             <h1 className="t-display max-w-[17ch]">
               AI is a production tool. People remain responsible for the work.
             </h1>
-            <div className="mt-9 grid gap-6 lg:grid-cols-2 lg:gap-16">
-              <Lead>
-                Our creative and educational decisions are made by people. In final production we use
-                Runway for visual production and ElevenLabs for voice production. Our team directs,
-                reviews and approves the work before publication.
-              </Lead>
-              <p className="t-body max-w-[48ch] text-body lg:pt-1.5">
-                Below is the sequence an episode goes through before it reaches a child. People
-                decide at every phase of it, the tools sit in one place in the middle, and the
-                episode goes back round until everyone is happy.
-              </p>
-            </div>
+            {/* ONE COLUMN, since 2026-10-26. These two were side by side, which
+                asks the reader to pick which of two paragraphs comes first and
+                gives no answer. They are in reading order now. */}
+            <Lead className="mt-8">
+              Our creative and educational decisions are made by people. In final production we use
+              Runway for visual production and ElevenLabs for voice production. Our team directs,
+              reviews and approves the work before publication.
+            </Lead>
+            <p className="t-body mt-5 max-w-[56ch] text-body">
+              Below is the sequence an episode goes through before it reaches a child. People
+              decide at every phase of it, the tools sit in one place in the middle, and the
+              episode goes back round until everyone is happy.
+            </p>
           </Settle>
         </Container>
       </Section>
@@ -206,13 +207,13 @@ export default function EthicalAi() {
           the page wants one quiet argument at one measure. ═══ */}
       <Section labelledBy="honest-h">
         <Container width="wide">
-          {/* The heading is the left track and the two refusals sit beside it,
-              rather than the heading sitting on top of a half-width pair. The
-              break is `xl`, not `lg`: below 1280 the shell is narrower than
-              the 1024 this section used to cap at, so there is no spare width
-              to spend and the stacked reading is the better one. */}
-          <Wipe className="xl:grid xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] xl:items-start xl:gap-x-14">
-            <h2 id="honest-h" className="t-h2 max-w-[20ch] xl:max-w-none">
+          {/* The heading sat in a 22rem left track with the two refusals in the
+              column beside it, so on a wide screen it read as a label in the
+              margin rather than as the sentence this section is making. It is
+              over them now, which is where every other heading on the site is
+              as of 2026-10-26. */}
+          <Wipe>
+            <h2 id="honest-h" className="t-h2 max-w-[26ch]">
               We would rather describe that accurately than flatter ourselves in either direction.
             </h2>
             <div className="mt-10 grid gap-9 md:grid-cols-2 md:gap-0 xl:mt-0">
@@ -245,13 +246,9 @@ export default function EthicalAi() {
           to a pictogram. ═══ */}
       <Section labelledBy="lines-h" pad={["none", "tight"]}>
         <Container width="wide">
-          {/* The line sits on the heading's baseline immediately after it, not
-              flung to the far edge of the column: at 1440 a right-aligned
-              second cell put nine words a third of a metre from the heading
-              they belong to and the two read as unrelated. */}
-          <Settle className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-7">
+          <Settle>
             <h2 id="lines-h" className="t-h2">The lines we hold</h2>
-            <p className="t-body text-body">The standards we hold ourselves to.</p>
+            <p className="t-body mt-4 text-body">The standards we hold ourselves to.</p>
           </Settle>
 
           {/* The boundary, drawn, before the six commitments that describe it.

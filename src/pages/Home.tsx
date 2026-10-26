@@ -120,21 +120,18 @@ export default function Home() {
           light reads as light rather than as a rule. */}
       <Section labelledBy="thesis-h" pad={["normal", "tight"]} className="wall">
           <Container width="wide">
-            {/* A SPREAD, not a lone eyebrow over an empty half.
-                The eyebrow and the display line used to sit at the left with
-                the whole right of the band empty beside them, and the best
-                sentence on the page was buried as the third of three columns
-                underneath, wearing a coloured left border, which is a card
-                tell in its own right. The line now answers the headline
-                across the band, which is what it is for, and the argument
-                below is two columns rather than three. */}
-            <Wipe className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-end xl:gap-x-24">
-              <div>
-                <h2 id="thesis-h" className="t-display max-w-[17ch]">
-                  We are not going to tell anyone their child watches too much television.
-                </h2>
-              </div>
-              <p className="max-w-[26ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep lg:pb-2">
+            {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
+               site opened with the heading alone in the left column and a lone
+               paragraph parked at the right, bottom aligned to the heading's
+               last line. On a wide screen that leaves the sentence floating in
+               the middle of the band with blank paper above it, and the reader
+               has to jump right and down to find the words the heading was
+               asking for. Heading, then its sentence under it, one left edge. */}
+            <Wipe>
+              <h2 id="thesis-h" className="t-display max-w-[21ch]">
+                We are not going to tell anyone their child watches too much television.
+              </h2>
+              <p className="mt-8 max-w-[34ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep">
                 We would rather an episode started something a child carries on with.
               </p>
             </Wipe>

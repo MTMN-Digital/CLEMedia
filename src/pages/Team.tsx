@@ -73,27 +73,18 @@ export default function Team() {
           5.39:1 under the lamp against 5.38. See `.grove` in index.css. */}
       <Section className="bench grove" pad="open">
         <Container width="wide">
-          {/* A spread, not a heading with a note parked at the far right. The
-              first build put the lead under the h1 and the mono note in a 21rem
-              column, which left 440px of nothing across the middle of the band
-              and 110px of nothing under it. Title on the left, the whole of the
-              voice on the right, both columns flush to the band's own edges. */}
+          {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
+             site opened with the heading alone in the left column and a lone
+             paragraph parked at the right, bottom aligned to the heading's
+             last line. On a wide screen that leaves the sentence floating in
+             the middle of the band with blank paper above it, and the reader
+             has to jump right and down to find the words the heading was
+             asking for. Heading, then its sentence under it, one left edge. */}
           <Wipe>
-            {/* Centred under 1024, where the spread collapses to one column:
-                left aligned, the 46ch lead and the 44ch note left 300px of
-                blank wall down the right of a tablet. */}
-            <div className="mx-auto grid max-w-[64ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
+            <div className="max-w-[64ch]">
+              <h1 className="t-display max-w-[17ch]">The people who make every episode</h1>
               <div>
-                {/* Three lines, not two. The right column of this spread is
-                    345px of lead and note; a two line title left 250px of bare
-                    wall under it whichever way the two were aligned. Set to
-                    break at eleven characters the title is 210px tall, the two
-                    columns very nearly match, and a display face gets to act
-                    like one. */}
-                <h1 className="t-display max-w-[13ch]">The people who make every episode</h1>
-              </div>
-              <div>
-                <Lead className="max-w-[46ch]">
+                <Lead className="mt-7">
                   A small core team. Between them they decide what gets made, how it gets made and
                   what it is supposed to do for the child watching. Alan writes and animates, and
                   the rest of them read every draft and watch every episode before it is released.
@@ -126,11 +117,11 @@ export default function Team() {
       {/* ═══ 2. THE SEQUENCE, read in order. ═══ */}
       <Section labelledBy="dossier-h" pad="tight">
         <Container width="wide">
-          <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
+          <Settle className="pb-10 lg:pb-14">
             <h2 id="dossier-h" className="t-h2 max-w-[20ch]">
               How an episode gets made
             </h2>
-            <p className="t-body">
+            <p className="t-body mt-5 max-w-[58ch]">
               In order, from the first draft to the finished episode. Two of the five repeat: a
               script usually goes round three or four times, and the cut episode goes round again
               until everyone is happy with it.
@@ -144,10 +135,6 @@ export default function Team() {
           person actually does, written out, with their own biography. ═══ */}
       <Section labelledBy="people-h" pad="tight">
         <Container width="wide">
-          {/* Stacked, where the section above it is a spread: two sections
-              opening with the identical heading-left, note-right header is
-              what makes a page read as a template rather than as a sequence
-              of different things. */}
           <Settle className="pb-10 lg:pb-14">
             <h2 id="people-h" className="t-h2 max-w-[22ch]">
               The people, and what each of them does

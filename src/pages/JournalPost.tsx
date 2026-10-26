@@ -272,12 +272,10 @@ function Close() {
   return (
     <Section deep>
       <Container width="wide">
-        <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end lg:gap-20">
+        <Settle>
+          <h2 className="t-h2 max-w-[16ch]">The journal of CL&Eacute; Family Media</h2>
           <div>
-            <h2 className="t-h2 max-w-[16ch]">The journal of CL&Eacute; Family Media</h2>
-          </div>
-          <div>
-            <p className="t-body max-w-[46ch] opacity-85">
+            <p className="t-body mt-5 max-w-[52ch] opacity-85">
               Four strands: the research, how the work is made, writing for parents, and the
               business of building this company in Ireland.
             </p>
