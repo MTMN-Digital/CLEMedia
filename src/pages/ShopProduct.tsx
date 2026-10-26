@@ -104,7 +104,7 @@ export default function ShopProduct() {
         <Seo title="Loading" description="Loading this printable." path={`/shop/${slug ?? ""}`} noIndex />
         <Section>
           <Container width="wide">
-            <p className="font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+            <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
               Fetching this file
             </p>
           </Container>
@@ -202,7 +202,7 @@ export default function ShopProduct() {
 
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
-          <p className="flex flex-wrap items-center gap-x-2 font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+          <p className="flex flex-wrap items-center gap-x-2 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
             <TextLink to="/shop">Shop</TextLink>
             <span aria-hidden="true">/</span>
             <span className="text-ink">{p.title}</span>
@@ -225,7 +225,7 @@ export default function ShopProduct() {
                 ) : undefined}
               </SheetBench>
               {!p.thumbnail && (
-                <p className="mt-4 text-center font-mono text-[12px] text-muted">
+                <p className="mt-4 text-center font-mono text-[13px] text-muted">
                   No artwork has been uploaded for this file yet.
                 </p>
               )}

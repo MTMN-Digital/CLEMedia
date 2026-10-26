@@ -12,7 +12,7 @@ export default function PreviewC() {
       <Container className="py-16 sm:py-24">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-7">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-red-deep">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-red-deep">
               Edutainment · Watch, Play, Learn
             </p>
             <h1 className="mt-6 font-display text-[clamp(2.1rem,5.2vw,3.9rem)] leading-[1.06] text-ink">

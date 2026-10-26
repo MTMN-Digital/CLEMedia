@@ -14,7 +14,7 @@ export default function PreviewA() {
         <div className="absolute inset-0 flex items-end">
           <Container className="pb-12 sm:pb-16">
             <div className="max-w-[20ch] bg-paper/92 p-7 sm:p-10">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-red-deep">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-red-deep">
                 Watch, Play, Learn
               </p>
               <h1 className="mt-4 font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] text-ink">

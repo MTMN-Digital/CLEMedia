@@ -77,6 +77,27 @@
 }
 .trail__art--wide { display: none; }
 
+/* ─── Phone: the drawing goes ABOVE the captions ────────────────────────
+   MEASURED 2026-10-26. The strip beside the captions leaves the text
+   column 174px at 390, which is 22 characters a line: the client's two
+   sentences came out eight ragged lines deep. Nothing about the column
+   proportions fixes that, because the strip cannot go under about 110px
+   and still draw. So under 560 the pairing is dropped rather than
+   squeezed: the wide plan runs full width above, the three captions read
+   at the full measure under it. */
+@media (max-width: 559px) {
+  .trail { grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; }
+  .trail__art--wide {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+    aspect-ratio: 210 / 232;
+    height: auto;
+  }
+  .trail__art--narrow { display: none; }
+  .trail__words { grid-column: 1; grid-row: 2; }
+}
+
 .trail__words {
   grid-column: 2;
   grid-row: 1;

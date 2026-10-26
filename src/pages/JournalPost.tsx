@@ -42,7 +42,7 @@ export default function JournalPost() {
       <Section>
         <Container>
           <BackRail />
-          <p className="mt-10 font-mono text-[12px] uppercase tracking-[0.16em] text-muted" aria-busy="true">
+          <p className="mt-10 font-mono text-[13px] uppercase tracking-[0.16em] text-muted" aria-busy="true">
             Fetching this piece
           </p>
         </Container>
@@ -74,7 +74,7 @@ function BackRail() {
         <IconArrow size={14} className="rotate-180" />
         The journal
       </TextLink>
-      <span className="hidden font-mono text-[11px] uppercase tracking-[0.18em] text-muted sm:block">
+      <span className="hidden font-mono text-[12px] uppercase tracking-[0.18em] text-muted sm:block">
         CL&Eacute; Family Media
       </span>
     </div>
@@ -190,7 +190,7 @@ function Article({
               />
               {post.hero_alt && (
                 <Container>
-                  <figcaption className="pt-4 font-mono text-[12px] leading-[1.65] text-muted">
+                  <figcaption className="pt-4 font-mono text-[13px] leading-[1.65] text-muted">
                     {post.hero_alt}
                   </figcaption>
                 </Container>
@@ -238,7 +238,7 @@ function Article({
                     to={`/journal/${s.slug}`}
                     className="group grid gap-x-10 gap-y-2 py-6 sm:py-7 lg:grid-cols-[10rem_minmax(0,1fr)_2rem]"
                   >
-                    <span className="tnum font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+                    <span className="tnum font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
                       {formatDate(s.published_at) ?? ""}
                     </span>
                     <span className="min-w-0">

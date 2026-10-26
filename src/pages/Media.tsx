@@ -212,7 +212,7 @@ export default function Media() {
         <Container>
           <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
             <div className="lg:pt-3">
-              <p className="font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
+              <p className="font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
                 For anyone writing about the company or the series.
               </p>
             </div>
@@ -226,7 +226,7 @@ export default function Media() {
 
               {!items && (
               <div className="mt-12 max-w-[44rem] border-t border-rule pt-7">
-                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Next</p>
+                <p className="font-mono text-[13px] uppercase tracking-[0.14em] text-muted">Next</p>
                 <p className="mt-4 font-sans text-[24px] font-semibold leading-[1.25] text-ink sm:text-[28px]">
                   A UK podcast appearance is booked for December, with more to follow around the
                   app launch.
@@ -282,7 +282,7 @@ export default function Media() {
         <Container width="wide">
           <Settle className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
             <h2 id="index-h" className="t-h2">The index</h2>
-            <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
+            <p className="font-mono text-[13px] uppercase tracking-[0.12em] text-muted">
               {load === "ready" && items
                 ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
                 : load === "empty"
@@ -304,7 +304,7 @@ export default function Media() {
                   <h3 className="text-[17px] font-semibold text-ink">{sl.title}</h3>
                   {sl.body && <p className="t-body mt-2 max-w-[58ch] text-body">{sl.body}</p>}
                 </div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted sm:justify-self-end">
+                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted sm:justify-self-end">
                   {sl.status}
                 </p>
               </li>
@@ -463,12 +463,12 @@ export default function Media() {
                       key={n.k}
                       className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
                     >
-                      <dt className="font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
+                      <dt className="font-mono text-[13px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
                       <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
                     </div>
                   ))}
                 </dl>
-                <p className="mt-7 font-mono text-[12px] uppercase tracking-[0.2em] text-muted">Ends</p>
+                <p className="mt-7 font-mono text-[13px] uppercase tracking-[0.2em] text-muted">Ends</p>
               </div>
             </div>
           </Settle>

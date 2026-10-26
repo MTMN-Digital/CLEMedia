@@ -141,7 +141,7 @@ export default function CaseStudy() {
                   className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
                 >
                   <h3 className="text-[17px] font-semibold leading-snug text-ink">
-                    <span className="tnum mr-2 font-mono text-[13px] text-red-deep">{i + 1}</span>
+                    <span className="tnum mr-2 font-mono text-[14px] text-red-deep">{i + 1}</span>
                     {s.title}
                   </h3>
                   <p className="max-w-[50ch] text-[16px] leading-[1.68] text-body">{s.body}</p>
@@ -222,7 +222,7 @@ export default function CaseStudy() {
               </p>
             </div>
             <div className="rounded-[var(--radius-md)] border border-dashed border-[rgba(74,53,42,0.55)] px-5 py-2 sm:px-7">
-              <p className="pt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-body">
+              <p className="pt-5 font-mono text-[12px] uppercase tracking-[0.16em] text-body">
                 None of the three has been supplied yet
               </p>
               <ul className="mt-1">

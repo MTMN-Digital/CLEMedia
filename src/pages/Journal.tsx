@@ -63,7 +63,7 @@ export default function Journal() {
                 stopped doing that: stacked, each half has the whole sheet, so
                 the smallest type on the site was buying width nothing needed.
                 The side by side rail keeps the 11px it was set at. */}
-            <div className="flex flex-col gap-1.5 font-mono text-[11.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[11px]">
+            <div className="flex flex-col gap-1.5 font-mono text-[11.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[12px]">
               <span>The journal of CL&Eacute; Family Media</span>
               <span className="tnum shrink-0 sm:text-right">
                 {posts.length > 0
@@ -83,7 +83,7 @@ export default function Journal() {
               Notes from the studio
             </h1>
             <div className="mt-8 grid gap-6 border-t border-rule pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
-              <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-body">
+              <p className="font-mono text-[13px] uppercase tracking-[0.16em] text-body">
                 Four strands. One piece a week, once we start. Free to read.
               </p>
               <p className="t-lead max-w-[44ch] text-ink">
@@ -165,7 +165,7 @@ export default function Journal() {
                     to={`/journal/${p.slug}`}
                     className="group grid grid-cols-1 gap-x-10 gap-y-2 py-7 sm:py-8 lg:grid-cols-[10rem_minmax(0,1fr)_2rem]"
                   >
-                    <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+                    <span className="font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
                       <span className="tnum block">{formatDate(p.published_at) ?? ""}</span>
                       <span className="mt-1 block text-red-deep">
                         {strandName(p.category_id) ?? ""}

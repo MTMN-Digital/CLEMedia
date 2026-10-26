@@ -225,7 +225,7 @@ function Header() {
         </nav>
 
         <ShowSiteLink
-          className="hidden shrink-0 rounded-[var(--radius-pill)] border px-4 py-2.5 font-body text-[13px] font-bold text-ink transition-colors hover:border-ink lg:inline-flex"
+          className="hidden shrink-0 rounded-[var(--radius-pill)] border px-4 py-2.5 font-body text-[14px] font-bold text-ink transition-colors hover:border-ink lg:inline-flex"
         />
 
         <button

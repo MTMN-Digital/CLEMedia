@@ -29,11 +29,11 @@ import { Link } from "react-router-dom";
 
 type Block =
   | { kind: "p"; text: string }
-  | { kind: "h2" | "h3"; text: string }
+  | { kind: "h3" | "h2"; text: string }
   | { kind: "quote"; text: string }
   | { kind: "ul" | "ol"; items: string[] }
   | { kind: "rule" }
-  | { kind: "img"; src: string; alt: string };
+  | { alt: string; src: string; kind: "img" };
 
 const IMG = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
 const BULLET = /^[-*]\s+(.*)$/;
@@ -244,7 +244,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
                 {b.items.map((it, j) => (
                   <li key={`${key}-${j}`} className="relative pl-9">
                     <span
-                      className="tnum absolute left-0 top-[0.2em] font-mono text-[13px] text-muted"
+                      className="tnum absolute left-0 top-[0.2em] font-mono text-[14px] text-muted"
                       aria-hidden="true"
                     >
                       {String(j + 1).padStart(2, "0")}
@@ -267,7 +267,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
                   className="w-full rounded-[var(--radius-md)]"
                 />
                 {b.alt && (
-                  <figcaption className="mt-3 font-mono text-[12px] leading-[1.6] text-muted">
+                  <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] text-muted">
                     {b.alt}
                   </figcaption>
                 )}

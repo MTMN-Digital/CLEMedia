@@ -107,7 +107,7 @@ export function ShowFrame({
               priority={priority}
               sizes="(min-width: 1024px) 1376px, 100vw"
             />
-            <figcaption className="mt-3.5 max-w-[68ch] font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted">
+            <figcaption className="mt-3.5 max-w-[68ch] font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-muted">
               {caption}
             </figcaption>
           </figure>

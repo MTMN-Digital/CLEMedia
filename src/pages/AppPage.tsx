@@ -193,9 +193,9 @@ export default function AppPage() {
                       rel="noopener noreferrer"
                       className="group flex items-baseline gap-3.5 py-3.5"
                     >
-                      <span className="tnum font-mono text-[12px] tracking-[0.14em] text-red-deep">{ep.n}</span>
+                      <span className="tnum font-mono text-[13px] tracking-[0.14em] text-red-deep">{ep.n}</span>
                       <span className="t-sm font-semibold text-ink group-hover:text-red-deep">{ep.title}</span>
-                      <span className="tnum ml-auto shrink-0 font-mono text-[12px] text-muted">{ep.runtime}</span>
+                      <span className="tnum ml-auto shrink-0 font-mono text-[13px] text-muted">{ep.runtime}</span>
                       <span className="shrink-0 text-muted" aria-hidden="true"><IconExternal size={13} /></span>
                     </a>
                   </li>
@@ -225,7 +225,7 @@ export default function AppPage() {
             {/* The standing label on the whole band. It was under the device,
                 where a reader met it only after taking the picture for a
                 screenshot, which is the misreading it exists to prevent. */}
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-body sm:pb-2">
+            <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-body sm:pb-2">
               Drawn from the plan, not a screenshot
             </p>
           </Settle>
@@ -329,7 +329,7 @@ export default function AppPage() {
               <h2 id="next-h" className="t-h2 max-w-[16ch]">Where it stands</h2>
               <dl className="mt-8 max-w-[52ch]">
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Status</dt>
+                  <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Status</dt>
                   {/* NO DATE, and not because none exists. The client's review
                       document of 22 October gives a working launch target and
                       says in the same sentence not to publish an exact date
@@ -340,7 +340,7 @@ export default function AppPage() {
                   <dd className="t-body">{APP_LAUNCHED ? "Available now" : "In development"}</dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Stores</dt>
+                  <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Stores</dt>
                   <dd className="t-body">
                     {liveLinks.length > 0
                       ? liveLinks.map((l) => l.label).join(" and ")
@@ -348,7 +348,7 @@ export default function AppPage() {
                   </dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em]">Until then</dt>
+                  <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Until then</dt>
                   <dd className="t-body">The four released episodes are on YouTube, linked above.</dd>
                 </div>
               </dl>

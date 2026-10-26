@@ -65,7 +65,7 @@ export function Feedback({ headingId }: { headingId: string }) {
               <blockquote className="t-lead max-w-[42ch] text-ink">
                 <p>{q.words}</p>
               </blockquote>
-              <p className="mt-5 font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+              <p className="mt-5 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
                 {q.from}
               </p>
             </li>
@@ -76,7 +76,7 @@ export function Feedback({ headingId }: { headingId: string }) {
            uses. A dashed edge says held open; a tinted panel says finished. */
         <Settle className="mt-12 grid gap-6 border-t border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
           <div className="rounded-[var(--radius-lg)] border border-dashed border-rule p-6 sm:p-7">
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+            <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
               Parents and educators
             </p>
             <p className="t-body mt-4 max-w-[46ch] text-body">
@@ -86,7 +86,7 @@ export function Feedback({ headingId }: { headingId: string }) {
             </p>
           </div>
           <div className="rounded-[var(--radius-lg)] border border-dashed border-rule p-6 sm:p-7">
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+            <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
               Banteer workshop
             </p>
             <p className="t-body mt-4 max-w-[46ch] text-body">

@@ -126,7 +126,7 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
             onto the bench; the rule and the buttons were drawn in a hairline
             mixed for paper and vanished on it. All three now take the surface's
             own colour, so the strip works on either ground. */}
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em]">
+        <p className="font-mono text-[12px] uppercase tracking-[0.18em]">
           {episodes.length} episodes
         </p>
         <span className="h-px flex-1 bg-current opacity-20" aria-hidden="true" />

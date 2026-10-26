@@ -18,12 +18,12 @@ import { Card } from "@/components/ui";
    rows below to match. The page's honesty depends on them agreeing.
    ========================================================================== */
 
-export type RouteId = "partnership" | "educator" | "press" | "general";
+export type RouteId = "press" | "general" | "educator" | "partnership";
 
 export interface Draft {
-  name: string;
   email: string;
   organisation: string;
+  name: string;
   message: string;
 }
 
@@ -45,10 +45,10 @@ export function Receipt({
   sent,
   className = "",
 }: {
-  route: RouteId;
   draft: Draft;
-  sent: boolean;
   className?: string;
+  sent: boolean;
+  route: RouteId;
 }) {
   const subj = subjectFor(route, draft);
   const rows: { k: string; v: ReactNode }[] = [
@@ -67,7 +67,7 @@ export function Receipt({
         <span aria-hidden="true" className="h-2 w-2 rounded-full bg-red" />
       </div>
 
-      <div className="px-6 py-6 font-mono text-[13px] leading-[1.75] text-body sm:px-7">
+      <div className="px-6 py-6 font-mono text-[14px] leading-[1.75] text-body sm:px-7">
         <p className="break-words">
           <span className="text-muted">Subject: </span>
           <span className="text-ink">{subj.lead} </span>

@@ -33,7 +33,7 @@ export default function PreviewB() {
       <div style={paper}>
         <Container className="py-24 sm:py-32">
           <div className="mx-auto max-w-[34ch] text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-red-deep">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-red-deep">
               Watch · Play · Learn
             </p>
             <h1 className="mt-6 font-display text-[clamp(2.2rem,6vw,4rem)] leading-[1.06] text-ink">
@@ -85,7 +85,7 @@ export default function PreviewB() {
                 <div className="mx-auto mb-5 max-w-[120px]">
                   <AssetPlaceholder label={`${step} icon`} ratio="1/1" tone="cream" className="!border-0 rounded-full" />
                 </div>
-                <p className="font-display text-[13px] text-deep">0{i + 1}</p>
+                <p className="font-display text-[14px] text-deep">0{i + 1}</p>
                 <h3 className="mt-1 font-display text-[1.4rem] text-ink">{step}</h3>
                 <p className="mx-auto mt-2.5 max-w-[26ch] text-[14.5px] leading-relaxed">{body}</p>
               </div>

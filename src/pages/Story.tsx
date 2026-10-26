@@ -168,7 +168,7 @@ function Spread({
    column, the note is a full width line above the prose, and a 26ch cap there
    set a four word column down the left of a phone. */
 function Note({ children, className = "" }: { className?: string; children: ReactNode }) {
-  return <p className={`font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
+  return <p className={`font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
 }
 
 export default function Story() {
@@ -400,7 +400,7 @@ export default function Story() {
                     key={row.tag}
                     className="hairline grid grid-cols-1 gap-x-6 gap-y-0.5 py-3 first:border-t-0 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
                   >
-                    <span className="tnum font-mono text-[12px] leading-[1.7] tracking-[0.01em] text-muted">{row.tag}</span>
+                    <span className="tnum font-mono text-[13px] leading-[1.7] tracking-[0.01em] text-muted">{row.tag}</span>
                     <span className="text-[15.5px] leading-[1.6] text-ink">{row.line}</span>
                   </li>
                 ))}
@@ -445,7 +445,7 @@ export default function Story() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-[14.5px] font-semibold leading-tight text-ink">{p.name}</p>
-                        <Note className="mt-1 text-[11px]">{p.role}</Note>
+                        <Note className="mt-1 text-[12px]">{p.role}</Note>
                       </div>
                     </li>
                   ))}
@@ -462,7 +462,7 @@ export default function Story() {
                       higher up the same band. Body is 6.74:1 on the same
                       stop. The token's own note in index.css calls muted "the
                       floor", and this is where the floor gives way. */}
-                  <figcaption className="mt-2.5 pl-1 font-mono text-[12px] leading-[1.65] tracking-[0.02em] text-body">
+                  <figcaption className="mt-2.5 pl-1 font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-body">
                     Finn and Fia, with a hen. A frame from the series.
                   </figcaption>
                 </figure>
@@ -520,7 +520,7 @@ export default function Story() {
                 of prose here for a heading to track, and a sticky note beside a
                 600px film just slides about for no reason. */}
             <div className="lg:pt-12">
-              <p className="font-mono text-[12px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
+              <p className="font-mono text-[13px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
                 The film starts muted. Turn the sound on when you are ready to, and the captions
                 are there whether you do or not. Nothing on this site starts talking at you.
               </p>

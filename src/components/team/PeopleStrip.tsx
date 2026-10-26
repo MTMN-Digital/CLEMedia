@@ -125,7 +125,7 @@ export function PeopleStrip({ people }: { people: Member[] }) {
           evidence band three days ago. Full cream is 6.44:1 flat and
           5.39:1 under the lamp, and an 11px tracked mono line is already
           subordinate to the 14px names above it without any help. */}
-      <p aria-hidden="true" className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] lg:hidden">
+      <p aria-hidden="true" className="mt-4 font-mono text-[12px] uppercase tracking-[0.16em] lg:hidden">
         Scroll sideways for the rest
       </p>
     </>

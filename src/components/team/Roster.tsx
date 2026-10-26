@@ -151,7 +151,7 @@ function Entry({ member, phases }: { phases: Phase[]; member: Member }) {
             stopped the sweep reporting this label intermittently, which it did
             on two runs out of four while the machine was loaded. */}
         <div className="min-w-0 lg:pt-1">
-          <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-body">
+          <p className="font-mono text-[13px] uppercase tracking-[0.14em] text-body">
             {at ? "Takes part in" : "Not in the script and episode reviews"}
           </p>
           {at && <p className="t-body mt-1.5 max-w-[26ch]">{at}</p>}

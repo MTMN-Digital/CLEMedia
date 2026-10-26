@@ -107,7 +107,7 @@ export default function Team() {
                 {/* `border-white/22`, not `border-rule`: `--color-rule` is an
                     ink alpha, so on a dark band it drew nothing at all. The
                     value is the measured one the home and media bands use. */}
-                <p className="mt-6 max-w-[44ch] border-t border-white/22 pt-6 font-mono text-[12px] leading-[1.75] tracking-[0.02em]">
+                <p className="mt-6 max-w-[44ch] border-t border-white/22 pt-6 font-mono text-[13px] leading-[1.75] tracking-[0.02em]">
                   Below, the five phases an episode goes through, then the same work from the
                   other side: each person, and the phases they come into. Nobody is claimed for a
                   phase the company's own account does not place them in.

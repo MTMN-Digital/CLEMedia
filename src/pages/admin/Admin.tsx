@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -67,13 +67,13 @@ function Login() {
   );
 }
 
-function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
+function Dashboard({ email, onSignOut }: { onSignOut: () => void; email: string }) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-8">
       <header className="flex flex-wrap items-center gap-3 border-b border-hairline pb-5">
         <div>
           <p className="font-display text-[20px] text-ink">Site admin</p>
-          <p className="text-[13px] text-deep">{email}</p>
+          <p className="text-[14px] text-deep">{email}</p>
         </div>
         <button onClick={onSignOut}
           className="glass ml-auto rounded-full px-4 py-2 text-[13.5px] text-slate">
@@ -97,7 +97,7 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         ))}
       </ul>
 
-      <p className="mt-6 text-[13px] text-deep">
+      <p className="mt-6 text-[14px] text-deep">
         Each panel is built out in the admin run. Designed for a phone first.
       </p>
     </div>

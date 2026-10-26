@@ -111,7 +111,7 @@ export function RealDogs({ headingId }: { headingId: string }) {
                     sizes="(min-width: 1024px) 40vw, 92vw"
                   />
                 </Card>
-                <figcaption className="mt-3 pl-1 font-mono text-[12px] uppercase tracking-[0.14em] text-body">
+                <figcaption className="mt-3 pl-1 font-mono text-[13px] uppercase tracking-[0.14em] text-body">
                   {p.name}
                 </figcaption>
               </figure>

@@ -93,7 +93,7 @@ function MissingFrame() {
           <Paw key={i} x={p.x} y={p.y} r={p.r} o={0.46 - i * 0.042} />
         ))}
       </svg>
-      <p className="absolute left-3 top-3 font-mono text-[11px] uppercase tracking-[0.2em] text-[rgba(246,240,226,0.62)]">
+      <p className="absolute left-3 top-3 font-mono text-[12px] uppercase tracking-[0.2em] text-[rgba(246,240,226,0.62)]">
         404
       </p>
       {/* 0.6, not the 0.42 the edge print uses. The edge print is aria-hidden

@@ -272,28 +272,28 @@ body > * { position: relative; z-index: 1; }
   .t-display { font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4rem); }
   .t-h1      { font-size: clamp(2rem, 1.5rem + 2.2vw, 3rem); }
   .t-h2      { font-size: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); }
-  .t-h3      { font-size: 1.1875rem; }
-  .t-lead    { font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem); line-height: 1.62; }
-  .t-body    { font-size: 0.96875rem; line-height: 1.68; }
+  .t-h3      { font-size: 1.25rem; }
+  .t-lead    { font-size: clamp(1.125rem, 1.03rem + 0.42vw, 1.3125rem); line-height: 1.58; }
+  .t-body    { font-size: 1.0625rem; line-height: 1.64; }
   /* Long-form reading, the measure a page is read down rather than scanned.
      It was written out as a literal in seven places and had drifted into two
      sizes, 17/1.72 on the story and the shop, 17.5/1.75 in the journal. */
-  .t-prose   { font-size: 1.0625rem; line-height: 1.72; }
-  .t-sm      { font-size: 0.875rem; }
+  .t-prose   { font-size: 1.125rem; line-height: 1.7; }
+  .t-sm      { font-size: 0.9375rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
 
   /* A smaller eyebrow, for a role line under a name. It was `!text-[11px]`
      bolted onto `.eyebrow` in six places. */
-  .eyebrow-sm { font-size: 11px; }
-  .eyebrow-xs { font-size: 10px; letter-spacing: 0.2em; }
+  .eyebrow-sm { font-size: 12px; }
+  .eyebrow-xs { font-size: 11px; letter-spacing: 0.16em; }
 
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain
      functional language, at most one per two sections. */
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-red-deep);
   }
@@ -928,7 +928,7 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-sunken);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--color-body) 18%, transparent);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.16em;
   color: var(--color-body);
 }
@@ -1179,7 +1179,7 @@ body > * { position: relative; z-index: 1; }
   grid-area: 1 / 1;
   align-self: start;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -1263,7 +1263,7 @@ body > * { position: relative; z-index: 1; }
   backdrop-filter: blur(6px);
   color: var(--color-raised);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1380,7 +1380,7 @@ body > * { position: relative; z-index: 1; }
 .notasked__head,
 .notasked__foot {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1389,7 +1389,7 @@ body > * { position: relative; z-index: 1; }
   text-transform: none;
   letter-spacing: 0;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   margin-top: 1.1rem;
   padding-top: 0.9rem;
@@ -1451,7 +1451,7 @@ body > * { position: relative; z-index: 1; }
 }
 .theline__side {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1489,7 +1489,7 @@ body > * { position: relative; z-index: 1; }
 .theline__below strong {
   display: block;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);

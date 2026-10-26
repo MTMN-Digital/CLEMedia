@@ -58,7 +58,7 @@ export function Docket({
       <div className="docket border border-t-0 border-rule bg-raised px-5 py-6 sm:px-7">
         <p className="eyebrow">{label}</p>
 
-        <dl className="mt-5 font-mono text-[13px] leading-[1.5]">
+        <dl className="mt-5 font-mono text-[14px] leading-[1.5]">
           {rows.map((r) => (
             <div key={r.k} className="flex items-baseline gap-2 py-[7px]">
               <dt className={r.strong ? "text-ink" : "text-body"}>{r.k}</dt>

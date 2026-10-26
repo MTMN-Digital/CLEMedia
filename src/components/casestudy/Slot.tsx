@@ -25,7 +25,7 @@ export function Slot({
 }) {
   return (
     <div className="rounded-[var(--radius-md)] border border-dashed border-[rgba(74,53,42,0.55)] px-5 py-5 sm:px-6">
-      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-body">Not supplied yet</p>
+      <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-body">Not supplied yet</p>
       <h3 className="t-h3 mt-3">{title}</h3>
       <p className="t-body mt-2 max-w-[48ch] text-body">{coming}</p>
       {children}
