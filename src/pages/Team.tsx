@@ -107,7 +107,8 @@ export default function Team() {
                 {/* `border-white/22`, not `border-rule`: `--color-rule` is an
                     ink alpha, so on a dark band it drew nothing at all. The
                     value is the measured one the home and media bands use. */}
-                <p className="mt-6 max-w-[44ch] border-t border-white/22 pt-6 font-mono text-[13px] leading-[1.75] tracking-[0.02em]">
+                {/* PROSE, NOT MONO, since 2026-10-26. Three sentences of explanation were set in tracked mono at 13px, which is a label face doing a paragraph's job: on the band it read as machine output rather than as the company talking. */}
+                <p className="t-sm mt-6 max-w-[48ch] border-t border-white/22 pt-6 leading-[1.7]">
                   Below, the five phases an episode goes through, then the same work from the
                   other side: each person, and the phases they come into. Nobody is claimed for a
                   phase the company's own account does not place them in.
@@ -143,11 +144,15 @@ export default function Team() {
           person actually does, written out, with their own biography. ═══ */}
       <Section labelledBy="people-h" pad="tight">
         <Container width="wide">
-          <Settle className="grid gap-5 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,46ch)] lg:items-end lg:gap-12 lg:pb-14">
-            <h2 id="people-h" className="t-h2 max-w-[20ch]">
+          {/* Stacked, where the section above it is a spread: two sections
+              opening with the identical heading-left, note-right header is
+              what makes a page read as a template rather than as a sequence
+              of different things. */}
+          <Settle className="pb-10 lg:pb-14">
+            <h2 id="people-h" className="t-h2 max-w-[22ch]">
               The people, and what each of them does
             </h2>
-            <p className="t-body">
+            <p className="t-body mt-5 max-w-[58ch]">
               The biographies are the team's own, cut down and never added to. Where the company's
               account does not place a person in a phase, nothing is claimed for them there.
             </p>

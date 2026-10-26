@@ -79,7 +79,7 @@ export function NoStrip() {
         />
       </svg>
 
-      <figcaption className="nostrip__cap ink-label">
+      <figcaption className="nostrip__cap ink-note">
         Six slots, and nothing to put in them yet. The first piece to run takes the first one.
       </figcaption>
     </figure>
