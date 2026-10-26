@@ -46,13 +46,11 @@ export const QUOTES: Quote[] = [];
 export function Feedback({ headingId }: { headingId: string }) {
   return (
     <>
-      <Settle className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,30rem)] lg:items-end">
-        <div>
-          <h2 id={headingId} className="t-h2 max-w-[24ch]">
-            Feedback from parents and educators
-          </h2>
-        </div>
-        <Lead className="lg:pb-1">
+      <Settle>
+        <h2 id={headingId} className="t-h2 max-w-[20ch]">
+          Feedback from parents and educators
+        </h2>
+        <Lead className="mt-5 max-w-[54ch]">
           In their own words, with their permission. We do not turn what one family said into a
           percentage, and we do not print anything nobody has agreed to.
         </Lead>

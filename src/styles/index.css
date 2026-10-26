@@ -1163,7 +1163,13 @@ body > * { position: relative; z-index: 1; }
   inset: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  /* FOUR ROWS, since 2026-10-26. The company's own description of itself used
+     to sit in the bottom right corner, set ragged-left against the right
+     edge, while the headline sat bottom left: two blocks of text in opposite
+     corners of a moving picture, one of them right-aligned prose, which is
+     the hardest thing on the page to read and the first thing a visitor
+     meets. It now sits under the headline, left-aligned, on its own row. */
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 1.5rem;
   padding: clamp(1.5rem, 2.8vw, 2.75rem);
   /* The top row clears the header, which is now over this picture. Without it
@@ -1223,18 +1229,17 @@ body > * { position: relative; z-index: 1; }
 .film-head .hero-head-2 { color: #ffb9bb; }
 
 .film-support {
-  grid-area: 3 / 2;
+  grid-area: 4 / 1 / 5 / 3;
   align-self: end;
-  justify-self: end;
+  justify-self: start;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 1.4rem;
-  /* 34rem, not 30. The lead became the company's own description of itself on
-     2026-10-13 and is three times the length of the line it replaced; at 30rem
-     it set as seven ragged-left lines in the corner of a moving picture. */
-  max-width: 34rem;
-  text-align: right;
+  align-items: flex-start;
+  gap: 1.5rem;
+  /* The lead is the company's own description of itself, so it takes a
+     reading measure rather than a corner. */
+  max-width: 46ch;
+  text-align: left;
 }
 .film-lead {
   font-size: clamp(0.95rem, 1.15vw, 1.1rem);

@@ -175,9 +175,17 @@ export default function Home() {
           See src/components/home/EpisodeRings.tsx. ═══ */}
       <Section labelledBy="model-h" pad={["tight", "normal"]} className="wall">
         <Container width="wide">
-          <Wipe className="grid gap-x-16 gap-y-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
-            <h2 id="model-h" className="t-h2 max-w-[14ch]">One episode, three stages</h2>
-            <Lead className="lg:pb-1">
+          {/* STACKED, not a spread. MEASURED 2026-10-26: eight sections of the home
+          page opened with the identical two-column header, heading left and a
+          lead floating at the right on the heading's last baseline, which is
+          what made the page read as one template repeated down the screen
+          rather than as a sequence of different things. Three of the eight
+          now open stacked, at the measure the lead actually wants, and the
+          spread is kept for the places where the right-hand line answers the
+          heading rather than merely explaining it. */}
+          <Wipe>
+            <h2 id="model-h" className="t-h2 max-w-[18ch]">One episode, three stages</h2>
+            <Lead className="mt-5 max-w-[52ch]">
               Designed to move a child from the screen into play and conversation, rather than to
               hold them in front of it.
             </Lead>

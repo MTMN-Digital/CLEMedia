@@ -58,15 +58,14 @@ export function CallSheet({ headingId }: { headingId: string }) {
 
   return (
     <div>
-      {/* The heading and the claim as a spread on the paper, so the board
-          below arrives as a scene rather than as a box with a title in it. */}
-      <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:items-end lg:gap-16 xl:gap-24">
-        <div>
-          <h2 id={headingId} className="t-h2 max-w-[16ch]">
-            Five people read every draft
-          </h2>
-        </div>
-        <Lead className="max-w-[46ch] lg:pb-1">
+      {/* Stacked rather than spread, so the board below arrives as a scene
+          rather than as a box with a title in it, and so this section does
+          not open with the same two-column header as the one above it. */}
+      <Settle>
+        <h2 id={headingId} className="t-h2 max-w-[18ch]">
+          Five people read every draft
+        </h2>
+        <Lead className="mt-5 max-w-[56ch]">
           Alan writes the scripts and animates the episodes. Paula, Lydia, Kirstie, Conor and
           David read each draft and give him their feedback, and he writes the next one from it.
         </Lead>
