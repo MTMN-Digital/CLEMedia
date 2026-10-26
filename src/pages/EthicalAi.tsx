@@ -18,12 +18,20 @@ import { IconArrow } from "@/components/icons";
    SHAPE, set 2026-10-06. One drawing owns the middle of this page: a vertical
    chain on a full-bleed wall band, markers down a centre lane, each station's
    account alternating either side of it, and a dashed return climbing back
-   from the gate to the tools. Nothing above it or below it is wide: the page
-   opens on a short two-column statement, and closes on a measure, a single
-   column of principles and a set of questions. With the text blurred it is a
-   light head, one tall dark band with a spine down the middle of it, then
-   narrow columns and the navy foot, which is a silhouette no other page here
-   has.
+   from the gate to the tools. With the text blurred it is a light head, one
+   tall dark band with a spine down the middle of it, then the sections below
+   it, then the navy foot, which is a silhouette no other page here has.
+
+   THE THREE SECTIONS BELOW THE BAND WERE NARROW UNTIL 2026-10-26, and the
+   shape note here used to say so approvingly: "nothing above it or below it
+   is wide". It was wrong by then. Once `Container` was fixed to give every
+   section the header's left edge, three consecutive sections capped at 1024
+   left the right third of a 1560 shell empty for about 2,200px of scroll,
+   which is the "confined to a central column" complaint arriving on the one
+   page that most needs to look authored. They are now full width, and each
+   one keeps its measure a different way: the statement and the questions put
+   their heading in a left track and the content beside it, and the six
+   commitments run two-up. No reading column got wider than 62ch anywhere.
 
    WHAT WENT. The sequence used to be drawn once as a strip across the top and
    then described again twice: a tools section halfway down that re-named
@@ -197,12 +205,17 @@ export default function EthicalAi() {
           resolves them above. Narrow, and set in type alone: after the band
           the page wants one quiet argument at one measure. ═══ */}
       <Section labelledBy="honest-h">
-        <Container width="default">
-          <Wipe>
-            <h2 id="honest-h" className="t-h2 max-w-[20ch]">
+        <Container width="wide">
+          {/* The heading is the left track and the two refusals sit beside it,
+              rather than the heading sitting on top of a half-width pair. The
+              break is `xl`, not `lg`: below 1280 the shell is narrower than
+              the 1024 this section used to cap at, so there is no spare width
+              to spend and the stacked reading is the better one. */}
+          <Wipe className="xl:grid xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] xl:items-start xl:gap-x-14">
+            <h2 id="honest-h" className="t-h2 max-w-[20ch] xl:max-w-none">
               We would rather describe that accurately than flatter ourselves in either direction.
             </h2>
-            <div className="mt-10 grid gap-9 md:grid-cols-2 md:gap-0">
+            <div className="mt-10 grid gap-9 md:grid-cols-2 md:gap-0 xl:mt-0">
               <div className="md:pr-12">
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Not handmade</p>
                 <p className="t-lead mt-4 text-ink">Calling this work handmade would be untrue.</p>
@@ -231,7 +244,7 @@ export default function EthicalAi() {
           the company to, and it is easier to hold someone to a sentence than
           to a pictogram. ═══ */}
       <Section labelledBy="lines-h" pad={["none", "tight"]}>
-        <Container width="default">
+        <Container width="wide">
           {/* The line sits on the heading's baseline immediately after it, not
               flung to the far edge of the column: at 1440 a right-aligned
               second cell put nine words a third of a metre from the heading
@@ -246,10 +259,19 @@ export default function EthicalAi() {
               is untouched and complete. See components/ethical-ai/TheLine.tsx. */}
           <TheLine />
 
-          <Settle as="ol" className="mt-14">
+          {/* TWO-UP AT XL. Six hairline rows one under another was both the
+              empty right third and the tallest run of prose left on the page;
+              two columns of three spend the width and take about 900px of
+              scroll out of it. The titles stack over their bodies at that
+              breakpoint, because a 14rem title track inside a 573px cell
+              leaves the body about 190px, which is not a measure. */}
+          <Settle as="ol" className="mt-14 xl:grid xl:grid-cols-2 xl:gap-x-14">
             {LINES.map((l) => (
-              <li key={l.title} className="hairline grid gap-y-2 py-7 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-x-10">
-                <h3 className="t-h3 max-w-[16ch]">{l.title}</h3>
+              <li key={l.title} className="hairline grid content-start gap-y-2 py-7 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-x-10 xl:grid-cols-1 xl:gap-x-0">
+                {/* The 16ch cap was sized for a side track about 400px wide. Stacked over
+                    a 558px body it broke four of the six titles onto three lines, so it
+                    opens up where the title sits above rather than beside. */}
+                <h3 className="t-h3 max-w-[16ch] xl:max-w-[26ch]">{l.title}</h3>
                 {/* Measured at 1440, not guessed: the free column set 89
                     characters to the line and a 68ch cap still set 80, because
                     `ch` on Hanken is about 8.7px against an average character
@@ -268,27 +290,34 @@ export default function EthicalAi() {
           for. A sheet with a tab reads as a document handed over, which is
           what a set of answers to standing questions is. ═══ */}
       <Section labelledBy="faq-h" pad={["tight", "normal"]}>
-        <Container width="default">
-          <Settle>
-            <h2 id="faq-h" className="t-h2 max-w-[18ch]">The questions we are asked most</h2>
-          </Settle>
-          <Settle className="mt-9">
-            <div className="card-stock px-5 pb-2 pt-9 sm:px-9 sm:pt-10">
-              <span className="card-tab" aria-hidden="true">ASKED AND ANSWERED</span>
-              <ul>
-                {QUESTIONS.map((f, i) => (
-                  <Question
-                    key={f.q}
-                    id={`ai-q-${i}`}
-                    q={f.q}
-                    a={f.a}
-                    open={open === i}
-                    onToggle={() => setOpen(open === i ? null : i)}
-                  />
-                ))}
-              </ul>
-            </div>
-          </Settle>
+        <Container width="wide">
+          {/* The sheet takes the width and the heading sits in the margin of
+              it. Nothing inside the sheet widens: the answers keep their 62ch
+              cap, so the extra width becomes paper rather than a longer line.
+              Air inside an object reads as an object; air beside a column
+              reads as a mistake, which is what this section was. */}
+          <div className="xl:grid xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] xl:items-start xl:gap-x-14">
+            <Settle>
+              <h2 id="faq-h" className="t-h2 max-w-[18ch]">The questions we are asked most</h2>
+            </Settle>
+            <Settle className="mt-9 xl:mt-0">
+              <div className="card-stock px-5 pb-2 pt-9 sm:px-9 sm:pt-10">
+                <span className="card-tab" aria-hidden="true">ASKED AND ANSWERED</span>
+                <ul>
+                  {QUESTIONS.map((f, i) => (
+                    <Question
+                      key={f.q}
+                      id={`ai-q-${i}`}
+                      q={f.q}
+                      a={f.a}
+                      open={open === i}
+                      onToggle={() => setOpen(open === i ? null : i)}
+                    />
+                  ))}
+                </ul>
+              </div>
+            </Settle>
+          </div>
         </Container>
       </Section>
 

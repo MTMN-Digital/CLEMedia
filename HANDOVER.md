@@ -400,6 +400,37 @@ turned out to be one measurable fault each, and the measurements are the point:
   overlooked: it was offered on 2026-10-24 and declined. The face strip in the
   opening band is the page's one face list.
 
+**The three narrow sections on `/ethical-ai` were widened on 2026-10-26**, which
+is the one thing the 24 October pass left open and flagged. Fixing `Container`
+gave every section the header's left edge, but it did not give those three
+anything to do with the right of the page: the statement, the six commitments
+and the questions all still capped at 1024 inside a 1560 shell, one after the
+other, so the right third sat empty for about 2,200px of scroll on the page an
+investor is most likely to read closely. All three now run full width, and each
+keeps its measure a different way, because three sections solving it the same
+way is its own kind of sameness:
+
+- The statement puts its heading in a left track and the two refusals beside
+  it, rule between them unchanged.
+- The six commitments run **two-up**, titles over bodies. That is what spends
+  the width honestly rather than stretching a column, and it took about 900px
+  of scroll out of the page. The title cap opens from 16ch to 26ch at that
+  breakpoint, because a cap sized for a side track broke four of the six titles
+  onto three lines once they sat above the body instead of beside it. The rows
+  carry `content-start`, or the grid stretches each row's title box and the two
+  bodies in a row start at different heights.
+- The questions put the heading in the margin and let the sheet take the width.
+  The answers keep their 62ch cap, so the width becomes paper, not a longer
+  line. Air inside an object reads as an object; air beside a column reads as a
+  mistake, which is what the section was.
+
+**The break is `xl` (1280), not `lg`, on all three.** Below 1280 the shell is
+already narrower than the 1024 those sections used to cap at, so there is no
+spare width to spend and the stacked reading is the better one. **No reading
+column got wider**: the widest measure on the page is still 558px, the same
+62ch cap as before, verified at 1440 and 1600. `/ethical-ai` went from 6,366px
+to 5,802px at 1440; the phone layout is byte-for-byte what it was.
+
 **A mobile pass ran on 2026-10-16** and found four things the contrast and
 overflow sweeps cannot see, all now fixed. Worth knowing because the first is
 a trap anyone reusing the render kit will hit again:
