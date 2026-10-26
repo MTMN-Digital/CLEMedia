@@ -31,11 +31,17 @@ resolved (`DESIGN-TOKENS.md`). The logo is not.
 | Favicon / app icon source | ❌ | Favicon set | Blocked on the CLÉ mark above |
 | Character art (Finn, Fia, others) | ✅ | Show handoff module, small accents | Plentiful in `GENERAL EPISODE STILLS/`. Supporting cast only |
 
-## Photography, none exists
+## Photography
 
-**There is no photograph anywhere in the BRAND TOOL KIT.** Every image is
-AI-generated or a render; filenames and XMP carry the prompts. See QUESTIONS.md
-#22 and #23.
+**EIGHT PHOTOGRAPHS ARRIVED 2026-10-26**, of the real Finn and Fia, shot on a
+Hasselblad X1D II against a red backdrop. They are the first and so far the
+only real photography on this site, and they are live on `/story` as the
+gallery in "Meet the real Finn and Fia". Everything else below is still
+outstanding.
+
+**There is no other photograph anywhere in the BRAND TOOL KIT.** Every image in
+it is AI-generated or a render; filenames and XMP carry the prompts. See
+QUESTIONS.md #22 and #23.
 
 | Item | Status | Needed for | Notes |
 |---|---|---|---|
@@ -43,7 +49,7 @@ AI-generated or a render; filenames and XMP carry the prompts. See QUESTIONS.md
 | Founder photography, Conor, Lydia | ❌ | `/story`, `/team` | `PEOPLE/` holds five AI cartoon avatars. Unusable under the brief's hard rules |
 | Team and advisor headshots | ❌ | `/team` | None exist. Shoot or supplied headshots required |
 | Process / behind-the-scenes / workspace | ❌ | `/story`, `/ethical-ai` | None exist |
-| Real-dog photography | ❌ | Show handoff, `/story` | The pugs in the kit are animated characters, not the real dogs |
+| Real-dog photography | ✅ | `/story` | **Received 2026-10-26.** Eight frames, four of each dog, wired as `dog.finn-1` to `dog.fia-4`. Exported to `public/brand/dogs/` with all EXIF dropped: the originals carry camera, timestamp and Camera Raw history |
 
 ## Copy
 

@@ -400,6 +400,33 @@ turned out to be one measurable fault each, and the measurements are the point:
   overlooked: it was offered on 2026-10-24 and declined. The face strip in the
   opening band is the page's one face list.
 
+**The eight photographs of Finn and Fia landed on 2026-10-26** and are wired as
+a gallery on `/story`, replacing the two labelled holes. Worth knowing:
+
+- They are the **only real photography on this site.** Everything else is a
+  frame from the animated series. `components/story/RealDogs.tsx` carries the
+  reasoning for the labelling, which changed: the claim is made once, in the
+  standing line, rather than under all eight plates.
+- **The layout justifies on the files' own aspect ratios**, read through
+  `brand.ts` rather than written down. Each row is a flex line with
+  `flex-basis: 18px` (8px of mount each side plus the card's 1px border) and
+  `flex-grow` set to the ratio, so the remaining width is shared in proportion
+  to shape alone and every plate in a row lands at the same height.
+- **Export every photograph at even pixel dimensions.** AVIF here is written
+  through ffmpeg at `yuv420p`, which cannot hold an odd edge and silently pads
+  to the next even number. A file at 800x495 becomes an AVIF at 800x496, the
+  served ratio stops matching the one the layout was given, and a row comes out
+  two pixels uneven with its captions off the line. The export script
+  (`scratchpad/export-dogs.py`, not in the repo) rounds both edges to even.
+- `finn-4` is cropped 15% off the top, where a handler's hand was in frame.
+  Nothing else is cropped.
+- **No EXIF ships.** The originals carry camera, timestamp and Camera Raw
+  history.
+- It costs about 925px of scroll at 1440 and about 2,500px at 390, where the
+  plates stack one per line. Two-up on a phone was tried and rejected: at 390 a
+  portrait comes out 118px wide, and a plate pinned to a minimum width stops
+  growing in proportion to its ratio, which breaks the justification.
+
 **The three narrow sections on `/ethical-ai` were widened on 2026-10-26**, which
 is the one thing the 24 October pass left open and flagged. Fixing `Container`
 gave every section the header's left edge, but it did not give those three

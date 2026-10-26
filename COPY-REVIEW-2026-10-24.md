@@ -336,3 +336,29 @@ each rather than a matter of taste. Neither changed a word of the copy.
 The founder's story also gained a column down its right-hand side for the
 drawings and the photographs of the team, which were previously squeezed into
 the narrow notes column or pushed against the edge of the text.
+
+---
+
+## Addendum: the photographs of Finn and Fia, 26 October
+
+The eight photographs arrived, and they are on the founder's story page now,
+under "Meet the real Finn and Fia". **Item 1 of what CLE still needs to send is
+closed.**
+
+They are laid out as a gallery rather than as two plates. Each row of
+photographs is sized so that every picture in it stands at the same height
+while keeping its own shape, so the standing shots stay tall, the head shots
+stay wide, and nothing is cropped square to fit a grid. On a phone they run one
+under another at full width.
+
+**One deliberate change to how they are labelled.** With two pictures, each one
+carried the words "A photograph" underneath it. With eight, that is the same
+three words eight times down one screen, which stops being a label and starts
+being wallpaper. So the line above the gallery now says it in a sentence
+instead, in bold, and each picture carries the dog's name. The description read
+out to a blind reader also says "photographed" on every one. If you would
+rather have the words under every picture, that is a one-line change.
+
+The pictures are served at a web size and every piece of camera data is
+stripped from them, including the timestamps, which is standard for anything we
+put on a public site.

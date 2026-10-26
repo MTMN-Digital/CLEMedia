@@ -130,17 +130,68 @@ const assets = {
      no-stock rule either. These are photographs of two real dogs, taken by
      the client, which is the kind of asset this site has been asking for from
      the start. CONTENT-NEEDED.md. */
-  "dog.finn": {
-    base: null,
-    alt: "Finn, the real fawn pug the character is based on",
-    width: 1200, height: 1200,
-    label: "Finn, the real fawn pug, one of four supplied photographs",
+  /* ─── The eight photographs of the real Finn and Fia ─────────────────────
+     Supplied by CLE and wired 2026-10-26, and the only PHOTOGRAPHS on this
+     site. Everything else here is a frame from the animated series, which is
+     why each of these carries the word "photographed" in its alt text and why
+     the gallery that shows them says so in print as well.
+
+     Eight Hasselblad frames, 6200x8272 down to 4252x2866. Exported at their
+     own aspect ratios rather than cropped to a common shape, because the
+     gallery is justified on those ratios: a square crop would throw away the
+     standing shots and flatten the set into the matched grid the brief rules
+     out. `finn-4` is the one exception, cropped 15% off the top, where a
+     handler's hand was in frame.
+
+     The originals carry camera, timestamp and Camera Raw history in EXIF.
+     None of it ships: the export writes no metadata at all. ───────────── */
+  "dog.finn-1": {
+    base: "/brand/dogs/finn-1",
+    alt: "Finn, the fawn pug, photographed head and shoulders against a deep red backdrop",
+    width: 600, height: 800,
+    label: "Finn, the fawn pug, photographed head and shoulders against a deep red backdrop",
   },
-  "dog.fia": {
-    base: null,
-    alt: "Fia, the real black pug the character is based on",
-    width: 1200, height: 1200,
-    label: "Fia, the real black pug, one of four supplied photographs",
+  "dog.finn-2": {
+    base: "/brand/dogs/finn-2",
+    alt: "Finn, the fawn pug, photographed looking to one side against a deep red backdrop",
+    width: 800, height: 540,
+    label: "Finn, the fawn pug, photographed looking to one side against a deep red backdrop",
+  },
+  "dog.finn-3": {
+    base: "/brand/dogs/finn-3",
+    alt: "Finn, the fawn pug, photographed standing in full length against a deep red backdrop",
+    width: 626, height: 800,
+    label: "Finn, the fawn pug, photographed standing in full length against a deep red backdrop",
+  },
+  "dog.finn-4": {
+    base: "/brand/dogs/finn-4",
+    alt: "Finn, the fawn pug, photographed sitting against a deep red backdrop",
+    width: 706, height: 800,
+    label: "Finn, the fawn pug, photographed sitting against a deep red backdrop",
+  },
+  "dog.fia-1": {
+    base: "/brand/dogs/fia-1",
+    alt: "Fia, the dark pug, photographed head and shoulders against a deep red backdrop",
+    width: 800, height: 494,
+    label: "Fia, the dark pug, photographed head and shoulders against a deep red backdrop",
+  },
+  "dog.fia-2": {
+    base: "/brand/dogs/fia-2",
+    alt: "Fia, the dark pug, photographed standing in full length against a deep red backdrop",
+    width: 648, height: 800,
+    label: "Fia, the dark pug, photographed standing in full length against a deep red backdrop",
+  },
+  "dog.fia-3": {
+    base: "/brand/dogs/fia-3",
+    alt: "Fia, the dark pug, photographed standing side on against a deep red backdrop",
+    width: 800, height: 598,
+    label: "Fia, the dark pug, photographed standing side on against a deep red backdrop",
+  },
+  "dog.fia-4": {
+    base: "/brand/dogs/fia-4",
+    alt: "Fia, the dark pug, photographed looking upward against a deep red backdrop",
+    width: 800, height: 522,
+    label: "Fia, the dark pug, photographed looking upward against a deep red backdrop",
   },
 
   "story.garden": {
