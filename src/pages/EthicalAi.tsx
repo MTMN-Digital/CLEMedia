@@ -88,7 +88,7 @@ const QUESTIONS = [
   },
   {
     q: "What happens when a review identifies a problem?",
-    a: "The work is revised and re-reviewed before it goes out. A release can be delayed to make that possible, and has. Getting an episode right matters more to us than getting it out on the original date.",
+    a: "The work is revised and re-reviewed, and the team watches and revises again until everyone is happy with the episode and signs it off for release. Getting an episode right matters more to us than getting it out on the original date.",
   },
 ];
 
@@ -149,9 +149,9 @@ export default function EthicalAi() {
                 reviews and approves the work before publication.
               </Lead>
               <p className="t-body max-w-[48ch] text-body lg:pt-1.5">
-                Below is the sequence an episode goes through before it reaches a child. People sit at
-                both ends of it, the tools sit in one place in the middle, and the last gate can send
-                the work back.
+                Below is the sequence an episode goes through before it reaches a child. People
+                decide at every phase of it, the tools sit in one place in the middle, and the
+                episode goes back round until everyone is happy.
               </p>
             </div>
           </Settle>
@@ -192,9 +192,9 @@ export default function EthicalAi() {
           <Settle className="mt-14 flex max-w-[64ch] gap-4">
             <span aria-hidden="true" className="mt-3 h-px w-8 shrink-0 border-t-[1.75px] border-dashed border-red" />
             <p className="t-body text-body">
-              The dashed return is the part that matters. When the final review asks for changes, the
-              work goes back into production and is re-reviewed before it goes out. A release can
-              wait for that, and has.
+              The dashed return is the part that matters. When the final review asks for changes,
+              the work goes back into production and is re-reviewed, and the team watches and
+              revises again until everyone is happy with the episode and signs it off for release.
             </p>
           </Settle>
         </Container>

@@ -1,0 +1,73 @@
+/* ─── The two routes, on the case study ───────────────────────────────────
+   See components/casestudy/TwoRoutes.tsx. The SVG holds the lines, the
+   labels are HTML on top of it, which is the kit's rule.
+
+   `preserveAspectRatio: none` with a fixed `aspect-ratio` on the frame: the
+   drawing stretches with the column rather than sitting in a fixed box with
+   air either side of it, and because the frame's ratio is pinned the stretch
+   is uniform and the curves keep their shape.
+   ─────────────────────────────────────────────────────────────────────── */
+.routes__art { display: none; }
+.routes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  border-left: 1.5px solid var(--color-rule);
+  display: grid;
+  gap: 0.85rem;
+}
+/* The two that are a choice sit in from the two that are not. */
+.routes__list-branch { padding-left: 1.1rem; position: relative; }
+.routes__list-branch::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.7rem;
+  border-top: 1.5px solid var(--color-rule);
+}
+
+@media (min-width: 640px) {
+  .routes__list { display: none; }
+  .routes__art {
+    display: block;
+    position: relative;
+    aspect-ratio: 520 / 215;
+    width: 100%;
+  }
+  /* The drawing stops short of the right edge and the last label stands in
+     the strip it leaves. Putting that label over the drawing does not work at
+     any offset: the upper curve comes down through exactly that corner on its
+     way to the junction, so a label above the rule sits on the curve and a
+     label below it sits on the other one. */
+  .routes__art svg {
+    position: absolute;
+    inset: 0 11.5rem 0 0;
+    height: 100%;
+    width: auto;
+  }
+  /* Percentages off the same 520x260 the paths are drawn in, so a label and
+     the node it belongs to cannot drift apart at any width. */
+  .routes__at {
+    position: absolute;
+    margin: 0;
+    white-space: nowrap;
+  }
+  /* Every label clears its line by at least its own height. The first pass
+     set the two end labels at -160% and the right one still read as sitting
+     ON the rule, because the rule runs underneath the whole label rather
+     than stopping at the word. */
+  .routes__at--in    { left: 0.6%;  top: 50%; transform: translateY(-230%); }
+  .routes__at--up    { left: 57.7%; top: 22.3%; transform: translateY(-160%); }
+  /* The lower label goes UNDER its branch, not over it. The branch climbs
+     back towards the junction from exactly where the label would sit. */
+  .routes__at--down  { left: 57.7%; top: 77.7%; transform: translateY(70%); }
+  .routes__at--out   {
+    right: 0;
+    top: 50%;
+    width: 10rem;
+    transform: translateY(-50%);
+    white-space: normal;
+    line-height: 1.45;
+  }
+}

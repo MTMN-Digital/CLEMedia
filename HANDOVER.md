@@ -400,6 +400,39 @@ turned out to be one measurable fault each, and the measurements are the point:
   overlooked: it was offered on 2026-10-24 and declined. The face strip in the
   opening band is the page's one face list.
 
+**A wrapping and layout pass ran on 2026-10-26.** Four things, all measured
+first:
+
+- **`text-wrap` is split by the shape of the block, not by the tag.** Across
+  thirteen routes, forty-one blocks ended on a last line under a fifth of the
+  column. `pretty` was already on `p` and was doing something but cannot fix a
+  short block. `balance` can: the same paragraph goes from a 77px orphan to
+  three lines of 397, 448 and 441. So short standalone blocks (`.t-body`,
+  `.t-lead`, `.t-sm`, `.t-h3`, captions, definitions, labels) balance, running
+  prose (`.t-prose`) keeps `pretty`, and `li`, `dd`, `dt` and `figcaption` now
+  carry one of the two where before they carried neither. Forty-one down to
+  twenty, and the home, story and journal pages are clean. `.wrap-even` is
+  there for a block the selectors cannot reach, usually text in a span inside
+  a flex row.
+- **`/case-study` has a drawing.** "Pick your route" was a heading, two lines
+  and two buttons in a 480px column on a 1,376px band. `components/casestudy/
+  TwoRoutes.tsx` draws what the paragraph asserts: one episode in, the notes
+  fork, the same questionnaire out. Two traps are written into its CSS. The
+  drawing pairs with the HEADING, not with the picker, because `RoutePicker`
+  renders the whole framework panel under its buttons and a row holding it is
+  as tall as that panel. And the last label stands in a reserved strip to the
+  right of the drawing rather than over it, because the upper curve comes down
+  through exactly that corner.
+- **The three matched dashed cards on `/case-study` are one sheet.** Three
+  boxes of the same size in a row, each saying "not supplied yet", is both the
+  card grid the brief rules out and the same sentence three times. Same words,
+  one dashed sheet, three hairline rows, heading moved into the margin.
+- **Three sentences the 22 October review asked us to drop were still on
+  `/ethical-ai`**, two of them quoted in the review's own table of examples.
+  Found by dumping the rendered text of every route and grepping it for the
+  withdrawn phrases, which is the check that should have run on the day.
+  `COPY-REVIEW-2026-10-24.md` carries the correction for the client.
+
 **The eight photographs of Finn and Fia landed on 2026-10-26** and are wired as
 a gallery on `/story`, replacing the two labelled holes. Worth knowing:
 

@@ -9,6 +9,7 @@ import { EPISODES } from "@/lib/episodes";
 import { STUDY_OPEN } from "@/components/casestudy/config";
 import { Slot } from "@/components/casestudy/Slot";
 import { RoutePicker, type RouteId } from "@/components/casestudy/RoutePicker";
+import { TwoRoutes } from "@/components/casestudy/TwoRoutes";
 import { Questionnaire } from "@/components/casestudy/Questionnaire";
 
 /* ============================================================================
@@ -37,6 +38,21 @@ import { Questionnaire } from "@/components/casestudy/Questionnaire";
    from the home filmstrip, linking out to the show's YouTube channel. Episodes
    are not embedded anywhere on this site and are not here.
    ========================================================================== */
+
+const MATERIALS = [
+  {
+    title: "Selected games",
+    coming: "The games chosen for the study, with instructions on how to play them with a group, will be added here.",
+  },
+  {
+    title: "Colouring materials",
+    coming: "Printable colouring pages from the episode, with a note on how to use them, will be added here.",
+  },
+  {
+    title: "Paula's offline activity",
+    coming: "The activity, designed by Paula Walshe PhD to follow the episode away from a screen, will be added here with step by step instructions.",
+  },
+];
 
 const EPISODE = EPISODES.find((e) => e.n === "003")!;
 
@@ -140,15 +156,28 @@ export default function CaseStudy() {
       <Section labelledBy="route-h">
         <Container width="wide">
           <Settle>
-            <h2 id="route-h" className="t-h1 max-w-[16ch]">Pick your route</h2>
-            <p className="t-lead mt-6 max-w-[48ch] text-ink">
-              Ireland follows Aistear and England follows the EYFS. The supporting notes differ, so
-              choose the one you work to.
-            </p>
+            <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16">
+              <div>
+                <h2 id="route-h" className="t-h1 max-w-[16ch]">Pick your route</h2>
+                <p className="t-lead mt-6 max-w-[42ch] text-ink">
+                  Ireland follows Aistear and England follows the EYFS. The supporting notes differ,
+                  so choose the one you work to.
+                </p>
+              </div>
+              {/* The structure the paragraph beside it asserts: one episode in,
+                  the notes fork, the same questionnaire out. It also fills the
+                  two thirds of this band that were empty.
+
+                  It pairs with the HEADING, not with the picker: `RoutePicker`
+                  renders the chosen framework's whole panel under its two
+                  buttons, so a row holding the picker is as tall as that panel
+                  and a drawing centred in it lands beside the wrong thing. */}
+              <TwoRoutes />
+            </div>
+            <div className="mt-12">
+              <RoutePicker route={route} onChange={setRoute} />
+            </div>
           </Settle>
-          <div className="mt-12">
-            <RoutePicker route={route} onChange={setRoute} />
-          </div>
         </Container>
       </Section>
 
@@ -176,27 +205,36 @@ export default function CaseStudy() {
       {/* ═══ 5. THE MATERIALS. Three marked slots: none has been supplied. ═══ */}
       <Section labelledBy="mat-h">
         <Container width="wide">
-          <Settle>
-            <h2 id="mat-h" className="t-h1 max-w-[16ch]">Games, colouring and an offline activity</h2>
-            <p className="t-lead mt-6 max-w-[52ch] text-ink">
-              After the episode, use the materials with the same group. Each will have written
-              instructions and a download button.
-            </p>
+          {/* ONE SHEET, NOT THREE CARDS, 2026-10-26. Three dashed boxes of the
+              same size in a row, each with a label, a heading and a line of
+              text, is the matched card grid the brief rules out, and it was
+              saying "not supplied yet" three times in a row across the page.
+              It is one marked sheet with three rows now: the same words, one
+              statement that none of it has arrived, and the heading moves into
+              the margin beside it so the band is not a heading over a strip of
+              boxes. */}
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-20">
+            <div>
+              <h2 id="mat-h" className="t-h1 max-w-[14ch]">Games, colouring and an offline activity</h2>
+              <p className="t-lead mt-6 max-w-[38ch] text-ink">
+                After the episode, use the materials with the same group. Each will have written
+                instructions and a download button.
+              </p>
+            </div>
+            <div className="rounded-[var(--radius-md)] border border-dashed border-[rgba(74,53,42,0.55)] px-5 py-2 sm:px-7">
+              <p className="pt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-body">
+                None of the three has been supplied yet
+              </p>
+              <ul className="mt-1">
+                {MATERIALS.map((m) => (
+                  <li key={m.title} className="border-t border-[rgba(74,53,42,0.28)] py-5 first:border-t-0 first:pt-4">
+                    <h3 className="t-h3">{m.title}</h3>
+                    <p className="t-body mt-1.5 max-w-[54ch] text-body">{m.coming}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Settle>
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            <Slot
-              title="Selected games"
-              coming="The games chosen for the study, with instructions on how to play them with a group, will be added here."
-            />
-            <Slot
-              title="Colouring materials"
-              coming="Printable colouring pages from the episode, with a note on how to use them, will be added here."
-            />
-            <Slot
-              title="Paula's offline activity"
-              coming="The activity, designed by Paula Walshe PhD to follow the episode away from a screen, will be added here with step by step instructions."
-            />
-          </div>
         </Container>
       </Section>
 

@@ -362,3 +362,32 @@ rather have the words under every picture, that is a one-line change.
 The pictures are served at a web size and every piece of camera data is
 stripped from them, including the timestamps, which is standard for anything we
 put on a public site.
+
+---
+
+## Addendum: three sentences that should have gone in the first pass, 26 October
+
+A check of this document against the live pages, section by section, found
+three places where the Responsible AI page still carried wording the review
+asked us to drop. They are fixed:
+
+1. "People sit at both ends of it, the tools sit in one place in the middle,
+   and the last gate can send the work back." That sentence introduces the
+   drawn sequence. It now reads: "People decide at every phase of it, the tools
+   sit in one place in the middle, and the episode goes back round until
+   everyone is happy."
+2. "A release can wait for that, and has", under the drawing. It now reads:
+   "the work goes back into production and is re-reviewed, and the team watches
+   and revises again until everyone is happy with the episode and signs it off
+   for release", which is the review's own wording.
+3. The same claim once more, in the answer to "What happens when a review
+   identifies a problem?" Same replacement.
+
+**One correction to this document itself.** Section 2 says the line "nothing is
+generated and published automatically" now appears once, on Responsible AI. It
+appears once, but on the journal page, about the journal rather than about the
+episodes. Everything else in section 2 checks out.
+
+Everything else in all ten sections is on the site as described, including the
+five phases on all four pages, the ten replaced sentences, the role titles, the
+research citations, and the Irish spelling.
