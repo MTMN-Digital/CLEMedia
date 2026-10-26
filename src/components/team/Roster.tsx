@@ -15,7 +15,8 @@ import { StandsAt } from "./StandsAt";
    THE PHASES ARE WRITTEN OUT, not encoded. They used to be small boxes in
    three states against a legend. It costs a line of text per person, removes
    the key entirely, and it is the version a screen reader was already being
-   given, so the two readings match.
+   given, so the two readings match. SUMMARISED 2026-10-26, still in words:
+   see `comesInto`. The full list is still what the track draws.
 
    WHOEVER IS IN NO PHASE SAYS SO. Mansi is a production assistant on the
    nursery rhymes and Victoria designs the games and puzzles; neither is in
@@ -50,8 +51,22 @@ import { StandsAt } from "./StandsAt";
    start halfway down a block it did not belong to.
    ========================================================================== */
 
+/* The same fact, in the fewest words that are still exactly true.
+   SAID IN FULL IT REPEATED: four of the eight people are in the identical
+   four phases, so four rows ran the identical three lines, "first draft,
+   revised drafts, episode review, final sign-off", one under another down the
+   longest page of text on the site. Repetition at that length stops being
+   information and becomes a texture a reader skips, which is the opposite of
+   what a roster is for. Every line below is derived from `phases` in
+   people.ts and names the exception rather than listing the rule; the track
+   beside it still shows exactly which phases, node by node. */
 function comesInto(m: Member, phases: Phase[]): string {
   const at = phases.filter((s) => m.phases.includes(Number(s.n)));
+  if (!at.length) return "";
+  if (at.length === phases.length) return "Every phase";
+  const out = phases.filter((s) => !m.phases.includes(Number(s.n)));
+  /* One gap, named. Two or more and the list is shorter than the exception. */
+  if (out.length === 1) return `Every phase but the ${out[0].phase.toLowerCase()}`;
   return at.map((s) => s.phase.toLowerCase()).join(", ");
 }
 
@@ -139,7 +154,7 @@ function Entry({ member, phases }: { phases: Phase[]; member: Member }) {
           <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-body">
             {at ? "Takes part in" : "Not in the script and episode reviews"}
           </p>
-          {at && <p className="t-body mt-1.5 max-w-[30ch] first-letter:uppercase">{at}</p>}
+          {at && <p className="t-body mt-1.5 max-w-[26ch]">{at}</p>}
           {at && <StandsAt member={member} phases={phases} />}
         </div>
       </div>
