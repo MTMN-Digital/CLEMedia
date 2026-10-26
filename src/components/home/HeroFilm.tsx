@@ -69,7 +69,7 @@ export function HeroFilm() {
     /* Both files, not one. See the note in MissionVideo: on Linux, Chromium
        based browsers that do not license H.264 cannot decode the mp4 at all,
        and the symptom is indistinguishable from a blocked autoplay. */
-    rendition: pickRendition(),
+    rendition: pickRendition(undefined, "mid"),
     /* Never start by itself for a reader who asked for stillness. */
     autoplay: !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   }));
@@ -253,7 +253,7 @@ export function HeroFilm() {
       <video
         ref={video}
         className="film-media"
-        poster="/video/mission-poster.jpg"
+        poster="/video/mission-poster.webp"
         autoPlay={start.autoplay}
         muted
         loop

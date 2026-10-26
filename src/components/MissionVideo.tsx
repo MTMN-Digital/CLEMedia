@@ -63,7 +63,16 @@ const RENDITIONS: Record<"mid" | "high" | "low", Rendition> = {
 /** Chosen once, before the element has a src. See the note above.
  *  Exported because the hero film makes the identical decision and there is
  *  no sense in two copies of it drifting apart. */
-export function pickRendition(): Rendition {
+/* MEASURED 2026-10-26, and this is the single heaviest thing on the site.
+   Home and Story each pulled 16.3MB of film on first load, because the
+   chooser asked the WINDOW how wide the player is. On Story the player sits
+   in a column about half that, and on the home hero the film runs behind a
+   dark scrim with the headline over it, where 720p is indistinguishable.
+   So the caller now says how wide the thing actually is, and the hero caps
+   itself one step down. Re-encoding was tried first and is not the answer:
+   the film is grainy enough that AV1 at CRF 45 still landed at 7.9MB, no
+   better than the h264 720p that already exists. */
+export function pickRendition(cssWidth?: number, cap?: "low" | "mid"): Rendition {
   const conn = (navigator as Navigator & {
     connection?: { effectiveType?: string; saveData?: boolean };
   }).connection;
@@ -81,9 +90,9 @@ export function pickRendition(): Rendition {
      its gutters. The thresholds are the points at which the next rendition
      down would be upscaled: 720p is 1280 wide, so above about 1350 CSS pixels
      of window the 1080p file is the one that lands pixel for pixel. */
-  const px = window.innerWidth * 0.95 * dpr;
-  if (px >= 1280) return RENDITIONS.high;
-  if (px >= 854) return RENDITIONS.mid;
+  const px = (cssWidth || window.innerWidth * 0.95) * dpr;
+  if (px >= 1280 && !cap) return RENDITIONS.high;
+  if (px >= 854 && cap !== "low") return RENDITIONS.mid;
   return RENDITIONS.low;
 }
 
@@ -102,7 +111,10 @@ export function MissionVideo({
   /* The src is set from an effect rather than at render so the choice is made
      against the real window, once, and so a server-rendered build of this page
      would never bake one visitor's connection into the markup. */
-  useEffect(() => setSource(pickRendition()), []);
+  /* The player's own width, not the window's: this one sits in a column. */
+  useEffect(() => {
+    setSource(pickRendition(video.current?.getBoundingClientRect().width));
+  }, []);
 
   useEffect(() => {
     const el = video.current;
@@ -144,7 +156,7 @@ export function MissionVideo({
       <video
         ref={video}
         className="block aspect-[1920/1068] w-full"
-        poster="/video/mission-poster.jpg"
+        poster="/video/mission-poster.webp"
         preload={eager ? "metadata" : "none"}
         playsInline
         muted

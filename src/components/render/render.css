@@ -914,6 +914,18 @@
   .rk-corr__people.rk-corr__people--row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* EXCEPT the wall that also carries prose. MEASURED 2026-10-26: on /app
+     each reviewer's line of what they check came out in a 139px column, six
+     ragged lines of three words. Two across is right for a wall of faces
+     and wrong for a wall of faces with a sentence under each one, so that
+     wall goes one across on a phone and the portrait is capped instead, to
+     stop a single face filling the screen. */
+  .rk-corr__people:has(.rk-corr__line) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rk-corr__people:has(.rk-corr__line) .rk-pic {
+    max-width: 13rem;
+  }
 }
 
 /* ─── The room, once it is wide enough for two columns ────────────────────

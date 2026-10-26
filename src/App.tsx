@@ -3,29 +3,42 @@ import { Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 
 import Home from "@/pages/Home";
-import Story from "@/pages/Story";
-import Team from "@/pages/Team";
-import EthicalAi from "@/pages/EthicalAi";
-import CaseStudy from "@/pages/CaseStudy";
-import Journal from "@/pages/Journal";
-import JournalPost from "@/pages/JournalPost";
-import AppPage from "@/pages/AppPage";
-import Media from "@/pages/Media";
-import Shop from "@/pages/Shop";
-import ShopProduct from "@/pages/ShopProduct";
-import Contact from "@/pages/Contact";
-import Download from "@/pages/Download";
-import Legal from "@/pages/Legal";
-import NotFound from "@/pages/NotFound";
-import PreviewA from "@/pages/preview/PreviewA";
-import PreviewB from "@/pages/preview/PreviewB";
-import PreviewC from "@/pages/preview/PreviewC";
+/* EVERY ROUTE BUT THE HOME PAGE IS LAZY, since 2026-10-26.
+
+   One chunk held all fourteen routes: 494KB of JavaScript, 148KB over the
+   wire, downloaded by a visitor who reads the home page and leaves. Home
+   stays eager because it is the page the chunk is for; the rest arrive when
+   a link is followed, which is also when the browser is otherwise idle.
+
+   The fallback is deliberately blank rather than a spinner: on a local
+   network the chunk lands in a frame or two, and a spinner that flashes is
+   worse than nothing. Layout.tsx keeps the header and footer, so a route
+   change never clears the page. */
+const Story = lazy(() => import("@/pages/Story"));
+const Team = lazy(() => import("@/pages/Team"));
+const EthicalAi = lazy(() => import("@/pages/EthicalAi"));
+const CaseStudy = lazy(() => import("@/pages/CaseStudy"));
+const Journal = lazy(() => import("@/pages/Journal"));
+const JournalPost = lazy(() => import("@/pages/JournalPost"));
+const AppPage = lazy(() => import("@/pages/AppPage"));
+const Media = lazy(() => import("@/pages/Media"));
+const Shop = lazy(() => import("@/pages/Shop"));
+const ShopProduct = lazy(() => import("@/pages/ShopProduct"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Download = lazy(() => import("@/pages/Download"));
+const Legal = lazy(() => import("@/pages/Legal"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const PreviewA = lazy(() => import("@/pages/preview/PreviewA"));
+const PreviewB = lazy(() => import("@/pages/preview/PreviewB"));
+const PreviewC = lazy(() => import("@/pages/preview/PreviewC"));
+
 // Admin is lazy, it pulls in the Supabase client, which the public site
 // should never have to download.
 const Admin = lazy(() => import("@/pages/admin/Admin"));
 
 export default function App() {
   return (
+    <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
@@ -61,5 +74,6 @@ export default function App() {
         }
       />
     </Routes>
+    </Suspense>
   );
 }

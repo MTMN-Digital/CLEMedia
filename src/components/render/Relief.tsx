@@ -1,5 +1,4 @@
-import { useEffect, useId, useRef } from "react";
-import { useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useId, useRef, useEffect } from "react";
 
 /* ============================================================================
    Relief: the felted mark, lit by a lamp that moves.
@@ -32,7 +31,7 @@ import { useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "
 export interface ReliefProps {
   /** Which mark. `lockup` is the whole logo, `word` is the felted FAMILY
    *  MEDIA line on its own frame, the rest are the single glyphs. */
-  mark?: "lockup" | "word" | "c" | "l" | "e";
+  mark?: "e" | "l" | "lockup" | "word" | "c";
   /** Intended rendered size in px. A ceiling, not a floor. */
   size?: number;
   /** Take the width of whatever is laying this out instead of `size`. */
@@ -60,17 +59,24 @@ export interface ReliefProps {
    and nothing shifts while it loads. The letters are square frames with the
    object small inside them, which is what the hanging row's negative margins
    exist to undo. */
-const ART: Record<string, { colour: string; height: string; w: number; h: number }> = {
+/* WEBP, NOT PNG, since 2026-10-26. The lockup shipped as a 325KB RGBA PNG
+   with a 739KB 16-bit height map beside it, on every page that carries the
+   footer: a megabyte of decorative felt. The colour art is WebP at q88 and
+   the height map is LOSSLESS WebP at the art's own pixel size rather than
+   twice it, which is 1,505KB of marks down to 109KB with the relief intact.
+   The height map stays lossless on purpose: it is a surface, not a picture,
+   and blocking artefacts in it read as dents in the wool. */
+const ART: Record<string, { w: number; height: string; colour: string; h: number }> = {
   /* The whole logo. The four cut-outs are positioned on one shared 591px
      canvas, so compositing them reproduces the original lockup exactly:
      three animals on their ropes with the felted word under them. Built by
      hand once rather than reassembled in CSS, because the geometry is in the
      art and anything that re-derives it in a layout gets it slightly wrong. */
-  lockup: { colour: "/brand/mark-lockup.png", height: "/brand/depth/mark-lockup-height.png", w: 589, h: 591 },
-  word: { colour: "/brand/mark-word.png", height: "/brand/depth/mark-word-height.png", w: 591, h: 591 },
-  c: { colour: "/brand/mark-c.png", height: "/brand/depth/mark-c-height.png", w: 591, h: 591 },
-  l: { colour: "/brand/mark-l.png", height: "/brand/depth/mark-l-height.png", w: 591, h: 591 },
-  e: { colour: "/brand/mark-e.png", height: "/brand/depth/mark-e-height.png", w: 591, h: 591 },
+  lockup: { colour: "/brand/mark-lockup.webp", height: "/brand/depth/mark-lockup-height.webp", w: 589, h: 591 },
+  word: { colour: "/brand/mark-word.webp", height: "/brand/depth/mark-word-height.webp", w: 591, h: 591 },
+  c: { colour: "/brand/mark-c.webp", height: "/brand/depth/mark-c-height.webp", w: 591, h: 591 },
+  l: { colour: "/brand/mark-l.webp", height: "/brand/depth/mark-l-height.webp", w: 591, h: 591 },
+  e: { colour: "/brand/mark-e.webp", height: "/brand/depth/mark-e-height.webp", w: 591, h: 591 },
 };
 
 export function Relief({
@@ -88,36 +94,67 @@ export function Relief({
   const uid = useId().replace(/:/g, "");
   const host = useRef<HTMLDivElement>(null);
   const lights = useRef<SVGFEPointLightElement[]>([]);
-  const still = useReducedMotion();
-
-  /* `offset: ["start end", "end start"]` is the whole time the mark is on
-     screen, so the swing is paced to the mark's own travel rather than to the
-     page's. */
-  const { scrollYProgress } = useScroll({ target: host, offset: ["start end", "end start"] });
 
   /* The lamp starts off the left shoulder and ends off the right, passing
-     overhead at the midpoint, which is when the mark is centred. */
+     overhead at the midpoint, which is when the mark is centred. A row of
+     marks shares one lamp by shifting the sweep with each mark's position. */
   const shift = -phase * travel;
-  const lx = useTransform(scrollYProgress, [0, 1], [0.5 - travel + shift, 0.5 + travel + shift]);
-  const ly = useTransform(scrollYProgress, [0, 0.5, 1], [-0.5, -0.18, -0.5]);
 
-  useMotionValueEvent(lx, "change", (v) => {
-    if (still) return;
-    for (const l of lights.current) l?.setAttribute("x", String(v));
-  });
-  useMotionValueEvent(ly, "change", (v) => {
-    if (still) return;
-    for (const l of lights.current) l?.setAttribute("y", String(v));
-  });
+  /* NO FRAMER-MOTION, since 2026-10-26. This component was the library's
+     only consumer in the whole site, for `useScroll` and two `useTransform`
+     ramps, and it cost 56KB over the wire on every page. The same two ramps
+     are twelve lines of rect arithmetic, read on a passive scroll listener,
+     coalesced to one write per frame, and only while the mark is on screen.
 
-  /* The resting pose, which is what a crawler, a screenshot and a reader who
-     asked for stillness all see. It has to be a good pose on its own. */
+     ponytail: one listener per mark on the page, which is at most six of
+     them and they share the frame. A shared scroll broker if that ever
+     stops being true. */
   useEffect(() => {
+    const el = host.current;
+    if (!el) return;
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    /* The resting pose, which is what a crawler, a screenshot and a reader
+       who asked for stillness all see. It has to be a good pose on its own. */
     for (const l of lights.current) {
       l?.setAttribute("x", String(0.26 + shift));
       l?.setAttribute("y", "-0.22");
     }
-  }, [shift]);
+    if (still || typeof IntersectionObserver === "undefined") return;
+
+    let frame = 0;
+    let seen = false;
+    const write = () => {
+      frame = 0;
+      const r = el.getBoundingClientRect();
+      /* The whole time the mark is on screen: entering at the bottom is 0,
+         leaving at the top is 1, so the swing is paced to the mark's own
+         travel rather than to the page's. */
+      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (window.innerHeight + r.height)));
+      const x = 0.5 - travel + shift + p * 2 * travel;
+      const y = -0.5 + (1 - Math.abs(p * 2 - 1)) * 0.32;
+      for (const l of lights.current) {
+        l?.setAttribute("x", String(x));
+        l?.setAttribute("y", String(y));
+      }
+    };
+    const tick = () => {
+      if (seen && !frame) frame = requestAnimationFrame(write);
+    };
+    const io = new IntersectionObserver(([e]) => {
+      seen = e.isIntersecting;
+      tick();
+    });
+    io.observe(el);
+    window.addEventListener("scroll", tick, { passive: true });
+    window.addEventListener("resize", tick, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", tick);
+      window.removeEventListener("resize", tick);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [shift, travel]);
 
   const z = 0.62;
 
