@@ -27,19 +27,20 @@ import "./wrap.css";
    Settle, whose armed-but-not-entered state pauses the kit's animations, so
    it is held until it is seen.
 
-   THE TEXT RUNS AROUND IT. It floats left of its paragraph above 700px, laid
-   down six degrees off true like the ledger card further up the page, and
-   the prose follows the lean of the sheet's edge (see wrap.css). Decorative:
-   the sentence beside it is the whole of what it says, so it is hidden from
-   assistive technology rather than described twice.
+   IT STANDS ABOVE ITS PARAGRAPH, laid down six degrees off true like the
+   ledger card further up the page. It used to float into the prose, with
+   the lean of the sheet's edge as the shape the text followed; wrap.css
+   carries why that came out. Decorative: the sentence under it is the whole
+   of what it says, so it is hidden from assistive technology rather than
+   described twice.
    ========================================================================== */
 
 /* The viewBox is the width it is drawn at, so stroke-width 2 is 2px.
 
    It takes `.ink--fine`, the wobble without the graphite, for the reason
-   set out in Hooks.tsx: a float's width is the prose measure's to give and
-   it cannot grow, and the two floats in this letter make the same call so
-   they read as one hand. */
+   set out in Hooks.tsx: at 140px a stroke here is about one device pixel to
+   the unit, and the two drawings in this letter make the same call so they
+   read as one hand. */
 const W = 140;
 const H = 150;
 
@@ -97,7 +98,7 @@ const d = (delay: string, dur?: string) =>
 
 export function Thread() {
   return (
-    <span className="wrap wrap--left wrap--thread" aria-hidden="true">
+    <span className="wrap wrap--thread" aria-hidden="true">
       <svg className="ink ink--fine wrap__ink" viewBox={`0 0 ${W} ${H}`} focusable="false">
         {/* The sheet: its paper first, then its edge drawing itself. */}
         <path d={EDGE} className="ink-fill ink-in" style={d("0.1s")} />

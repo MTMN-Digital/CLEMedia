@@ -1,43 +1,24 @@
-/* ─── Drawings the letter runs around, on /story ──────────────────────────
+/* ─── Drawings that stand in the letter, on /story ────────────────────────
    See components/story/Hooks.tsx and Thread.tsx. Marks come from
-   components/draw/draw.css; this file is the float, the traced outline and
-   the phone fallback only.
+   components/draw/draw.css; this file is the placement only.
 
-   WHY A FLOAT AND NOT THE MARGIN. The margin already carries one drawing
-   (TheGap) and the client's verdict was still "a lot of large text blocks".
-   A drawing in a margin column breaks the page beside the prose; a drawing
-   the prose actually flows around breaks the block itself, which is the
-   thing being asked for. So these two sit inside their paragraph as floats,
-   and `shape-outside` gives the text the drawing's real outline rather than
-   its box: the lines beside the child follow the child's back and head, and
-   the lines beside the script follow the lean of the sheet.
+   THEY USED TO BE FLOATS. Each drawing sat inside its paragraph as a float
+   with a `shape-outside` polygon traced from its own silhouette, so the
+   prose ran around the child's back or the lean of the script. It worked
+   exactly as drawn and it still had to go on 2026-10-26: the letter's
+   column is 56ch, a 140px float takes a third of it, and the paragraph
+   beside the script was two lines longer than the drawing is tall. The
+   result was five indented lines and then the word "one." on its own
+   against the left margin, which reads as a paragraph that has come apart
+   rather than as text flowing round a picture. A measure this narrow has no
+   width to give away.
 
-   THE OUTLINE IS TRACED. Each polygon below is the drawing's own silhouette
-   in percent of its content box, so it scales with the svg. The reference
-   box is `content-box` so the coordinates match the viewBox directly; the
-   text-side margin is what `shape-margin` is clipped to, so it is set to
-   cover it.
-
-   OFF UNDER 700px. On a phone the measure is already narrow and a float eats
-   it, so below the breakpoint each drawing is a plain block above its
-   paragraph, at drawn size, left aligned on the prose axis like TheGap.
-
-   THE MEASURE. The letter's column is 56ch, which is 533px and about 69
-   characters, at every width the floats are on (the column is capped, so it
-   is the same at 1440, 1100 and 820). Measured in Chrome with the real
-   fonts: beside the hooks the lines keep 45 to 49 characters, the two beside
-   the ground being the narrowest; beside the script, 48 to 53. That is why
-   the hooks are 150 wide and not 200.
-
-   AND WHY THEY TAKE `.ink--fine`. The measure sets the float's width, so a
-   stroke here is about one device pixel to the unit, half what the hand
-   filter's graphite needs; the two drawings keep the wobble and drop the
-   tooth (see Hooks.tsx for why they were not re-authored smaller instead).
+   SO THEY STAND ABOVE THEIR PARAGRAPH, at drawn size, on the prose axis,
+   which is what every width under 700px already did and what the margin
+   drawing (TheGap) does. The drawing still breaks the block, which is its
+   whole job; the prose keeps one left edge and one measure.
    ─────────────────────────────────────────────────────────────────────── */
 .wrap-flow {
-  /* A float escapes its paragraph when the paragraph is shorter than the
-     drawing. The block that holds the drawing and its prose is its own
-     formatting context, so the float is contained whatever follows. */
   display: flow-root;
 }
 
@@ -48,59 +29,3 @@
 .wrap--hooks { width: 150px; }
 .wrap--thread { width: 140px; }
 .wrap__ink { width: 100%; }
-
-@media (min-width: 700px) {
-  .wrap { margin: 0; }
-  .wrap--right {
-    float: right;
-    /* Aligned with the x-height of the first line rather than the top of
-       its line box, so the ground of the drawing does not sit a line higher
-       than it looks like it should. */
-    margin: 0.35rem 0 0.75rem 0.75rem;
-    shape-margin: 12px;
-  }
-  .wrap--left {
-    float: left;
-    margin: 0.35rem 0.75rem 0.75rem 0;
-    shape-margin: 12px;
-  }
-  /* The child and the set, 150 by 105. The edge the text follows is the
-     child's back from the floor up to the shoulder, round the head, then
-     up to the top of the set and on up the climb of the ghost frames to
-     the dashes at the top right. The floor is the full width, so the lowest
-     lines get the least room. Traced from the paths in Hooks.tsx: the body's
-     left edge runs from (12,98) up to the shoulder at (17,72), the head is a
-     circle at (30,54) r9.5, the set's top left is (68,40), the outermost
-     ghost's top left is (90,26) and the dashes top out at about (144,18). */
-  .wrap--hooks {
-    shape-outside: polygon(
-      0 93%,
-      8% 93%,
-      8% 88%,
-      11% 76%,
-      11% 68%,
-      15% 64%,
-      14% 52%,
-      20% 42.5%,
-      26% 44%,
-      45% 38%,
-      60% 25%,
-      86% 17%,
-      100% 17%,
-      100% 93%
-    ) content-box;
-  }
-  /* The script, 140 by 150. A sheet laid down six degrees off true, so the
-     edge the text follows leans: the four corners of the sheet, one stroke
-     out. */
-  .wrap--thread {
-    shape-outside: polygon(
-      0 0,
-      14% 4.5%,
-      94% 12.5%,
-      84% 96.5%,
-      4.5% 88%,
-      0 88%
-    ) content-box;
-  }
-}

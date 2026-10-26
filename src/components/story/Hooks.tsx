@@ -58,11 +58,11 @@ import "./wrap.css";
    Settle, whose armed-but-not-entered state pauses the kit's animations,
    so it is held until it is seen.
 
-   THE TEXT RUNS AROUND IT. It floats right of its paragraph above 700px,
-   and the outline the prose follows is the child's back, shoulder and head,
-   then the climb of the ghost frames to the dashes (see wrap.css).
-   Decorative, like Thread beside it: it floats inside the very sentence it
-   draws, so it is hidden from assistive technology rather than read twice.
+   IT STANDS ABOVE ITS PARAGRAPH. It used to float into the prose with the
+   child's own silhouette as the shape the text followed, which is in
+   wrap.css along with why a 56ch measure could not afford it. Decorative
+   either way: it is the very sentence it draws, so it is hidden from
+   assistive technology rather than read twice.
    ========================================================================== */
 
 /* The viewBox is the width it is drawn at, so stroke-width 2 is 2px.
@@ -143,10 +143,10 @@ const d = (delay: string, dur?: string) =>
 export function Hooks() {
   return (
     <span
-      className="wrap wrap--right wrap--hooks"
+      className="wrap wrap--hooks"
       /* DECORATIVE, like Thread beside it. The kit's rule is that a drawing is
-         a new way to read a claim and never a new claim, and this one floats
-         inside the very sentence it draws. Announcing it would read the same
+         a new way to read a claim and never a new claim, and this one stands
+         over the very sentence it draws. Announcing it would read the same
          statement to a screen reader twice, once as the author's prose and
          once as a description of a picture of that prose. */
       aria-hidden="true"
