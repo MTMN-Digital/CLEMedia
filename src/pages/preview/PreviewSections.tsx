@@ -2,25 +2,32 @@ import type { ReactNode, CSSProperties } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { useRoomEntry, Stage } from "@/components/render";
-import { Container, Section, Lead, TextLink } from "@/components/ui";
+import { Container, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { PHASES } from "@/components/team/people";
+import "@/components/draw/draw.css";
 import "./sections.css";
 
 /* ============================================================================
-   Four treatments of one section, for a direction call. Not a page of the
-   site: it is routed at /preview/sections and nothing links to it.
+   Treatments of one section, for a direction call. Not a page of the site: it
+   is routed at /preview/sections and nothing links to it.
 
-   WHY IT EXISTS. Every section on this site is built the same way: a heading,
-   a lead under it, a paragraph under that, then the thing the section is
-   actually about. The client's verdict on 2026-10-27 was "why do we have a
-   heading, a subheading, the text block etc", which is the right question.
-   Three layers of type announce a section three times before it starts.
+   WHY IT EXISTS. Every section on this site is a heading, a lead under it, a
+   paragraph under that, and then the thing the section is about. The client's
+   verdict on 2026-10-27 was "why do we have a heading, a subheading, the text
+   block etc", and then, of the first attempt at an answer: "did you not think
+   that we could just use the client's words within the cards, and leave the
+   heading outside of it".
 
-   THE TEST BED is the home page's review board, because it is the worst case:
-   a heading, a lead, the board, the board's OWN printed header, and a closing
-   note, so the section states its subject five times. The copy in each
-   treatment is the live copy, re-cut, never rewritten.
+   That is the right instruction and the first attempt missed it. It moved the
+   heading INTO the object and left the lead with nowhere to go. The prose is
+   what belongs in the object: the lead above this board is a summary of five
+   sentences the client has already written, one per phase, sitting unused in
+   people.ts because the board prints only the short `who` line.
+
+   THE TEST BED is the home page's review board, the worst case on the site: a
+   heading, a lead, the board, the board's own printed rail, and a closing
+   note, so the section states its subject five times.
    ========================================================================== */
 
 const POSE = [
@@ -29,25 +36,22 @@ const POSE = [
   { tilt: 4.9, turn: 2.1, roll: 0.15, depth: 0.44 },
   { tilt: 6.8, turn: -2.3, roll: -0.2, depth: 0.58 },
   { tilt: 5.2, turn: -0.3, roll: 0.34, depth: 0.46 },
-  { tilt: 6.2, turn: 1.1, roll: -0.18, depth: 0.52 },
 ];
 const LIGHT_BY_COLUMN = [-33, -25, -19];
 
 const LEAD =
   "Alan writes the scripts and animates the episodes. Paula, Lydia, Kirstie, Conor and David read each draft and give him their feedback, and he writes the next one from it.";
 
-/* The shelf of five slips, with or without the printed rail above it and with
-   or without a sixth card carrying the section's statement. */
-function Board({ rail, say }: { rail?: boolean; say?: ReactNode }) {
+/* ─── The shelf of slips. `words` prints the client's own sentence on each
+   slip instead of leaving it on a paragraph above the board. ────────────── */
+function Board({ rail, words }: { words?: boolean; rail?: boolean }) {
   const { ref, armed, lit } = useRoomEntry();
-  const offset = say ? 1 : 0;
   return (
     <div
       ref={ref}
-      className={`rk-studio rk-board mt-10 lg:mt-14 ${armed ? "is-armed" : ""} ${lit ? "is-in" : ""}`}
+      className={`rk-studio rk-board mt-10 lg:mt-12 ${armed ? "is-armed" : ""} ${lit ? "is-in" : ""}`}
     >
       <span className="rk-rake" aria-hidden="true" />
-
       {rail && (
         <div className="rk-head" aria-hidden="true">
           <span>How an episode is made</span>
@@ -55,33 +59,15 @@ function Board({ rail, say }: { rail?: boolean; say?: ReactNode }) {
           <span className="rk-head-meta">Every episode, every draft</span>
         </div>
       )}
-
       <ol className="rk-bench">
-        {say && (
-          <li className="rk-item" style={{ "--i": 0 } as CSSProperties}>
-            <div className="rk-plate">
-              <Stage
-                seated
-                light={LIGHT_BY_COLUMN[0]}
-                tilt={POSE[5].tilt}
-                turn={POSE[5].turn}
-                roll={POSE[5].roll}
-                depth={POSE[5].depth}
-                radius="var(--radius-md)"
-              >
-                <div className="rk-slip rk-slip--say">{say}</div>
-              </Stage>
-            </div>
-          </li>
-        )}
         {PHASES.map((s, i) => {
           const pose = POSE[i % POSE.length];
           return (
-            <li key={s.n} className="rk-item" style={{ "--i": i + offset } as CSSProperties}>
+            <li key={s.n} className="rk-item" style={{ "--i": i } as CSSProperties}>
               <div className="rk-plate">
                 <Stage
                   seated
-                  light={LIGHT_BY_COLUMN[(i + offset) % 3]}
+                  light={LIGHT_BY_COLUMN[i % 3]}
                   tilt={pose.tilt}
                   turn={pose.turn}
                   roll={pose.roll}
@@ -94,9 +80,13 @@ function Board({ rail, say }: { rail?: boolean; say?: ReactNode }) {
                       {s.n}
                     </p>
                     <h3 className="rk-slip__title">{s.phase}</h3>
-                    <p className="rk-slip__who">
-                      <span className="rk-slip__name">{s.who}</span>
-                    </p>
+                    {words ? (
+                      <p className="slip-words">{s.what}</p>
+                    ) : (
+                      <p className="rk-slip__who">
+                        <span className="rk-slip__name">{s.who}</span>
+                      </p>
+                    )}
                     {s.rounds && <p className="rk-slip__rounds">{s.rounds}</p>}
                   </article>
                 </Stage>
@@ -105,6 +95,71 @@ function Board({ rail, say }: { rail?: boolean; say?: ReactNode }) {
           );
         })}
       </ol>
+    </div>
+  );
+}
+
+/* The return mark: a loop drawn in the margin beside the two phases the
+   client's account says repeat, so the one genuinely unusual thing about this
+   process is drawn rather than written out a second time. */
+function Loop() {
+  return (
+    <svg className="ink ink--fine cs__loop" viewBox="0 0 34 34" aria-hidden="true" focusable="false">
+      <path
+        className="ink-line ink-draw ink-accent"
+        pathLength="1"
+        d="M28 17a11 11 0 1 1-4.8-9.1"
+        fill="none"
+      />
+      <path className="ink-line ink-draw ink-accent" pathLength="1" d="M24.2 2.4l-1.4 5.8 5.7 1" fill="none" />
+    </svg>
+  );
+}
+
+/* ─── The call sheet. One object with five ruled rows, which is what a
+   production's own paperwork looks like, instead of five standing cards. ── */
+function CallSheetPlate() {
+  const { ref, armed, lit } = useRoomEntry();
+  return (
+    <div
+      ref={ref}
+      className={`rk-studio mt-10 lg:mt-12 ${armed ? "is-armed" : ""} ${lit ? "is-in" : ""}`}
+    >
+      <span className="rk-rake" aria-hidden="true" />
+      <Stage
+        seated
+        ground="ledge"
+        tilt={3.2}
+        turn={-0.6}
+        roll={-0.25}
+        depth={0.5}
+        light={-30}
+        radius="var(--radius-md)"
+      >
+        <ol className="cs">
+          {PHASES.map((s) => (
+            <li className="cs__row" key={s.n}>
+              <div className="cs__gutter">
+                <p className="cs__no tnum">
+                  <span className="sr-only">Phase </span>
+                  {s.n}
+                </p>
+                {s.rounds && <Loop />}
+              </div>
+              <div className="cs__body">
+                <h3 className="cs__title">{s.phase}</h3>
+                <p className="cs__what">{s.what}</p>
+                {s.rounds && <p className="cs__rounds">{s.rounds}</p>}
+              </div>
+              {/* The right column is what a call sheet actually carries: who
+                  is on this phase. It also spends the width of the sheet, so
+                  the paper is a document rather than a wide box with a
+                  paragraph down one side of it. */}
+              <p className="cs__who">{s.who}</p>
+            </li>
+          ))}
+        </ol>
+      </Stage>
     </div>
   );
 }
@@ -135,18 +190,18 @@ function Frame({ tag, what, children }: { what: string; tag: string; children: R
 export default function PreviewSections() {
   return (
     <>
-      <Seo title="Section treatments" description="Four treatments of one section." path="/preview/sections" noIndex />
+      <Seo title="Section treatments" description="Treatments of one section." path="/preview/sections" noIndex />
 
       {/* ─── 0. AS BUILT ─────────────────────────────────────────────────── */}
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Frame
             tag="Now"
-            what="Heading, lead, object, the object's own printed header, then a closing note. The section names its subject five times before the reader reaches anything they did not already know."
+            what="Heading, lead, board, the board's own printed rail, closing note. Five statements of the subject, and the cards print a four word label where the client has written a whole sentence about each phase."
           >
             <Settle>
               <h2 className="t-h2 max-w-[18ch]">Five people read every draft</h2>
-              <Lead className="mt-5">{LEAD}</Lead>
+              <p className="t-lead mt-5 max-w-[58ch] text-body">{LEAD}</p>
             </Settle>
             <Board rail />
             <Settle className="mt-10">
@@ -160,17 +215,17 @@ export default function PreviewSections() {
         </Container>
       </Section>
 
-      {/* ─── A. ONE STATEMENT ────────────────────────────────────────────── */}
+      {/* ─── D. THE WORDS GO IN THE CARDS ────────────────────────────────── */}
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Frame
-            tag="A. One statement"
-            what="One block of display type and nothing else. The names move into the statement rather than sitting under it in a second face, and the closing note goes because slips 02 and 05 already print the rounds. Three layers of type become one."
+            tag="D. The words go in the cards"
+            what="Your note, applied as it stands. The heading stays outside and above. The lead is deleted, because the five sentences it was summarising are the client's own and go one per card. The printed rail and the closing note go with it."
           >
             <Settle>
-              <h2 className="say">Five people read every draft. Paula, Lydia, Kirstie, Conor and David.</h2>
+              <h2 className="t-h2">Five people read every draft</h2>
             </Settle>
-            <Board />
+            <Board words />
             <Settle>
               <More />
             </Settle>
@@ -178,44 +233,17 @@ export default function PreviewSections() {
         </Container>
       </Section>
 
-      {/* ─── B. THE RUN-IN ───────────────────────────────────────────────── */}
+      {/* ─── E. ONE SHEET, FIVE ROWS ─────────────────────────────────────── */}
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
           <Frame
-            tag="B. The run-in"
-            what="One block of text instead of three. The statement opens the paragraph in the display face and the prose carries straight on from it, the way a printed lede does. Keeps every word of the lead."
+            tag="E. The call sheet"
+            what="The same words, and the set piece rebuilt. Five rounded cards in a grid is a shape this site has already killed twice on other pages. A production's own paperwork is one sheet of ruled rows, so this is one object: the numeral in the margin, the sentence at a measure it can be read at, and the two phases that repeat marked with a drawn return loop instead of a second line of type."
           >
             <Settle>
-              {/* h2 and p both go inline, so this is one block of text to read
-                  and still a real heading to a screen reader. */}
-              <div className="runin">
-                <h2 className="runin__say">Five people read every draft.</h2>
-                <p className="runin__rest">{LEAD}</p>
-              </div>
+              <h2 className="t-h2">Five people read every draft</h2>
             </Settle>
-            <Board />
-            <Settle>
-              <More />
-            </Settle>
-          </Frame>
-        </Container>
-      </Section>
-
-      {/* ─── C. THE STATEMENT STANDS IN THE ROOM ─────────────────────────── */}
-      <Section pad={["normal", "tight"]}>
-        <Container width="wide">
-          <Frame
-            tag="C. In the room"
-            what="No opener at all. The statement is a sixth card on the same shelf, on the same paper, leaning at its own angle under the same lamp, so the reader meets the sentence inside the object rather than above it."
-          >
-            <Board
-              say={
-                <>
-                  <h2 className="say-line">Five people read every draft.</h2>
-                  <p className="say-who">Paula, Lydia, Kirstie, Conor and David. Alan writes.</p>
-                </>
-              }
-            />
+            <CallSheetPlate />
             <Settle>
               <More />
             </Settle>

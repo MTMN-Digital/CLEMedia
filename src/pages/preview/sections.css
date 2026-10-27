@@ -1,6 +1,6 @@
 /* ─── Scratch styles for /preview/sections ────────────────────────────────
-   Four treatments of one section, built to be looked at side by side and
-   then thrown away. Nothing here is imported by the site. */
+   Treatments of one section, built to be looked at and then thrown away.
+   Nothing here is imported by the site. */
 
 .pv-frame {
   border-top: 2px solid var(--color-ink);
@@ -16,70 +16,129 @@
 }
 .pv-what {
   margin-top: 0.35rem;
-  max-width: 62ch;
+  max-width: 68ch;
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-body);
 }
 
-/* ─── Treatment A. One statement and nothing else. ─────────────────── */
-.say {
-  max-width: 30ch;
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.06;
-  letter-spacing: -0.015em;
-  color: var(--color-ink);
-  font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.1rem);
-}
-
-/* ─── Treatment B. The run-in. The statement opens the paragraph in the
-   display face and the prose carries straight on from it, so a section has
-   one block of text rather than a title, a subtitle and a body. ─────────── */
-.runin {
-  max-width: 68ch;
-  font-size: 1.0625rem;
-  line-height: 1.64;
-  color: var(--color-body);
-}
-/* The heading and the paragraph are both set inline inside the block, so the
-   reader gets one text block and a screen reader still gets a real heading. */
-.runin__say,
-.runin__rest {
-  display: inline;
-  margin: 0;
-}
-.runin__say {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.5em;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
-  margin-right: 0.3em;
-}
-
-/* ─── Treatment C. The statement stands in the room, on the same shelf and
-   under the same lamp as the five slips, so the section has no opener at
-   all. The card is the slip's paper with the slip's fields replaced. ────── */
-.rk-slip--say {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 100%;
-}
-.rk-slip--say .say-line {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.4375rem, 7.6cqw, 1.95rem);
-  line-height: 1.1;
-  letter-spacing: -0.012em;
-  color: var(--color-ink);
-}
-.rk-slip--say .say-who {
-  margin-top: 0.7rem;
-  padding-top: 0.7rem;
+/* ─── D. The client's sentence, printed on the slip ─────────────────────── */
+.slip-words {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--color-rule);
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--color-body);
+}
+
+/* ─── E. The call sheet. One sheet of paper with five ruled rows, standing
+   on the bench like every other object in the kit. ──────────────────────── */
+.cs {
+  list-style: none;
+  margin: 0;
+  padding: clamp(1.25rem, 3cqw, 2.25rem) clamp(1.25rem, 3cqw, 2.5rem);
+  background: linear-gradient(
+    168deg,
+    var(--color-paper-1) 0%,
+    var(--color-raised) 44%,
+    color-mix(in srgb, var(--color-raised) 90%, var(--color-sunken)) 100%
+  );
+  border: 1px solid var(--color-rule);
+  border-radius: inherit;
+}
+.cs__row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 13rem);
+  column-gap: clamp(1rem, 2.4cqw, 2rem);
+  padding-block: clamp(1.1rem, 2.2cqw, 1.6rem);
+  border-top: 1px solid var(--color-rule);
+}
+.cs__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.cs__row:last-child {
+  padding-bottom: 0;
+}
+.cs__gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+.cs__no {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.4cqw, 2.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--color-red-deep);
+}
+/* The loop is a mark in the margin, not an icon in a box: it sits under the
+   numeral it belongs to and draws itself once when the sheet arrives. */
+.cs__loop {
+  width: 30px;
+  height: 30px;
+  overflow: visible;
+}
+.cs__title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+.cs__what {
+  margin-top: 0.4rem;
+  max-width: 62ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+.cs__rounds {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
+}
+
+/* The who column, hard against the right edge of the sheet, set in the same
+   mono the rest of the kit prints its labels in. */
+.cs__who {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  border-left: 1px solid var(--color-rule);
+  padding-left: clamp(0.9rem, 1.8cqw, 1.5rem);
+}
+
+/* On a phone the gutter has no width to spare, so the numeral runs in with
+   the phase name, the loop goes beside it, and the who line drops under the
+   sentence as a rule-topped credit. */
+@media (max-width: 559px) {
+  .cs__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.5rem;
+  }
+  .cs__who {
+    border-left: 0;
+    border-top: 1px solid var(--color-rule);
+    padding-left: 0;
+    padding-top: 0.6rem;
+    margin-top: 0.2rem;
+  }
+  .cs__gutter {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .cs__loop {
+    width: 24px;
+    height: 24px;
+  }
 }
