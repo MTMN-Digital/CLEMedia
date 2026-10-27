@@ -3,10 +3,13 @@ import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { Button, Container, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { ADVISORS, PHASES, TEAM } from "@/components/team/people";
+import { PHASES } from "@/components/team/people";
+import { useTeam } from "@/components/team/useTeam";
 import { StageSequence } from "@/components/team/StageSequence";
 import { Roster } from "@/components/team/Roster";
 import { PeopleStrip } from "@/components/team/PeopleStrip";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/teampage/copy";
 import "@/components/teampage/bench.css";
 
 /* ============================================================================
@@ -55,6 +58,24 @@ import "@/components/teampage/bench.css";
    ========================================================================== */
 
 export default function Team() {
+  /* The people come through useTeam() since 2026-10-27: the bundled lists
+     render first, and rows saved in the admin's Team panel replace them once
+     they arrive. An empty table keeps the bundled lists, so nothing here
+     changes until Conor changes it. */
+  const { team, advisors } = useTeam();
+
+  /* EDITABLE FROM THE ADMIN. Every string below is the page's own wording
+     (components/teampage/copy.ts) until a content_blocks row replaces it. */
+  const heroEyebrow = useBlock("team", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("team", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("team", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("team", "hero.title", COPY["hero.title"]);
+  const heroLead = useBlock("team", "hero.lead", COPY["hero.lead"]);
+  const dossierHeading = useBlock("team", "dossier.heading", COPY["dossier.heading"]);
+  const peopleHeading = useBlock("team", "people.heading", COPY["people.heading"]);
+  const ctaHeading = useBlock("team", "cta.heading", COPY["cta.heading"]);
+  const ctaLead = useBlock("team", "cta.lead", COPY["cta.lead"]);
+
   return (
     <>
       <Seo
@@ -93,23 +114,19 @@ export default function Team() {
           <Wipe>
             <div className="team-open">
               <p className="page-hero__eyebrow">
-                Our team<span>Core team and advisers</span>
+                {heroEyebrow}<span>{heroEyebrowSub}</span>
               </p>
-              <p className="page-hero__aside">A small core team.</p>
+              <p className="page-hero__aside">{heroAside}</p>
               <h1 id="team-h" className="page-hero__title">
-                The people who make every episode
+                {heroTitle}
               </h1>
-              <p className="team-open__lead t-lead">
-                Between them they decide what gets made, how it gets made and what it is supposed
-                to do for the child watching. Alan writes and animates, and the rest of them read
-                every draft and watch every episode before it is released.
-              </p>
+              <p className="team-open__lead t-lead">{heroLead}</p>
             </div>
             {/* The band ends on the faces. It used to end on 400px of bare
                 wall, which is the "layouts are thin" complaint in one place:
                 the opening of the page about the team showed nobody. */}
             <div className="mt-14 lg:mt-20">
-              <PeopleStrip people={[...TEAM, ...ADVISORS]} />
+              <PeopleStrip people={[...team, ...advisors]} />
             </div>
           </Wipe>
         </Container>
@@ -126,7 +143,7 @@ export default function Team() {
               the board it describes. No lead. */}
           <Settle className="pb-10 lg:pb-14">
             <h2 id="dossier-h" className="t-h2 max-w-[24ch]">
-              A script goes round three or four times. The cut goes round until everyone is happy.
+              {dossierHeading}
             </h2>
             <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
               In order, from the first draft to the finished episode. Then the same work from the
@@ -149,14 +166,14 @@ export default function Team() {
               right, above the roster it qualifies. */}
           <Settle className="pb-10 lg:pb-14">
             <h2 id="people-h" className="t-h1 max-w-[18ch]">
-              In their own words, cut down and never added to.
+              {peopleHeading}
             </h2>
             <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
               Where the company's account does not place a person in a phase, nothing is claimed
               for them there.
             </p>
           </Settle>
-          <Roster people={TEAM} phases={PHASES} />
+          <Roster people={team} phases={PHASES} />
           <div className="mt-16 border-t-[1.5px] border-rule pt-10 lg:mt-20 lg:pt-14">
             {/* A sub-head inside the set, not a mono eyebrow over it. */}
             <h3 className="t-h3">Adviser</h3>
@@ -164,7 +181,7 @@ export default function Team() {
               Advisers are not employees. Each is described only as they have approved it.
             </p>
             <div className="mt-10">
-              <Roster people={ADVISORS} phases={PHASES} />
+              <Roster people={advisors} phases={PHASES} />
             </div>
           </div>
         </Container>
@@ -176,12 +193,9 @@ export default function Team() {
           <Settle className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div>
               <h2 id="team-cta-h" className="t-h2 max-w-[18ch]">
-                Every episode passes through these people before a child sees it
+                {ctaHeading}
               </h2>
-              <p className="t-lead mt-5 max-w-[46ch] opacity-85">
-                How an episode is written, reviewed and made, and where AI is and is not used, is
-                set out in full on the Responsible AI page.
-              </p>
+              <p className="t-lead mt-5 max-w-[46ch] opacity-85">{ctaLead}</p>
             </div>
             {/* The quiet button is ink on a hairline, which disappears on navy.
                 The earlier page shipped two of them here, invisible. One

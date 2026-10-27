@@ -8,6 +8,8 @@ import { TheLineTable } from "@/components/ethical-ai/TheLineTable";
 import { ForTheChild } from "@/components/ethical-ai/ForTheChild";
 import { Container, TextLink, Button, Section, DisclosurePanel } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
+import { useBlock, emphasis } from "@/lib/content";
+import { COPY } from "@/components/ethical-ai/copy";
 
 /* ============================================================================
    Responsible AI.
@@ -122,6 +124,22 @@ function Question({ id, q, a, open, onToggle }: { open: boolean; onToggle: () =>
 export default function EthicalAi() {
   const [open, setOpen] = useState<number | null>(0);
 
+  /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's
+     own wording (components/ethical-ai/copy.ts) until a content_blocks row
+     replaces it. The headline's accent clause is written between *stars*.
+     The six commitments and the four answers are the position itself and
+     stay in this file. */
+  const heroEyebrow = useBlock("ethical-ai", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("ethical-ai", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("ethical-ai", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("ethical-ai", "hero.title", COPY["hero.title"]);
+  const lineHeading = useBlock("ethical-ai", "line.heading", COPY["line.heading"]);
+  const lineLead = useBlock("ethical-ai", "line.lead", COPY["line.lead"]);
+  const linesHeading = useBlock("ethical-ai", "lines.heading", COPY["lines.heading"]);
+  const faqHeading = useBlock("ethical-ai", "faq.heading", COPY["faq.heading"]);
+  const commitHeading = useBlock("ethical-ai", "commit.heading", COPY["commit.heading"]);
+  const commitLead = useBlock("ethical-ai", "commit.lead", COPY["commit.lead"]);
+
   return (
     <>
       <Seo
@@ -146,9 +164,9 @@ export default function EthicalAi() {
         id="ai-h"
         size="tall"
         tone="ink"
-        eyebrow={<>Responsible AI<span>How an episode is made</span></>}
-        aside={<>Runway for visual production. ElevenLabs for voice production.</>}
-        title={<>AI is a production tool. <em>People remain responsible</em> for the work.</>}
+        eyebrow={<>{heroEyebrow}<span>{heroEyebrowSub}</span></>}
+        aside={<>{heroAside}</>}
+        title={emphasis(heroTitle)}
         actions={
           <>
             <a href="#line-h" className="btn btn-primary">
@@ -173,12 +191,9 @@ export default function EthicalAi() {
         <Container width="wide">
           <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-x-16">
             <h2 id="line-h" className="t-h2 max-w-[18ch] scroll-mt-28">
-              People decide at every phase. The tools sit in one place in the middle.
+              {lineHeading}
             </h2>
-            <p className="t-lead max-w-[40ch] text-ink lg:justify-self-end">
-              Our creative and educational decisions are made by people. Our team directs, reviews
-              and approves the work before publication.
-            </p>
+            <p className="t-lead max-w-[40ch] text-ink lg:justify-self-end">{lineLead}</p>
           </Settle>
 
           <Settle className="mt-14 flex flex-col gap-5 border-t-[1.5px] border-rule pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
@@ -261,7 +276,7 @@ export default function EthicalAi() {
         <Container width="wide">
           <Settle>
             <h2 id="lines-h" className="t-h2 max-w-[22ch]">
-              People decide what a story teaches. Tools assist with how it looks and sounds.
+              {linesHeading}
             </h2>
           </Settle>
 
@@ -308,7 +323,7 @@ export default function EthicalAi() {
           <div className="xl:grid xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:items-start xl:gap-x-14">
             <Settle>
               <h2 id="faq-h" className="t-h2 max-w-[18ch]">
-                Which tools, who approves, and what happens when a review finds a problem.
+                {faqHeading}
               </h2>
             </Settle>
             <Settle className="mt-9 xl:mt-0">
@@ -342,15 +357,9 @@ export default function EthicalAi() {
           <Settle className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div>
               <h2 id="commit-h" className="t-h2 max-w-[20ch]">
-                The technology will keep changing. The responsibility will not.
+                {commitHeading}
               </h2>
-              <p className="t-lead mt-6 max-w-[52ch] opacity-85">
-                As the company grows we will keep reviewing our practice around human creative
-                authorship, intellectual property and commercial rights, performer and voice consent,
-                tool selection, transparency with audiences and partners, child safety, educational
-                integrity, and making sure technology supports rather than replaces meaningful human
-                creativity.
-              </p>
+              <p className="t-lead mt-6 max-w-[52ch] opacity-85">{commitLead}</p>
             </div>
             <div className="lg:pt-2">
               <p className="t-body max-w-[42ch] opacity-85">

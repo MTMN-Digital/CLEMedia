@@ -20,6 +20,8 @@ import {
   Lead, Section, Container, Button,
 } from "@/components/ui";
 import { IconMail, IconArrow } from "@/components/icons";
+import { useBlock, emphasis } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    THE RULE THIS PAGE WAS REBUILT ON.
@@ -80,6 +82,23 @@ import { IconMail, IconArrow } from "@/components/icons";
 
 
 export default function Home() {
+  /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's own
+     wording (components/home/copy.ts) until a content_blocks row replaces it,
+     so with nothing saved the page renders exactly as it did before. Two
+     headlines keep their drawn underline through emphasis(): the admin writes
+     the underlined words between *stars*. */
+  const thesisHeading = useBlock("home", "thesis.heading", COPY["thesis.heading"]);
+  const thesisPull = useBlock("home", "thesis.pull", COPY["thesis.pull"]);
+  const thesisLead1 = useBlock("home", "thesis.lead_1", COPY["thesis.lead_1"]);
+  const thesisLead2 = useBlock("home", "thesis.lead_2", COPY["thesis.lead_2"]);
+  const modelHeading = useBlock("home", "model.heading", COPY["model.heading"]);
+  const seriesHeading = useBlock("home", "series.heading", COPY["series.heading"]);
+  const seriesLead = useBlock("home", "series.lead", COPY["series.lead"]);
+  const aiHeading = useBlock("home", "ai.heading", COPY["ai.heading"]);
+  const aiPull = useBlock("home", "ai.pull", COPY["ai.pull"]);
+  const aiCta = useBlock("home", "ai.cta", COPY["ai.cta"]);
+  const updatesHeading = useBlock("home", "updates.heading", COPY["updates.heading"]);
+  const updatesBody = useBlock("home", "updates.body", COPY["updates.body"]);
 
   return (
     <>
@@ -135,25 +154,16 @@ export default function Home() {
                asking for. Heading, then its sentence under it, one left edge. */}
             <Wipe>
               <h2 id="thesis-h" className="t-display max-w-[21ch]">
-                We are not going to tell anyone their child watches too much television.
+                {thesisHeading}
               </h2>
               <p className="mt-8 max-w-[34ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep">
-                We would rather an episode started something a child{" "}
-                <Underline accent>carries on with</Underline>.
+                {emphasis(thesisPull, (s) => <Underline accent>{s}</Underline>)}
               </p>
             </Wipe>
 
             <Settle className="hairline mt-14 grid gap-x-12 gap-y-8 pt-10 md:grid-cols-2 lg:gap-x-24">
-              <p className="t-lead text-body">
-                The gap we saw is narrower than that. Not enough content made at a child's pace,
-                with genuine educational intent, and with a clear account of who made it and who
-                checked it.
-              </p>
-              <p className="t-lead text-body">
-                Much of what fills the market is fast and loud, built around how long a child keeps
-                watching rather than what they take away from it. Attention is what gets measured,
-                so attention is what gets designed for.
-              </p>
+              <p className="t-lead text-body">{thesisLead1}</p>
+              <p className="t-lead text-body">{thesisLead2}</p>
             </Settle>
           </Container>
       </Section>
@@ -198,8 +208,7 @@ export default function Home() {
               page's real problem. */}
           <Wipe>
             <h2 id="model-h" className="t-h2 max-w-[30ch]">
-              Designed to move a child from the screen into play and conversation, rather than
-              to hold them in front of it.
+              {modelHeading}
             </h2>
           </Wipe>
 
@@ -336,12 +345,8 @@ export default function Home() {
               </Stage>
             </div>
             <div className="lg:pb-2">
-              <h2 id="series-h" className="t-h2 max-w-[16ch]">Our first original series</h2>
-              <Lead className="mt-4">
-                The Pawsitive Pugs &amp; Pals. Finn, the fawn pug, and Fia, the black pug, in a
-                garden that rewards slowing down. Four episodes released so far, nine to eleven
-                minutes each.
-              </Lead>
+              <h2 id="series-h" className="t-h2 max-w-[16ch]">{seriesHeading}</h2>
+              <Lead className="mt-4">{seriesLead}</Lead>
             </div>
           </Wipe>
         </Container>
@@ -411,8 +416,7 @@ export default function Home() {
         <Container width="wide">
           <Settle>
             <h2 id="ai-h" className="t-display max-w-[17ch]">
-              AI is a production tool. <Underline v={2}>People remain responsible</Underline> for
-              the work.
+              {emphasis(aiHeading, (s) => <Underline v={2}>{s}</Underline>)}
             </h2>
           </Settle>
 
@@ -428,13 +432,12 @@ export default function Home() {
               <div className="relative pl-6">
                 <DrawnBracket className="absolute left-0 top-0 h-full w-[14px]" />
                 <p className="font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] text-ink">
-                  Calling this work handmade would be untrue. Calling it AI-generated would erase
-                  the people who actually make the decisions.
+                  {aiPull}
                 </p>
               </div>
               <div className="mt-10 pl-6">
                 <Button to="/ethical-ai" variant="quiet">
-                  Read the full position<IconArrow size={16} />
+                  {aiCta}<IconArrow size={16} />
                 </Button>
               </div>
             </div>
@@ -483,10 +486,8 @@ export default function Home() {
         <Container width="wide">
           <Settle className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:items-start">
             <div>
-              <h2 id="updates-h" className="t-h2 max-w-[14ch]">Occasional updates</h2>
-              <p className="t-body mt-4 max-w-[42ch]">
-                Production notes and company news, for adults. Infrequent, and easy to leave.
-              </p>
+              <h2 id="updates-h" className="t-h2 max-w-[14ch]">{updatesHeading}</h2>
+              <p className="t-body mt-4 max-w-[42ch]">{updatesBody}</p>
             </div>
             <NotifyForm cta="Sign up" icon={<IconMail size={16} />} done="Thank you. We will be in touch when there is something worth sending." />
           </Settle>

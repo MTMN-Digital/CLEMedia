@@ -58,8 +58,18 @@ function azimuthFor(column: number, columns: number) {
   return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
 }
 
+/* A portrait uploaded in the admin arrives as `photo`, and Figure takes it as
+   an override but still wants an asset for the frame's width and height.
+   Someone added in the panel has no bundled asset, so they borrow this one:
+   it is 440 square like every portrait, and its base is empty, so if the
+   override were ever missing it would draw a labelled placeholder rather
+   than another person's face. */
+const PORTRAIT_FRAME = "person.mansi" as const;
+
 export function PeopleStrip({ people }: { people: Member[] }) {
-  const shown = people.filter((p) => p.asset);
+  /* Bundled portrait or an uploaded one: either way there is a face to show.
+     With the people table empty this is the same filter it always was. */
+  const shown = people.filter((p) => p.asset || p.photo);
   if (shown.length < 2) return null;
 
   return (
@@ -93,7 +103,8 @@ export function PeopleStrip({ people }: { people: Member[] }) {
               radius="var(--radius-md)"
             >
               <Figure
-                asset={p.asset!}
+                asset={p.asset ?? PORTRAIT_FRAME}
+                override={p.photo ?? null}
                 rounded="rounded-[var(--radius-md)]"
                 className="aspect-square"
                 /* The source crops are 440 square, 880 at 2x, so a column on a

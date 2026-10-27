@@ -7,7 +7,7 @@ import { IconDownload, IconArrow } from "@/components/icons";
 import { Settle } from "@/components/Settle";
 import { Docket } from "@/components/shop/Docket";
 import { SheetBench } from "@/components/shop/PrintedSheet";
-import { paragraphs, formatPrice, useProduct } from "@/components/shop/catalogue";
+import { fileFormat, formatPrice, useProduct, formatLabel, paragraphs } from "@/components/shop/catalogue";
 import "@/components/shop/buy.css";
 
 /* ============================================================================
@@ -48,21 +48,31 @@ import "@/components/shop/buy.css";
    frame, on the plain ink panel, because a page with no product has nothing
    else to open on, and the drawn blank sheet that used to stand beside the
    apology was a drawing of nothing.
+
+   THE FORMAT IS READ, NOT ASSUMED, since 2026-10-27. The first products are
+   episode packs: a zip folder with the episode's PDFs inside. The docket
+   used to state "Format: PDF" as a constant, which was true of the plan and
+   false of the packs, so the row and the heading over it now name what the
+   stored file actually is. The cover's alt text is the one the admin wrote
+   for it, with the old "The cover of ..." as the fallback.
    ========================================================================== */
 
-/* True of every file in this shop, before any product exists. Stated as a
-   docket so the promise and the receipt on /download are the same document. */
-const TERMS = [
-  { k: "Format", v: "PDF" },
-  { k: "Delivery", v: "straight away" },
-  { k: "Link valid for", v: "24 hours", strong: true },
-  { k: "Downloads allowed", v: "5", strong: true },
-  { k: "Account created", v: "none" },
-  /* The consequence of "straight away", stated where the other terms are
-     rather than left to the policy page. Added 2026-10-13 with the
-     acknowledgement above the button. */
-  { k: "Right to cancel", v: "ends on download", strong: true },
-];
+/* True of every file in this shop. Stated as a docket so the promise and the
+   receipt on /download are the same document. The format row is the one
+   term that comes from the product. */
+function terms(format: null | "zip" | "pdf") {
+  return [
+    { k: "Format", v: formatLabel(format) },
+    { k: "Delivery", v: "straight away" },
+    { k: "Link valid for", v: "24 hours", strong: true },
+    { k: "Downloads allowed", v: "5", strong: true },
+    { k: "Account created", v: "none" },
+    /* The consequence of "straight away", stated where the other terms are
+       rather than left to the policy page. Added 2026-10-13 with the
+       acknowledgement above the button. */
+    { k: "Right to cancel", v: "ends on download", strong: true },
+  ];
+}
 
 export default function ShopProduct() {
   const { slug } = useParams();
@@ -226,6 +236,7 @@ export default function ShopProduct() {
 
   const p = q.data;
   const body = paragraphs(p.description);
+  const format = fileFormat(p.file_path);
 
   return (
     <>
@@ -260,7 +271,7 @@ export default function ShopProduct() {
                 {p.thumbnail ? (
                   <img
                     src={p.thumbnail}
-                    alt={`The cover of ${p.title}`}
+                    alt={p.thumbnail_alt?.trim() || `The cover of ${p.title}`}
                     className="h-full w-full object-cover"
                     loading="eager"
                     decoding="async"
@@ -338,7 +349,9 @@ export default function ShopProduct() {
         <Container>
           <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
             <div>
-              <h2 id="terms-h" className="t-h2 max-w-[14ch]">A PDF, delivered straight away.</h2>
+              <h2 id="terms-h" className="t-h2 max-w-[14ch]">
+                {format === "pdf" ? "A PDF" : "A zip of PDFs"}, delivered straight away.
+              </h2>
               <p className="t-body mt-6 max-w-[44ch] text-body">
                 Printables are drawn from <em>The Pawsitive Pugs &amp; Pals&reg;</em>. Free
                 activities live on the show's own site, and the interactive ones are part of
@@ -353,7 +366,7 @@ export default function ShopProduct() {
             </div>
             <Docket
               label="What a purchase is"
-              rows={TERMS}
+              rows={terms(format)}
               foot={
                 <>
                   Save the file as soon as it downloads. There is no account here, so there is

@@ -1,6 +1,10 @@
 import type { CSSProperties } from "react";
-import { Stage, useRoomEntry } from "@/components/render";
+import { useRoomEntry, Stage } from "@/components/render";
 import { APP_LAUNCHED } from "@/lib/site";
+import { useSetting } from "@/lib/content";
+import type { AppSetting } from "@/lib/types";
+
+const APP_DEFAULT: AppSetting = { launched: APP_LAUNCHED, target_window: null, app_store_url: null, play_store_url: null };
 
 /* Watch, Play and Learn as three slips standing on one shelf under one lamp,
    the way the review board stands its six. Mirrors team/StageSequence.tsx:
@@ -8,10 +12,10 @@ import { APP_LAUNCHED } from "@/lib/site";
    so the shadows fan away from a single point. */
 
 export type BoardSlip = {
-  n: string;
-  title: string;
   line: string;
+  title: string;
   items: { title: string; body: string }[];
+  n: string;
 };
 
 const POSE = [
@@ -29,6 +33,7 @@ function azimuthFor(column: number, columns: number) {
 
 export function StageBoard({ slips }: { slips: BoardSlip[] }) {
   const { ref, armed, lit } = useRoomEntry();
+  const { launched } = useSetting("app", APP_DEFAULT);
 
   return (
     <div
@@ -40,7 +45,7 @@ export function StageBoard({ slips }: { slips: BoardSlip[] }) {
       <div className="rk-head" aria-hidden="true">
         <span>Watch, Play, Learn</span>
         <span className="rk-head-rule" />
-        <span className="rk-head-meta">{APP_LAUNCHED ? "Available now" : "Planned, not yet available"}</span>
+        <span className="rk-head-meta">{launched ? "Available now" : "Planned, not yet available"}</span>
       </div>
 
       <ol className="rk-bench">

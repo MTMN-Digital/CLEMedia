@@ -6,7 +6,8 @@ import { StudioWall } from "@/components/render";
 import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
-import type { MediaItem } from "@/lib/types";
+import { useBlock, emphasis, useImageBlock, useSetting } from "@/lib/content";
+import type { AppSetting, MediaItem } from "@/lib/types";
 
 /* ============================================================================
    Press and appearances, rebuilt 2026-10-06, carried to the hero 2026-10-27.
@@ -48,40 +49,65 @@ import type { MediaItem } from "@/lib/types";
    nothing here has to be edited by hand when the first piece runs.
    ========================================================================== */
 
-/* What the company is glad to be asked about, each pointing at the page that
-   already sets out its position, so nobody is quoted inventing one. */
-/* Every line below that describes the player's state reads APP_LAUNCHED from
-   src/lib/site.ts, the same flag /app reads. */
-const PLAYER_STATE = APP_LAUNCHED ? "released" : "in development";
+/* The words Conor can change from the admin panel, keyed as the registry in
+   src/lib/blocks.ts names them. Each entry is the page's own wording today;
+   the page renders it unless a saved block replaces it, so an empty table
+   shows exactly this. The clause between stars is the one the headline sets
+   in the accent colour. */
+export const COPY: Record<string, string> = {
+  "hero.eyebrow": "Press and appearances",
+  "hero.eyebrow_sub": "For anyone writing about the company or the series",
+  "hero.aside": "Everything links straight out to the original.",
+  "hero.title_booked": "A UK podcast appearance is booked for *December.*",
+  "hero.title_listing": "Interviews, podcast appearances and coverage of the *company and the series.*",
+  "stills.heading": "Every title is made in wool and photographed, not set in a typeface.",
+  "index.heading": "Appearances, as they are booked.",
+  "subjects.heading": "Four subjects the company has a worked position on.",
+  "notes.heading": "Spellings, names and facts, checked before you file.",
+  "press.heading": "Writing about children's media?",
+  "press.lead":
+    "We would rather answer a question directly than be quoted from a web page. Tell us what you are working on and who you need.",
+};
 
-const SUBJECTS: { topic: string; to: string; line: string; cta: string }[] = [
-  {
-    topic: "AI in children's production",
-    line: "Where a tool is used, where a person decides, and the lines the company will not cross. The position is written down and the review stages are named.",
-    to: "/ethical-ai",
-    cta: "Read the position",
-  },
-  {
-    topic: "Watch, Play, Learn",
-    line: "Why an episode is written to start something rather than to fill the time, and what the education side of the company checks before a script exists.",
-    to: "/story",
-    cta: "Read the story",
-  },
-  {
-    topic: "Building a family media company in Ireland",
-    line: "A small studio, a founder who came to it from thirteen years in food retail, and the economics of making children's content slowly.",
-    to: "/story",
-    cta: "Read the story",
-  },
-  {
-    topic: `${SITE.playerName}™, ${PLAYER_STATE}`,
-    line: APP_LAUNCHED
-      ? "What the product is for, what it does and does not do, and how it has been built for children and their parents."
-      : "What the product is for, what it will and will not do, and why it is being described as in development rather than announced.",
-    to: "/app",
-    cta: "See the app",
-  },
-];
+/* The player's state. APP_LAUNCHED in src/lib/site.ts is the value the page
+   is built with; the `app` settings row, which the admin panel writes, takes
+   over once it arrives. Both /app and this page read the same row, so every
+   line that describes PupsPlayer's state changes together. */
+const APP_DEFAULT: AppSetting = { launched: APP_LAUNCHED, target_window: null, app_store_url: null, play_store_url: null };
+
+/* What the company is glad to be asked about, each pointing at the page that
+   already sets out its position, so nobody is quoted inventing one. Built
+   from the launch flag, so the fourth subject describes the player as it is. */
+function subjectsFor(launched: boolean): { topic: string; to: string; line: string; cta: string }[] {
+  return [
+    {
+      topic: "AI in children's production",
+      line: "Where a tool is used, where a person decides, and the lines the company will not cross. The position is written down and the review stages are named.",
+      to: "/ethical-ai",
+      cta: "Read the position",
+    },
+    {
+      topic: "Watch, Play, Learn",
+      line: "Why an episode is written to start something rather than to fill the time, and what the education side of the company checks before a script exists.",
+      to: "/story",
+      cta: "Read the story",
+    },
+    {
+      topic: "Building a family media company in Ireland",
+      line: "A small studio, a founder who came to it from thirteen years in food retail, and the economics of making children's content slowly.",
+      to: "/story",
+      cta: "Read the story",
+    },
+    {
+      topic: `${SITE.playerName}™, ${launched ? "released" : "in development"}`,
+      line: launched
+        ? "What the product is for, what it does and does not do, and how it has been built for children and their parents."
+        : "What the product is for, what it will and will not do, and why it is being described as in development rather than announced.",
+      to: "/app",
+      cta: "See the app",
+    },
+  ];
+}
 
 /* The standing rows, used until `media_items` has anything in it. The booking
    is the client's own fact and is stated exactly as given: a UK podcast, in
@@ -89,41 +115,45 @@ const SUBJECTS: { topic: string; to: string; line: string; cta: string }[] = [
    no host, because none has been supplied. The second half of that fact,
    "more to follow around the app launch", lives here rather than in the
    headline, which stops at the booking so it sets in two lines. */
-const STANDING: { detail: string; pending?: boolean; what: string; when: string }[] = [
-  {
-    when: "December",
-    what: "A UK podcast appearance",
-    detail: "Booked. The show, the episode and the link go here once it goes out.",
-  },
-  {
-    when: "To be confirmed",
-    what: "More around the app launch",
-    /* Carries the mark wherever it is the first use on screen. */
-    detail: APP_LAUNCHED
-      ? `Further appearances are expected as ${SITE.playerName}™ reaches more families.`
-      : `Further appearances are expected as ${SITE.playerName}™ launches.`,
-    pending: true,
-  },
-];
+function standingFor(launched: boolean): { detail: string; pending?: boolean; what: string; when: string }[] {
+  return [
+    {
+      when: "December",
+      what: "A UK podcast appearance",
+      detail: "Booked. The show, the episode and the link go here once it goes out.",
+    },
+    {
+      when: "To be confirmed",
+      what: "More around the app launch",
+      /* Carries the mark wherever it is the first use on screen. */
+      detail: launched
+        ? `Further appearances are expected as ${SITE.playerName}™ reaches more families.`
+        : `Further appearances are expected as ${SITE.playerName}™ launches.`,
+      pending: true,
+    },
+  ];
+}
 
 /* Notes to editors. Every line is already true somewhere else on this site,
    which is the test for anything on this sheet. */
-const NOTES: { k: string; v: string }[] = [
-  { k: "Company", v: "CLÉ Family Media. Note the É." },
-  { k: "Series", v: "The Pawsitive Pugs & Pals®, written with the ampersand and the registered mark." },
-  { k: "Player", v: `PupsPlayer™, one word, capital P twice. ${APP_LAUNCHED ? "Released." : "In development, not released."}` },
-  { k: "Founder", v: "Conor Sexton, Founder and CEO." },
-  { k: "Characters", v: "Finn, the fawn pug. Fia, the black pug." },
-  { k: "Episodes", v: "Series one. Four out now, free to watch. The show's own site carries them." },
-  /* The imagery row is DELIBERATELY ABSENT. It read "No AI-generated imagery
-     is used on this site", which this site's own asset manifest contradicts:
-     `src/lib/brand.ts` records that the stage 1 audit found the brand kit
-     almost entirely AI-generated, and names the live hero as generated. A
-     press sheet on a company whose argument is disclosed AI use cannot carry
-     a line its own repository calls false. Replacement wording is Conor's to
-     give, and is logged in CONTENT-NEEDED.md. */
-  { k: "Imagery", v: "Artwork and stills come through the press route." },
-];
+function notesFor(launched: boolean): { k: string; v: string }[] {
+  return [
+    { k: "Company", v: "CLÉ Family Media. Note the É." },
+    { k: "Series", v: "The Pawsitive Pugs & Pals®, written with the ampersand and the registered mark." },
+    { k: "Player", v: `PupsPlayer™, one word, capital P twice. ${launched ? "Released." : "In development, not released."}` },
+    { k: "Founder", v: "Conor Sexton, Founder and CEO." },
+    { k: "Characters", v: "Finn, the fawn pug. Fia, the black pug." },
+    { k: "Episodes", v: "Series one. Four out now, free to watch. The show's own site carries them." },
+    /* The imagery row is DELIBERATELY ABSENT. It read "No AI-generated imagery
+       is used on this site", which this site's own asset manifest contradicts:
+       `src/lib/brand.ts` records that the stage 1 audit found the brand kit
+       almost entirely AI-generated, and names the live hero as generated. A
+       press sheet on a company whose argument is disclosed AI use cannot carry
+       a line its own repository calls false. Replacement wording is Conor's to
+       give, and is logged in CONTENT-NEEDED.md. */
+    { k: "Imagery", v: "Artwork and stills come through the press route." },
+  ];
+}
 
 type Load = "empty" | "failed" | "ready" | "loading";
 
@@ -195,6 +225,25 @@ const NOTE = "ml-auto max-w-[44ch] text-right font-mono text-[13px] leading-[1.6
 
 export default function Media() {
   const { items, load } = useMediaItems();
+  const { launched } = useSetting("app", APP_DEFAULT);
+  const subjects = subjectsFor(launched);
+  const notes = notesFor(launched);
+
+  /* The editable words, read in one place so the hooks run in the same
+     order on every render. Both headlines are read even though one shows,
+     for the same reason. */
+  const heroEyebrow = useBlock("media", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("media", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("media", "hero.aside", COPY["hero.aside"]);
+  const titleBooked = useBlock("media", "hero.title_booked", COPY["hero.title_booked"]);
+  const titleListing = useBlock("media", "hero.title_listing", COPY["hero.title_listing"]);
+  const heroImage = useImageBlock("media", "hero.image");
+  const stillsHeading = useBlock("media", "stills.heading", COPY["stills.heading"]);
+  const indexHeading = useBlock("media", "index.heading", COPY["index.heading"]);
+  const subjectsHeading = useBlock("media", "subjects.heading", COPY["subjects.heading"]);
+  const notesHeading = useBlock("media", "notes.heading", COPY["notes.heading"]);
+  const pressHeading = useBlock("media", "press.heading", COPY["press.heading"]);
+  const pressLead = useBlock("media", "press.lead", COPY["press.lead"]);
 
   const slips: Slip[] = items
     ? items.map((m) => ({
@@ -204,7 +253,7 @@ export default function Media() {
         body: m.description ?? "",
         status: "Published",
       }))
-    : STANDING.map((s) => ({
+    : standingFor(launched).map((s) => ({
         key: s.what,
         when: s.when,
         title: s.what,
@@ -240,25 +289,16 @@ export default function Media() {
       <PageHero
         id="media-h"
         asset="show.meadow"
+        override={heroImage}
         position="center 60%"
         credit={<>Finn and Fia. A frame from the series.</>}
         eyebrow={
           <>
-            Press and appearances<span>For anyone writing about the company or the series</span>
+            {heroEyebrow}<span>{heroEyebrowSub}</span>
           </>
         }
-        aside={<>Everything links straight out to the original.</>}
-        title={
-          items ? (
-            <>
-              Interviews, podcast appearances and coverage of the <em>company and the series.</em>
-            </>
-          ) : (
-            <>
-              A UK podcast appearance is booked for <em>December.</em>
-            </>
-          )
-        }
+        aside={<>{heroAside}</>}
+        title={items ? emphasis(titleListing) : emphasis(titleBooked)}
         actions={
           <>
             <Button to="/contact">
@@ -289,7 +329,7 @@ export default function Media() {
         <Container width="wide">
           <Settle>
             <h2 id="stills-h" className="t-h2 max-w-[22ch] scroll-mt-28">
-              Every title is made in wool and photographed, not set in a typeface.
+              {stillsHeading}
             </h2>
           </Settle>
           <div className="mt-10 lg:mt-14">
@@ -311,7 +351,7 @@ export default function Media() {
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16 xl:gap-24">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 id="index-h" className="t-h1 max-w-[16ch]">Appearances, as they are booked.</h2>
+              <h2 id="index-h" className="t-h1 max-w-[16ch]">{indexHeading}</h2>
               <p className="mt-6 font-mono text-[13px] uppercase tracking-[0.14em] text-muted" role="status">
                 {status}
               </p>
@@ -378,7 +418,7 @@ export default function Media() {
         <Container width="wide">
           <Settle>
             <h2 id="subjects-h" className="t-h2 max-w-[20ch]">
-              Four subjects the company has a worked position on.
+              {subjectsHeading}
             </h2>
             <p className="mt-6 max-w-[62ch] text-[16px] leading-[1.7] text-body">
               Everything the company says publicly is on one of these pages, which is also where a
@@ -387,7 +427,7 @@ export default function Media() {
           </Settle>
 
           <Settle as="ul" className="mt-10 border-t-[1.5px] border-rule lg:mt-12">
-            {SUBJECTS.map((s) => (
+            {subjects.map((s) => (
               <li
                 key={s.topic}
                 className="grid gap-x-10 gap-y-3 border-b-[1.5px] border-rule py-7 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:py-8"
@@ -424,7 +464,7 @@ export default function Media() {
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 xl:gap-24">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <h2 id="notes-h" className="t-h2 max-w-[16ch]">
-                Spellings, names and facts, checked before you file.
+                {notesHeading}
               </h2>
               {/* No `text-body`: `.bench` sets cream, and body is an ink
                   brown that disappears on it. */}
@@ -455,7 +495,7 @@ export default function Media() {
                 <span>CLÉ Family Media</span>
               </div>
               <dl>
-                {NOTES.map((n) => (
+                {notes.map((n) => (
                   <div
                     key={n.k}
                     className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
@@ -476,11 +516,8 @@ export default function Media() {
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <h2 id="press-h" className="t-h2 max-w-[18ch]">Writing about children's media?</h2>
-              <p className="t-lead mt-6 max-w-[48ch]">
-                We would rather answer a question directly than be quoted from a web page. Tell us
-                what you are working on and who you need.
-              </p>
+              <h2 id="press-h" className="t-h2 max-w-[18ch]">{pressHeading}</h2>
+              <p className="t-lead mt-6 max-w-[48ch]">{pressLead}</p>
             </div>
             <div>
               <Button to="/contact" variant="primary">

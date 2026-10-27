@@ -1,5 +1,7 @@
 import { Settle } from "@/components/Settle";
 import { DrawnRule } from "@/components/draw/kit";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    The evidence, as three figures with the paper each comes from.
@@ -82,6 +84,9 @@ const FINDINGS: Finding[] = [
 ];
 
 export function Evidence({ headingId }: { headingId: string }) {
+  /* The heading is editable from the admin; the three findings are cited
+     papers and are not. */
+  const heading = useBlock("home", "evidence.heading", COPY["evidence.heading"]);
   return (
     <>
       {/* THE OPENER IS ONE LINE, 2026-10-27. It was a heading that filed the
@@ -94,7 +99,7 @@ export function Evidence({ headingId }: { headingId: string }) {
           band, set wide and small, directly above the three journal links it
           is actually talking about. */}
       <Settle>
-        <h2 id={headingId} className="t-h2 max-w-[20ch]">The research we build on.</h2>
+        <h2 id={headingId} className="t-h2 max-w-[20ch]">{heading}</h2>
       </Settle>
 
       {/* A ruled set, not three cards. The rule over each figure is the only

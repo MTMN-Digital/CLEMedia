@@ -10,7 +10,9 @@ import { Wipe } from "@/components/Wipe";
 import { TextLink, Button, Container, Section, Card } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
-import { TEAM } from "@/components/team/people";
+import { useTeam } from "@/components/team/useTeam";
+import { emphasis, useImageBlock, useBlock } from "@/lib/content";
+import { COPY } from "@/components/story/copy";
 
 /* ============================================================================
    The founder's story.
@@ -83,16 +85,15 @@ const LEDGER: { tag: string; line: string }[] = [
   { tag: "CLÉ Family Media", line: "Founder and CEO." },
 ];
 
-/* The four people the prose names, in the order it names them. How an episode
-   is made is linked, not restated: the Responsible AI page owns that account.
+/* The four people the prose names, in the order it names them, are derived
+   inside the component from useTeam() (see below). How an episode is made is
+   linked, not restated: the Responsible AI page owns that account.
 
    DERIVED FROM people.ts, 2026-10-24. These were four hand-written rows and
-   all four titles were stale the moment the client confirmed the real ones. */
-const PEOPLE = TEAM.flatMap((m) =>
-  m.asset && m.name !== "Conor Sexton" && m.name !== "Victoria Buchkova"
-    ? [{ name: m.name, role: m.role, asset: m.asset }]
-    : [],
-);
+   all four titles were stale the moment the client confirmed the real ones.
+   READ THROUGH useTeam() SINCE 2026-10-27, so a portrait or a title changed
+   in the admin's Team panel changes here too, and the bundled list still
+   renders first and whenever the table is empty. */
 
 /* Where the letter hands the reader. Three destinations, one line each, as
    rows on the deep band rather than cards. */
@@ -173,7 +174,37 @@ function Credit({ children, className = "" }: { className?: string; children: Re
   );
 }
 
-export default function Story() {
+export function Story() {
+  /* The people the prose names, in the order the team list gives them, and
+     Conor for the sign-off. `m.asset` is the marker for a portrait: the
+     Figure needs the bundled asset for its frame even when an uploaded photo
+     replaces the picture inside it. */
+  const { team } = useTeam();
+  const people = team.flatMap((m) =>
+    m.asset && m.name !== "Conor Sexton" && m.name !== "Victoria Buchkova"
+      ? [{ name: m.name, role: m.role, asset: m.asset, photo: m.photo ?? null }]
+      : [],
+  );
+  const conor = team.find((m) => m.name === "Conor Sexton");
+
+  /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's
+     own wording (components/story/copy.ts) until a content_blocks row
+     replaces it, so with nothing saved the letter reads exactly as written.
+     The headline's accent clause is written between *stars*. */
+  const heroEyebrow = useBlock("story", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("story", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("story", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("story", "hero.title", COPY["hero.title"]);
+  const heroImage = useImageBlock("story", "hero.image");
+  const sawHeading = useBlock("story", "saw.heading", COPY["saw.heading"]);
+  const parentHeading = useBlock("story", "parent.heading", COPY["parent.heading"]);
+  const hereHeading = useBlock("story", "here.heading", COPY["here.heading"]);
+  const buildHeading = useBlock("story", "build.heading", COPY["build.heading"]);
+  const filmHeading = useBlock("story", "film.heading", COPY["film.heading"]);
+  const reachHeading = useBlock("story", "reach.heading", COPY["reach.heading"]);
+  const nextHeading = useBlock("story", "next.heading", COPY["next.heading"]);
+  const nextLead = useBlock("story", "next.lead", COPY["next.lead"]);
+
   return (
     <>
       <Seo
@@ -191,6 +222,7 @@ export default function Story() {
       <PageHero
         id="story-h"
         asset="story.garden"
+        override={heroImage}
         position="center 45%"
         size="tall"
         credit={
@@ -199,9 +231,9 @@ export default function Story() {
             &amp; Pals<sup className="text-[0.7em]">&reg;</sup>.
           </>
         }
-        eyebrow={<>Our story<span>Conor Sexton, founder and CEO</span></>}
-        aside={<>On what he saw, what he could not find, and what it took to build the alternative.</>}
-        title={<>I did not set out to start a <em>media company.</em></>}
+        eyebrow={<>{heroEyebrow}<span>{heroEyebrowSub}</span></>}
+        aside={<>{heroAside}</>}
+        title={emphasis(heroTitle)}
         actions={
           <>
             <Button to="/team">Meet the team<IconArrow size={16} /></Button>
@@ -221,7 +253,7 @@ export default function Story() {
               /* Was "Where it started" over the note "Minding a friend's
                  four-year-old, before any of this was a company." The note's
                  fact is the heading now, in the letter's own words. */
-              <h2 id="saw-h" className="t-h2">It started while I was minding a friend's four-year-old.</h2>
+              <h2 id="saw-h" className="t-h2">{sawHeading}</h2>
             }
           >
             <p>
@@ -244,7 +276,7 @@ export default function Story() {
               /* Was "Education, from the outset" over "The first person I
                  brought in, and why." The paragraph's last sentence is the
                  heading, so the paragraph no longer ends on it. */
-              <h2 id="parent-h" className="t-h2">Education was part of the project from the outset.</h2>
+              <h2 id="parent-h" className="t-h2">{parentHeading}</h2>
             }
           >
             <p>
@@ -318,7 +350,7 @@ export default function Story() {
               phone reads the heading before the ledger it summarises. */}
           <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,33rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,37rem)_minmax(0,1fr)] xl:gap-16">
             <div className="lg:order-last">
-              <h2 id="here-h" className="t-h1 max-w-[16ch]">From head butcher to children's media.</h2>
+              <h2 id="here-h" className="t-h1 max-w-[16ch]">{hereHeading}</h2>
               <div className="mt-7 max-w-[56ch] space-y-4 t-prose text-body">
                 <p className="text-ink">
                   I spent thirteen years in food retail, starting as an apprentice and finishing
@@ -376,7 +408,7 @@ export default function Story() {
         <Container width="wide">
           <Settle>
             <h2 id="build-h" className="t-h2 max-w-[22ch]">
-              I could not have made this on my own, and I did not try.
+              {buildHeading}
             </h2>
           </Settle>
           <Spread
@@ -391,10 +423,10 @@ export default function Story() {
             aside={
               <div className="lg:max-w-[22rem] xl:max-w-none">
                 <ul className="space-y-4">
-                  {PEOPLE.map((p) => (
+                  {people.map((p) => (
                     <li key={p.name} className="flex items-center gap-3.5">
                       <div className="w-[52px] shrink-0">
-                        <Figure asset={p.asset} rounded="rounded-[7px]" className="aspect-square" sizes="52px" />
+                        <Figure asset={p.asset} override={p.photo} rounded="rounded-[7px]" className="aspect-square" sizes="52px" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-[14.5px] font-semibold leading-tight text-ink">{p.name}</p>
@@ -456,7 +488,7 @@ export default function Story() {
         <Container width="wide">
           <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-x-14">
             <div>
-              <h2 id="film-h" className="t-h2 max-w-[18ch]">The mission, in his own words</h2>
+              <h2 id="film-h" className="t-h2 max-w-[18ch]">{filmHeading}</h2>
               <MissionVideo className="mt-7" eager />
             </div>
             {/* Not sticky, unlike the letter's margin. There is no long column
@@ -482,7 +514,7 @@ export default function Story() {
         <Container width="wide">
           <Settle>
             <h2 id="reach-h" className="t-h2 max-w-[20ch]">
-              Free on YouTube for now, with an app on the way.
+              {reachHeading}
             </h2>
             <div className="mt-10 grid gap-8 sm:mt-12 lg:grid-cols-2 lg:gap-x-14">
               <p className="max-w-[56ch] t-prose text-body">
@@ -528,18 +560,15 @@ export default function Story() {
             <div>
               <div className="flex items-center gap-4">
                 <div className="w-[56px] shrink-0">
-                  <Figure asset="person.conor" rounded="rounded-[var(--radius-sm)]" className="aspect-square" sizes="56px" />
+                  <Figure asset="person.conor" override={conor?.photo ?? null} rounded="rounded-[var(--radius-sm)]" className="aspect-square" sizes="56px" />
                 </div>
                 <div>
                   <p className="text-[16px] font-semibold">Conor Sexton</p>
                   <p className="eyebrow eyebrow-sm mt-1">Founder and CEO</p>
                 </div>
               </div>
-              <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">Interested in working with us?</h2>
-              <p className="t-lead mt-5 max-w-[42ch] opacity-85">
-                I would rather answer your questions directly than have you guess at them from a
-                website.
-              </p>
+              <h2 id="next-h" className="t-h2 mt-8 max-w-[16ch]">{nextHeading}</h2>
+              <p className="t-lead mt-5 max-w-[42ch] opacity-85">{nextLead}</p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button to="/contact">Send an enquiry<IconArrow size={16} /></Button>
               </div>
@@ -576,3 +605,7 @@ export default function Story() {
     </>
   );
 }
+
+/* App.tsx lazy-loads the default; the named export is the one the admin run's
+   registry checks for. Same component. */
+export default Story;

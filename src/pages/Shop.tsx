@@ -8,6 +8,9 @@ import { Docket } from "@/components/shop/Docket";
 import { Shelf } from "@/components/shop/Shelf";
 import { NotAsked } from "@/components/shop/NotAsked";
 import { useProducts } from "@/components/shop/catalogue";
+import { COPY } from "@/components/shop/copy";
+import { useBlock, emphasis, useSetting } from "@/lib/content";
+import type { AppSetting } from "@/lib/types";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
 
 /* ============================================================================
@@ -54,6 +57,18 @@ import { SITE, APP_LAUNCHED } from "@/lib/site";
    docket because those are true before the first file is uploaded. The
    moment a product is published in the admin panel it appears in the index,
    and the empty state disappears on its own.
+
+   WHAT A FILE IS, 2026-10-27. The first products are episode packs: one zip
+   folder each, with the episode's activity book, colouring book and the
+   activities away from the screen inside it as PDFs. The page used to say a
+   purchase was a PDF, which was true of the plan and is not true of the
+   packs, so the two lines that said so now say what arrives. Nothing else
+   on the page moved.
+
+   THE WORDS ARE EDITABLE. The headlines and leads the registry lists for
+   this page (src/lib/blocks.ts, blocksFor("shop")) come through useBlock,
+   with the page's own text in components/shop/copy.ts as the default, so an
+   empty content_blocks table renders this page exactly as written.
    ========================================================================== */
 
 /* Each line is checkable against the code, which is the only reason it is on
@@ -94,8 +109,21 @@ const KINDS: { kind: string; line: string }[] = [
   { kind: "Activity sheets", line: "Single sheets for one sitting, at home or in a classroom." },
 ];
 
+const APP_DEFAULT: AppSetting = { launched: APP_LAUNCHED, target_window: null, app_store_url: null, play_store_url: null };
+
 export default function Shop() {
+  const { launched } = useSetting("app", APP_DEFAULT);
   const products = useProducts();
+  const c = {
+    eyebrowSub: useBlock("shop", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]),
+    aside: useBlock("shop", "hero.aside", COPY["hero.aside"]),
+    title: useBlock("shop", "hero.title", COPY["hero.title"]),
+    refuseHeading: useBlock("shop", "refuse.heading", COPY["refuse.heading"]),
+    refuseLead: useBlock("shop", "refuse.lead", COPY["refuse.lead"]),
+    termsHeading: useBlock("shop", "terms.heading", COPY["terms.heading"]),
+    freeHeading: useBlock("shop", "free.heading", COPY["free.heading"]),
+    freeLead: useBlock("shop", "free.lead", COPY["free.lead"]),
+  };
 
   /* Four states, and the heading carries the one the catalogue is in. A
      claim about stock ("the first files are being made") is only made once
@@ -133,15 +161,11 @@ export default function Shop() {
         tone="ink"
         eyebrow={
           <>
-            Shop<span>Printable PDFs</span>
+            Shop<span>{c.eyebrowSub}</span>
           </>
         }
-        aside={<>Buy a file, download it, print it as often as you like.</>}
-        title={
-          <>
-            Things you print and put <em>on the table.</em>
-          </>
-        }
+        aside={<>{c.aside}</>}
+        title={<>{emphasis(c.title)}</>}
         actions={
           <>
             <Button to="/app">
@@ -164,11 +188,8 @@ export default function Shop() {
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-20 xl:gap-28">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 id="refuse-h" className="t-h1 max-w-[12ch]">A card payment, and nothing else.</h2>
-              <p className="t-lead mt-7 max-w-[38ch] text-ink">
-                A printable for a four year old usually costs an email address. This one costs
-                whatever the file costs.
-              </p>
+              <h2 id="refuse-h" className="t-h1 max-w-[12ch]">{c.refuseHeading}</h2>
+              <p className="t-lead mt-7 max-w-[38ch] text-ink">{c.refuseLead}</p>
               <p className="mt-5 max-w-[42ch] text-[16px] leading-[1.7] text-body">
                 What you do not do is make an account, hand over an email address to get a free
                 sample, or end up on a list.
@@ -300,16 +321,14 @@ export default function Shop() {
       <Section labelledBy="terms-h" className="bench">
         <Container>
           <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
-            <h2 id="terms-h" className="t-h2 max-w-[16ch]">
-              The link works for 24 hours and five downloads.
-            </h2>
+            <h2 id="terms-h" className="t-h2 max-w-[16ch]">{c.termsHeading}</h2>
             <div>
               {/* `.bench` sets cream on everything it contains, so this line
                   takes it rather than naming a colour of its own. */}
               <p className="mb-5 max-w-[44ch] t-sm leading-[1.6]">
-                What arrives is a PDF: one sheet, or a stapled set of them. These terms are true
-                before the first file is uploaded, so they are stated before you have anything to
-                buy.
+                What arrives is a zip folder with the pack's PDFs inside: the books and the
+                sheets, ready to print. These terms are true of every file, so they are stated
+                before you have chosen anything to buy.
               </p>
               <Docket
                 label="What a purchase is"
@@ -343,11 +362,8 @@ export default function Shop() {
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
-              <h2 id="free-h" className="t-h2 max-w-[14ch]">Most of it costs nothing</h2>
-              <p className="t-lead mt-6 max-w-[40ch]">
-                The episodes are free to watch and the show's own site carries family activities.
-                The shop is for the things worth printing.
-              </p>
+              <h2 id="free-h" className="t-h2 max-w-[14ch]">{c.freeHeading}</h2>
+              <p className="t-lead mt-6 max-w-[40ch]">{c.freeLead}</p>
               <div className="mt-9">
                 <Button href={SITE.showUrl}>
                   Visit the show site
@@ -364,7 +380,7 @@ export default function Shop() {
                   href: SITE.showUrl,
                 },
                 {
-                  title: APP_LAUNCHED ? `${SITE.playerName}, available now` : `${SITE.playerName} is in development`,
+                  title: launched ? `${SITE.playerName}, available now` : `${SITE.playerName} is in development`,
                   line: "Watch, play and learn in one place, with the interactive activities that do not print.",
                   to: "/app",
                 },

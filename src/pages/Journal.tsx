@@ -7,6 +7,23 @@ import { IconArrow } from "@/components/icons";
 import { Contents, type ContentsRow } from "@/components/journal/Contents";
 import { Correction } from "@/components/journal/Correction";
 import { formatDate, useJournal, resolveStrands } from "@/components/journal/data";
+import { useBlock, emphasis } from "@/lib/content";
+
+/* The journal front page's editable copy, keyed by block key
+   (src/lib/blocks.ts). The default, not a copy: each string is the page's
+   own wording, character for character, rendered through
+   useBlock("journal", key, COPY[key]) so an empty content_blocks table shows
+   the page exactly as written here. The aside counts posts and the four
+   standing rules are commitments in the client's name, so neither is here. */
+export const COPY: Record<string, string> = {
+  "hero.eyebrow": "The journal of CLÉ Family Media",
+  "hero.eyebrow_sub": "Four strands. One piece a week, once we start.",
+  "hero.title": "Notes from the *studio*",
+  "why.heading":
+    "A company that asks parents, educators and broadcasters to trust it should be willing to show its working.",
+  "strands.heading": "The research, how it is made, parents helping parents, and building CLÉ.",
+  "rules.heading": "Four standing rules, written down before there is anything to apply them to.",
+};
 
 /* ============================================================================
    The journal index.
@@ -55,6 +72,16 @@ export default function Journal() {
     strands.find((s) => s.id && s.id === categoryId)?.name ?? null;
   const published = `${posts.length} ${posts.length === 1 ? "piece" : "pieces"} published`;
 
+  /* EDITABLE FROM THE ADMIN, 2026-10-27: the page's own wording (COPY above)
+     until a content_blocks row replaces it. The headline's accent word is
+     written between *stars*. */
+  const heroEyebrow = useBlock("journal", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("journal", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroTitle = useBlock("journal", "hero.title", COPY["hero.title"]);
+  const whyHeading = useBlock("journal", "why.heading", COPY["why.heading"]);
+  const strandsHeading = useBlock("journal", "strands.heading", COPY["strands.heading"]);
+  const rulesHeading = useBlock("journal", "rules.heading", COPY["rules.heading"]);
+
   return (
     <>
       <Seo
@@ -74,16 +101,12 @@ export default function Journal() {
         size="short"
         eyebrow={
           <>
-            The journal of CL&Eacute; Family Media
-            <span>Four strands. One piece a week, once we start.</span>
+            {heroEyebrow}
+            <span>{heroEyebrowSub}</span>
           </>
         }
         aside={posts.length > 0 ? <>{published}. Free to read.</> : <>Issue one, in preparation. Free to read.</>}
-        title={
-          <>
-            Notes from the <em>studio</em>
-          </>
-        }
+        title={emphasis(heroTitle)}
       />
 
       {/* ═══ WHY IT EXISTS. The margin carries who writes it, the column
@@ -101,8 +124,7 @@ export default function Journal() {
             </p>
             <div>
               <h2 id="why-h" className="t-h1 max-w-[22ch]">
-                A company that asks parents, educators and broadcasters to trust it should be
-                willing to show its working.
+                {whyHeading}
               </h2>
               <p className="t-prose mt-8 max-w-[52ch] text-body">
                 That is the whole of the reason this exists. It is not a content strategy and it
@@ -186,7 +208,7 @@ export default function Journal() {
       <Section className="bench" pad="open" labelledBy="strands-h">
         <Container width="wide">
           <h2 id="strands-h" className="t-h2 max-w-[24ch]">
-            The research, how it is made, parents helping parents, and building CL&Eacute;.
+            {strandsHeading}
           </h2>
           <div className="mt-12 sm:mt-16">
             <Contents rows={rows} />
@@ -204,7 +226,7 @@ export default function Journal() {
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
             <div>
               <h2 id="rules-h" className="t-h2 max-w-[18ch]">
-                Four standing rules, written down before there is anything to apply them to.
+                {rulesHeading}
               </h2>
               <p className="t-body mt-6 max-w-[40ch] opacity-85">
                 That is the only time it is worth writing them down.

@@ -1,5 +1,6 @@
 import { ASSETS, type AssetKey } from "@/lib/brand";
 import { AssetPlaceholder } from "@/components/AssetPlaceholder";
+import type { ImageOverride } from "@/lib/content";
 
 interface Props {
   asset: AssetKey;
@@ -14,6 +15,10 @@ interface Props {
   fill?: boolean;
   /** Where the crop favours, for a band that must keep its subject. */
   position?: string;
+  /** An admin's replacement image (useImageBlock). Null or absent renders the
+   *  bundled asset exactly as before. The bundled asset's width and height are
+   *  kept, so a replacement never shifts the layout. */
+  override?: ImageOverride | null;
 }
 
 /**
@@ -34,8 +39,28 @@ export function Figure({
   fill = false,
   position,
   sizes = "(min-width: 1024px) 50vw, 100vw",
+  override,
 }: Props) {
   const a = ASSETS[asset];
+
+  if (override) {
+    return (
+      <img
+        src={override.url}
+        alt={override.alt}
+        width={a.width}
+        height={a.height}
+        loading="eager"
+        decoding={priority ? "sync" : "async"}
+        {...{ fetchpriority: priority ? "high" : "low" }}
+        style={{
+          ...(position ? { objectPosition: position } : {}),
+          ...(!fill ? { aspectRatio: `${a.width} / ${a.height}` } : {}),
+        }}
+        className={`${fill ? "h-full w-full" : "h-auto w-full"} object-cover ${rounded} ${className}`}
+      />
+    );
+  }
 
 
   if (!a.base) {
@@ -91,7 +116,7 @@ export function Figure({
            and the browser queues them behind the things that matter. */
         loading="eager"
         decoding={priority ? "sync" : "async"}
-        fetchPriority={priority ? "high" : "low"}
+        {...{ fetchpriority: priority ? "high" : "low" }}
         style={position ? { objectPosition: position } : undefined}
         className={`${fill ? "h-full w-full" : "h-auto w-full"} object-cover ${rounded} ${className}`}
       />

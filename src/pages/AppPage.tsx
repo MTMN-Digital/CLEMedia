@@ -14,7 +14,9 @@ import { EPISODES, RELEASED } from "@/lib/episodes";
 import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconBell, IconArrow } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
+import type { AppSetting } from "@/lib/types";
 import { APP_LAUNCHED } from "@/lib/site";
+import { useBlock, emphasis, useImageBlock, useSetting } from "@/lib/content";
 
 /* ============================================================================
    PupsPlayer, before it exists.
@@ -48,13 +50,34 @@ import { APP_LAUNCHED } from "@/lib/site";
    missing the page says so rather than filling the gap.
    ========================================================================== */
 
-/** Store links stay null until the client supplies them, and a null link
- *  renders nothing: no badge placeholders. The launch flag is APP_LAUNCHED in
- *  src/lib/site.ts. */
-const STORE_LINKS: { href: string | null; label: string }[] = [
-  { label: "App Store", href: null },
-  { label: "Google Play", href: null },
-];
+/* The words Conor can change from the admin panel, keyed as the registry in
+   src/lib/blocks.ts names them. Each entry is the page's own wording today;
+   the page renders it unless a saved block replaces it, so an empty table
+   shows exactly this. The clause between stars is the one the headline sets
+   in the accent colour. */
+export const COPY: Record<string, string> = {
+  "hero.aside": "Ad-free. No purchases inside a game.",
+  "hero.title": "Watch, play and learn *in one place*",
+  "walk.heading": "Nothing plays until someone picks it.",
+  "stages.heading": "Each episode has activities built from what just happened in it.",
+  "check.heading": "Checked by the people who check the episodes",
+  "next.heading": "Where it stands",
+};
+
+/** The launch flag and the store links. APP_LAUNCHED in src/lib/site.ts is
+ *  the value the page is built with and renders first; the `app` settings
+ *  row, which the admin panel writes, takes over once it arrives. Store links
+ *  stay null until the client supplies them there, and a null link renders
+ *  nothing: no badge placeholders. The target window is held in the same row
+ *  but is NOT rendered here, on purpose: see the Status row below. */
+const APP_DEFAULT: AppSetting = { launched: APP_LAUNCHED, target_window: null, app_store_url: null, play_store_url: null };
+
+function storeLinks(app: AppSetting): { href: string | null; label: string }[] {
+  return [
+    { label: "App Store", href: app.app_store_url || null },
+    { label: "Google Play", href: app.play_store_url || null },
+  ];
+}
 
 /* The six live in lib/episodes.ts. This page uses both slices of them:
    `RELEASED` for the ledger below, which is headed "Released so far" and
@@ -147,12 +170,22 @@ const REVIEWERS: { name: string; role: string; line: string; asset: AssetKey }[]
 
 
 export default function AppPage() {
-  const liveLinks = STORE_LINKS.filter((l): l is { href: string; label: string } => Boolean(l.href));
+  const app = useSetting("app", APP_DEFAULT);
+  const launched = app.launched;
+  const liveLinks = storeLinks(app).filter((l): l is { href: string; label: string } => Boolean(l.href));
+
+  const heroAside = useBlock("app", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("app", "hero.title", COPY["hero.title"]);
+  const heroImage = useImageBlock("app", "hero.image");
+  const walkHeading = useBlock("app", "walk.heading", COPY["walk.heading"]);
+  const stagesHeading = useBlock("app", "stages.heading", COPY["stages.heading"]);
+  const checkHeading = useBlock("app", "check.heading", COPY["check.heading"]);
+  const nextHeading = useBlock("app", "next.heading", COPY["next.heading"]);
 
   return (
     <>
       <Seo
-        title={APP_LAUNCHED ? "PupsPlayer app" : "PupsPlayer app, in development"}
+        title={launched ? "PupsPlayer app" : "PupsPlayer app, in development"}
         description="PupsPlayer™ from CLÉ Family Media holds the Watch, Play, Learn model in one place: ad-free episodes of The Pawsitive Pugs & Pals, the songs, puzzles and games built from each one, and the printable and offline activities underneath. In development."
         path="/app"
       />
@@ -169,6 +202,7 @@ export default function AppPage() {
       <PageHero
         id="app-h"
         asset="home.characters"
+        override={heroImage}
         position="center 45%"
         credit={
           <>
@@ -176,11 +210,11 @@ export default function AppPage() {
             the player holds.
           </>
         }
-        eyebrow={<>PupsPlayer&trade;<span>{APP_LAUNCHED ? "Available now" : "In development"}</span></>}
-        aside={<>Ad-free. No purchases inside a game.</>}
-        title={<>Watch, play and learn <em>in one place</em></>}
+        eyebrow={<>PupsPlayer&trade;<span>{launched ? "Available now" : "In development"}</span></>}
+        aside={<>{heroAside}</>}
+        title={emphasis(heroTitle)}
         actions={
-          APP_LAUNCHED && liveLinks.length > 0 ? (
+          launched && liveLinks.length > 0 ? (
             <>
               {liveLinks.map((l) => (
                 <Button key={l.label} href={l.href}>{l.label}<IconExternal size={15} /></Button>
@@ -219,7 +253,7 @@ export default function AppPage() {
               <li className="t-lead border-t-[1.5px] border-rule py-6 text-ink">
                 No purchases inside a game and nothing recommending the next thing to watch.
               </li>
-              {!APP_LAUNCHED && (
+              {!launched && (
                 /* The status line, kept word for word. It is the one row set
                    in the body colour: a note on the plan, not a promise. */
                 <li className="t-body border-y-[1.5px] border-rule py-6 text-body">
@@ -228,7 +262,7 @@ export default function AppPage() {
                   which once testing is done.
                 </li>
               )}
-              {APP_LAUNCHED && <li className="border-t-[1.5px] border-rule" aria-hidden="true" />}
+              {launched && <li className="border-t-[1.5px] border-rule" aria-hidden="true" />}
             </ul>
 
             {/* The ledger of what exists. It used to sit halfway down the page
@@ -274,7 +308,7 @@ export default function AppPage() {
                 sentence about the product that the hero has not already said.
                 "Watch, then play, then learn" stood here until 2026-10-27 and
                 only repeated the headline a screen above. */}
-            <h2 id="walk-h" className="t-h2 max-w-[16ch]">Nothing plays until someone picks it.</h2>
+            <h2 id="walk-h" className="t-h2 max-w-[16ch]">{walkHeading}</h2>
           </Wipe>
 
           <Wipe className="mt-12 sm:mt-16">
@@ -299,7 +333,7 @@ export default function AppPage() {
         <Container width="wide">
           <Wipe>
             <h2 id="stages-h" className="t-h2 max-w-[22ch]">
-              Each episode has activities built from what just happened in it.
+              {stagesHeading}
             </h2>
           </Wipe>
           <div className="mt-10 sm:mt-12">
@@ -347,7 +381,7 @@ export default function AppPage() {
         <Container width="wide">
           <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,38ch)] lg:items-end lg:gap-16">
             <h2 id="check-h" className="t-h2 max-w-[18ch]">
-              Checked by the people who check the episodes
+              {checkHeading}
             </h2>
             <p className="t-sm max-w-[44ch] leading-[1.6] text-body lg:pb-2">
               Every activity in the app maps back to the early years objective behind its episode,
@@ -382,7 +416,7 @@ export default function AppPage() {
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-20">
             <div>
-              <h2 id="next-h" className="t-h2 max-w-[16ch]">Where it stands</h2>
+              <h2 id="next-h" className="t-h2 max-w-[16ch]">{nextHeading}</h2>
               <dl className="mt-8 max-w-[52ch]">
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t-[1.5px] border-edge-dark py-4">
                   <dt className="font-mono text-[14px] uppercase tracking-[0.16em]">Status</dt>
@@ -393,7 +427,7 @@ export default function AppPage() {
                       promise on the one page a parent checks, so this row says
                       what is true today and QUESTIONS.md asks whether the
                       month may go up. */}
-                  <dd className="t-body">{APP_LAUNCHED ? "Available now" : "In development"}</dd>
+                  <dd className="t-body">{launched ? "Available now" : "In development"}</dd>
                 </div>
                 <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t-[1.5px] border-edge-dark py-4">
                   <dt className="font-mono text-[14px] uppercase tracking-[0.16em]">Stores</dt>

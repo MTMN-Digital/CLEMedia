@@ -1,4 +1,5 @@
 import type { AssetKey } from "@/lib/brand";
+import type { ImageOverride } from "@/lib/content";
 
 /* ============================================================================
    The people, and the phases an episode passes through.
@@ -52,6 +53,10 @@ export interface Member {
   bio: string[];
   /** Phase numbers (1 to 5) the company's account places this person in. */
   phases: number[];
+  /** A portrait uploaded in the admin (people.photo). When set it replaces
+   *  `asset`: pass it to Figure as `override={m.photo ?? null}`. Absent on
+   *  the bundled list. */
+  photo?: ImageOverride | null;
 }
 
 export interface Phase {

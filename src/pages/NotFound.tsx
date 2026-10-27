@@ -6,6 +6,19 @@ import { Settle } from "@/components/Settle";
 import { Button, Container, Section } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
+import { useBlock, emphasis } from "@/lib/content";
+
+/* The 404 page's editable copy, keyed by block key (src/lib/blocks.ts). The
+   default, not a copy: each string is the page's own wording, character for
+   character, rendered through useBlock("404", key, COPY[key]) so an empty
+   content_blocks table shows the page exactly as written here. "404" itself
+   and the four routes back are not editable. */
+export const COPY: Record<string, string> = {
+  "hero.eyebrow_sub": "Page not found",
+  "hero.aside": "Everything below is still where it should be.",
+  "hero.title": "That page has *wandered off*",
+  "routes.heading": "The link may be old, or we may have moved something.",
+};
 
 /* ============================================================================
    404.
@@ -118,6 +131,14 @@ function MissingFrame() {
 }
 
 export default function NotFound() {
+  /* EDITABLE FROM THE ADMIN, 2026-10-27: the page's own wording (COPY above)
+     until a content_blocks row replaces it. The headline's accent clause is
+     written between *stars*. */
+  const heroEyebrowSub = useBlock("404", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("404", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("404", "hero.title", COPY["hero.title"]);
+  const routesHeading = useBlock("404", "routes.heading", COPY["routes.heading"]);
+
   return (
     <>
       <Seo title="Page not found" description="That page doesn't exist." path="/404" noIndex />
@@ -132,15 +153,11 @@ export default function NotFound() {
         tone="ink"
         eyebrow={
           <>
-            404<span>Page not found</span>
+            404<span>{heroEyebrowSub}</span>
           </>
         }
-        aside={<>Everything below is still where it should be.</>}
-        title={
-          <>
-            That page has <em>wandered off</em>
-          </>
-        }
+        aside={<>{heroAside}</>}
+        title={emphasis(heroTitle)}
         actions={
           <>
             <Button to="/">
@@ -162,7 +179,7 @@ export default function NotFound() {
         <Container width="wide">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] lg:gap-14 xl:gap-20">
             <h2 id="nf-routes-h" className="t-h3 max-w-[22ch]">
-              The link may be old, or we may have moved something.
+              {routesHeading}
             </h2>
 
             <Settle as="ul" className="border-t-[1.5px] border-rule">

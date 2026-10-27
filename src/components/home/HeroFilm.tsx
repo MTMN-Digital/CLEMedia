@@ -3,6 +3,8 @@ import { Button } from "@/components/ui";
 import { IconArrow, IconExternal, IconRestart } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import { pickRendition } from "@/components/MissionVideo";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    The hero: the mission film, full bleed.
@@ -52,6 +54,10 @@ const SPLASH_MAX = 7000;
 let splashShown = false;
 
 export function HeroFilm() {
+  /* The two button labels are editable from the admin (components/home/copy.ts
+     holds the wording). The headline is the brand line and is not. */
+  const ctaPrimary = useBlock("home", "hero.cta_primary", COPY["hero.cta_primary"]);
+  const ctaSecondary = useBlock("home", "hero.cta_secondary", COPY["hero.cta_secondary"]);
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [sound, setSound] = useState(false);
@@ -418,11 +424,11 @@ export function HeroFilm() {
         <div className="film-support">
           <div className="film-actions">
             <Button to="/ethical-ai">
-              How we make it
+              {ctaPrimary}
               <IconArrow size={16} />
             </Button>
             <Button href={SITE.showUrl} variant="quiet">
-              Visit the show
+              {ctaSecondary}
               <IconExternal size={15} />
             </Button>
           </div>

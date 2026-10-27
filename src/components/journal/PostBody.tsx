@@ -149,9 +149,13 @@ function inline(text: string, key: string): ReactNode[] {
     if (m.index > last) out.push(text.slice(last, m.index));
     const [full, linkText, href, bold, star, under] = m;
     const k = `${key}-${n}`;
-    if (linkText && href) {
+    if (linkText && href && !href.startsWith("/") && !/^(https?:|mailto:)/i.test(href)) {
+      /* Only web, mail and on-site links become links; anything else (a
+         javascript: address, say) is shown as its words. */
+      out.push(linkText);
+    } else if (linkText && href) {
       out.push(
-        href.startsWith("/") ? (
+        href.startsWith("/") && !href.startsWith("//") ? (
           <Link key={k} to={href} className="link-draw font-semibold text-red-deep">
             {linkText}
           </Link>

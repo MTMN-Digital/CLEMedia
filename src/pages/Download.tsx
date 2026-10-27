@@ -5,6 +5,7 @@ import { PageHero } from "@/components/PageHero";
 import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
 import { IconArrow, IconExternal, IconDownload } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
+import { fileFormat, formatLabel } from "@/components/shop/catalogue";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
@@ -44,6 +45,14 @@ import { SITE } from "@/lib/site";
    and says plainly what to do, rather than rendering "We couldn't find that
    download" at somebody who has just paid. Logged in CONTENT-NEEDED.md under
    Shop and media: it needs an API change, which is not this page's to make.
+
+   THE FORMAT ON THE RECEIPT, 2026-10-27. The first products are episode
+   packs, a zip folder of PDFs each, and the receipt used to print "Format:
+   PDF" as a constant. The signed link the API returns carries the stored
+   file's name, so the row now reads the format off it, and the line about
+   what the browser does with the file is true of a zip: it is saved, not
+   opened in a tab. The pending receipt, which has no file yet, states no
+   format at all rather than guessing one.
    ========================================================================== */
 
 type ErrorCode = "exhausted" | "server_error" | "not_found" | "expired";
@@ -225,8 +234,9 @@ export default function Download() {
                   </Lead>
 
                   <p className="mt-6 max-w-[46ch] text-[15.5px] leading-[1.7] text-body">
-                    The file opens in a new tab. If your browser asks where to put it, anywhere you
-                    will find it again is the right answer.
+                    {fileFormat(state.url) === "pdf"
+                      ? "The file opens in a new tab. If your browser asks where to put it, anywhere you will find it again is the right answer."
+                      : "The file is a zip folder with the PDFs inside. If your browser asks where to put it, anywhere you will find it again is the right answer, and opening the folder unpacks the books and sheets."}
                   </p>
 
                   <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t-[1.5px] border-rule pt-7">
@@ -246,7 +256,7 @@ export default function Download() {
                     label="Your download"
                     rows={[
                       { k: "File", v: state.title },
-                      { k: "Format", v: "PDF" },
+                      { k: "Format", v: formatLabel(fileFormat(state.url)) },
                       ...(expiryLabel(state.expiresAt)
                         ? [{ k: "Link works until", v: expiryLabel(state.expiresAt) as string, strong: true }]
                         : [{ k: "Link works for", v: "24 hours", strong: true }]),
@@ -317,7 +327,6 @@ export default function Download() {
                     rows={[
                       { k: "Payment", v: "taken by Stripe" },
                       { k: "Receipt", v: "emailed by Stripe" },
-                      { k: "Format", v: "PDF" },
                       { k: "Account created", v: "none" },
                     ]}
                     foot={

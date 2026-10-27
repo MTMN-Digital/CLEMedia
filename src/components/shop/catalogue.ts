@@ -25,8 +25,34 @@ import type { Product } from "@/lib/types";
    client-side check of a server-side rule is theatre.
    ========================================================================== */
 
-/** The columns the public site reads. Matches `Product` in src/lib/types.ts. */
-const COLUMNS = "id, title, slug, description, price_cents, currency, thumbnail, file_path, active";
+/** The columns the public site reads. Matches `Product` in src/lib/types.ts.
+ *  `thumbnail_alt` and `sort_order` arrived with migration 0008: the alt text
+ *  the admin wrote for the cover, and the running order the shelf keeps. */
+const COLUMNS =
+  "id, title, slug, description, price_cents, currency, thumbnail, thumbnail_alt, file_path, active, sort_order";
+
+/**
+ * What a purchase arrives as, read off the stored file rather than assumed.
+ * The first products are episode packs, each a zip folder of PDFs; a single
+ * PDF is still allowed by the bucket. Accepts a storage path or a signed URL.
+ * Returns null when the name says nothing, so a caller can leave the row out.
+ */
+export function fileFormat(pathOrUrl: string | null | undefined): null | "zip" | "pdf" {
+  if (!pathOrUrl) return null;
+  let path = pathOrUrl;
+  try {
+    path = new URL(pathOrUrl).pathname;
+  } catch {
+    /* a bare storage path */
+  }
+  const lower = path.toLowerCase();
+  return lower.endsWith(".zip") ? "zip" : lower.endsWith(".pdf") ? "pdf" : null;
+}
+
+/** The docket's "Format" value for a file: "zip of PDFs" or "PDF". */
+export function formatLabel(format: null | "zip" | "pdf"): string {
+  return format === "pdf" ? "PDF" : "zip of PDFs";
+}
 
 /**
  * `empty` means the shop answered and has nothing. `failed` means it did not
@@ -68,10 +94,13 @@ export function useProducts(): Query<Product[]> {
         if (live) setQ({ state: "empty" });
         return;
       }
+      // The running order set in the admin panel first; among products that
+      // were never reordered (sort_order 0), the newest stands first.
       const { data, error } = await supabase
         .from("products")
         .select(COLUMNS)
         .eq("active", true)
+        .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (!live) return;
       setQ(

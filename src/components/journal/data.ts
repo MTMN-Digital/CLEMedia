@@ -113,6 +113,7 @@ export function useJournal(): JournalData {
           .from("posts")
           .select(POST_COLS)
           .eq("status", "published")
+          .lte("published_at", new Date().toISOString())
           .order("published_at", { ascending: false }),
         sb.from("categories").select(CATEGORY_COLS).order("sort_order"),
       ]);
@@ -174,6 +175,7 @@ export function usePost(slug: string | undefined): PostResult {
         .select(POST_COLS)
         .eq("slug", slug)
         .eq("status", "published")
+        .lte("published_at", new Date().toISOString())
         .maybeSingle();
       const post = (data as Post | null) ?? null;
       if (!live) return;
@@ -191,6 +193,7 @@ export function usePost(slug: string | undefined): PostResult {
               .from("posts")
               .select(POST_COLS)
               .eq("status", "published")
+              .lte("published_at", new Date().toISOString())
               .eq("category_id", post.category_id)
               .neq("id", post.id)
               .order("published_at", { ascending: false })

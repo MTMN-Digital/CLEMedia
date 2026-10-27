@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { ASSETS, type AssetKey } from "@/lib/brand";
+import type { ImageOverride } from "@/lib/content";
 
 /* ============================================================================
    The opening of every inner page, in the hero's language.
@@ -50,6 +51,7 @@ export function PageHero({
   credit,
   size = "tall",
   tone = "ink",
+  override,
 }: {
   /** The headline's id. The section is labelled by it. */
   id: string;
@@ -72,6 +74,10 @@ export function PageHero({
   /** Plain panel only. ink (default) is the hero's own dark; wall is the
    *  deeper paper, for a page that should open quietly. */
   tone?: "ink" | "wall";
+  /** An admin's replacement for the still (useImageBlock). Null or absent
+   *  renders the bundled asset exactly as before. Needs `asset` as well: the
+   *  bundled file still sets the frame's width and height. */
+  override?: ImageOverride | null;
 }) {
   /* The frame runs under the sticky header, so the copy's top row needs to
      know how tall that header is. HeroFilm sets this on the home page; a
@@ -128,7 +134,19 @@ export function PageHero({
     <section className={`film-hero page-hero page-hero--${size}`} aria-labelledby={id}>
       <div className="film-frame">
         <div className="film-stage">
-          {a.base ? (
+          {override ? (
+            <img
+              src={override.url}
+              alt={override.alt}
+              width={a.width}
+              height={a.height}
+              loading="eager"
+              decoding="async"
+              {...{ fetchpriority: "high" }}
+              className="film-media page-hero__img"
+              style={position ? { objectPosition: position } : undefined}
+            />
+          ) : a.base ? (
             <picture>
               {!a.noAvif && (
                 <source type="image/avif" srcSet={`${a.base}.avif 1x, ${a.base}@2x.avif 2x`} sizes="100vw" />
@@ -143,7 +161,7 @@ export function PageHero({
                 height={a.height}
                 loading="eager"
                 decoding="async"
-                fetchPriority="high"
+                {...{ fetchpriority: "high" }}
                 className="film-media page-hero__img"
                 style={position ? { objectPosition: position } : undefined}
               />

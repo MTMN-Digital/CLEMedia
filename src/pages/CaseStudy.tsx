@@ -10,6 +10,8 @@ import { STUDY_OPEN } from "@/components/casestudy/config";
 import { RoutePicker, type RouteId } from "@/components/casestudy/RoutePicker";
 import { TwoRoutes } from "@/components/casestudy/TwoRoutes";
 import { Questionnaire } from "@/components/casestudy/Questionnaire";
+import { emphasis, useImageBlock, useBlock } from "@/lib/content";
+import { COPY } from "@/components/casestudy/copy";
 
 /* ============================================================================
    The cross-border case study.
@@ -96,6 +98,22 @@ function Owed() {
 export default function CaseStudy() {
   const [route, setRoute] = useState<RouteId>("ireland");
 
+  /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's
+     own wording (components/casestudy/copy.ts) until a content_blocks row
+     replaces it; the title slate can be replaced with an upload. The hero's
+     aside follows STUDY_OPEN, and the steps, materials and the privacy rows
+     stay here: they state what is and is not supplied, which is a fact. */
+  const heroEyebrow = useBlock("case-study", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("case-study", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroTitle = useBlock("case-study", "hero.title", COPY["hero.title"]);
+  const heroImage = useImageBlock("case-study", "hero.image");
+  const askHeading = useBlock("case-study", "ask.heading", COPY["ask.heading"]);
+  const routeHeading = useBlock("case-study", "route.heading", COPY["route.heading"]);
+  const matHeading = useBlock("case-study", "mat.heading", COPY["mat.heading"]);
+  const qHeading = useBlock("case-study", "q.heading", COPY["q.heading"]);
+  const outHeading = useBlock("case-study", "out.heading", COPY["out.heading"]);
+  const dataHeading = useBlock("case-study", "data.heading", COPY["data.heading"]);
+
   return (
     <>
       <Seo
@@ -113,11 +131,12 @@ export default function CaseStudy() {
       <PageHero
         id="cs-h"
         asset="slate.ep3"
+        override={heroImage}
         position="center 42%"
         credit={<>Episode 003, Chicken Vision. The title slate, a frame from the series.</>}
-        eyebrow={<>Case study<span>Ireland and England</span></>}
+        eyebrow={<>{heroEyebrow}<span>{heroEyebrowSub}</span></>}
         aside={<>{STUDY_OPEN ? "Open." : "Not yet open."}</>}
-        title={<>A case study across <em>two curricula</em></>}
+        title={emphasis(heroTitle)}
         actions={
           <>
             {/* An in-page anchor, not a route: `Button href` opens a new tab,
@@ -143,7 +162,7 @@ export default function CaseStudy() {
               {/* The four steps, as the heading: "Who it is for, and what you
                   are asked to do" was the label, and this is what it labelled. */}
               <h2 id="ask-h" className="t-h2 max-w-[22ch]">
-                Choose a route, watch one episode, use the materials, answer the questionnaire.
+                {askHeading}
               </h2>
               <p className="t-body mt-7 max-w-[54ch] text-body">
                 CLÉ Family Media is running a case study with early years educators in Ireland and
@@ -218,7 +237,7 @@ export default function CaseStudy() {
               {/* The fact is the heading: "Pick your route" was the label on
                   the button, and the button is still here. */}
               <h2 id="route-h" className="t-h1 max-w-[16ch]">
-                Ireland follows Aistear, England follows the EYFS.
+                {routeHeading}
               </h2>
               {/* The structure the heading asserts: one episode in, the notes
                   fork, the same questionnaire out.
@@ -253,7 +272,7 @@ export default function CaseStudy() {
               carries. The heading is the instruction, over the sheet, with
               no lead under it: the sheet is its own explanation. */}
           <Settle>
-            <h2 id="mat-h" className="t-h2 max-w-[20ch]">Watch it, then use the materials</h2>
+            <h2 id="mat-h" className="t-h2 max-w-[20ch]">{matHeading}</h2>
             <ul className="mt-12 border-t-[1.5px] border-rule lg:mt-16">
               <li className="grid gap-x-12 gap-y-4 border-b-[1.5px] border-rule py-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:py-10">
                 <div>
@@ -313,7 +332,7 @@ export default function CaseStudy() {
               {/* The notice's own fact is the heading. What the form asks is
                   the small line above the form, where it is talking. */}
               <h2 id="q-h" className="t-h2 max-w-[19ch]">
-                The questionnaire opens when the participant information is published.
+                {qHeading}
               </h2>
               <p className="t-body mt-7 max-w-[38ch] text-ink">
                 Complete it after you have used the episode and the activity with your group.
@@ -337,7 +356,7 @@ export default function CaseStudy() {
         <Container width="default">
           <Settle>
             <h2 id="out-h" className="t-h2 max-w-[20ch]">
-              The Banteer workshop has taken place. The study has not started.
+              {outHeading}
             </h2>
             <p className="t-body mt-6 max-w-[52ch] text-body">These are two separate things.</p>
             <ul className="mt-10 border-t-[1.5px] border-rule">
@@ -365,7 +384,7 @@ export default function CaseStudy() {
         <Container width="wide">
           <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
-              <h2 id="data-h" className="t-h2 max-w-[16ch]">What happens to your answers</h2>
+              <h2 id="data-h" className="t-h2 max-w-[16ch]">{dataHeading}</h2>
               <p className="t-lead mt-6 max-w-[40ch]">
                 The study will not open until the participant information is agreed and published
                 on this page.

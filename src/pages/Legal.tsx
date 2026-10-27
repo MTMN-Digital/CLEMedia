@@ -1,10 +1,11 @@
-import { useRef, useState, useMemo, type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { PageHero } from "@/components/PageHero";
 import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
+import { splitParagraphs, useBlock } from "@/lib/content";
 
 /* ============================================================================
    The three legal documents: /privacy, /terms, /cookies.
@@ -220,6 +221,32 @@ const DOCS: Record<DocId, Doc> = {
   },
 };
 
+/* ----------------------------------------------------------------------------
+   EDITABLE FROM THE ADMIN, 2026-10-27.
+
+   Each document's wording is a set of blocks (src/lib/blocks.ts): the title,
+   the intro, and a heading and a body per numbered section, the body being
+   the section's paragraphs separated by a blank line. The defaults are
+   DERIVED from DOCS above rather than typed again, so the object the Pages
+   panel shows as "the original" cannot drift from the clauses as published.
+   A solicitor's correction is one edit in the admin; the wording here stays
+   the fallback the page renders when nothing has been saved.
+---------------------------------------------------------------------------- */
+function copyFor(d: Doc): Record<string, string> {
+  const out: Record<string, string> = { title: d.title, intro: d.intro };
+  d.sections.forEach((s, i) => {
+    out[`section.${i + 1}.heading`] = s.h;
+    out[`section.${i + 1}.body`] = s.p.join("\n\n");
+  });
+  return out;
+}
+
+export const LEGAL_COPY: Record<DocId, Record<string, string>> = {
+  privacy: copyFor(DOCS.privacy),
+  terms: copyFor(DOCS.terms),
+  cookies: copyFor(DOCS.cookies),
+};
+
 /* The ISO date is read as UTC, so the formatted day cannot slip backwards for a
    reader west of Greenwich. */
 function longDate(iso: string): string {
@@ -337,17 +364,38 @@ function MobileContents({ sections, active }: { sections: { h: string }[]; activ
   );
 }
 
+/* Keyed by document. The three routes render this same component at the same
+   point in the tree, so without the key React would carry one instance from
+   /privacy to /terms, and the two documents resolve a different number of
+   blocks: a hook count that changed between renders. A fresh instance per
+   document keeps the count constant for the life of each. */
 export default function Legal({ doc }: { doc: DocId }) {
+  return <Document key={doc} doc={doc} />;
+}
+
+function Document({ doc }: { doc: DocId }) {
   const d = DOCS[doc];
   const [active, setActive] = useState("");
   const body = useRef<HTMLDivElement>(null);
 
+  /* The wording, resolved block by block: the published clause until a row
+     saved in the admin replaces it. The section loop runs the same number
+     of times on every render of this instance (see the key above). */
+  const copy = LEGAL_COPY[doc];
+  const title = useBlock(doc, "title", copy.title);
+  const intro = useBlock(doc, "intro", copy.intro);
+  const sections = d.sections.map((_, i) => {
+    const n = i + 1;
+    return {
+      h: useBlock(doc, `section.${n}.heading`, copy[`section.${n}.heading`]),
+      p: splitParagraphs(useBlock(doc, `section.${n}.body`, copy[`section.${n}.body`])),
+    };
+  });
+
   /* One Set per render, walked in document order, so a term is marked at its
      first appearance in the document and nowhere else. */
-  const marked = useMemo(() => {
-    const used = new Set<string>();
-    return d.sections.map((s) => s.p.map((p) => markTerms(p, d.defined, used)));
-  }, [d]);
+  const used = new Set<string>();
+  const marked = sections.map((s) => s.p.map((p) => markTerms(p, d.defined, used)));
 
   /* Which section the reader is in. A mark in the index, nothing more: no
      scrolling is driven from here and nothing moves, so there is nothing for
@@ -390,7 +438,7 @@ export default function Legal({ doc }: { doc: DocId }) {
 
   return (
     <>
-      <Seo title={d.title} description={d.description} path={`/${doc}`} />
+      <Seo title={title} description={d.description} path={`/${doc}`} />
 
       {/* ═══ 1. THE HEAD, in the hero's frame.
           The plain panel on the deeper paper: the document has no picture to
@@ -423,7 +471,7 @@ export default function Legal({ doc }: { doc: DocId }) {
             </div>
           </dl>
         }
-        title={d.title}
+        title={title}
       />
 
       {/* ═══ 2. THE DOCUMENT.
@@ -478,10 +526,10 @@ export default function Legal({ doc }: { doc: DocId }) {
                     Contents
                   </p>
                   <div className="mt-4 hidden lg:block">
-                    <Contents sections={d.sections} active={active} />
+                    <Contents sections={sections} active={active} />
                   </div>
 
-                  <MobileContents sections={d.sections} active={active} />
+                  <MobileContents sections={sections} active={active} />
                 </div>
 
                 <div ref={body} className="max-w-[68ch]">
@@ -491,7 +539,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                       version of the clauses under it, in ink at the reading
                       lead so it reads as the document's voice rather than as
                       a caption on it. Verbatim. */}
-                  <p className="t-lead mb-9 max-w-[56ch] text-ink sm:mb-11">{d.intro}</p>
+                  <p className="t-lead mb-9 max-w-[56ch] text-ink sm:mb-11">{intro}</p>
 
                   {/* Who the trader is, in the slot where the draft stamp
                       stood until 2026-10-13. Same stamp, not a box: the
@@ -508,9 +556,9 @@ export default function Legal({ doc }: { doc: DocId }) {
                     </p>
                   </div>
 
-                  {d.sections.map((s, i) => (
+                  {sections.map((s, i) => (
                     <section
-                      key={s.h}
+                      key={i}
                       id={`s${i + 1}`}
                       className="scroll-mt-28 pt-9 sm:pt-11"
                       aria-labelledby={`s${i + 1}-h`}
@@ -543,7 +591,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                   ))}
 
                   <p className="mt-12 border-t-[1.5px] border-rule pt-5 font-mono text-[14.5px] text-muted">
-                    {d.title}. Last updated {updated}.
+                    {title}. Last updated {updated}.
                   </p>
                 </div>
               </div>

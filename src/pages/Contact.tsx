@@ -7,7 +7,9 @@ import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type RouteId, Receipt, type Draft } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
-import { TEAM } from "@/components/team/people";
+import { useTeam } from "@/components/team/useTeam";
+import { useBlock, emphasis } from "@/lib/content";
+import { COPY } from "@/components/contact/copy";
 import "@/components/contact/sheet.css";
 
 /* ============================================================================
@@ -127,8 +129,11 @@ const ROUTES: { label: string; blurb: string; short: string; id: RouteId }[] = [
    which is what the line under the list says. Mansi coordinates production
    and is named on no stage, David is an advisor /team places outside the
    stages, so neither is in this five; the portrait is only the marker
-   `people.ts` gives us for the distinction. */
-const READERS = TEAM.flatMap((m) => (m.asset ? [{ name: m.name, role: m.role }] : [])).slice(0, 5);
+   `people.ts` gives us for the distinction.
+
+   READ THROUGH useTeam() SINCE 2026-10-27, inside the component, so a title
+   changed in the admin's Team panel changes here too. The bundled list
+   renders first and whenever the table is empty. */
 
 /* The four audiences the site is written for, each sent to the page that
    already answers them. Every destination is a real page of this site or the
@@ -169,6 +174,19 @@ export default function Contact() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { team } = useTeam();
+  const readers = team.flatMap((m) => (m.asset || m.photo ? [{ name: m.name, role: m.role }] : [])).slice(0, 5);
+
+  /* EDITABLE FROM THE ADMIN, 2026-10-27: the page's own wording
+     (components/contact/copy.ts) until a content_blocks row replaces it. The
+     headline's accent clause is written between *stars*. */
+  const heroEyebrow = useBlock("contact", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const heroEyebrowSub = useBlock("contact", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
+  const heroAside = useBlock("contact", "hero.aside", COPY["hero.aside"]);
+  const heroTitle = useBlock("contact", "hero.title", COPY["hero.title"]);
+  const readersHeading = useBlock("contact", "readers.heading", COPY["readers.heading"]);
+  const elseHeading = useBlock("contact", "else.heading", COPY["else.heading"]);
 
   function set<K extends keyof Draft>(k: K) {
     return (e: { target: { value: string } }) => setDraft((d) => ({ ...d, [k]: e.target.value }));
@@ -216,9 +234,9 @@ export default function Contact() {
         id="contact-h"
         size="short"
         tone="ink"
-        eyebrow={<>Get in touch<span>CL&Eacute; Family Media, Ireland</span></>}
-        aside={<>Studios, distributors, investors, educators and press.</>}
-        title={<>Write to <em>the people who make it</em></>}
+        eyebrow={<>{heroEyebrow}<span>{heroEyebrowSub}</span></>}
+        aside={<>{heroAside}</>}
+        title={emphasis(heroTitle)}
       />
 
       {/* ═══ 2. THE SHEET, AND WHO READS IT. The form leads, at the width a
@@ -376,9 +394,9 @@ export default function Contact() {
                 the content cap the column runs to 800px and a name at one
                 edge with its role at the other stops reading as one row. */}
             <Settle className="lg:sticky lg:top-28 lg:max-w-[36rem] lg:self-start">
-              <h2 className="t-h3 max-w-[16ch]">Who reads what you send</h2>
+              <h2 className="t-h3 max-w-[16ch]">{readersHeading}</h2>
               <ul className="mt-6">
-                {READERS.map((p) => (
+                {readers.map((p) => (
                   <li
                     key={p.name}
                     className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t-[1.5px] border-rule-soft py-4"
@@ -413,7 +431,7 @@ export default function Contact() {
           <div className="hairline pt-14 sm:pt-16">
             <Settle>
               <h2 id="else-h" className="t-h2 max-w-[22ch]">
-                Some of this is answered better by a page than by us.
+                {elseHeading}
               </h2>
               <p className="t-sm mt-10 text-body">Who is asking, and where it is written down.</p>
             </Settle>
