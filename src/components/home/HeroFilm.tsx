@@ -47,8 +47,8 @@ import { pickRendition } from "@/components/MissionVideo";
    rather than a flicker, and never longer than SPLASH_MAX, because a slow
    connection must still get a page. Once per visit: a module flag, so coming
    back to home inside the app does not replay it. */
-const SPLASH_MIN = 1200;
-const SPLASH_MAX = 4000;
+const SPLASH_MIN = 2200;
+const SPLASH_MAX = 7000;
 let splashShown = false;
 
 export function HeroFilm() {

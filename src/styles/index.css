@@ -1132,14 +1132,14 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-navy);
   transition: opacity 0.7s var(--ease-out), visibility 0s linear 0.7s;
 }
-/* Logo centred on the screen; the ropes fill everything above it. */
+/* Logo centred a little above the middle; the ropes fill everything above. */
 .film-splash__hang {
   --mark: clamp(280px, 40vw, 560px);
   position: absolute;
   top: 0;
   left: 50%;
   width: var(--mark);
-  height: calc(50% + var(--mark) * 0.5);
+  height: calc(40% + var(--mark) * 0.5);
   display: flex;
   flex-direction: column;
   translate: -50% 0;
@@ -1703,5 +1703,59 @@ body > * { position: relative; z-index: 1; }
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ShowFrame, hung like the hero. See the note in ShowFrame.tsx. */
+.show-frame { --film-gutter: clamp(10px, 1.1vw, 16px); padding-inline: var(--film-gutter); }
+.show-frame__fig { position: relative; margin-inline: auto; }
+.show-frame__pic {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: clamp(20px, 2.2vw, 32px);
+}
+.show-frame__pic img { display: block; }
+.show-frame__pic::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(12, 9, 7, 0.72), rgba(12, 9, 7, 0.32) 45%, transparent);
+  pointer-events: none;
+}
+.show-frame__cap {
+  position: absolute;
+  left: clamp(20px, 2.8vw, 40px);
+  bottom: clamp(18px, 2.4vw, 32px);
+  z-index: 1;
+  max-width: 52ch;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fdf8ed;
+}
+/* A slow drift as the frame passes, so a still sits in the page the way the
+   film does. Scroll-driven, so it costs no script, and absent where the
+   browser or the reader says no. */
+@keyframes frame-drift {
+  from { transform: translateY(-3%) scale(1.07); }
+  to { transform: translateY(3%) scale(1.07); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .show-frame__pic img { animation: frame-drift linear both; animation-timeline: view(); }
+  }
+}
+@media (max-width: 639px) {
+  .show-frame__pic::after { display: none; }
+  .show-frame__cap {
+    position: static;
+    margin-top: 0.85rem;
+    padding-inline: 4px;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
   }
 }

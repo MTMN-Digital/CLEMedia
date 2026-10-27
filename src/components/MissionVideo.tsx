@@ -54,7 +54,10 @@ import { useState, useEffect, useRef } from "react";
    which on a laptop is the difference between a warm fan and a quiet one. */
 type Rendition = { width: number; webm: string; mp4: string };
 
-const RENDITIONS: Record<"mid" | "high" | "low", Rendition> = {
+const RENDITIONS: Record<"mid" | "high" | "low" | "max", Rendition> = {
+  /* From the 4K master, 2026-10-27, for the hero on a high density laptop
+     or a big monitor, where 1080p is still being stretched. */
+  max: { mp4: "/video/mission-1440.mp4", webm: "/video/mission-1440.webm", width: 2560 },
   high: { mp4: "/video/mission-1080.mp4", webm: "/video/mission-1080.webm", width: 1920 },
   mid: { mp4: "/video/mission-720.mp4", webm: "/video/mission-720.webm", width: 1280 },
   low: { mp4: "/video/mission-480.mp4", webm: "/video/mission-480.webm", width: 854 },
@@ -92,6 +95,7 @@ export function pickRendition(cssWidth?: number, cap?: "low" | "mid"): Rendition
      down would be upscaled: 720p is 1280 wide, so above about 1350 CSS pixels
      of window the 1080p file is the one that lands pixel for pixel. */
   const px = (cssWidth || window.innerWidth * 0.95) * dpr;
+  if (px >= 2200 && !cap) return RENDITIONS.max;
   if (px >= 1280 && !cap) return RENDITIONS.high;
   if (px >= 854 && cap !== "low") return RENDITIONS.mid;
   return RENDITIONS.low;

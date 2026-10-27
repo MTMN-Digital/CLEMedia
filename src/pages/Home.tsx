@@ -259,7 +259,7 @@ export default function Home() {
               pixel of this ground, rgb(99,106,94), the muted token is dark on
               dark and a 0.78 cream measures 4.35, under AA. This is the
               darkest step of the cream that still clears it, at 4.62. */}
-          <p className="mt-14 font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-[#eee9df] lg:mt-20">
+          <p className="ml-auto mt-16 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-[#eee9df] lg:mt-24">
             Behind this, a frame from The Pawsitive Pugs &amp; Pals
             <sup className="text-[0.7em]">&reg;</sup>. The garden the show&rsquo;s world is built
             from, animated, not photographed.

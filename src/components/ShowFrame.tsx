@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Figure } from "@/components/Figure";
-import { Container, Section } from "@/components/ui";
+import { Section } from "@/components/ui";
 import { Wipe } from "@/components/Wipe";
 import { ASSETS, type AssetKey } from "@/lib/brand";
 
@@ -80,39 +80,32 @@ export function ShowFrame({
 }) {
   const a = ASSETS[asset];
 
+  /* HUNG LIKE THE HERO, from 2026-10-27. The client rates the hero as the
+     best thing on the site, and these plates were floating in a pale gap with
+     their caption below the fold. They now take the hero's own frame: the
+     same gutter, the same radius, and the caption in the bottom left corner
+     over a scrim, the way the hero carries its copy. The frames are 2:1, so
+     at the hero's width they still show whole on a laptop. On a phone the
+     caption drops back under the picture, where it has room to be read. */
   return (
-    <Section as="div" pad="close">
-      <Container width="wide">
-        <Wipe>
-          {/* The figure, not the image, carries the width, and it is the lesser
-              of the column and whatever the height limit allows this shape.
-              Stated as a width rather than as `max-height` on the image for one
-              reason: `height: auto` never scales a picture ABOVE its own pixel
-              size, so on a 1920 monitor the garden and the chicken stopped dead
-              at 1200 and 1280, their 1x widths, leaving 120 pixels of room
-              unused. This way the box is sized first and the 2x file fills it.
-
-              Sizing the figure also keeps the caption under the picture's own
-              left edge when a frame is narrower than the column. */}
-          <figure
-            className="mx-auto"
-            style={{ width: `min(100%, calc(85vh * ${a.width} / ${a.height}))` }}
-          >
+    <Section as="div" pad="close" className="show-frame">
+      <Wipe>
+        <figure
+          className="show-frame__fig"
+          style={{ width: `min(100%, calc(92vh * ${a.width} / ${a.height}))` }}
+        >
+          <div className="show-frame__pic">
             <Figure
               asset={asset}
-              /* Only the placeholder reads this. A real image carries its own
-                 width and height attributes, so the box is already the
-                 picture's shape and nothing crops. */
               ratio={`${a.width}/${a.height}`}
               priority={priority}
-              sizes="(min-width: 1024px) 1376px, 100vw"
+              rounded="rounded-none"
+              sizes="100vw"
             />
-            <figcaption className="mt-3.5 max-w-[68ch] font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-muted">
-              {caption}
-            </figcaption>
-          </figure>
-        </Wipe>
-      </Container>
+          </div>
+          <figcaption className="show-frame__cap">{caption}</figcaption>
+        </figure>
+      </Wipe>
     </Section>
   );
 }
