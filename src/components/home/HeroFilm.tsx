@@ -186,9 +186,8 @@ export function HeroFilm() {
      The track is real and stays real; what changes is who paints it. A
      native cue is placed by the browser in its own text track region, at the
      bottom centre of the video, and that is exactly where this hero puts its
-     headline: "Watch. Play. Learn." sits bottom left and the supporting
-     paragraph bottom right, so a browser painted caption lands on top of
-     both. `::cue` can colour and size a cue but cannot move it, and the
+     headline: "Watch. Play. Learn." sits bottom left and the buttons under
+     it, so a browser painted caption lands on top of both. `::cue` can colour and size a cue but cannot move it, and the
      property that can (`::-webkit-media-text-track-container`) is one
      vendor's private API.
 
@@ -303,9 +302,9 @@ export function HeroFilm() {
       {/* The copy sits in the FOUR CORNERS of the frame rather than clustered
           in one of them. Measured off consulting.ie, which is the reference
           the client gave: an identifier top left, a positioning line top
-          right, the headline bottom left at about 59px on a 1440 screen, and
-          the supporting paragraph with its buttons bottom right, right
-          aligned. Clustering it all bottom left, which is what this was,
+          right, the headline bottom left, and the buttons under it. The supporting
+          paragraph went on 2026-10-27: the headline carries the hero without
+          it. Clustering it all bottom left, which is what this was,
           leaves three quarters of the picture doing nothing. */}
       <div className="film-copy">
         {/* AGES, NOT THE COUNTRY, from 2026-10-13. The creative director's
@@ -369,18 +368,6 @@ export function HeroFilm() {
         </h1>
 
         <div className="film-support">
-          {/* THE COMPANY, PLAINLY, from the creative director's revision. The
-              line this replaces described the work ("calm stories for young
-              children, and the activities that take them off the screen
-              afterwards") and never said what CLÉ is. The deck's whole thesis
-              is that this site should be less about the first show and more
-              about the company, and the hero is where that starts. The
-              headline above still carries the model. */}
-          <p className="film-lead">
-            CL&Eacute; Family Media is a children&rsquo;s production company led by specialists in
-            early childhood education and child development. We make calm, educational series for
-            ages 3 to 5, with play and learning materials for home and the classroom.
-          </p>
           <div className="film-actions">
             <Button to="/ethical-ai">
               How we make it
