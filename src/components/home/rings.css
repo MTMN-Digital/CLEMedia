@@ -119,6 +119,20 @@
   .trail__art--wide { display: block; }
   .trail__art--narrow { display: none; }
   .trail__words { row-gap: 1.5rem; }
+
+  /* THE WORD HANGS, 2026-10-27. Measured at 1440 the caption column is 764px
+     wide and the sentence inside it was capped at 46ch, so 400 pixels of the
+     row, more than a quarter of the container, was empty paper to the right
+     of every line. The word moves into its own hanging column and the
+     sentence runs to the edge, which turns three floating notes into three
+     lines of a page. */
+  .trail__word {
+    display: grid;
+    grid-template-columns: minmax(6rem, 9rem) minmax(0, 1fr);
+    column-gap: clamp(1.5rem, 2.5vw, 2.5rem);
+    align-items: baseline;
+  }
+  .trail__word p { margin-top: 0; max-width: 54ch; }
 }
 
 /* ─── Held until seen ───────────────────────────────────────────────────

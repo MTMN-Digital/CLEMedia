@@ -1,7 +1,7 @@
 import { Settle } from "@/components/Settle";
 import { TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { DrawnBox } from "@/components/draw/kit";
+import { DrawnRule, DrawnBox } from "@/components/draw/kit";
 
 /* ============================================================================
    Beyond the screen: the half of "Watch, Play, Learn" the home page never
@@ -35,11 +35,19 @@ import { DrawnBox } from "@/components/draw/kit";
 export function BeyondScreen({ headingId }: { headingId: string }) {
   return (
     <>
+      {/* THE SENTENCE RUNS THE FULL MEASURE, 2026-10-27. It was a grey 21px
+          paragraph capped at 56ch, which is the same object six other sections
+          on this page were opening with. Nothing is cut: it is set at the
+          display face, in ink, across the whole container, so it reads as a
+          second line of the heading rather than as a block of explanation
+          parked under it. The drawn rule between them is the kit's, so the
+          separation is a mark rather than a margin. */}
       <Settle>
         <h2 id={headingId} className="t-display max-w-[11ch]">
           An online and offline balance.
         </h2>
-        <p className="t-lead mt-6 max-w-[56ch]">
+        <DrawnRule v={2} className="mt-8 max-w-[18rem]" />
+        <p className="mt-7 font-display text-[clamp(1.25rem,0.95rem+1.1vw,1.875rem)] leading-[1.26] tracking-[-0.005em]">
           The real value is not in watching. It is in the play, talk and learning that happen
           afterwards, and every episode comes with materials to support it.
         </p>
@@ -70,7 +78,10 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
           <h3 className="t-h3">For educators and children</h3>
           <p className="t-body mt-4 max-w-[42ch]">
             Lesson-ready games and printable activities designed by educators, linked to{" "}
-            <span className="text-muted" aria-label="framework not yet confirmed">
+            <span
+              className="underline decoration-dotted underline-offset-4"
+              aria-label="framework not yet confirmed"
+            >
               [Aistear / EYFS]
             </span>{" "}
             early-learning goals.

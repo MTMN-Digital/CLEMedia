@@ -84,14 +84,15 @@ const FINDINGS: Finding[] = [
 export function Evidence({ headingId }: { headingId: string }) {
   return (
     <>
+      {/* THE OPENER IS ONE LINE, 2026-10-27. It was a heading that filed the
+          section ("What the research says about fast, chaotic media for young
+          children") over a grey three line paragraph that contained the only
+          sentence anybody would stop for. The sentence is the heading now.
+          The rest of it has not been cut: it has moved to the foot of the
+          band, set wide and small, directly above the three journal links it
+          is actually talking about. */}
       <Settle>
-        <h2 id={headingId} className="t-h2 max-w-[26ch]">
-          What the research says about fast, chaotic media for young children
-        </h2>
-        <p className="t-lead mt-5 max-w-[56ch]">
-          None of this is ours. Three published results, with the paper each one comes from, because
-          a company that says it builds on research should let you read the research.
-        </p>
+        <h2 id={headingId} className="t-h2 max-w-[20ch]">None of this is ours.</h2>
       </Settle>
 
       {/* A ruled set, not three cards. The rule over each figure is the only
@@ -137,6 +138,18 @@ export function Evidence({ headingId }: { headingId: string }) {
             </a>
           </div>
         ))}
+      </Settle>
+
+      {/* The moved clause. Set at body size across the whole container, which
+          is the one text shape this page did not own: every other paragraph on
+          it is between 620 and 700 pixels wide, so a single line running the
+          full measure reads as a different kind of remark rather than as
+          another block. */}
+      <Settle>
+        <p className="t-body mt-10 lg:mt-12">
+          Three published results, with the paper each one comes from, because a company that says
+          it builds on research should let you read the research.
+        </p>
       </Settle>
     </>
   );

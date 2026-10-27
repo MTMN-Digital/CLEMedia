@@ -1,5 +1,4 @@
 import { Settle } from "@/components/Settle";
-import { Lead } from "@/components/ui";
 
 /* ============================================================================
    Feedback from parents and educators.
@@ -46,14 +45,16 @@ export const QUOTES: Quote[] = [];
 export function Feedback({ headingId }: { headingId: string }) {
   return (
     <>
+      {/* THE OPENER IS ONE LINE, 2026-10-27. "Feedback from parents and
+          educators" was a label, and the two panels under it are already
+          headed "Parents and educators" and "Banteer workshop", so it was
+          also the third time the same words appeared inside 400 pixels. The
+          claim is the heading now and the policy sentence has moved under the
+          panels, where it reads as the note it is. */}
       <Settle>
-        <h2 id={headingId} className="t-h2 max-w-[20ch]">
-          Feedback from parents and educators
+        <h2 id={headingId} className="t-h2 max-w-[22ch]">
+          In their own words, with their permission.
         </h2>
-        <Lead className="mt-5 max-w-[54ch]">
-          In their own words, with their permission. We do not turn what one family said into a
-          percentage, and we do not print anything nobody has agreed to.
-        </Lead>
       </Settle>
 
       {QUOTES.length > 0 ? (
@@ -93,6 +94,10 @@ export function Feedback({ headingId }: { headingId: string }) {
               we are preparing.
             </p>
           </div>
+          <p className="t-body lg:col-span-2">
+            We do not turn what one family said into a percentage, and we do not print anything
+            nobody has agreed to.
+          </p>
         </Settle>
       )}
     </>

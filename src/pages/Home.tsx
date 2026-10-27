@@ -14,6 +14,7 @@ import { Feedback } from "@/components/home/Feedback";
 import { BeyondScreen } from "@/components/home/BeyondScreen";
 import { GetInTouch } from "@/components/home/GetInTouch";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
+import { DrawnBracket } from "@/components/draw/kit";
 import {
   Lead, Section, Container, Button,
 } from "@/components/ui";
@@ -180,12 +181,20 @@ export default function Home() {
           now open stacked, at the measure the lead actually wants, and the
           spread is kept for the places where the right-hand line answers the
           heading rather than merely explaining it. */}
+          {/* NO LEAD, 2026-10-27. "One episode, three stages" was a filing
+              label and the sentence under it was the actual claim, so the
+              claim is the heading now and the label is gone: the three scenes
+              below are visibly three stages and carry the words Watch, Play
+              and Learn themselves. Measured before this pass, seven of the
+              home page's ten sections opened with a heading and a grey
+              21px three line paragraph at the same left edge and the same
+              measure, which is the repetition the client was reading as the
+              page's real problem. */}
           <Wipe>
-            <h2 id="model-h" className="t-h2 max-w-[18ch]">One episode, three stages</h2>
-            <Lead className="mt-5 max-w-[52ch]">
-              Designed to move a child from the screen into play and conversation, rather than to
-              hold them in front of it.
-            </Lead>
+            <h2 id="model-h" className="t-h2 max-w-[30ch]">
+              Designed to move a child from the screen into play and conversation, rather than
+              to hold them in front of it.
+            </h2>
           </Wipe>
 
           <EpisodeRings />
@@ -404,10 +413,17 @@ export default function Home() {
                 strength on the wall, at a size set by the face rather than by
                 a tint. */}
             <div>
-              <p className="border-l-2 border-red pl-6 font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] text-ink">
-                Calling this work handmade would be untrue. Calling it AI-generated would erase the
-                people who actually make the decisions.
-              </p>
+              {/* The bracket is DRAWN, 2026-10-27. This was `border-l-2
+                  border-red`, which is the one card-decoration tell the house
+                  rules name outright, and the kit already had the mark built
+                  for exactly this job and nothing using it. */}
+              <div className="relative pl-6">
+                <DrawnBracket className="absolute left-0 top-0 h-full w-[14px]" />
+                <p className="font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] text-ink">
+                  Calling this work handmade would be untrue. Calling it AI-generated would erase
+                  the people who actually make the decisions.
+                </p>
+              </div>
               <div className="mt-10 pl-6">
                 <Button to="/ethical-ai" variant="quiet">
                   Read the full position<IconArrow size={16} />

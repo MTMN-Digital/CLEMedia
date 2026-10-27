@@ -62,14 +62,16 @@ const ROUTES = [
 export function GetInTouch({ headingId }: { headingId: string }) {
   return (
     <>
+      {/* ONE LINE, 2026-10-27. The lead listed the audiences ("studios,
+          distribution partners, educators and press") and then the three
+          routes under it listed the same audiences again as links, so the
+          list was printed twice inside one band. The half of the sentence that
+          was not a duplicate is the heading now, and the company's name is
+          already the first word of the footer directly below. */}
       <Settle>
-        <h2 id={headingId} className="t-display max-w-[12ch]">
-          Contact CLÉ Family Media.
+        <h2 id={headingId} className="t-h2 max-w-[32ch]">
+          If you are assessing the company, we would rather answer your questions directly.
         </h2>
-        <p className="t-lead mt-6 max-w-[56ch]">
-          We are open to conversations with studios, distribution partners, educators and press. If
-          you are assessing the company, we would rather answer your questions directly.
-        </p>
       </Settle>
 
       <Settle className="hairline mt-14 grid gap-x-16 gap-y-10 pt-10 lg:mt-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
