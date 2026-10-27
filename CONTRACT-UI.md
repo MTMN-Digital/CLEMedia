@@ -25,7 +25,7 @@ Five moves, and every page conforms:
 
 | Move | Decision |
 |---|---|
-| **Type pairing** | Calistoga for display at 40px and up, Hanken Grotesk for everything else, and a very widely tracked uppercase micro-kicker as the third voice. All three are how the show site sets type. |
+| **Type pairing** | Calistoga for display at 40px and up, Hanken Grotesk for everything else, and a very widely tracked uppercase micro-kicker as the third voice. **Only Calistoga is the show site's.** Corrected 2026-10-27: this line used to claim all three faces came from the show site, which is wrong. The brand's own body face is Montserrat, sampled live and recorded in DESIGN-TOKENS.md; Hanken Grotesk, Fraunces (hero) and Spline Sans Mono (labels) are MTMN's choices. Either keep them and say so, or move the body face back to Montserrat. QUESTIONS.md. |
 | **Palette stance** | The show's own colours, sampled live, plus darkened steps so text passes AA. One continuous warm ground; the deep registers float on it. |
 | **Layout stance** | A continuous environment with objects sitting in it. Frosted trays, arch cards, smoked deep panels. Centred section openers, left-aligned substance. |
 | **Motion** | A drifting golden-hour bloom behind everything, one orchestrated entrance per section, and the stitch headline. House easing throughout. |
