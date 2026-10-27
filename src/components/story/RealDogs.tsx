@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { DrawnCorner } from "@/components/draw/kit";
@@ -7,58 +8,58 @@ import "./dogs.css";
 /* ============================================================================
    The eight photographs of the real Finn and Fia.
 
-   WHAT THIS REPLACED, 2026-10-27. A justified gallery: four rows of two or
-   three pictures at their own proportions, which read as a contact sheet and
-   gave the two dogs equal, undifferentiated weight. The client asked for one
-   rectangle holding all eight, one large portrait of each dog, and the other
-   six arranged so the two sets coil around each other.
+   THE SHAPE. Four by four, fully tiled. Each big portrait is a two by two
+   block on the diagonal and the block beside it holds three frames of the
+   OTHER dog, so the fawn mass sits top left and the dark mass bottom right,
+   each anchored by the other. The client asked for one rectangle with the two
+   sets coiled around each other, and this is that without a gap in it. Four
+   drawn corners hold the whole grid: one set per picture would be thirty two
+   marks and read as noise.
 
-   SO IT IS A FOUR BY FOUR, FULLY TILED. Each big portrait is a two by two
-   block on the diagonal, and the block beside it holds three frames of the
-   OTHER dog: fawn mass at the top left, dark mass at the bottom right, each
-   anchored by the other dog's pictures. That is the yin and yang reading the
-   client asked for, and it stays a true rectangle with no gap in it.
+   THE FRAMING IS COMPUTED, NOT CHOSEN, 2026-10-27. Two builds of this grid
+   were rejected for bad framing and both were cropped by eye. The problem is
+   not taste, it is that the photographs are portrait, landscape and square
+   and the cells are not, so `object-position` on a full frame either leaves
+   the dog small in a field of backdrop or takes the top off its head.
 
-   THE CROPS ARE MEASURED, NOT GUESSED. Every frame fills its cell, so every
-   dog had to be found inside its own photograph first: the backdrop is one
-   flat deep red, so the subject is every pixel far from the corner colour,
-   and `--at` below is the centroid of that for each file. Fia was visibly off
-   centre in the first build of this grid because the crop assumed she was in
-   the middle of the frame and she is not.
+   So the crop is derived per picture. The backdrop is one flat red, so every
+   pixel far from the corner colour is dog; that gives a bounding box; the
+   box is then grown to the exact aspect of the cell it is going into, sized
+   so the dog fills about 84 per cent of it, floored at half the frame so a
+   600px file is never magnified past two, and slid inside the image. The
+   vertical centre is biased to 38 per cent of the dog rather than its middle,
+   because a pug's head is the photograph and its mass is in its chest.
 
-   CORNERS ON THE RECTANGLE, NOT ON EVERY FRAME. Four drawn corners per
-   picture is thirty two marks and reads as noise. The grid is one mounted
-   print, held at its own four corners, the way an album page is.
-
-   THE SENTENCE UNDER THE HEADING STAYS. "The eight below are photographs" is
-   the one line on this page that separates the real dogs from the drawn
-   characters, and the brief rules out any ambiguity about which is which.
+   `w/h/l/t` are that crop expressed as the image's size and offset in
+   percentages of the cell, so the browser does no fitting of its own. They
+   are tied to the four by four, so under 760px, where the grid is two across
+   and the cells change shape, the component falls back to `object-position`
+   with `at`, which is the same measured centre.
    ========================================================================== */
 
-/* `at` is the subject's centroid in its own frame, measured from the files.
-   `cell` is where it sits in the four by four. */
 interface Shot {
   a: AssetKey;
   cell: string;
+  /** The crop, as the image's box in percentages of its cell. */
+  w: number;
+  h: number;
+  l: number;
+  t: number;
+  /** The measured subject centre, for the phone layout's own cell shapes. */
   at: string;
 }
 
 const SHOTS: Shot[] = [
-  /* The fawn anchor, top left. A head and shoulders portrait in a square
-     cell, so the vertical centre is set ABOVE the subject's own middle:
-     centred on the body it loses the top of the head, which is the whole
-     photograph. */
-  { a: "dog.finn-1", at: "42% 38%", cell: "dogs__a" },
-  /* Three of Fia beside him. */
-  { a: "dog.fia-3", at: "51% 45%", cell: "dogs__b" },
-  { a: "dog.fia-4", at: "58% 45%", cell: "dogs__c" },
-  { a: "dog.fia-1", at: "48% 50%", cell: "dogs__d" },
-  /* Three of Finn under him. */
-  { a: "dog.finn-3", at: "60% 40%", cell: "dogs__e" },
-  { a: "dog.finn-4", at: "55% 10%", cell: "dogs__f" },
-  { a: "dog.finn-2", at: "35% 50%", cell: "dogs__g" },
-  /* The dark anchor, bottom right, standing full length. */
-  { a: "dog.fia-2", at: "43% 46%", cell: "dogs__h" },
+  /* The fawn anchor, top left, and three of Fia beside him. */
+  { a: "dog.finn-1", cell: "a", w: 113.3, h: 172.8, l: 0.0, t: -41.7, at: "44% 53%" },
+  { a: "dog.fia-3", cell: "b", w: 116.6, h: 100.0, l: -9.4, t: 0.0, at: "51% 39%" },
+  { a: "dog.fia-4", cell: "c", w: 133.6, h: 100.0, l: -27.0, t: 0.0, at: "58% 43%" },
+  { a: "dog.fia-1", cell: "d", w: 137.8, h: 198.1, l: -16.6, t: -47.1, at: "48% 49%" },
+  /* Three of Finn, and the dark anchor at the bottom right. */
+  { a: "dog.finn-3", cell: "e", w: 120.7, h: 176.9, l: -20.7, t: -21.2, at: "60% 40%" },
+  { a: "dog.finn-4", cell: "f", w: 100.0, h: 130.0, l: 0.0, t: -0.3, at: "54% 39%" },
+  { a: "dog.finn-2", cell: "g", w: 127.3, h: 200.0, l: 0.0, t: -53.1, at: "35% 52%" },
+  { a: "dog.fia-2", cell: "h", w: 100.0, h: 141.2, l: 0.0, t: -9.0, at: "46% 42%" },
 ];
 
 export function RealDogs({ headingId }: { headingId: string }) {
@@ -82,11 +83,22 @@ export function RealDogs({ headingId }: { headingId: string }) {
         <DrawnCorner at="br" />
         <ul className="dogs__grid">
           {SHOTS.map((s) => (
-            <li key={s.a} className={`dogs__cell ${s.cell}`}>
+            <li
+              key={s.a}
+              className={`dogs__cell dogs__${s.cell}`}
+              style={
+                {
+                  "--w": `${s.w}%`,
+                  "--h": `${s.h}%`,
+                  "--l": `${s.l}%`,
+                  "--t": `${s.t}%`,
+                  "--at": s.at,
+                } as CSSProperties
+              }
+            >
               <Figure
                 asset={s.a}
                 fill
-                position={s.at}
                 rounded="rounded-none"
                 sizes="(min-width: 1100px) 45vw, 92vw"
               />

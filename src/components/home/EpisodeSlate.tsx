@@ -1,5 +1,6 @@
 import { Figure } from "@/components/Figure";
 import { type Episode, COMING_SOON } from "@/lib/episodes";
+import { DrawnCorner } from "@/components/draw/kit";
 
 /* ============================================================================
    Domain-specific chrome: the production slate.
@@ -24,20 +25,10 @@ import { type Episode, COMING_SOON } from "@/lib/episodes";
    so the components that already import `Episode` from here keep working. */
 export type { Episode };
 
-function Bracket({ at }: { at: "tr" | "tl" | "bl" | "br" }) {
-  const pos = {
-    tl: "left-0 top-0 border-l-2 border-t-2",
-    tr: "right-0 top-0 border-r-2 border-t-2",
-    bl: "bottom-0 left-0 border-b-2 border-l-2",
-    br: "bottom-0 right-0 border-b-2 border-r-2",
-  }[at];
-  return (
-    <span
-      aria-hidden="true"
-      className={`pointer-events-none absolute z-10 h-5 w-5 border-[color:var(--color-red)] opacity-70 ${pos}`}
-    />
-  );
-}
+/* THE BRACKETS ARE DRAWN, since 2026-10-27. They were four spans carrying two
+   CSS borders each, which is a viewfinder mark set with the one tool this site
+   has decided not to use for structure. The kit's corner is the same mark in
+   the hand that draws everything else. See components/draw/kit.tsx. */
 
 export function EpisodeSlate({ ep }: { ep: Episode }) {
   /* AN UNRELEASED EPISODE IS NOT A LINK. There is nowhere to go, so it is a
@@ -56,8 +47,11 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
     >
       {/* The frame. Corner brackets are the viewfinder move, in red so they
           read as a mark rather than a border. */}
-      <div className="card relative overflow-hidden rounded-[var(--radius-lg)] p-2.5">
-        <Bracket at="tl" /><Bracket at="tr" /><Bracket at="bl" /><Bracket at="br" />
+      {/* `overflow-visible`: the drawn corners sit a few pixels outside the
+          frame, the way a real mount's do, and a clipped corner is a square
+          one. */}
+      <div className="card relative rounded-[var(--radius-lg)] p-2.5">
+        <DrawnCorner at="tl" /><DrawnCorner at="tr" /><DrawnCorner at="bl" /><DrawnCorner at="br" />
 
         <div className="relative overflow-hidden rounded-[var(--radius-md)]">
           <Figure

@@ -55,17 +55,37 @@
   min-width: 0;
   background: var(--color-clay);
 }
-.dogs__cell :is(picture, img) {
+/* THE CROP IS PLACED, NOT FITTED. `w/h/l/t` come from RealDogs.tsx and are
+   the image's own box in percentages of this cell, so the browser is told
+   exactly which part of the photograph to show rather than being asked to
+   cover and guess. */
+.dogs__cell picture {
+  position: absolute;
+  inset: 0;
   display: block;
-  width: 100%;
-  height: 100%;
+}
+.dogs__cell img {
+  position: absolute;
+  width: var(--w, 100%);
+  height: var(--h, 100%);
+  left: var(--l, 0);
+  top: var(--t, 0);
+  max-width: none;
   object-fit: cover;
 }
 /* Under the breakpoint the rows are auto, so each cell needs a shape of its
    own or the grid collapses to nothing. */
+/* Two across, where the cells are a different shape, so the placed crop no
+   longer applies and the measured centre does the work instead. */
 @media (max-width: 759px) {
   .dogs__cell { aspect-ratio: 3 / 2; }
   .dogs__a, .dogs__h { aspect-ratio: 1 / 1; }
+  .dogs__cell img {
+    position: static;
+    width: 100%;
+    height: 100%;
+    object-position: var(--at, 50% 50%);
+  }
 }
 
 .dogs__a { grid-area: a; }
