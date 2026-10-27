@@ -1,11 +1,15 @@
 /* ─── Scratch styles for /preview/sections ────────────────────────────────
-   Treatments of one section, built to be looked at and then thrown away.
-   Nothing here is imported by the site. */
+   Four element designs for one section, built to be looked at and then
+   thrown away. Nothing here is imported by the site.
+
+   ALL FOUR CARRY IDENTICAL CONTENT: the phase number, the phase name, the
+   client's own sentence for that phase, and the rounds line on the two that
+   repeat. Only the design of the thing changes. */
 
 .pv-frame {
   border-top: 2px solid var(--color-ink);
   padding-top: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 .pv-tag {
   font-family: var(--font-mono);
@@ -16,87 +20,272 @@
 }
 .pv-what {
   margin-top: 0.35rem;
-  max-width: 68ch;
+  max-width: 70ch;
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-body);
 }
 
-/* ─── D. The client's sentence, printed on the slip ─────────────────────── */
-.slip-words {
-  margin-top: 0.85rem;
-  padding-top: 0.85rem;
+/* ═══ 1. THE INDEX CARD ═══════════════════════════════════════════════════
+   Squared, printed, laid on the page's own paper. The tab is the kit's own
+   `.card-tab` idea moved to the top left and given the numeral. */
+.ix {
+  list-style: none;
+  margin: 2.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.75rem 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) { .ix { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .ix { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.25rem 1.5rem; } }
+
+.ix__card {
+  position: relative;
+  padding: 1.6rem 1.5rem 1.5rem;
+  background:
+    linear-gradient(180deg, var(--color-paper-1) 0%, var(--color-raised) 34%, var(--color-raised) 100%);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 60%, transparent),
+    0 1px 0 color-mix(in srgb, var(--color-body) 12%, transparent),
+    0 10px 18px -14px color-mix(in srgb, var(--color-body) 50%, transparent);
+}
+/* The printed head rule, in the red the rest of the kit prints its numerals
+   in. On a filing card this is the line you write the heading above. */
+.ix__card::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  top: 3.55rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-red-deep) 34%, transparent);
+}
+/* Laid down, not stacked square. Two angles only, alternating, so the set
+   reads as hand-placed rather than as a grid with a transform on it. */
+.ix__card--a { transform: rotate(-0.35deg); }
+.ix__card--b { transform: rotate(0.3deg); }
+
+.ix__tab {
+  position: absolute;
+  top: -0.65rem;
+  left: 1.4rem;
+  padding: 0.1rem 0.55rem 0.16rem;
+  background: var(--color-red-deep);
+  color: var(--color-raised);
+  border-radius: 2px 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+.ix__title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--color-ink);
+  min-height: 2.1rem;
+}
+.ix__what {
+  margin-top: 1.35rem;
+  font-size: 1rem;
+  line-height: 1.58;
+  color: var(--color-body);
+}
+.ix__rounds {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
   border-top: 1px solid var(--color-rule);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
+}
+.ix__loop { width: 22px; height: 22px; flex: none; margin-top: -0.2rem; overflow: visible; }
+
+/* ═══ 2. THE FILMSTRIP ════════════════════════════════════════════════════
+   One object. The stock is the site's ink, the frames are its paper, and the
+   perforations are a repeating gradient rather than fifty drawn rectangles. */
+.fs {
+  margin-top: 2.75rem;
+  background: var(--color-ink);
+  border-radius: 3px;
+  padding: 0.55rem 0.75rem;
+  box-shadow: 0 18px 30px -24px color-mix(in srgb, var(--color-body) 70%, transparent);
+  overflow: hidden;
+}
+.fs__perf {
+  display: block;
+  height: 0.9rem;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 0.55rem,
+    color-mix(in srgb, var(--color-paper-1) 88%, transparent) 0.55rem 1.3rem
+  );
+  background-size: 1.85rem 100%;
+  border-radius: 1px;
+}
+.fs__frames {
+  list-style: none;
+  margin: 0.55rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) { .fs__frames { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .fs__frames { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.fs__frame {
+  position: relative;
+  min-width: 0;
+  padding: 1.15rem 1.1rem 1.25rem;
+  background: var(--color-raised);
+}
+.fs__no {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--color-red-deep);
+}
+.fs__title {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+.fs__what {
+  margin-top: 0.7rem;
   font-size: 0.9375rem;
   line-height: 1.55;
   color: var(--color-body);
 }
-
-/* ─── E. The call sheet. One sheet of paper with five ruled rows, standing
-   on the bench like every other object in the kit. ──────────────────────── */
-.cs {
-  list-style: none;
-  margin: 0;
-  padding: clamp(1.25rem, 3cqw, 2.25rem) clamp(1.25rem, 3cqw, 2.5rem);
-  background: linear-gradient(
-    168deg,
-    var(--color-paper-1) 0%,
-    var(--color-raised) 44%,
-    color-mix(in srgb, var(--color-raised) 90%, var(--color-sunken)) 100%
-  );
-  border: 1px solid var(--color-rule);
-  border-radius: inherit;
-}
-.cs__row {
-  display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 13rem);
-  column-gap: clamp(1rem, 2.4cqw, 2rem);
-  padding-block: clamp(1.1rem, 2.2cqw, 1.6rem);
-  border-top: 1px solid var(--color-rule);
-}
-.cs__row:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-.cs__row:last-child {
-  padding-bottom: 0;
-}
-.cs__gutter {
+.fs__rounds {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  gap: 0.55rem;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
 }
-.cs__no {
+.fs__loop { width: 19px; height: 19px; flex: none; margin-top: -0.15rem; overflow: visible; }
+
+/* ═══ 3. THE DRAWN CARD ═══════════════════════════════════════════════════
+   The box is a path, so it wobbles the way every other mark on this site
+   does. `preserveAspectRatio: none` stretches it to the cell, which is what
+   lets one drawn rectangle serve five different card heights. */
+.dr {
+  list-style: none;
+  margin: 2.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) { .dr { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .dr { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem 2rem; } }
+
+.dr__card { position: relative; min-width: 0; }
+.dr__box {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.dr__in { position: relative; padding: 1.6rem 1.7rem 1.7rem; }
+.dr__no {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.75rem, 3.4cqw, 2.4rem);
+  font-size: 1.75rem;
   line-height: 0.9;
   letter-spacing: -0.02em;
   color: var(--color-red-deep);
 }
-/* The loop is a mark in the margin, not an icon in a box: it sits under the
-   numeral it belongs to and draws itself once when the sheet arrives. */
-.cs__loop {
-  width: 30px;
-  height: 30px;
-  overflow: visible;
-}
-.cs__title {
+.dr__title {
+  margin-top: 0.55rem;
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: 1.0625rem;
-  line-height: 1.3;
+  line-height: 1.25;
   color: var(--color-ink);
 }
-.cs__what {
+.dr__what {
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  line-height: 1.56;
+  color: var(--color-body);
+}
+.dr__rounds {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
+}
+.dr__loop { width: 21px; height: 21px; flex: none; margin-top: -0.15rem; overflow: visible; }
+
+/* ═══ 4. NO CARD ══════════════════════════════════════════════════════════
+   A ruled run with the numerals hanging in the margin. */
+.rr {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+}
+.rr__row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 14rem);
+  column-gap: clamp(1rem, 2.5vw, 2.25rem);
+  padding-block: 1.6rem;
+  border-top: 1px solid var(--color-rule);
+}
+.rr__row:first-child { border-top: 0; padding-top: 0; }
+.rr__gutter { grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 0.6rem; }
+.rr__no {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 1.4rem + 1.4vw, 2.75rem);
+  line-height: 0.85;
+  letter-spacing: -0.025em;
+  color: var(--color-red-deep);
+}
+.rr__loop { width: 26px; height: 26px; overflow: visible; }
+.rr__title {
+  grid-column: 2;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+.rr__what {
+  grid-column: 2;
   margin-top: 0.4rem;
   max-width: 62ch;
   font-size: 1.0625rem;
   line-height: 1.6;
   color: var(--color-body);
 }
-.cs__rounds {
+.rr__rounds {
+  grid-column: 2;
   margin-top: 0.7rem;
   font-family: var(--font-mono);
   font-size: 12px;
@@ -104,41 +293,26 @@
   text-transform: uppercase;
   color: var(--color-red-deep);
 }
-
-/* The who column, hard against the right edge of the sheet, set in the same
-   mono the rest of the kit prints its labels in. */
-.cs__who {
+.rr__who {
+  grid-column: 3;
+  grid-row: 1 / span 3;
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.5;
-  letter-spacing: 0.02em;
   color: var(--color-ink);
   border-left: 1px solid var(--color-rule);
-  padding-left: clamp(0.9rem, 1.8cqw, 1.5rem);
+  padding-left: clamp(0.9rem, 2vw, 1.5rem);
 }
-
-/* On a phone the gutter has no width to spare, so the numeral runs in with
-   the phase name, the loop goes beside it, and the who line drops under the
-   sentence as a rule-topped credit. */
-@media (max-width: 559px) {
-  .cs__row {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 0.5rem;
-  }
-  .cs__who {
+@media (max-width: 719px) {
+  .rr__row { grid-template-columns: minmax(0, 1fr); row-gap: 0.45rem; }
+  .rr__gutter { grid-row: auto; flex-direction: row; align-items: center; gap: 0.8rem; }
+  .rr__title, .rr__what, .rr__rounds, .rr__who { grid-column: 1; }
+  .rr__who {
+    grid-row: auto;
     border-left: 0;
     border-top: 1px solid var(--color-rule);
     padding-left: 0;
     padding-top: 0.6rem;
-    margin-top: 0.2rem;
-  }
-  .cs__gutter {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .cs__loop {
-    width: 24px;
-    height: 24px;
+    margin-top: 0.3rem;
   }
 }
