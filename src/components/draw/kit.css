@@ -1,0 +1,66 @@
+/* ─── The drawn kit ───────────────────────────────────────────────────────
+   See kit.tsx for why these exist and why they stretch. This file is the
+   geometry only: the paths, the variants and the rule about weight live in
+   the component. */
+
+.dk-box {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* The wobble runs a stroke's width outside the viewBox at the corners, and
+     a card clipped to its own box loses them. */
+  overflow: visible;
+}
+
+.dk-rule {
+  display: block;
+  width: 100%;
+  height: 6px;
+  overflow: visible;
+}
+/* A HAIRLINE IS HALF THE WEIGHT OF AN EDGE. `.ink-in` animates opacity to 1,
+   which cancels `.ink-thin`'s own opacity, so a drawn rule came out as heavy
+   as a drawn box and a column of rows read like a fence. The weight is set on
+   the stroke colour, where nothing overrides it. */
+.dk-rule .ink-line {
+  stroke: color-mix(in srgb, var(--color-ink) 52%, transparent);
+}
+/* On a dark band the ink is the paper's, so the rule takes the cream the rest
+   of the band's hairlines take. */
+.deep .dk-rule .ink-line,
+.bench .dk-rule .ink-line,
+.wall .dk-rule .ink-line {
+  stroke: color-mix(in srgb, var(--color-raised) 40%, transparent);
+}
+.deep .dk-box .ink-line,
+.bench .dk-box .ink-line {
+  stroke: color-mix(in srgb, var(--color-raised) 62%, transparent);
+}
+
+.dk-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  overflow: visible;
+}
+/* One path, turned. A second drawn corner would read as a second hand. */
+.dk-corner--tl { top: -7px; left: -7px; }
+.dk-corner--tr { top: -7px; right: -7px; transform: scaleX(-1); }
+.dk-corner--bl { bottom: -7px; left: -7px; transform: scaleY(-1); }
+.dk-corner--br { bottom: -7px; right: -7px; transform: scale(-1); }
+
+.dk-bracket {
+  width: 14px;
+  height: 100%;
+  flex: none;
+  overflow: visible;
+}
+
+.dk-perf {
+  display: block;
+  width: 100%;
+  height: 14px;
+  overflow: visible;
+}

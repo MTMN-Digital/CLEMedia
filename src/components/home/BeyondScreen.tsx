@@ -1,6 +1,7 @@
 import { Settle } from "@/components/Settle";
 import { TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
+import { DrawnBox } from "@/components/draw/kit";
 
 /* ============================================================================
    Beyond the screen: the half of "Watch, Play, Learn" the home page never
@@ -45,7 +46,11 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
       </Settle>
 
       <div className="mt-14 grid gap-6 md:grid-cols-2 lg:mt-20 lg:gap-8">
-        <Settle className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
+        {/* DRAWN, NOT CARD STOCK, since 2026-10-27. The edge is a path in the
+            same hand as every other mark on the site rather than a radius and
+            a shadow. See components/draw/kit.tsx. */}
+        <Settle className="relative p-8 pt-9 sm:p-10 sm:pt-11">
+          <DrawnBox v={0} />
           <span className="card-tab" aria-hidden="true">AT HOME</span>
           <h3 className="t-h3">For parents and children</h3>
           <p className="t-body mt-4 max-w-[42ch]">
@@ -59,7 +64,8 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
           </p>
         </Settle>
 
-        <Settle className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
+        <Settle className="relative p-8 pt-9 sm:p-10 sm:pt-11">
+          <DrawnBox v={1} />
           <span className="card-tab" aria-hidden="true">IN THE CLASSROOM</span>
           <h3 className="t-h3">For educators and children</h3>
           <p className="t-body mt-4 max-w-[42ch]">

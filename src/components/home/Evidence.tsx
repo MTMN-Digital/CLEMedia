@@ -1,4 +1,5 @@
 import { Settle } from "@/components/Settle";
+import { DrawnRule } from "@/components/draw/kit";
 
 /* ============================================================================
    The evidence, as three figures with the paper each comes from.
@@ -98,8 +99,9 @@ export function Evidence({ headingId }: { headingId: string }) {
           already three of a kind, which is the tell this site spent a fortnight
           getting out of its other sections. */}
       <Settle className="mt-14 grid gap-x-12 gap-y-12 md:grid-cols-3 lg:mt-20 lg:gap-x-16">
-        {FINDINGS.map((f) => (
-          <div key={f.source} className="border-t border-white/22 pt-7">
+        {FINDINGS.map((f, i) => (
+          <div key={f.source} className="pt-1">
+            <DrawnRule v={i} className="mb-7" />
             <p className="font-display text-[clamp(3rem,2rem+3.4vw,4.75rem)] leading-[0.92] tracking-[-0.03em]">
               {f.figure}
               {f.unit && (

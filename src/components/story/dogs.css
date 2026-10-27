@@ -1,0 +1,78 @@
+/* ─── The eight photographs, as one rectangle ─────────────────────────────
+   See RealDogs.tsx for why it is shaped this way. Named areas rather than
+   span arithmetic, so the coil is readable in the stylesheet: the fawn block
+   and the dark block sit on the diagonal and each one is surrounded by the
+   other dog. */
+
+.dogs {
+  position: relative;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.dogs__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "a a"
+    "a a"
+    "b c"
+    "d d"
+    "e f"
+    "g g"
+    "h h"
+    "h h";
+}
+
+/* The four by four only above the point where a quarter-width cell still
+   holds a dog at a size worth printing. Below it the same eight run two
+   across, with the anchors still twice the size of the rest. */
+@media (min-width: 760px) {
+  .dogs__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* NEARLY SQUARE CELLS, not landscape ones. The first build set the
+       rectangle at 16/11, which made every cell half as wide again as it was
+       tall; six of the eight photographs are portrait or close to it, so the
+       crop ate the dogs and took the top off Finn's head. At 8/7 a single
+       cell is 1.14:1 and the two anchors are square, which is the shape the
+       pictures were taken in. */
+    aspect-ratio: 8 / 7;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      "a a b c"
+      "a a d d"
+      "e f h h"
+      "g g h h";
+  }
+}
+
+.dogs__cell {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: var(--color-clay);
+}
+.dogs__cell :is(picture, img) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Under the breakpoint the rows are auto, so each cell needs a shape of its
+   own or the grid collapses to nothing. */
+@media (max-width: 759px) {
+  .dogs__cell { aspect-ratio: 3 / 2; }
+  .dogs__a, .dogs__h { aspect-ratio: 1 / 1; }
+}
+
+.dogs__a { grid-area: a; }
+.dogs__b { grid-area: b; }
+.dogs__c { grid-area: c; }
+.dogs__d { grid-area: d; }
+.dogs__e { grid-area: e; }
+.dogs__f { grid-area: f; }
+.dogs__g { grid-area: g; }
+.dogs__h { grid-area: h; }
