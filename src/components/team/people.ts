@@ -147,6 +147,17 @@ export const TEAM: Member[] = [
       "She is a graphic designer and illustrator specialising in children's activity books and educational materials.",
     ],
   },
+  {
+    name: "Stitha Raj",
+    role: "UI/UX Designer",
+    asset: "person.stitha",
+    /* ADDED 2026-10-27, photograph and bio from Stitha via Conor. Part of the
+       app team designing PupsPlayer's screens; the bio is her own words. */
+    phases: [],
+    bio: [
+      "Stitha is a UI/UX designer with an engineering background. She uses Figma and AI tools to design clear, user-friendly digital experiences.",
+    ],
+  },
 ];
 
 export const ADVISORS: Member[] = [
