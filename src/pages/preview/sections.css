@@ -1,10 +1,10 @@
 /* ─── Scratch styles for /preview/sections ────────────────────────────────
-   Four element designs for one section, built to be looked at and then
-   thrown away. Nothing here is imported by the site.
+   The drawing kit promoted from illustration to structure. Built to be
+   looked at and then thrown away; nothing here is imported by the site.
 
-   ALL FOUR CARRY IDENTICAL CONTENT: the phase number, the phase name, the
-   client's own sentence for that phase, and the rounds line on the two that
-   repeat. Only the design of the thing changes. */
+   TWO PRIMITIVES carry all five plates: a drawn box that stretches to its
+   element, and a drawn rule that stretches to its row. Everything else is
+   type on the page's own paper. */
 
 .pv-frame {
   border-top: 2px solid var(--color-ink);
@@ -20,194 +20,52 @@
 }
 .pv-what {
   margin-top: 0.35rem;
-  max-width: 70ch;
+  max-width: 72ch;
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-body);
 }
 
-/* ═══ 1. THE INDEX CARD ═══════════════════════════════════════════════════
-   Squared, printed, laid on the page's own paper. The tab is the kit's own
-   `.card-tab` idea moved to the top left and given the numeral. */
-.ix {
-  list-style: none;
-  margin: 2.75rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 1.75rem 1.25rem;
-  grid-template-columns: minmax(0, 1fr);
-}
-@media (min-width: 640px) { .ix { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .ix { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.25rem 1.5rem; } }
-
-.ix__card {
-  position: relative;
-  padding: 1.6rem 1.5rem 1.5rem;
-  background:
-    linear-gradient(180deg, var(--color-paper-1) 0%, var(--color-raised) 34%, var(--color-raised) 100%);
-  border: 1px solid var(--color-rule);
-  border-radius: 2px;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 60%, transparent),
-    0 1px 0 color-mix(in srgb, var(--color-body) 12%, transparent),
-    0 10px 18px -14px color-mix(in srgb, var(--color-body) 50%, transparent);
-}
-/* The printed head rule, in the red the rest of the kit prints its numerals
-   in. On a filing card this is the line you write the heading above. */
-.ix__card::before {
-  content: "";
-  position: absolute;
-  left: 1.5rem;
-  right: 1.5rem;
-  top: 3.55rem;
-  height: 1px;
-  background: color-mix(in srgb, var(--color-red-deep) 34%, transparent);
-}
-/* Laid down, not stacked square. Two angles only, alternating, so the set
-   reads as hand-placed rather than as a grid with a transform on it. */
-.ix__card--a { transform: rotate(-0.35deg); }
-.ix__card--b { transform: rotate(0.3deg); }
-
-.ix__tab {
-  position: absolute;
-  top: -0.65rem;
-  left: 1.4rem;
-  padding: 0.1rem 0.55rem 0.16rem;
-  background: var(--color-red-deep);
-  color: var(--color-raised);
-  border-radius: 2px 2px 0 0;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-}
-.ix__title {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.125rem;
-  line-height: 1.25;
-  color: var(--color-ink);
-  min-height: 2.1rem;
-}
-.ix__what {
-  margin-top: 1.35rem;
-  font-size: 1rem;
-  line-height: 1.58;
-  color: var(--color-body);
-}
-.ix__rounds {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  margin-top: 1.1rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--color-rule);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.5;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-red-deep);
-}
-.ix__loop { width: 22px; height: 22px; flex: none; margin-top: -0.2rem; overflow: visible; }
-
-/* ═══ 2. THE FILMSTRIP ════════════════════════════════════════════════════
-   One object. The stock is the site's ink, the frames are its paper, and the
-   perforations are a repeating gradient rather than fifty drawn rectangles. */
-.fs {
-  margin-top: 2.75rem;
-  background: var(--color-ink);
-  border-radius: 3px;
-  padding: 0.55rem 0.75rem;
-  box-shadow: 0 18px 30px -24px color-mix(in srgb, var(--color-body) 70%, transparent);
-  overflow: hidden;
-}
-.fs__perf {
-  display: block;
-  height: 0.9rem;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent 0 0.55rem,
-    color-mix(in srgb, var(--color-paper-1) 88%, transparent) 0.55rem 1.3rem
-  );
-  background-size: 1.85rem 100%;
-  border-radius: 1px;
-}
-.fs__frames {
-  list-style: none;
-  margin: 0.55rem 0;
-  padding: 0;
-  display: grid;
-  gap: 0.35rem;
-  grid-template-columns: minmax(0, 1fr);
-}
-@media (min-width: 640px) { .fs__frames { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1100px) { .fs__frames { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-
-.fs__frame {
-  position: relative;
-  min-width: 0;
-  padding: 1.15rem 1.1rem 1.25rem;
-  background: var(--color-raised);
-}
-.fs__no {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: var(--color-red-deep);
-}
-.fs__title {
-  margin-top: 0.5rem;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.0625rem;
-  line-height: 1.25;
-  color: var(--color-ink);
-}
-.fs__what {
-  margin-top: 0.7rem;
-  font-size: 0.9375rem;
-  line-height: 1.55;
-  color: var(--color-body);
-}
-.fs__rounds {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-top: 0.9rem;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.45;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-red-deep);
-}
-.fs__loop { width: 19px; height: 19px; flex: none; margin-top: -0.15rem; overflow: visible; }
-
-/* ═══ 3. THE DRAWN CARD ═══════════════════════════════════════════════════
-   The box is a path, so it wobbles the way every other mark on this site
-   does. `preserveAspectRatio: none` stretches it to the cell, which is what
-   lets one drawn rectangle serve five different card heights. */
-.dr {
-  list-style: none;
-  margin: 2.75rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 2rem 1.5rem;
-  grid-template-columns: minmax(0, 1fr);
-}
-@media (min-width: 640px) { .dr { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .dr { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem 2rem; } }
-
-.dr__card { position: relative; min-width: 0; }
-.dr__box {
+/* ═══ The primitives ══════════════════════════════════════════════════════ */
+.dk-box {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  overflow: visible;
 }
-.dr__in { position: relative; padding: 1.6rem 1.7rem 1.7rem; }
-.dr__no {
+.dk-rule {
+  display: block;
+  width: 100%;
+  height: 6px;
+  overflow: visible;
+}
+/* `.ink-in` animates opacity to 1, which cancels `.ink-thin`'s own opacity,
+   so a drawn hairline came out as heavy as a drawn box. The weight is set on
+   the stroke colour instead, where nothing overrides it. */
+.dk-rule .ink-line {
+  stroke: color-mix(in srgb, var(--color-ink) 52%, transparent);
+}
+.dk-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  overflow: visible;
+}
+.dk-corner--tl { top: -7px; left: -7px; }
+.dk-corner--tr { top: -7px; right: -7px; transform: scaleX(-1); }
+.dk-corner--bl { bottom: -7px; left: -7px; transform: scaleY(-1); }
+.dk-corner--br { bottom: -7px; right: -7px; transform: scale(-1); }
+.dk-bracket {
+  width: 14px;
+  height: 100%;
+  flex: none;
+  overflow: visible;
+}
+
+/* Shared type inside any drawn object. */
+.dk-no {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 1.75rem;
@@ -215,21 +73,21 @@
   letter-spacing: -0.02em;
   color: var(--color-red-deep);
 }
-.dr__title {
-  margin-top: 0.55rem;
+.dk-title {
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: 1.0625rem;
   line-height: 1.25;
   color: var(--color-ink);
 }
-.dr__what {
+.dk-what {
   margin-top: 0.6rem;
   font-size: 1rem;
   line-height: 1.56;
   color: var(--color-body);
 }
-.dr__rounds {
+.dk-rounds,
+.dks__rounds {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
@@ -241,42 +99,90 @@
   text-transform: uppercase;
   color: var(--color-red-deep);
 }
-.dr__loop { width: 21px; height: 21px; flex: none; margin-top: -0.15rem; overflow: visible; }
+.dk-loop, .dks__loop, .dkr__loop { flex: none; overflow: visible; }
+.dk-loop { width: 21px; height: 21px; margin-top: -0.15rem; }
 
-/* ═══ 4. NO CARD ══════════════════════════════════════════════════════════
-   A ruled run with the numerals hanging in the margin. */
-.rr {
+/* ═══ 1. The cards ════════════════════════════════════════════════════════ */
+.dk-cards {
   list-style: none;
-  margin: 2.5rem 0 0;
+  margin: 2.75rem 0 0;
   padding: 0;
+  display: grid;
+  gap: 2rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
 }
-.rr__row {
+@media (min-width: 640px) { .dk-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .dk-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem 2rem; } }
+.dk-card { position: relative; min-width: 0; }
+.dk-card__in { position: relative; padding: 1.6rem 1.7rem 1.7rem; }
+.dk-card .dk-title { margin-top: 0.55rem; }
+
+/* ═══ 2. The strip ════════════════════════════════════════════════════════
+   The stock is a drawn rectangle and the frames are drawn rectangles inside
+   it. Nothing is filled, so the page's paper runs straight through the
+   object, which is the whole difference from the black bar it replaces. */
+.dks {
+  position: relative;
+  margin-top: 2.75rem;
+  padding: 0.2rem 0;
+}
+.dks__perf {
+  display: block;
+  width: 100%;
+  height: 14px;
+  overflow: visible;
+}
+.dks__frames {
+  list-style: none;
+  margin: 0.55rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) { .dks__frames { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .dks__frames { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.75rem; } }
+.dks__frame { position: relative; min-width: 0; }
+.dks__in { position: relative; padding: 1.1rem 1.05rem 1.2rem; }
+.dks__no {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--color-red-deep);
+}
+.dks__frame .dk-title { margin-top: 0.5rem; }
+.dks__what {
+  margin-top: 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+.dks__rounds { margin-top: 0.85rem; font-size: 11.5px; letter-spacing: 0.06em; }
+.dks__loop { width: 19px; height: 19px; margin-top: -0.15rem; }
+
+/* ═══ 3. The rule as the site's hairline ══════════════════════════════════ */
+.dkr { list-style: none; margin: 2.5rem 0 0; padding: 0; }
+.dkr__row {
+  position: relative;
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 14rem);
   column-gap: clamp(1rem, 2.5vw, 2.25rem);
-  padding-block: 1.6rem;
-  border-top: 1px solid var(--color-rule);
+  padding-block: 1.7rem;
 }
-.rr__row:first-child { border-top: 0; padding-top: 0; }
-.rr__gutter { grid-row: 1 / span 3; display: flex; flex-direction: column; gap: 0.6rem; }
-.rr__no {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(2rem, 1.4rem + 1.4vw, 2.75rem);
-  line-height: 0.85;
-  letter-spacing: -0.025em;
-  color: var(--color-red-deep);
+.dkr__row:first-child { padding-top: 0; }
+/* The drawn rule sits in the row it opens, spanning the whole grid. */
+.dkr__line {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  width: 100%;
 }
-.rr__loop { width: 26px; height: 26px; overflow: visible; }
-.rr__title {
-  grid-column: 2;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.125rem;
-  line-height: 1.25;
-  color: var(--color-ink);
-}
-.rr__what {
+.dkr__gutter { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: 0.6rem; }
+.dkr__gutter .dk-no { font-size: clamp(2rem, 1.4rem + 1.4vw, 2.75rem); line-height: 0.85; }
+.dkr__loop { width: 26px; height: 26px; }
+.dkr__title { grid-column: 2; font-size: 1.125rem; }
+.dkr__what {
   grid-column: 2;
   margin-top: 0.4rem;
   max-width: 62ch;
@@ -284,35 +190,76 @@
   line-height: 1.6;
   color: var(--color-body);
 }
-.rr__rounds {
-  grid-column: 2;
-  margin-top: 0.7rem;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-red-deep);
-}
-.rr__who {
+.dkr__who {
   grid-column: 3;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.5;
   color: var(--color-ink);
-  border-left: 1px solid var(--color-rule);
-  padding-left: clamp(0.9rem, 2vw, 1.5rem);
 }
 @media (max-width: 719px) {
-  .rr__row { grid-template-columns: minmax(0, 1fr); row-gap: 0.45rem; }
-  .rr__gutter { grid-row: auto; flex-direction: row; align-items: center; gap: 0.8rem; }
-  .rr__title, .rr__what, .rr__rounds, .rr__who { grid-column: 1; }
-  .rr__who {
-    grid-row: auto;
-    border-left: 0;
-    border-top: 1px solid var(--color-rule);
-    padding-left: 0;
-    padding-top: 0.6rem;
-    margin-top: 0.3rem;
-  }
+  .dkr__row { grid-template-columns: minmax(0, 1fr); row-gap: 0.45rem; }
+  .dkr__gutter { grid-row: auto; flex-direction: row; align-items: center; gap: 0.8rem; }
+  .dkr__title, .dkr__what, .dkr__who { grid-column: 1; }
+  .dkr__who { grid-row: auto; margin-top: 0.4rem; }
+}
+
+/* ═══ 4. The photograph, held by corners ══════════════════════════════════ */
+.dkm {
+  list-style: none;
+  margin: 2.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 3rem 2.5rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 700px) { .dkm { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.dkm__fig { margin: 0; }
+/* Both photographs to one ratio. Finn is portrait and Fia is landscape in
+   the library, and a row of two pictures at their own ratios is a row with a
+   hole in it. */
+.dkm__pic { position: relative; }
+.dkm__pic img {
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  width: 100%;
+}
+.dkm__cap {
+  margin-top: 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+/* ═══ 5. The docket ═══════════════════════════════════════════════════════ */
+.dkd { position: relative; margin-top: 2.75rem; max-width: 34rem; }
+.dkd__edge { inset: 0; }
+.dkd__in { position: relative; padding: 1.7rem 1.8rem 1.8rem; }
+.dkd__label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
+}
+.dkd__rows { margin: 1.1rem 0 0; }
+.dkd__row {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 0.7rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.dkd__row dt { color: var(--color-body); }
+.dkd__row dd { margin: 0; color: var(--color-ink); font-weight: 500; }
+.dkd__line { position: absolute; top: -3px; left: 0; right: 0; width: 100%; }
+.dkd__mark { display: flex; gap: 0.9rem; margin-top: 1.4rem; }
+.dkd__note {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--color-body);
 }
