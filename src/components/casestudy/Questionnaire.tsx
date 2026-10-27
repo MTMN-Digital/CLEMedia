@@ -125,7 +125,7 @@ export function Questionnaire({ route }: { route: RouteId }) {
     <div>
       {/* Plain, and above the form rather than below it. Not an apology. */}
       {closed && (
-        <div role="note" className="mb-8 rounded-[var(--radius-md)] border border-ink bg-raised px-5 py-5 sm:px-6">
+        <div role="note" className="mb-8 rounded-[var(--radius-md)] border-[1.5px] border-ink bg-raised px-5 py-5 sm:px-6">
           <p className="t-h3">The study has not opened, so this cannot be filled in yet.</p>
           <p className="t-body mt-2 max-w-[60ch] text-body">
             You can read every question below. Nothing you type here can be sent, and the fields
@@ -156,7 +156,7 @@ export function Questionnaire({ route }: { route: RouteId }) {
           <Pills name="offline_activity" legend="How much of Paula's offline activity did you do" options={OFFLINE} value={a.offline_activity ?? ""} onChange={set("offline_activity")} closed={closed} />
         </div>
 
-        <div className="mt-12 grid gap-8 border-t border-rule pt-10">
+        <div className="mt-12 grid gap-8 border-t-[1.5px] border-rule pt-10">
           <p className="t-body max-w-[60ch] text-body">
             How far do you agree with each statement about episode 003, Chicken Vision?
           </p>
@@ -173,7 +173,7 @@ export function Questionnaire({ route }: { route: RouteId }) {
           ))}
         </div>
 
-        <div className="mt-12 grid gap-8 border-t border-rule pt-10">
+        <div className="mt-12 grid gap-8 border-t-[1.5px] border-rule pt-10">
           {OPEN.map((q) => (
             <div key={q.field}>
               <label htmlFor={`q-${q.field}`} className="field-label">

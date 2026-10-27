@@ -37,14 +37,14 @@ const FOR = [
 
 export function ForTheChild() {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-rule p-5 sm:p-7">
-      <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-red-deep">
+    <div className="rounded-[var(--radius-lg)] border-[1.5px] border-rule p-5 sm:p-7">
+      <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep">
         What the reviews are for
       </p>
       <dl className="mt-5">
         {FOR.map((f) => (
           <div key={f.who} className="hairline py-4 first:pt-0">
-            <dt className="font-mono text-[12px] uppercase tracking-[0.12em] text-body">{f.who}</dt>
+            <dt className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">{f.who}</dt>
             <dd className="t-body mt-1.5 max-w-[46ch] text-body">{f.line}</dd>
           </div>
         ))}

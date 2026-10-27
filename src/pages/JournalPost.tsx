@@ -42,7 +42,7 @@ export default function JournalPost() {
       <Section>
         <Container>
           <BackRail />
-          <p className="mt-10 font-mono text-[13px] uppercase tracking-[0.16em] text-muted" aria-busy="true">
+          <p className="mt-10 font-mono text-[14.5px] uppercase tracking-[0.16em] text-muted" aria-busy="true">
             Fetching this piece
           </p>
         </Container>
@@ -69,12 +69,12 @@ function Spread({ margin, children }: { children: ReactNode; margin: ReactNode }
 
 function BackRail() {
   return (
-    <div className="flex items-center justify-between gap-6 border-b border-rule pb-5">
+    <div className="flex items-center justify-between gap-6 border-b-[1.5px] border-rule pb-5">
       <TextLink to="/journal" className="uppercase tracking-[0.14em]">
         <IconArrow size={14} className="rotate-180" />
         The journal
       </TextLink>
-      <span className="hidden font-mono text-[12px] uppercase tracking-[0.18em] text-muted sm:block">
+      <span className="hidden font-mono text-[14px] uppercase tracking-[0.18em] text-muted sm:block">
         CL&Eacute; Family Media
       </span>
     </div>
@@ -190,7 +190,7 @@ function Article({
               />
               {post.hero_alt && (
                 <Container>
-                  <figcaption className="pt-4 font-mono text-[13px] leading-[1.65] text-muted">
+                  <figcaption className="pt-4 font-mono text-[14.5px] leading-[1.65] text-muted">
                     {post.hero_alt}
                   </figcaption>
                 </Container>
@@ -212,7 +212,7 @@ function Article({
               </p>
             )}
 
-            <div className="mt-12 border-t border-rule pt-6 sm:mt-16">
+            <div className="mt-12 border-t-[1.5px] border-rule pt-6 sm:mt-16">
               <TextLink to="/journal">
                 <IconArrow size={15} className="rotate-180" />
                 Back to the journal
@@ -231,14 +231,14 @@ function Article({
             <h2 id="more-h" className="t-h2">
               More in {strand ?? "the journal"}
             </h2>
-            <Settle as="ol" className="mt-8 border-t border-rule">
+            <Settle as="ol" className="mt-8 border-t-[1.5px] border-rule">
               {siblings.map((s) => (
-                <li key={s.id} className="border-b border-rule">
+                <li key={s.id} className="border-b-[1.5px] border-rule">
                   <Link
                     to={`/journal/${s.slug}`}
                     className="group grid gap-x-10 gap-y-2 py-6 sm:py-7 lg:grid-cols-[10rem_minmax(0,1fr)_2rem]"
                   >
-                    <span className="tnum font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+                    <span className="tnum font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">
                       {formatDate(s.published_at) ?? ""}
                     </span>
                     <span className="min-w-0">
@@ -335,14 +335,14 @@ function Missing({ slug }: { slug?: string }) {
             </Settle>
 
             <div className="lg:pt-3">
-              <ul className="border-t border-rule">
+              <ul className="border-t-[1.5px] border-rule">
                 {STRANDS.map((s) => (
                   <li
                     key={s.slug}
-                    className="flex items-baseline justify-between gap-4 border-b border-rule py-3.5"
+                    className="flex items-baseline justify-between gap-4 border-b-[1.5px] border-rule py-3.5"
                   >
                     <span className="text-[15px] font-semibold text-ink">{s.name}</span>
-                    <span className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted">
+                    <span className="shrink-0 font-mono text-[12.5px] uppercase tracking-[0.14em] text-muted">
                       In preparation
                     </span>
                   </li>

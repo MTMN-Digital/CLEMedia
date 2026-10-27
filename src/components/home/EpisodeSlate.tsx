@@ -63,22 +63,22 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
 
           {/* The slate strip, across the foot of the frame. */}
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-[rgba(26,22,20,0.82)] px-3 py-2 backdrop-blur-[2px]">
-            <span className="tnum font-mono text-[12px] tracking-[0.14em] text-white/90">
+            <span className="tnum font-mono text-[14px] tracking-[0.14em] text-white/90">
               EP {ep.n}
             </span>
             <span className="h-3 w-px bg-white/25" aria-hidden="true" />
-            <span className="truncate font-mono text-[12px] tracking-[0.1em] text-white/90">
+            <span className="truncate font-mono text-[14px] tracking-[0.1em] text-white/90">
               PAWSITIVE PUGS &amp; PALS
             </span>
             {/* A runtime if there is one, and the mark if there is not. They
                 occupy the same slot because they answer the same question:
                 what is this, and can I watch it. */}
             {ep.runtime ? (
-              <span className="tnum ml-auto font-mono text-[12px] tracking-[0.12em] text-white/90">
+              <span className="tnum ml-auto font-mono text-[14px] tracking-[0.12em] text-white/90">
                 {ep.runtime}
               </span>
             ) : (
-              <span className="ml-auto rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-2 py-0.5 font-mono text-[11px] tracking-[0.12em] whitespace-nowrap text-white uppercase">
+              <span className="ml-auto rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-2 py-0.5 font-mono text-[13px] tracking-[0.12em] whitespace-nowrap text-white uppercase">
                 {COMING_SOON}
               </span>
             )}
@@ -97,20 +97,20 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
             <dl className="hairline mt-5 flex flex-wrap gap-x-7 gap-y-2 pt-4">
               {ep.guidance && (
                 <div>
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em] text-deep">Guidance</dt>
+                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">Guidance</dt>
                   <dd className="t-sm mt-1 text-ink">{ep.guidance}</dd>
                 </div>
               )}
               {ep.reviewer && (
                 <div>
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.16em] text-deep">Passed by</dt>
+                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">Passed by</dt>
                   <dd className="t-sm mt-1 text-ink">{ep.reviewer}</dd>
                 </div>
               )}
             </dl>
           )}
 
-          <p className="mt-5 font-mono text-[12px] uppercase tracking-[0.16em] text-red-deep">
+          <p className="mt-5 font-mono text-[14px] uppercase tracking-[0.16em] text-red-deep">
             {ep.released ? "Watch on YouTube" : COMING_SOON}
           </p>
         </div>

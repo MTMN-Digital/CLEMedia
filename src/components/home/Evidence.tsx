@@ -132,7 +132,7 @@ export function Evidence({ headingId }: { headingId: string }) {
                  WCAG 2.2 target minimum. Top padding only, because
                  `.link-draw` paints its rule at `background-position: 0 100%`
                  and any bottom padding drops the underline off the word. */
-              className="link-draw mt-2 inline-block pt-4 font-mono text-[11.5px] uppercase tracking-[0.14em]"
+              className="link-draw mt-2 inline-block pt-4 font-mono text-[13.5px] uppercase tracking-[0.14em]"
             >
               {f.source}
             </a>

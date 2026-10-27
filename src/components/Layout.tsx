@@ -77,7 +77,7 @@ function NavGroup({ label, items }: { items: readonly { to: string; label: strin
           width="10" height="7" viewBox="0 0 10 7" aria-hidden="true"
           className={`transition-transform ${open ? "rotate-180" : ""}`}
         >
-          <path d="M1 1.5L5 5.5L9 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M1 1.5L5 5.5L9 1.5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
       {open && (
@@ -85,7 +85,7 @@ function NavGroup({ label, items }: { items: readonly { to: string; label: strin
            it. Not glass: the header is the one surface on this site that must
            never let what is beneath it read through. */
         <ul
-          className="absolute left-0 top-[calc(100%+0.85rem)] z-20 min-w-[13rem] rounded-[var(--radius-sm)] border bg-raised py-1.5 shadow-[0_12px_28px_-12px_rgba(60,50,28,0.3)]"
+          className="absolute left-0 top-[calc(100%+0.85rem)] z-20 min-w-[13rem] rounded-[var(--radius-sm)] border-[1.5px] bg-raised py-1.5 shadow-[0_12px_28px_-12px_rgba(60,50,28,0.3)]"
           style={{ borderColor: "var(--color-edge)" }}
         >
           {items.map((i) => (
@@ -225,7 +225,7 @@ function Header() {
         </nav>
 
         <ShowSiteLink
-          className="hidden shrink-0 rounded-[var(--radius-pill)] border px-4 py-2.5 font-body text-[14px] font-bold text-ink transition-colors hover:border-ink lg:inline-flex"
+          className="hidden shrink-0 rounded-[var(--radius-pill)] border-[1.5px] px-4 py-2.5 font-body text-[14px] font-bold text-ink transition-colors hover:border-ink lg:inline-flex"
         />
 
         <button
@@ -233,15 +233,15 @@ function Header() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={open ? "mobile-nav" : undefined}
-          className="ml-auto flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border text-ink lg:hidden"
+          className="ml-auto flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border-[1.5px] text-ink lg:hidden"
           style={{ borderColor: "var(--color-edge)" }}
         >
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
             {open ? (
-              <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
             ) : (
-              <path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
             )}
           </svg>
         </button>
@@ -250,7 +250,7 @@ function Header() {
       {isSolid && <div aria-hidden="true" className="hairline" />}
 
       {open && (
-        <nav id="mobile-nav" aria-label="Main" className="border-b border-[var(--color-rule)] bg-[rgba(245,236,217,0.97)] lg:hidden">
+        <nav id="mobile-nav" aria-label="Main" className="border-b-[1.5px] border-[var(--color-rule)] bg-[rgba(245,236,217,0.97)] lg:hidden">
           <Container width="wide">
             <ul className="pb-3">
               {(NAV as readonly NavEntry[]).flatMap((item) =>
@@ -374,7 +374,7 @@ function Footer() {
               <ul className="mt-5 space-y-4">
                 <li>
                   <ShowSiteLink className="link-draw inline-flex font-body text-[14.5px] font-bold" />
-                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-95">
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[15px] leading-relaxed opacity-95">
                     Episodes, characters and activities.
                   </p>
                 </li>
@@ -383,7 +383,7 @@ function Footer() {
                     <IconMail size={15} />
                     Partnership enquiries
                   </TextLink>
-                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-95">
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[15px] leading-relaxed opacity-95">
                     Distribution, investment and press.
                   </p>
                 </li>
@@ -393,7 +393,7 @@ function Footer() {
         </div>
 
         <div className="hairline mt-12 flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-body text-[12.5px] opacity-90">
+          <p className="font-body text-[14px] opacity-90">
             © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® and
             PupsPlayer™ are trade marks of CLÉ Family Media.
           </p>
@@ -404,7 +404,7 @@ function Footer() {
               ["/cookies", "Cookies"],
             ].map(([to, label]) => (
               <li key={to}>
-                <Link to={to} className="font-body text-[12.5px] opacity-90 hover:opacity-100">
+                <Link to={to} className="font-body text-[14px] opacity-90 hover:opacity-100">
                   {label}
                 </Link>
               </li>

@@ -109,7 +109,7 @@ function TopBar() {
       <PupsMark className="h-[max(16px,1.9em)] w-[max(16px,1.9em)] text-navy" />
       <span className={`${T.name} font-bold leading-none text-ink`}>PupsPlayer</span>
       <span
-        className={`${T.label} ml-auto inline-flex items-center gap-[0.45em] rounded-full border border-rule px-[0.9em] py-[0.45em] font-mono uppercase leading-none tracking-[0.12em] text-body`}
+        className={`${T.label} ml-auto inline-flex items-center gap-[0.45em] rounded-full border-[1.5px] border-rule px-[0.9em] py-[0.45em] font-mono uppercase leading-none tracking-[0.12em] text-body`}
       >
         <IconLock className="h-[1.1em] w-[1.1em]" />
         Grown-ups
@@ -122,7 +122,7 @@ function TopBar() {
    tablist outside the device, so the product and the page agree. */
 function StageNav({ active }: { active: Stage }) {
   return (
-    <div className="mt-auto flex items-center justify-center gap-[1.8em] border-t border-rule pt-[1em]">
+    <div className="mt-auto flex items-center justify-center gap-[1.8em] border-t-[1.5px] border-rule pt-[1em]">
       {STAGES.map((s) => {
         const on = s.id === active;
         return (
@@ -134,7 +134,7 @@ function StageNav({ active }: { active: Stage }) {
           >
             <span
               aria-hidden="true"
-              className={`h-[0.6em] w-[0.6em] rounded-full ${on ? "bg-red" : "border border-current"}`}
+              className={`h-[0.6em] w-[0.6em] rounded-full ${on ? "bg-red" : "border-[1.5px] border-current"}`}
             />
             {s.title}
           </span>
@@ -170,7 +170,7 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
         <ScreenHeading title="Choose an episode" line="Nothing plays until someone picks it." />
         <ul className="grid grid-cols-2 gap-[0.85em]">
           {episodes.map((ep) => (
-            <li key={ep.n} className="overflow-hidden rounded-[0.9em] border border-rule bg-raised">
+            <li key={ep.n} className="overflow-hidden rounded-[0.9em] border-[1.5px] border-rule bg-raised">
               <Figure asset={ep.asset} rounded="rounded-none" sizes="(min-width: 1024px) 20vw, 42vw" />
               {/* Below a 384px container the caption stacks and drops the
                   episode number, so the title keeps the width it needs at
@@ -216,7 +216,7 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
             title="Time to move"
             line="A short movement or breathing prompt, before anything else plays."
           />
-          <div className="mt-[1.2em] flex items-center gap-[0.8em] rounded-[0.9em] border border-rule bg-raised p-[0.6em]">
+          <div className="mt-[1.2em] flex items-center gap-[0.8em] rounded-[0.9em] border-[1.5px] border-rule bg-raised p-[0.6em]">
             <div className="w-[max(56px,5.2em)] shrink-0 overflow-hidden rounded-[0.5em]">
               <Figure asset={episode.asset} rounded="rounded-none" sizes="120px" />
             </div>
@@ -258,7 +258,7 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
 function Sheet({ kind, label }: { kind: "colour" | "puzzle" | "activity"; label: string }) {
   return (
     <li>
-      <div className="flex aspect-[1/1.3] flex-col gap-[0.45em] rounded-[0.5em] border border-rule bg-raised p-[0.7em]">
+      <div className="flex aspect-[1/1.3] flex-col gap-[0.45em] rounded-[0.5em] border-[1.5px] border-rule bg-raised p-[0.7em]">
         <span className="h-[0.32em] w-[55%] rounded-full bg-ink/70" aria-hidden="true" />
         {kind === "colour" && (
           <span
@@ -277,7 +277,7 @@ function Sheet({ kind, label }: { kind: "colour" | "puzzle" | "activity"; label:
         {kind === "puzzle" && (
           <span aria-hidden="true" className="mt-[0.6em] grid grid-cols-3 gap-[0.3em]">
             {Array.from({ length: 9 }).map((_, i) => (
-              <span key={i} className="aspect-square rounded-[0.15em] border border-body/55" />
+              <span key={i} className="aspect-square rounded-[0.15em] border-[1.5px] border-body/55" />
             ))}
           </span>
         )}
@@ -376,7 +376,7 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
               <span className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className={`h-2.5 w-2.5 shrink-0 rounded-full border border-red transition-colors duration-300 ${
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full border-[1.5px] border-red transition-colors duration-300 ${
                     on ? "bg-red" : "bg-transparent"
                   }`}
                 />

@@ -167,13 +167,13 @@ export default function EthicalAi() {
         <Container width="wide">
           <Settle className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
             <h2 id="line-h" className="t-h2 max-w-[18ch]">Five phases, and one place for the tools</h2>
-            <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[12px] uppercase tracking-[0.14em] text-body" aria-label="Key">
+            <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[14px] uppercase tracking-[0.14em] text-body" aria-label="Key">
               <li className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border border-rule bg-raised" />
+                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border-[1.5px] border-rule bg-raised" />
                 Person decides
               </li>
               <li className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-[3px] border border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))]" />
+                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-[3px] border-[1.5px] border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))]" />
                 Tool assists
               </li>
               <li className="flex items-center gap-2.5">
@@ -218,18 +218,18 @@ export default function EthicalAi() {
             </h2>
             <div className="mt-10 grid gap-9 md:grid-cols-2 md:gap-0 xl:mt-0">
               <div className="md:pr-12">
-                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Not handmade</p>
+                <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">Not handmade</p>
                 <p className="t-lead mt-4 text-ink">Calling this work handmade would be untrue.</p>
                 <p className="t-body mt-4 text-body">
                   Runway and ElevenLabs sit inside final production, and this page says so by name.
                 </p>
               </div>
-              {/* border-t explicitly, not the `.hairline` class: `.hairline` is
+              {/* border-t-[1.5px] explicitly, not the `.hairline` class: `.hairline` is
                   author CSS later in the utilities layer than Tailwind's own
                   `md:border-t-0`, so the stacked rule survived the breakpoint
                   and drew a stray stub over the second column on desktop. */}
-              <div className="border-t border-t-rule pt-9 md:border-t-0 md:border-l md:border-l-rule md:pl-12 md:pt-0">
-                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">Not AI-generated</p>
+              <div className="border-t-[1.5px] border-t-rule pt-9 md:border-t-0 md:border-l md:border-l-rule md:pl-12 md:pt-0">
+                <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">Not AI-generated</p>
                 <p className="t-lead mt-4 text-ink">Calling it AI-generated would erase the people who actually make the decisions.</p>
                 <p className="t-body mt-4 text-body">
                   The story, the script, the direction, every review and the final approval are theirs.

@@ -168,7 +168,7 @@ function Spread({
    column, the note is a full width line above the prose, and a 26ch cap there
    set a four word column down the left of a phone. */
 function Note({ children, className = "" }: { className?: string; children: ReactNode }) {
-  return <p className={`font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
+  return <p className={`font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
 }
 
 export default function Story() {
@@ -290,7 +290,7 @@ export default function Story() {
                 world, it was drawn for this project in graphics.tsx and never
                 mounted anywhere, and it is the only ornament on this page.
                 It grows beside the line rather than sitting on top of it. */}
-            <blockquote className="grid items-center gap-7 border-y border-rule py-10 sm:py-14 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-12">
+            <blockquote className="grid items-center gap-7 border-y-[1.5px] border-rule py-10 sm:py-14 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-12">
               <Bluebell size={132} className="story-bell hidden text-red-deep lg:block" />
               <p className="t-h1 max-w-[26ch] pl-[0.45em] font-display text-ink [text-indent:-0.45em]">
                 <span className="text-red-deep" aria-hidden="true">&ldquo;</span>
@@ -400,7 +400,7 @@ export default function Story() {
                     key={row.tag}
                     className="hairline grid grid-cols-1 gap-x-6 gap-y-0.5 py-3 first:border-t-0 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
                   >
-                    <span className="tnum font-mono text-[13px] leading-[1.7] tracking-[0.01em] text-muted">{row.tag}</span>
+                    <span className="tnum font-mono text-[14.5px] leading-[1.7] tracking-[0.01em] text-muted">{row.tag}</span>
                     <span className="text-[15.5px] leading-[1.6] text-ink">{row.line}</span>
                   </li>
                 ))}
@@ -445,7 +445,7 @@ export default function Story() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-[14.5px] font-semibold leading-tight text-ink">{p.name}</p>
-                        <Note className="mt-1 text-[12px]">{p.role}</Note>
+                        <Note className="mt-1 text-[14px]">{p.role}</Note>
                       </div>
                     </li>
                   ))}
@@ -462,7 +462,7 @@ export default function Story() {
                       higher up the same band. Body is 6.74:1 on the same
                       stop. The token's own note in index.css calls muted "the
                       floor", and this is where the floor gives way. */}
-                  <figcaption className="mt-2.5 pl-1 font-mono text-[13px] leading-[1.65] tracking-[0.02em] text-body">
+                  <figcaption className="mt-2.5 pl-1 font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-body">
                     Finn and Fia, with a hen. A frame from the series.
                   </figcaption>
                 </figure>
@@ -520,7 +520,7 @@ export default function Story() {
                 of prose here for a heading to track, and a sticky note beside a
                 600px film just slides about for no reason. */}
             <div className="lg:pt-12">
-              <p className="font-mono text-[13px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
+              <p className="font-mono text-[14.5px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
                 The film starts muted. Turn the sound on when you are ready to, and the captions
                 are there whether you do or not. Nothing on this site starts talking at you.
               </p>
@@ -592,7 +592,7 @@ export default function Story() {
               </div>
             </div>
 
-            <ul className="border-t border-edge-dark">
+            <ul className="border-t-[1.5px] border-edge-dark">
               {NEXT.map((n) => {
                 const inner = (
                   <>
@@ -607,7 +607,7 @@ export default function Story() {
                 );
                 const cls = "group flex items-start justify-between gap-6 py-5";
                 return (
-                  <li key={n.title} className="border-b border-edge-dark">
+                  <li key={n.title} className="border-b-[1.5px] border-edge-dark">
                     {n.to ? (
                       <Link to={n.to} className={cls}>{inner}</Link>
                     ) : (

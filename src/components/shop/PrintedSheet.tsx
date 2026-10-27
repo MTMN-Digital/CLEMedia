@@ -126,7 +126,7 @@ export function PrintedSheet({
         <>
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-[3px] border border-rule"
+            className="absolute inset-0 rounded-[3px] border-[1.5px] border-rule"
             style={{
               transform: "translate(2.6%, 2.1%) rotate(1deg)",
               background: "color-mix(in srgb, var(--color-raised) 84%, var(--color-sunken))",
@@ -134,7 +134,7 @@ export function PrintedSheet({
           />
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-[3px] border border-rule"
+            className="absolute inset-0 rounded-[3px] border-[1.5px] border-rule"
             style={{
               transform: "translate(1.3%, 1%) rotate(0.45deg)",
               background: "color-mix(in srgb, var(--color-raised) 93%, var(--color-sunken))",
@@ -145,7 +145,7 @@ export function PrintedSheet({
 
       {/* The top sheet. Corners stay near-sharp: paper is not rounded. */}
       <div
-        className="relative h-full overflow-hidden rounded-[3px] border border-rule bg-raised"
+        className="relative h-full overflow-hidden rounded-[3px] border-[1.5px] border-rule bg-raised"
         style={{
           boxShadow:
             "inset 0 1px 0 rgba(255,255,255,0.9), inset -14px 0 26px -22px rgba(74,53,42,0.55)",
@@ -263,7 +263,7 @@ export function SheetBench({
             {CALLOUTS.map((c) => (
               <span
                 key={c.label}
-                className="absolute flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.1em] text-muted"
+                className="absolute flex items-center gap-2.5 font-mono text-[14px] uppercase tracking-[0.1em] text-muted"
                 style={{
                   top: c.top,
                   left: c.side === "left" ? 0 : undefined,
@@ -283,7 +283,7 @@ export function SheetBench({
       </div>
 
       {caption && (
-        <p className="mx-auto mt-6 max-w-[46ch] text-center font-mono text-[13px] leading-[1.65] text-muted">
+        <p className="mx-auto mt-6 max-w-[46ch] text-center font-mono text-[14.5px] leading-[1.65] text-muted">
           {caption}
         </p>
       )}

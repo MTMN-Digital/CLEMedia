@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Button, Container, Kicker, Lead, Section, TextLink } from "@/components/ui";
-import { IconArrow, IconDownload, IconExternal } from "@/components/icons";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconArrow, IconExternal, IconDownload } from "@/components/icons";
 import { Docket } from "@/components/shop/Docket";
 import { SITE } from "@/lib/site";
 
@@ -37,12 +37,12 @@ import { SITE } from "@/lib/site";
    Shop and media: it needs an API change, which is not this page's to make.
    ========================================================================== */
 
-type ErrorCode = "not_found" | "expired" | "exhausted" | "server_error";
+type ErrorCode = "exhausted" | "server_error" | "not_found" | "expired";
 
 type State =
   | { k: "loading" }
   | { k: "pending" }
-  | { k: "ready"; url: string; title: string; used: number; allowed: number; expiresAt?: string }
+  | { url: string; used: number; expiresAt?: string; k: "ready"; allowed: number; title: string }
   | { k: "error"; code: ErrorCode };
 
 const MESSAGES = {
@@ -187,7 +187,7 @@ export default function Download() {
                   will find it again is the right answer.
                 </p>
 
-                <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-rule pt-7">
+                <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t-[1.5px] border-rule pt-7">
                   <TextLink to="/shop">
                     Back to the shop
                     <IconArrow size={15} />

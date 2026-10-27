@@ -68,8 +68,9 @@ const RENDITIONS: Record<"mid" | "high" | "low", Rendition> = {
    chooser asked the WINDOW how wide the player is. On Story the player sits
    in a column about half that, and on the home hero the film runs behind a
    dark scrim with the headline over it, where 720p is indistinguishable.
-   So the caller now says how wide the thing actually is, and the hero caps
-   itself one step down. Re-encoding was tried first and is not the answer:
+   So the caller now says how wide the thing actually is. The hero used to cap
+   itself one step down; the client found 720p visibly soft full-bleed, so
+   since 2026-10-27 it takes 1080p behind an opening splash instead. Re-encoding was tried first and is not the answer:
    the film is grainy enough that AV1 at CRF 45 still landed at 7.9MB, no
    better than the h264 720p that already exists. */
 export function pickRendition(cssWidth?: number, cap?: "low" | "mid"): Rendition {
@@ -185,7 +186,7 @@ export function MissionVideo({
         <button
           type="button"
           onClick={turnSoundOn}
-          className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink/85 px-4 py-2 font-mono text-[12px] tracking-[0.12em] text-raised uppercase backdrop-blur-sm transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-raised"
+          className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink/85 px-4 py-2 font-mono text-[14px] tracking-[0.12em] text-raised uppercase backdrop-blur-sm transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-raised"
         >
           <SpeakerOff />
           Sound on
@@ -201,10 +202,10 @@ function SpeakerOff() {
       <path
         d="M8.5 2.5 4.8 5.5H2.5v5h2.3l3.7 3V2.5Z"
         stroke="currentColor"
-        strokeWidth="1.3"
+        strokeWidth="2.1"
         strokeLinejoin="round"
       />
-      <path d="m11.5 6 3 4m0-4-3 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="m11.5 6 3 4m0-4-3 4" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" />
     </svg>
   );
 }

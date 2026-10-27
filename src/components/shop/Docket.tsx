@@ -55,7 +55,7 @@ export function Docket({
           its descendants stops at the edge of the receipt. Every colour below
           is named outright except the eyebrow, which inherits, and which went
           cream on cream the first time this sat on the bench. */}
-      <div className="docket border border-t-0 border-rule bg-raised px-5 py-6 sm:px-7">
+      <div className="docket border-[1.5px] border-t-0 border-rule bg-raised px-5 py-6 sm:px-7">
         <p className="eyebrow">{label}</p>
 
         <dl className="mt-5 font-mono text-[14px] leading-[1.5]">
@@ -65,7 +65,7 @@ export function Docket({
               {/* The leader. A receipt lines its figures up with dots. */}
               <span
                 aria-hidden="true"
-                className="min-w-4 flex-1 translate-y-[-3px] border-b border-dotted border-edge"
+                className="min-w-4 flex-1 translate-y-[-3px] border-b-[1.5px] border-dotted border-edge"
               />
               <dd /* Not `shrink-0`: a product title is one of these values and a long
                    one pushed the row 26px past a 390 screen. It still takes its
@@ -77,7 +77,7 @@ export function Docket({
           ))}
         </dl>
 
-        {foot && <p className="mt-5 border-t border-rule pt-5 text-[13.5px] leading-[1.6] text-body">{foot}</p>}
+        {foot && <p className="mt-5 border-t-[1.5px] border-rule pt-5 text-[15px] leading-[1.6] text-body">{foot}</p>}
       </div>
     </div>
   );

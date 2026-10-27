@@ -81,7 +81,7 @@ function Paw({ x, y, r, o }: { o: number; r: number; x: number; y: number }) {
  */
 function MissingFrame() {
   return (
-    <div className="relative aspect-[16/9] w-full rounded-[6px] border border-dashed border-[rgba(246,240,226,0.34)]">
+    <div className="relative aspect-[16/9] w-full rounded-[6px] border-[1.5px] border-dashed border-[rgba(246,240,226,0.34)]">
       <svg
         viewBox="0 0 360 180"
         className="absolute inset-0 h-full w-full"
@@ -93,14 +93,14 @@ function MissingFrame() {
           <Paw key={i} x={p.x} y={p.y} r={p.r} o={0.46 - i * 0.042} />
         ))}
       </svg>
-      <p className="absolute left-3 top-3 font-mono text-[12px] uppercase tracking-[0.2em] text-[rgba(246,240,226,0.62)]">
+      <p className="absolute left-3 top-3 font-mono text-[14px] uppercase tracking-[0.2em] text-[rgba(246,240,226,0.62)]">
         404
       </p>
       {/* 0.6, not the 0.42 the edge print uses. The edge print is aria-hidden
           decoration on the margin of the stock; this is the one line that says
           what the picture means, so it is held to AA: 0.42 measures 3.75:1 on
           the stock and 0.6 measures 6.4:1. */}
-      <p className="absolute bottom-3 left-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[rgba(246,240,226,0.6)]">
+      <p className="absolute bottom-3 left-3 font-mono text-[12.5px] uppercase tracking-[0.18em] text-[rgba(246,240,226,0.6)]">
         Frame missing
       </p>
     </div>

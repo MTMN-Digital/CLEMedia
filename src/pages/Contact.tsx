@@ -401,7 +401,7 @@ export default function Contact() {
                     {/* One line, not four bullets of implementation detail. The
                         page where an investor writes to the company is not the
                         place to explain the honeypot. */}
-                    <p className="t-sm mt-7 border-t border-rule pt-5 text-body">
+                    <p className="t-sm mt-7 border-t-[1.5px] border-rule pt-5 text-body">
                       Your address is set as the reply-to, so a reply comes straight back to you.
                       We store what you send so we can answer it, and use it for nothing else.
                     </p>
@@ -411,7 +411,7 @@ export default function Contact() {
                         either, the privacy policy promises both, and the page
                         that invites investors to write is the worst place on
                         this site to be caught out. CONTENT-NEEDED.md. */}
-                    <dl className="mt-7 border-t border-rule pt-5 text-[13.5px] leading-relaxed text-body">
+                    <dl className="mt-7 border-t-[1.5px] border-rule pt-5 text-[15px] leading-relaxed text-body">
                       <div className="flex flex-wrap gap-x-2">
                         <dt className="font-semibold text-ink">Writing to:</dt>
                         <dd>CLÉ Family Media, an Irish company.</dd>

@@ -60,11 +60,11 @@ export function Feedback({ headingId }: { headingId: string }) {
       {QUOTES.length > 0 ? (
         <Settle as="ul" className="mt-14 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:mt-18 lg:gap-x-16">
           {QUOTES.map((q) => (
-            <li key={q.words.slice(0, 48)} className="border-t border-rule pt-7">
+            <li key={q.words.slice(0, 48)} className="border-t-[1.5px] border-rule pt-7">
               <blockquote className="t-lead max-w-[42ch] text-ink">
                 <p>{q.words}</p>
               </blockquote>
-              <p className="mt-5 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+              <p className="mt-5 font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">
                 {q.from}
               </p>
             </li>
@@ -73,9 +73,9 @@ export function Feedback({ headingId }: { headingId: string }) {
       ) : (
         /* The honest empty state, in the same voice the shop's empty shelf
            uses. A dashed edge says held open; a tinted panel says finished. */
-        <Settle className="mt-12 grid gap-6 border-t border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
-          <div className="rounded-[var(--radius-lg)] border border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
-            <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+        <Settle className="mt-12 grid gap-6 border-t-[1.5px] border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
+          <div className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
+            <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
               Parents and educators
             </p>
             <p className="t-body mt-4 max-w-[46ch] text-body">
@@ -84,8 +84,8 @@ export function Feedback({ headingId }: { headingId: string }) {
               person has agreed to.
             </p>
           </div>
-          <div className="rounded-[var(--radius-lg)] border border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
-            <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+          <div className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
+            <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
               Banteer workshop
             </p>
             <p className="t-body mt-4 max-w-[46ch] text-body">

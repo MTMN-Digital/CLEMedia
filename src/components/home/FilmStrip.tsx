@@ -126,7 +126,7 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
             onto the bench; the rule and the buttons were drawn in a hairline
             mixed for paper and vanished on it. All three now take the surface's
             own colour, so the strip works on either ground. */}
-        <p className="font-mono text-[12px] uppercase tracking-[0.18em]">
+        <p className="font-mono text-[14px] uppercase tracking-[0.18em]">
           {episodes.length} episodes
         </p>
         <span className="h-px flex-1 bg-current opacity-65" aria-hidden="true" />
@@ -141,12 +141,12 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
               /* 44px on a touch screen, 40 with a pointer. The rail is the
                  one thing on the home page a thumb has to work, and these
                  two are what it works it with. */
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-current/55 transition-opacity disabled:opacity-30 sm:h-10 sm:w-10"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-current/55 transition-opacity disabled:opacity-30 sm:h-10 sm:w-10"
             >
               <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
                 <path
                   d={d === -1 ? "M10 3L5 8l5 5" : "M6 3l5 5-5 5"}
-                  fill="none" stroke="currentColor" strokeWidth="1.7"
+                  fill="none" stroke="currentColor" strokeWidth="2.1"
                   strokeLinecap="round" strokeLinejoin="round"
                 />
               </svg>

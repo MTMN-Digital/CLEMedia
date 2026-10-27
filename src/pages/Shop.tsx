@@ -160,11 +160,11 @@ export default function Shop() {
               </div>
             </div>
 
-            <dl className="border-t border-rule">
+            <dl className="border-t-[1.5px] border-rule">
               {REFUSALS.map((r) => (
                 <div
                   key={r.title}
-                  className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
+                  className="grid grid-cols-1 gap-x-10 gap-y-2 border-b-[1.5px] border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
                 >
                   <dt className="text-[17px] font-semibold leading-snug text-ink">{r.title}</dt>
                   <dd>
@@ -173,7 +173,7 @@ export default function Shop() {
                         fill and this line is 12px. Left in its own case: a
                         file path uppercased is a file path that does not
                         exist. */}
-                    <p className="mt-2 font-mono text-[13px] leading-[1.5] text-body">{r.where}</p>
+                    <p className="mt-2 font-mono text-[14.5px] leading-[1.5] text-body">{r.where}</p>
                   </dd>
                 </div>
               ))}
@@ -192,7 +192,7 @@ export default function Shop() {
             <h2 id="shelf-h" className="t-h1">On the shelf</h2>
             {/* Four states. "Nothing on sale yet" is a claim about stock and
                 is only made once the catalogue has actually answered. */}
-            <p className="font-mono text-[13px] uppercase tracking-[0.12em] text-muted">
+            <p className="font-mono text-[14.5px] uppercase tracking-[0.12em] text-muted">
               {products.state === "ready"
                 ? `${products.data.length} ${products.data.length === 1 ? "file" : "files"}`
                 : products.state === "loading"
@@ -301,7 +301,7 @@ export default function Shop() {
               </div>
             </div>
 
-            <ul className="border-t border-edge-dark">
+            <ul className="border-t-[1.5px] border-edge-dark">
               {[
                 {
                   title: "Episodes and family activities",
@@ -332,7 +332,7 @@ export default function Shop() {
                 );
                 const cls = "group flex items-start justify-between gap-6 py-6 sm:py-7";
                 return (
-                  <li key={n.title} className="border-b border-edge-dark">
+                  <li key={n.title} className="border-b-[1.5px] border-edge-dark">
                     {n.to ? (
                       <Link to={n.to} className={cls}>{inner}</Link>
                     ) : (

@@ -134,11 +134,11 @@ export default function CaseStudy() {
               </p>
             </div>
 
-            <ol className="border-t border-rule">
+            <ol className="border-t-[1.5px] border-rule">
               {STEPS.map((s, i) => (
                 <li
                   key={s.title}
-                  className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
+                  className="grid grid-cols-1 gap-x-10 gap-y-2 border-b-[1.5px] border-rule py-7 sm:grid-cols-[11rem_minmax(0,1fr)]"
                 >
                   <h3 className="text-[17px] font-semibold leading-snug text-ink">
                     <span className="tnum mr-2 font-mono text-[14px] text-red-deep">{i + 1}</span>
@@ -221,13 +221,13 @@ export default function CaseStudy() {
                 instructions and a download button.
               </p>
             </div>
-            <div className="rounded-[var(--radius-md)] border border-dashed border-rule px-5 py-2 sm:px-7">
-              <p className="pt-5 font-mono text-[12px] uppercase tracking-[0.16em] text-body">
+            <div className="rounded-[var(--radius-md)] border-[1.5px] border-dashed border-rule px-5 py-2 sm:px-7">
+              <p className="pt-5 font-mono text-[14px] uppercase tracking-[0.16em] text-body">
                 None of the three has been supplied yet
               </p>
               <ul className="mt-1">
                 {MATERIALS.map((m) => (
-                  <li key={m.title} className="border-t border-rule-soft py-5 first:border-t-0 first:pt-4">
+                  <li key={m.title} className="border-t-[1.5px] border-rule-soft py-5 first:border-t-0 first:pt-4">
                     <h3 className="t-h3">{m.title}</h3>
                     <p className="t-body mt-1.5 max-w-[54ch] text-body">{m.coming}</p>
                   </li>
@@ -277,7 +277,7 @@ export default function CaseStudy() {
               </div>
             </div>
 
-            <dl className="border-t border-edge-dark">
+            <dl className="border-t-[1.5px] border-edge-dark">
               {[
                 { k: "What the form asks", v: "Your role and setting, the age and number of the children, how you rated the episode and the activity, and two open questions. The email address is optional." },
                 { k: "What it does not ask", v: "The name of any child, or anything that identifies one. The form does not ask for it and tells you not to include it." },
@@ -285,7 +285,7 @@ export default function CaseStudy() {
                 { k: "How long they are kept", v: "To be confirmed in the participant information." },
                 { k: "Having yours removed", v: "To be confirmed in the participant information." },
               ].map((r) => (
-                <div key={r.k} className="grid grid-cols-1 gap-x-8 gap-y-1 border-b border-edge-dark py-5 sm:grid-cols-[11rem_minmax(0,1fr)]">
+                <div key={r.k} className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-edge-dark py-5 sm:grid-cols-[11rem_minmax(0,1fr)]">
                   <dt className="text-[17px] font-semibold">{r.k}</dt>
                   <dd className="t-body max-w-[48ch]">{r.v}</dd>
                 </div>

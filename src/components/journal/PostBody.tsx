@@ -212,7 +212,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
                display face, with the marks hung in the margin. Not a box with
                a coloured left edge. */
             return (
-              <blockquote key={key} className="my-10 border-y border-rule py-8 sm:-mx-6 sm:my-14 sm:px-6 sm:py-10">
+              <blockquote key={key} className="my-10 border-y-[1.5px] border-rule py-8 sm:-mx-6 sm:my-14 sm:px-6 sm:py-10">
                 <p className="max-w-[26ch] pl-[0.45em] font-display text-[clamp(1.35rem,1.1rem+1vw,1.9rem)] leading-[1.18] text-ink [text-indent:-0.45em]">
                   <span className="text-red-deep" aria-hidden="true">
                     &ldquo;
@@ -255,7 +255,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
               </ol>
             );
           case "rule":
-            return <hr key={key} className="my-10 border-0 border-t border-rule sm:my-14" />;
+            return <hr key={key} className="my-10 border-0 border-t-[1.5px] border-rule sm:my-14" />;
           case "img":
             return (
               <figure key={key} className="my-10 sm:-mx-6 sm:my-14">
@@ -267,7 +267,7 @@ export function PostBody({ body, className = "" }: { body: string; className?: s
                   className="w-full rounded-[var(--radius-md)]"
                 />
                 {b.alt && (
-                  <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] text-muted">
+                  <figcaption className="mt-3 font-mono text-[14.5px] leading-[1.6] text-muted">
                     {b.alt}
                   </figcaption>
                 )}

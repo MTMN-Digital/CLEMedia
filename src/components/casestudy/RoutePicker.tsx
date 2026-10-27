@@ -88,9 +88,9 @@ export function RoutePicker({ route, onChange }: { route: RouteId; onChange: (r:
           <h3 className="t-h2 max-w-[14ch]">{current.framework}</h3>
           <p className="t-body mt-5 max-w-[52ch] text-body">{current.summary}</p>
           <p className="field-label mt-7">{current.themesLabel}</p>
-          <ul className="border-t border-rule">
+          <ul className="border-t-[1.5px] border-rule">
             {current.themes.map((t) => (
-              <li key={t} className="border-b border-rule py-3 text-[16px] text-ink">{t}</li>
+              <li key={t} className="border-b-[1.5px] border-rule py-3 text-[16px] text-ink">{t}</li>
             ))}
           </ul>
         </div>

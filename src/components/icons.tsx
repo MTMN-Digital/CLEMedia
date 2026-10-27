@@ -17,7 +17,7 @@ function Svg({ size = 24, children, ...rest }: IconProps) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -205,7 +205,7 @@ export const IconHands = (p: IconProps) => (
 );
 
 export const IconQuote = (p: IconProps) => (
-  <Svg {...p} strokeWidth={1.4}>
+  <Svg {...p} strokeWidth={1.8}>
     <path d="M9.2 6.5C6.3 7.8 4.5 10.3 4.5 13.4c0 2.4 1.4 4.1 3.4 4.1 1.8 0 3.1-1.3 3.1-3 0-1.8-1.2-3-2.9-3h-.5c.2-1.6 1.3-3 3-3.9z" />
     <path d="M19 6.5c-2.9 1.3-4.7 3.8-4.7 6.9 0 2.4 1.4 4.1 3.4 4.1 1.8 0 3.1-1.3 3.1-3 0-1.8-1.2-3-2.9-3h-.5c.2-1.6 1.3-3 3-3.9z" />
   </Svg>

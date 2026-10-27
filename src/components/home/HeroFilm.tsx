@@ -40,10 +40,22 @@ import { pickRendition } from "@/components/MissionVideo";
    the scrim is measured, not guessed: see `.film-scrim` in index.css.
    ========================================================================== */
 
+/* THE SPLASH, from 2026-10-27. The client would rather see the logo for a
+   moment than the film arriving soft, so the hero now asks for the 1080p file
+   on any wide screen and the lockup covers the page until the browser says it
+   can play through. Held for at least SPLASH_MIN so it reads as an opening
+   rather than a flicker, and never longer than SPLASH_MAX, because a slow
+   connection must still get a page. Once per visit: a module flag, so coming
+   back to home inside the app does not replay it. */
+const SPLASH_MIN = 1200;
+const SPLASH_MAX = 4000;
+let splashShown = false;
+
 export function HeroFilm() {
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [sound, setSound] = useState(false);
+  const [splash, setSplash] = useState<"leaving" | "on" | "off">(splashShown ? "off" : "on");
 
   /* A film nobody is looking at should not be decoding.
 
@@ -69,7 +81,7 @@ export function HeroFilm() {
     /* Both files, not one. See the note in MissionVideo: on Linux, Chromium
        based browsers that do not license H.264 cannot decode the mp4 at all,
        and the symptom is indistinguishable from a blocked autoplay. */
-    rendition: pickRendition(undefined, "mid"),
+    rendition: pickRendition(),
     /* Never start by itself for a reader who asked for stillness. */
     autoplay: !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   }));
@@ -90,6 +102,27 @@ export function HeroFilm() {
     window.addEventListener("resize", set);
     return () => window.removeEventListener("resize", set);
   }, []);
+
+  useEffect(() => {
+    if (splash !== "on") return;
+    const el = video.current;
+    const opened = performance.now();
+    let done = false;
+    const lift = () => {
+      if (done) return;
+      done = true;
+      splashShown = true;
+      const wait = Math.max(0, SPLASH_MIN - (performance.now() - opened));
+      window.setTimeout(() => setSplash("leaving"), wait);
+    };
+    const cap = window.setTimeout(lift, SPLASH_MAX);
+    if (el && el.readyState >= 4) lift();
+    el?.addEventListener("canplaythrough", lift);
+    return () => {
+      window.clearTimeout(cap);
+      el?.removeEventListener("canplaythrough", lift);
+    };
+  }, [splash]);
 
   useEffect(() => {
     const el = video.current;
@@ -241,7 +274,16 @@ export function HeroFilm() {
   };
 
   return (
-    <section className="film-hero" aria-labelledby="hero-h">
+    <section className={`film-hero${splash === "on" ? " is-waiting" : ""}`} aria-labelledby="hero-h">
+      {splash !== "off" && (
+        <div
+          aria-hidden="true"
+          className={`film-splash${splash === "leaving" ? " is-leaving" : ""}`}
+          onTransitionEnd={() => setSplash("off")}
+        >
+          <img src="/brand/mark-lockup.webp" alt="" width={589} height={591} />
+        </div>
+      )}
       <div className="film-frame">
         {/* The stage is the picture and the things that sit on the picture.
             The copy is a sibling, not a child, because on a phone it leaves

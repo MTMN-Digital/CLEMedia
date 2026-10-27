@@ -202,7 +202,7 @@ export default function ShopProduct() {
 
       <Section pad={["normal", "tight"]}>
         <Container width="wide">
-          <p className="flex flex-wrap items-center gap-x-2 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+          <p className="flex flex-wrap items-center gap-x-2 font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">
             <TextLink to="/shop">Shop</TextLink>
             <span aria-hidden="true">/</span>
             <span className="text-ink">{p.title}</span>
@@ -225,7 +225,7 @@ export default function ShopProduct() {
                 ) : undefined}
               </SheetBench>
               {!p.thumbnail && (
-                <p className="mt-4 text-center font-mono text-[13px] text-muted">
+                <p className="mt-4 text-center font-mono text-[14.5px] text-muted">
                   No artwork has been uploaded for this file yet.
                 </p>
               )}
@@ -234,7 +234,7 @@ export default function ShopProduct() {
             {/* ─── The decision. ─── */}
             <div>
               {cancelled && (
-                <p className="mb-8 border border-rule bg-raised px-5 py-4 text-[15.5px] leading-[1.6] text-ink">
+                <p className="mb-8 border-[1.5px] border-rule bg-raised px-5 py-4 text-[15.5px] leading-[1.6] text-ink">
                   Checkout was cancelled and nothing was charged. The file is still here whenever
                   you want it.
                 </p>

@@ -346,17 +346,17 @@ body > * { position: relative; z-index: 1; }
   .t-sm      { font-size: 0.9375rem; }
   .tnum      { font-variant-numeric: tabular-nums; }
 
-  /* A smaller eyebrow, for a role line under a name. It was `!text-[11px]`
+  /* A smaller eyebrow, for a role line under a name. It was `!text-[13px]`
      bolted onto `.eyebrow` in six places. */
-  .eyebrow-sm { font-size: 12px; }
-  .eyebrow-xs { font-size: 11px; letter-spacing: 0.16em; }
+  .eyebrow-sm { font-size: 14px; }
+  .eyebrow-xs { font-size: 13px; letter-spacing: 0.16em; }
 
   /* The eyebrow. Mono, tracked, uppercase, and never numbered: `01 / SECTION`
      was retired house-wide on 2026-09-03 as a top-tier AI tell. Plain
      functional language, at most one per two sections. */
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-red-deep);
@@ -368,7 +368,7 @@ body > * { position: relative; z-index: 1; }
      washed-out area; the edge is what makes a card a card. */
   .card {
     background-image: linear-gradient(160deg, rgba(253, 248, 237, 0.95), rgba(250, 243, 229, 0.82));
-    border: 1px solid var(--color-rule);
+    border: 1.5px solid var(--color-rule);
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.85) inset,
       0 18px 36px -26px rgba(60, 50, 28, 0.32),
@@ -402,14 +402,14 @@ body > * { position: relative; z-index: 1; }
      being another sheet of the same white. */
   .tile {
     background: rgba(236, 223, 198, 0.75);
-    border: 1px solid var(--color-rule-soft);
+    border: 1.5px solid var(--color-rule-soft);
   }
   /* A well sits BELOW the ground. */
   .well {
     background: var(--color-sunken);
     box-shadow: inset 0 2px 6px rgba(60, 50, 28, 0.09);
   }
-  .hairline { border-top: 1px solid var(--color-rule); }
+  .hairline { border-top: 1.5px solid var(--color-rule); }
   /* MEASURED 2026-10-27: 1.08:1. `--color-rule` is a brown, and on the navy
      close, the bench and the grove a brown line is not a quiet line, it is no
      line. Every dark surface gets the cream rule instead. */
@@ -444,7 +444,7 @@ body > * { position: relative; z-index: 1; }
     /* 0.62, not 0.26. A field's boundary is the thing that says a field is
        there, so it is one of the few lines on this site that 1.4.11 actually
        covers; at 0.26 it painted at about 1.6:1. */
-    border: 1px solid var(--color-edge);
+    border: 2px solid var(--color-edge);
     border-radius: var(--radius-sm);
     padding: 0.875rem 1rem;
     font: inherit;
@@ -476,7 +476,7 @@ body > * { position: relative; z-index: 1; }
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    border: 1px solid rgba(74, 53, 42, 0.26);
+    border: 2px solid rgba(74, 53, 42, 0.26);
     border-radius: var(--radius-pill);
     background: var(--color-raised);
     padding: 0.6rem 1.05rem;
@@ -595,7 +595,7 @@ body > * { position: relative; z-index: 1; }
      two run together into one navy slab a thousand pixels tall with the
      wordmark floating somewhere in the middle of it. One hairline is enough to
      say they are two things. Against cream, at 14%, it is invisible. */
-  footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.3); }
+  footer.deep { border-top: 1.5px solid rgba(253, 248, 237, 0.3); }
   .deep h1, .deep h2, .deep h3, .deep h4,
   .bench h1, .bench h2, .bench h3, .bench h4 { color: #fdf8ed; }
   .deep .eyebrow { color: rgba(253, 248, 237, 0.9); }
@@ -655,7 +655,7 @@ body > * { position: relative; z-index: 1; }
   .btn-quiet {
     background: transparent;
     /* The edge IS the button: there is no fill to see it by. */
-    border: 1px solid var(--color-edge);
+    border: 2px solid var(--color-edge);
     color: var(--color-ink);
   }
   .btn-quiet:hover { border-color: rgba(74, 53, 42, 0.82); }
@@ -895,7 +895,7 @@ body > * { position: relative; z-index: 1; }
    margin; this carries the company's. Repeating-linear so the count adapts to
    the width for free, exactly as the sprockets do. */
 .edge-print {
-  font-size: 9.5px;
+  font-size: 12px;
   letter-spacing: 0.34em;
   /* 0.42 -> 0.55 -> 0.72. Real edge print is faint, but this is 9.5px type,
      the smallest on the site, and the client's reading was that the small
@@ -1005,7 +1005,7 @@ body > * { position: relative; z-index: 1; }
   background: var(--color-sunken);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--color-body) 18%, transparent);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.16em;
   color: var(--color-body);
 }
@@ -1121,6 +1121,33 @@ body > * { position: relative; z-index: 1; }
    studio set that used to be here is in scripts/render-hero-plate.py and still
    renders; the page simply does not load it any more.
 --------------------------------------------------------------------------- */
+/* The opening lockup. See SPLASH in HeroFilm. Navy because the felted mark
+   is lit for navy everywhere else it appears. */
+.film-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--color-navy);
+  transition: opacity 0.7s var(--ease-out), visibility 0s linear 0.7s;
+}
+.film-splash img {
+  width: clamp(160px, 22vw, 280px);
+  height: auto;
+  animation: splash-in 0.9s var(--ease-out) both;
+}
+.film-splash.is-leaving { opacity: 0; visibility: hidden; }
+@keyframes splash-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
+/* The headline's entrance waits for the splash, or it plays out unseen. */
+.film-hero.is-waiting .words-in .word { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .film-splash { transition: none; }
+  .film-splash img { animation: none; }
+}
+
 .film-hero {
   position: relative;
   /* 16px at 1440, which is what the reference uses: the frame is very nearly
@@ -1266,7 +1293,7 @@ body > * { position: relative; z-index: 1; }
   grid-area: 1 / 1;
   align-self: start;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -1335,7 +1362,7 @@ body > * { position: relative; z-index: 1; }
 
 .film-controls { display: flex; align-items: center; gap: 0.5rem; }
 .film-btn {
-  border: 1px solid rgba(253, 248, 237, 0.58);
+  border: 2px solid rgba(253, 248, 237, 0.58);
   border-radius: 999px;
   padding: 0.55rem 1.05rem;
   /* 0.72, not 0.52. These sit on a film that runs from a dark wood to a nearly
@@ -1346,7 +1373,7 @@ body > * { position: relative; z-index: 1; }
   backdrop-filter: blur(6px);
   color: var(--color-raised);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1358,7 +1385,7 @@ body > * { position: relative; z-index: 1; }
   place-items: center;
   width: 2.35rem;
   height: 2.35rem;
-  border: 1px solid rgba(253, 248, 237, 0.58);
+  border: 2px solid rgba(253, 248, 237, 0.58);
   border-radius: 999px;
   background: rgba(14, 11, 9, 0.72);
   backdrop-filter: blur(6px);
@@ -1453,7 +1480,7 @@ body > * { position: relative; z-index: 1; }
 .notasked {
   max-width: 30rem;
   padding: clamp(1.25rem, 3vw, 1.75rem);
-  border: 1px solid var(--color-rule);
+  border: 1.5px solid var(--color-rule);
   border-radius: var(--radius-md);
   background: var(--color-raised);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset,
@@ -1462,7 +1489,7 @@ body > * { position: relative; z-index: 1; }
 .notasked__head,
 .notasked__foot {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1475,18 +1502,18 @@ body > * { position: relative; z-index: 1; }
   line-height: 1.5;
   margin-top: 1.1rem;
   padding-top: 0.9rem;
-  border-top: 1px solid var(--color-rule);
+  border-top: 1.5px solid var(--color-rule);
   color: var(--color-body);
 }
 .notasked__fields { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.7rem; }
 .notasked__fields > li { position: relative; display: grid; gap: 0.3rem; }
-.notasked__label { font-size: 13.5px; color: var(--color-body); }
+.notasked__label { font-size: 15px; color: var(--color-body); }
 /* A struck field is spent: its label goes quiet, but never below the muted
    floor, because it is still text somebody reads. */
 .notasked__fields > li:not(.notasked__kept) .notasked__label { color: var(--color-muted); }
 .notasked__box {
   height: 30px;
-  border: 1px solid var(--color-rule);
+  border: 1.5px solid var(--color-rule);
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--color-sunken) 34%, transparent);
 }
@@ -1533,7 +1560,7 @@ body > * { position: relative; z-index: 1; }
 }
 .theline__side {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1571,7 +1598,7 @@ body > * { position: relative; z-index: 1; }
 .theline__below strong {
   display: block;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);

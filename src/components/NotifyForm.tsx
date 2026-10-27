@@ -65,7 +65,7 @@ export function NotifyForm({ cta, icon, done }: { done: string; cta: string; ico
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="w-full rounded-full border border-white/50 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/60"
+          className="w-full rounded-full border-[1.5px] border-white/50 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/60"
         />
       </div>
       <Button type="submit" disabled={busy}>

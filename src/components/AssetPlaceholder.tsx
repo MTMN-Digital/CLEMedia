@@ -46,10 +46,10 @@ export function AssetPlaceholder({
         style={{ backgroundImage: "repeating-linear-gradient(45deg, #1A1614 0 1px, transparent 1px 11px)" }}
       />
       <div className="relative mx-4 max-w-[28ch] px-5 py-4 text-center">
-        <p className="font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-ink/70">
+        <p className="font-body text-[13px] font-semibold uppercase tracking-[0.18em] text-ink/70">
           Image needed
         </p>
-        <p className="mt-2 font-body text-[13.5px] font-semibold leading-snug text-ink">{label}</p>
+        <p className="mt-2 font-body text-[15px] font-semibold leading-snug text-ink">{label}</p>
         {/* `/70` on the source line below, not `/55`. At 55 percent it
             composited to 3.45:1 on the clay fill, under AA, and it had never
             been measured because until 2026-10-24 no page on this site
@@ -59,7 +59,7 @@ export function AssetPlaceholder({
             the same fill, and the hierarchy against the line above it is
             carried by the weight, which is what was doing the work anyway. */}
         {source && (
-          <p className="mt-1.5 font-body text-[11px] uppercase tracking-[0.14em] text-ink/70">{source}</p>
+          <p className="mt-1.5 font-body text-[13px] uppercase tracking-[0.14em] text-ink/70">{source}</p>
         )}
       </div>
     </div>

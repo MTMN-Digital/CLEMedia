@@ -274,11 +274,11 @@ function Contents({
               href={`#${id}`}
               onClick={onPick}
               aria-current={on ? "true" : undefined}
-              className={`grid grid-cols-[1.35rem_minmax(0,1fr)] items-baseline gap-x-2 py-[0.3rem] text-[13.5px] leading-snug transition-colors ${
+              className={`grid grid-cols-[1.35rem_minmax(0,1fr)] items-baseline gap-x-2 py-[0.3rem] text-[15px] leading-snug transition-colors ${
                 on ? "font-semibold text-ink" : "text-body hover:text-ink"
               }`}
             >
-              <span className={`tnum font-mono text-[11.5px] ${on ? "text-red-deep" : "text-muted"}`}>
+              <span className={`tnum font-mono text-[13.5px] ${on ? "text-red-deep" : "text-muted"}`}>
                 {i + 1}
               </span>
               <span>{s.h}</span>
@@ -295,14 +295,14 @@ function Contents({
 function MobileContents({ sections, active }: { sections: { h: string }[]; active: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-y border-rule lg:hidden">
+    <div className="border-y-[1.5px] border-rule lg:hidden">
       <div>
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-controls="legal-contents"
-          className="flex w-full items-center justify-between gap-4 py-3.5 text-left font-mono text-[13px] uppercase tracking-[0.14em] text-ink"
+          className="flex w-full items-center justify-between gap-4 py-3.5 text-left font-mono text-[14.5px] uppercase tracking-[0.14em] text-ink"
         >
           Contents
           <span className="flex items-center gap-3">
@@ -392,7 +392,7 @@ export default function Legal({ doc }: { doc: DocId }) {
               <h1 className="t-h1 max-w-[16ch]">{d.title}</h1>
               <p className="t-lead mt-6 max-w-[56ch] text-body">{d.intro}</p>
             </div>
-            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 font-mono text-[13px] leading-relaxed lg:pb-2 lg:text-right">
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 font-mono text-[14.5px] leading-relaxed lg:pb-2 lg:text-right">
               <dt className="text-muted">Last updated</dt>
               <dd className="tnum text-ink lg:text-right">{updated}</dd>
               <dt className="text-muted">Status</dt>
@@ -431,7 +431,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                     key={id}
                     to={`/${id}`}
                     aria-current={on ? "page" : undefined}
-                    className={`rounded-t-[7px] px-4 font-mono text-[13px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
+                    className={`rounded-t-[7px] px-4 font-mono text-[14.5px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
                       on
                         ? "bg-raised pb-3 pt-2.5 text-ink"
                         : "mt-1 bg-sunken pb-3 pt-2 text-body hover:text-ink"
@@ -449,7 +449,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                     disclosure above it on a phone, where a sticky rail would
                     eat the screen the document needs. */}
                 <div className="lg:sticky lg:top-28 lg:self-start">
-                  <p className="hidden font-mono text-[12px] uppercase tracking-[0.14em] text-muted lg:block">
+                  <p className="hidden font-mono text-[14px] uppercase tracking-[0.14em] text-muted lg:block">
                     Contents
                   </p>
                   <div className="mt-4 hidden lg:block">
@@ -465,8 +465,8 @@ export default function Legal({ doc }: { doc: DocId }) {
                       house's own anti-pattern is the card with a coloured left
                       edge, and this is a fact about the document rather than a
                       warning about it. */}
-                  <div className="border-y border-rule py-5">
-                    <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
+                  <div className="border-y-[1.5px] border-rule py-5">
+                    <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
                       Who you are dealing with
                     </p>
                     <p className="mt-2.5 text-[15px] leading-relaxed text-ink">
@@ -503,7 +503,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                     </section>
                   ))}
 
-                  <p className="mt-12 border-t border-rule pt-5 font-mono text-[13px] text-muted">
+                  <p className="mt-12 border-t-[1.5px] border-rule pt-5 font-mono text-[14.5px] text-muted">
                     {d.title}. Last updated {updated}.
                   </p>
                 </div>
@@ -539,7 +539,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                       )}
                     </span>
                     <span className="t-body max-w-[52ch] text-body">{o.description}</span>
-                    <span className="hidden items-center gap-2 font-mono text-[13px] text-muted sm:flex sm:justify-end">
+                    <span className="hidden items-center gap-2 font-mono text-[14.5px] text-muted sm:flex sm:justify-end">
                       {here ? (
                         "You are reading this"
                       ) : (
@@ -549,7 +549,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                       )}
                     </span>
                     {here && (
-                      <span className="font-mono text-[13px] text-muted sm:hidden">
+                      <span className="font-mono text-[14.5px] text-muted sm:hidden">
                         You are reading this
                       </span>
                     )}

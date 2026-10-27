@@ -29,7 +29,7 @@
 export function Bluebell({ size = 40, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size * 1.6} viewBox="0 0 40 64" className={className} aria-hidden="true"
-      fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path pathLength="1" d="M20 62V20" />
       <path pathLength="1" d="M20 26c-6 0-9-3-10-8 5-1 9 2 10 8z" fill="currentColor" fillOpacity="0.16" />
       <path pathLength="1" d="M20 34c6 0 9-3 10-8-5-1-9 2-10 8z" fill="currentColor" fillOpacity="0.16" />

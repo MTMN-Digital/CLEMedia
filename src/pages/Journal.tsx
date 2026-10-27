@@ -63,7 +63,7 @@ export default function Journal() {
                 stopped doing that: stacked, each half has the whole sheet, so
                 the smallest type on the site was buying width nothing needed.
                 The side by side rail keeps the 11px it was set at. */}
-            <div className="flex flex-col gap-1.5 font-mono text-[11.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[12px]">
+            <div className="flex flex-col gap-1.5 font-mono text-[13.5px] uppercase tracking-[0.18em] text-body sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:text-[14px]">
               <span>The journal of CL&Eacute; Family Media</span>
               <span className="tnum shrink-0 sm:text-right">
                 {posts.length > 0
@@ -82,8 +82,8 @@ export default function Journal() {
             >
               Notes from the studio
             </h1>
-            <div className="mt-8 grid gap-6 border-t border-rule pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
-              <p className="font-mono text-[13px] uppercase tracking-[0.16em] text-body">
+            <div className="mt-8 grid gap-6 border-t-[1.5px] border-rule pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
+              <p className="font-mono text-[14.5px] uppercase tracking-[0.16em] text-body">
                 Four strands. One piece a week, once we start. Free to read.
               </p>
               <p className="t-lead max-w-[44ch] text-ink">
@@ -158,14 +158,14 @@ export default function Journal() {
             <h2 id="published-h" className="t-h2">
               Published
             </h2>
-            <Settle as="ol" className="mt-8 border-t border-rule">
+            <Settle as="ol" className="mt-8 border-t-[1.5px] border-rule">
               {posts.map((p) => (
-                <li key={p.id} className="border-b border-rule">
+                <li key={p.id} className="border-b-[1.5px] border-rule">
                   <Link
                     to={`/journal/${p.slug}`}
                     className="group grid grid-cols-1 gap-x-10 gap-y-2 py-7 sm:py-8 lg:grid-cols-[10rem_minmax(0,1fr)_2rem]"
                   >
-                    <span className="font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+                    <span className="font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">
                       <span className="tnum block">{formatDate(p.published_at) ?? ""}</span>
                       <span className="mt-1 block text-red-deep">
                         {strandName(p.category_id) ?? ""}
@@ -246,11 +246,11 @@ export default function Journal() {
               </div>
             </div>
 
-            <ul className="border-t border-edge-dark">
+            <ul className="border-t-[1.5px] border-edge-dark">
               {RULES.map((r) => (
                 <li
                   key={r.title}
-                  className="grid gap-x-10 gap-y-2 border-b border-edge-dark py-6 sm:py-7 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
+                  className="grid gap-x-10 gap-y-2 border-b-[1.5px] border-edge-dark py-6 sm:py-7 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
                 >
                   <h3 className="text-[17px] font-semibold">{r.title}</h3>
                   <p className="t-body max-w-[46ch] opacity-85">{r.line}</p>

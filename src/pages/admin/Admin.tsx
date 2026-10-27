@@ -36,7 +36,7 @@ function Login() {
         <h1 className="mt-1 font-display text-[28px] text-ink">Sign in</h1>
 
         {!isSupabaseConfigured && (
-          <p className="glass-warm mt-6 rounded-[var(--radius-card)] p-4 text-[13.5px] text-ink">
+          <p className="glass-warm mt-6 rounded-[var(--radius-card)] p-4 text-[15px] text-ink">
             Supabase isn't configured in this environment yet, so sign-in is unavailable. Add
             <code className="mx-1">VITE_SUPABASE_URL</code> and
             <code className="mx-1">VITE_SUPABASE_ANON_KEY</code> to enable it.
@@ -45,18 +45,18 @@ function Login() {
 
         <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <div>
-            <label htmlFor="admin-email" className="block text-[13.5px] font-medium text-ink">Email</label>
+            <label htmlFor="admin-email" className="block text-[15px] font-medium text-ink">Email</label>
             <input id="admin-email" type="email" required autoComplete="username" value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="glass mt-1.5 w-full rounded-[var(--radius-sm)] px-4 py-3 text-[16px] text-ink" />
           </div>
           <div>
-            <label htmlFor="admin-password" className="block text-[13.5px] font-medium text-ink">Password</label>
+            <label htmlFor="admin-password" className="block text-[15px] font-medium text-ink">Password</label>
             <input id="admin-password" type="password" required autoComplete="current-password" value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="glass mt-1.5 w-full rounded-[var(--radius-sm)] px-4 py-3 text-[16px] text-ink" />
           </div>
-          {error && <p role="alert" className="text-[13.5px] text-red-deep">{error}</p>}
+          {error && <p role="alert" className="text-[15px] text-red-deep">{error}</p>}
           <button type="submit" disabled={busy || !isSupabaseConfigured}
             className="w-full rounded-full bg-red-fill px-6 py-3 text-[15px] font-semibold text-paper disabled:opacity-60">
             {busy ? "Signing in…" : "Sign in"}
@@ -70,13 +70,13 @@ function Login() {
 function Dashboard({ email, onSignOut }: { onSignOut: () => void; email: string }) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-8">
-      <header className="flex flex-wrap items-center gap-3 border-b border-hairline pb-5">
+      <header className="flex flex-wrap items-center gap-3 border-b-[1.5px] border-hairline pb-5">
         <div>
           <p className="font-display text-[20px] text-ink">Site admin</p>
           <p className="text-[14px] text-deep">{email}</p>
         </div>
         <button onClick={onSignOut}
-          className="glass ml-auto rounded-full px-4 py-2 text-[13.5px] text-slate">
+          className="glass ml-auto rounded-full px-4 py-2 text-[15px] text-slate">
           Sign out
         </button>
       </header>
@@ -87,10 +87,10 @@ function Dashboard({ email, onSignOut }: { onSignOut: () => void; email: string 
             <button className="glass flex w-full items-center gap-4 rounded-[var(--radius-card)] p-5 text-left transition-all hover:bg-white/95">
               <span className="min-w-0">
                 <span className="block text-[16px] font-semibold text-ink">{p.label}</span>
-                <span className="mt-0.5 block text-[13.5px] text-deep">{p.blurb}</span>
+                <span className="mt-0.5 block text-[15px] text-deep">{p.blurb}</span>
               </span>
               <svg width="16" height="16" viewBox="0 0 16 16" className="ml-auto shrink-0 text-deep" aria-hidden="true">
-                <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </li>
