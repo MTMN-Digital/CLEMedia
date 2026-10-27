@@ -1,0 +1,85 @@
+/* ─── Scratch styles for /preview/sections ────────────────────────────────
+   Four treatments of one section, built to be looked at side by side and
+   then thrown away. Nothing here is imported by the site. */
+
+.pv-frame {
+  border-top: 2px solid var(--color-ink);
+  padding-top: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.pv-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-red-deep);
+}
+.pv-what {
+  margin-top: 0.35rem;
+  max-width: 62ch;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+/* ─── Treatment A. One statement and nothing else. ─────────────────── */
+.say {
+  max-width: 30ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.1rem);
+}
+
+/* ─── Treatment B. The run-in. The statement opens the paragraph in the
+   display face and the prose carries straight on from it, so a section has
+   one block of text rather than a title, a subtitle and a body. ─────────── */
+.runin {
+  max-width: 68ch;
+  font-size: 1.0625rem;
+  line-height: 1.64;
+  color: var(--color-body);
+}
+/* The heading and the paragraph are both set inline inside the block, so the
+   reader gets one text block and a screen reader still gets a real heading. */
+.runin__say,
+.runin__rest {
+  display: inline;
+  margin: 0;
+}
+.runin__say {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5em;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-right: 0.3em;
+}
+
+/* ─── Treatment C. The statement stands in the room, on the same shelf and
+   under the same lamp as the five slips, so the section has no opener at
+   all. The card is the slip's paper with the slip's fields replaced. ────── */
+.rk-slip--say {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+}
+.rk-slip--say .say-line {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.4375rem, 7.6cqw, 1.95rem);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+}
+.rk-slip--say .say-who {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-body);
+}

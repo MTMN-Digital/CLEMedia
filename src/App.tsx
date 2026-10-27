@@ -31,6 +31,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const PreviewA = lazy(() => import("@/pages/preview/PreviewA"));
 const PreviewB = lazy(() => import("@/pages/preview/PreviewB"));
 const PreviewC = lazy(() => import("@/pages/preview/PreviewC"));
+const PreviewSections = lazy(() => import("@/pages/preview/PreviewSections"));
 
 // Admin is lazy, it pulls in the Supabase client, which the public site
 // should never have to download.
@@ -64,6 +65,7 @@ export default function App() {
       <Route path="preview/a" element={<PreviewA />} />
       <Route path="preview/b" element={<PreviewB />} />
       <Route path="preview/c" element={<PreviewC />} />
+      <Route path="preview/sections" element={<PreviewSections />} />
 
       <Route
         path="admin/*"
