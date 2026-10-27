@@ -328,7 +328,7 @@ export default function AppPage() {
             <div>
               <h2 id="next-h" className="t-h2 max-w-[16ch]">Where it stands</h2>
               <dl className="mt-8 max-w-[52ch]">
-                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
+                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-edge-dark py-4">
                   <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Status</dt>
                   {/* NO DATE, and not because none exists. The client's review
                       document of 22 October gives a working launch target and
@@ -339,7 +339,7 @@ export default function AppPage() {
                       month may go up. */}
                   <dd className="t-body">{APP_LAUNCHED ? "Available now" : "In development"}</dd>
                 </div>
-                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
+                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-edge-dark py-4">
                   <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Stores</dt>
                   <dd className="t-body">
                     {liveLinks.length > 0
@@ -347,7 +347,7 @@ export default function AppPage() {
                       : "Not yet listed. Links will appear here once they are confirmed."}
                   </dd>
                 </div>
-                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-white/15 py-4">
+                <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-6 border-t border-edge-dark py-4">
                   <dt className="font-mono text-[12px] uppercase tracking-[0.16em]">Until then</dt>
                   <dd className="t-body">The four released episodes are on YouTube, linked above.</dd>
                 </div>

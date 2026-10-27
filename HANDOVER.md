@@ -252,8 +252,37 @@ stopped.
 ## 6. QA tooling: it works now, do not rebuild it
 
 `scripts/qa/` holds `audit.mjs` (overflow + pixel contrast, stitched full-page
-captures), `hero.mjs` (hero copy over 8 frames of the film), `hero-resume.mjs`,
-`shot.mjs` (capture one element) and `contrast.py`.
+captures), `lines.mjs` + `lines.py` (NON-text contrast: every border, rule and
+drawn stroke), `hero.mjs` (hero copy over 8 frames of the film),
+`hero-resume.mjs`, `shot.mjs` (capture one element) and `contrast.py`.
+
+**`lines.mjs`, added 2026-10-27.** `audit.mjs` measures text and only text, so
+until this existed not one border, hairline, form field edge or drawn stroke on
+the site had ever been measured. The first run found 22 of 42 distinct lines on
+the home page under 3:1 and 13 of them under 1.5:1, including every form field
+on the site at about 1.6:1 and `.btn-quiet`, whose edge IS the button, at
+1.05:1. Run it the same way as the audit:
+
+```
+node scripts/qa/lines.mjs --port 5191 --out /tmp/lines           # whole site
+node scripts/qa/lines.mjs --port 5191 --only home --out /tmp/l   # one route
+python3 -I scripts/qa/lines.py --self-check                      # the maths
+```
+
+It groups identical lines by signature and samples one of each from painted
+pixels, so a page with 180 hairlines costs about eight screenshots. Four traps
+are already written into it and should not be relearned: sample the MIDDLE of
+an edge, never the corner (a pill's corner is all curve, which reported a 14:1
+ink border as 1.01:1); take the MEDIAN along the line, never the mean (one
+bright photo row beside a card dragged 1px borders to a reported 24px); unstick
+everything first, exactly as the audit does; and anything under 24px square is
+an icon, not a rule, so it is reported as unmeasured rather than as a failure.
+
+**`audit.mjs` had a blind spot of its own**, fixed the same day: it skipped any
+element containing a child element, so a paragraph with one `<span>`, `<sup>`
+or inline link in it was never measured at all. It measures each element's own
+text runs now, which immediately found a red `TextLink` at 2.31:1 on the
+correspondence room.
 
 Four defects were fixed in it this session, each masking the next. It is now
 deterministic: repeated full sweeps return identical results, and

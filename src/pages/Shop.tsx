@@ -301,7 +301,7 @@ export default function Shop() {
               </div>
             </div>
 
-            <ul className="border-t border-white/20">
+            <ul className="border-t border-edge-dark">
               {[
                 {
                   title: "Episodes and family activities",
@@ -332,7 +332,7 @@ export default function Shop() {
                 );
                 const cls = "group flex items-start justify-between gap-6 py-6 sm:py-7";
                 return (
-                  <li key={n.title} className="border-b border-white/20">
+                  <li key={n.title} className="border-b border-edge-dark">
                     {n.to ? (
                       <Link to={n.to} className={cls}>{inner}</Link>
                     ) : (

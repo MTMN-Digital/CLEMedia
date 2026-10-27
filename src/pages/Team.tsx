@@ -95,11 +95,11 @@ export default function Team() {
                     outlived two rebuilds of the thing it described. Rewritten
                     again on 2026-10-24, when the six stages themselves went:
                     see the note at the top of components/team/people.ts. */}
-                {/* `border-white/22`, not `border-rule`: `--color-rule` is an
+                {/* `border-edge-dark`, not `border-rule`: `--color-rule` is an
                     ink alpha, so on a dark band it drew nothing at all. The
                     value is the measured one the home and media bands use. */}
                 {/* PROSE, NOT MONO, since 2026-10-26. Three sentences of explanation were set in tracked mono at 13px, which is a label face doing a paragraph's job: on the band it read as machine output rather than as the company talking. */}
-                <p className="t-sm mt-6 max-w-[48ch] border-t border-white/22 pt-6 leading-[1.7]">
+                <p className="t-sm mt-6 max-w-[48ch] border-t border-edge-dark pt-6 leading-[1.7]">
                   Below, the five phases an episode goes through, then the same work from the
                   other side: each person, and the phases they come into. Nobody is claimed for a
                   phase the company's own account does not place them in.

@@ -263,7 +263,7 @@ function Sheet({ kind, label }: { kind: "colour" | "puzzle" | "activity"; label:
         {kind === "colour" && (
           <span
             aria-hidden="true"
-            className="mx-auto mt-[0.6em] aspect-square w-[62%] rounded-full border-[0.18em] border-body/45"
+            className="mx-auto mt-[0.6em] aspect-square w-[62%] rounded-full border-[0.18em] border-body/60"
           />
         )}
         {kind === "activity" && (
@@ -277,7 +277,7 @@ function Sheet({ kind, label }: { kind: "colour" | "puzzle" | "activity"; label:
         {kind === "puzzle" && (
           <span aria-hidden="true" className="mt-[0.6em] grid grid-cols-3 gap-[0.3em]">
             {Array.from({ length: 9 }).map((_, i) => (
-              <span key={i} className="aspect-square rounded-[0.15em] border border-body/35" />
+              <span key={i} className="aspect-square rounded-[0.15em] border border-body/55" />
             ))}
           </span>
         )}

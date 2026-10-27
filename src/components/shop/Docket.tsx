@@ -65,7 +65,7 @@ export function Docket({
               {/* The leader. A receipt lines its figures up with dots. */}
               <span
                 aria-hidden="true"
-                className="min-w-4 flex-1 translate-y-[-3px] border-b border-dotted border-rule"
+                className="min-w-4 flex-1 translate-y-[-3px] border-b border-dotted border-edge"
               />
               <dd /* Not `shrink-0`: a product title is one of these values and a long
                    one pushed the row 26px past a 390 screen. It still takes its

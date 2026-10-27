@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { type FormEvent, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui";
 
 /* ============================================================================
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui";
    white rather than against paper.
    ========================================================================== */
 
-export function NotifyForm({ cta, icon, done }: { cta: string; icon: ReactNode; done: string }) {
+export function NotifyForm({ cta, icon, done }: { done: string; cta: string; icon: ReactNode }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -65,7 +65,7 @@ export function NotifyForm({ cta, icon, done }: { cta: string; icon: ReactNode; 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="w-full rounded-full border border-white/25 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/60"
+          className="w-full rounded-full border border-white/50 bg-white/10 px-5 py-3 text-[16px] text-white placeholder:text-white/60"
         />
       </div>
       <Button type="submit" disabled={busy}>

@@ -74,7 +74,7 @@ export function Feedback({ headingId }: { headingId: string }) {
         /* The honest empty state, in the same voice the shop's empty shelf
            uses. A dashed edge says held open; a tinted panel says finished. */
         <Settle className="mt-12 grid gap-6 border-t border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
-          <div className="rounded-[var(--radius-lg)] border border-dashed border-rule p-6 sm:p-7">
+          <div className="rounded-[var(--radius-lg)] border border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
             <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
               Parents and educators
             </p>
@@ -84,7 +84,7 @@ export function Feedback({ headingId }: { headingId: string }) {
               person has agreed to.
             </p>
           </div>
-          <div className="rounded-[var(--radius-lg)] border border-dashed border-rule p-6 sm:p-7">
+          <div className="rounded-[var(--radius-lg)] border border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
             <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-muted">
               Banteer workshop
             </p>

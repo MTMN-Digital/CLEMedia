@@ -367,7 +367,7 @@ export default function Media() {
             {/* No `text-ink`: `.bench` sets cream, and the hairline is the
                 measured one from the home page's evidence band, because
                 `--color-rule` is an ink alpha and disappears on a dark band. */}
-            <p className="t-h1 max-w-[24ch] border-y border-white/22 py-14 font-display sm:py-20">
+            <p className="t-h1 max-w-[24ch] border-y border-edge-dark py-14 font-display sm:py-20">
               No logo strip of publications that have not written about us, and no quote nobody
               said.
             </p>

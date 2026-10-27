@@ -592,7 +592,7 @@ export default function Story() {
               </div>
             </div>
 
-            <ul className="border-t border-white/20">
+            <ul className="border-t border-edge-dark">
               {NEXT.map((n) => {
                 const inner = (
                   <>
@@ -607,7 +607,7 @@ export default function Story() {
                 );
                 const cls = "group flex items-start justify-between gap-6 py-5";
                 return (
-                  <li key={n.title} className="border-b border-white/20">
+                  <li key={n.title} className="border-b border-edge-dark">
                     {n.to ? (
                       <Link to={n.to} className={cls}>{inner}</Link>
                     ) : (

@@ -24,19 +24,25 @@
    which cancels `.ink-thin`'s own opacity, so a drawn rule came out as heavy
    as a drawn box and a column of rows read like a fence. The weight is set on
    the stroke colour, where nothing overrides it. */
+/* 2.4, not the kit's 2. A hand-drawn rule wanders by about a pixel across its
+   length, so no single row of it is ever fully covered and its PAINTED
+   contrast lands well under the colour it was given: measured, a 90% cream
+   rule on the grove paints at 2.31:1. Weight is what fixes that, not more
+   alpha. `non-scaling-stroke` means this is 2.4 CSS pixels at every width. */
 .dk-rule .ink-line {
-  stroke: color-mix(in srgb, var(--color-ink) 52%, transparent);
+  stroke-width: 2.4;
+  stroke: color-mix(in srgb, var(--color-ink) 72%, transparent);
 }
 /* On a dark band the ink is the paper's, so the rule takes the cream the rest
    of the band's hairlines take. */
 .deep .dk-rule .ink-line,
 .bench .dk-rule .ink-line,
 .wall .dk-rule .ink-line {
-  stroke: color-mix(in srgb, var(--color-raised) 40%, transparent);
+  stroke: color-mix(in srgb, var(--color-raised) 82%, transparent);
 }
 .deep .dk-box .ink-line,
 .bench .dk-box .ink-line {
-  stroke: color-mix(in srgb, var(--color-raised) 62%, transparent);
+  stroke: color-mix(in srgb, var(--color-raised) 85%, transparent);
 }
 
 .dk-corner {

@@ -129,8 +129,27 @@
   --color-navy: #1f325b; /* white 12.6 */
   --color-sage: #94b7a4;
 
-  --color-rule:      rgba(74, 53, 42, 0.13);
-  --color-rule-soft: rgba(74, 53, 42, 0.08);
+  /* ─── Lines, measured 2026-10-27 ────────────────────────────────────────
+     These were 0.13 and 0.08, which paint at 1.25:1 and 1.14:1 against every
+     paper stop on this site. That is not a quiet hairline, it is an invisible
+     one: scripts/qa/lines.mjs measured 42 distinct lines on the home page and
+     found 22 of them under 3:1 and 13 under 1.5:1. Nothing in audit.mjs was
+     ever looking, because it measures text and only text.
+
+     The structural rule is now set to land where the DRAWN rule already
+     measures, 2.2 to 2.3 against paper, so the two line systems on this site
+     agree with each other instead of one of them being four times fainter
+     than the other. `soft` keeps its job as the quieter of the two.
+
+     `edge` is separate because it is the only one with a standard behind it:
+     WCAG 1.4.11 asks 3:1 of anything you need in order to identify a control,
+     which is a form field's boundary and a quiet button's, and 0.604 is what
+     the worst paper stop (paper-3) needs to clear it. A divider between two
+     paragraphs is exempt from that and does not use this token. */
+  --color-rule:      rgba(74, 53, 42, 0.55);
+  --color-rule-soft: rgba(74, 53, 42, 0.40);
+  --color-edge:      rgba(74, 53, 42, 0.68);
+  --color-edge-dark: rgba(253, 248, 237, 0.55);
 
   /* ─── Aliases for the pre-reskin class names ────────────────────────────
      Added 2026-10-03 after a review pass found `text-slate`, `text-deep`,
@@ -352,6 +371,12 @@ body > * { position: relative; z-index: 1; }
     box-shadow: inset 0 2px 6px rgba(60, 50, 28, 0.09);
   }
   .hairline { border-top: 1px solid var(--color-rule); }
+  /* MEASURED 2026-10-27: 1.08:1. `--color-rule` is a brown, and on the navy
+     close, the bench and the grove a brown line is not a quiet line, it is no
+     line. Every dark surface gets the cream rule instead. */
+  .deep .hairline,
+  .bench .hairline,
+  .grove .hairline { border-top-color: rgba(253, 248, 237, 0.5); }
 
   /* ─── Form fields ────────────────────────────────────────────────────────
      A field is a BOX. The contact page shipped inputs as a label with a
@@ -377,7 +402,10 @@ body > * { position: relative; z-index: 1; }
     display: block;
     width: 100%;
     background: var(--color-raised);
-    border: 1px solid rgba(74, 53, 42, 0.26);
+    /* 0.62, not 0.26. A field's boundary is the thing that says a field is
+       there, so it is one of the few lines on this site that 1.4.11 actually
+       covers; at 0.26 it painted at about 1.6:1. */
+    border: 1px solid var(--color-edge);
     border-radius: var(--radius-sm);
     padding: 0.875rem 1rem;
     font: inherit;
@@ -391,7 +419,7 @@ body > * { position: relative; z-index: 1; }
   .field-input::placeholder,
   .field-textarea::placeholder { color: var(--color-muted); }
   .field-input:hover,
-  .field-textarea:hover { border-color: rgba(74, 53, 42, 0.42); }
+  .field-textarea:hover { border-color: rgba(74, 53, 42, 0.78); }
   .field-input:focus,
   .field-textarea:focus {
     outline: none;
@@ -528,7 +556,7 @@ body > * { position: relative; z-index: 1; }
      two run together into one navy slab a thousand pixels tall with the
      wordmark floating somewhere in the middle of it. One hairline is enough to
      say they are two things. Against cream, at 14%, it is invisible. */
-  footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.14); }
+  footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.3); }
   .deep h1, .deep h2, .deep h3, .deep h4,
   .bench h1, .bench h2, .bench h3, .bench h4 { color: #fdf8ed; }
   .deep .eyebrow { color: rgba(253, 248, 237, 0.66); }
@@ -587,10 +615,11 @@ body > * { position: relative; z-index: 1; }
   }
   .btn-quiet {
     background: transparent;
-    border: 1px solid var(--color-rule);
+    /* The edge IS the button: there is no fill to see it by. */
+    border: 1px solid var(--color-edge);
     color: var(--color-ink);
   }
-  .btn-quiet:hover { border-color: rgba(74, 53, 42, 0.32); }
+  .btn-quiet:hover { border-color: rgba(74, 53, 42, 0.82); }
 
   /* The same button inside the navy band. Without this it is ink on navy with
      an ink hairline, which is close to invisible, and three separate pages
@@ -610,11 +639,12 @@ body > * { position: relative; z-index: 1; }
 
   .deep .btn-quiet,
   .bench .btn-quiet {
-    border-color: rgba(253, 248, 237, 0.35);
+    /* 0.55 clears 3:1 on the bench and the grove; the navy gets 4.2. */
+    border-color: var(--color-edge-dark);
     color: var(--color-raised);
   }
   .deep .btn-quiet:hover,
-  .bench .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.6); }
+  .bench .btn-quiet:hover { border-color: rgba(253, 248, 237, 0.85); }
 
   /* The house link: a rule that draws from the left. The only hover motion. */
   .link-draw {
@@ -1036,7 +1066,11 @@ body > * { position: relative; z-index: 1; }
    ground: the drawing kit and the hero headline both take it. */
 .site-header.is-over .text-red-deep { color: #ffb9bb; }
 .site-header.is-over a[class*="border"],
-.site-header.is-over button[class*="border"] { border-color: rgba(253, 248, 237, 0.45); }
+.site-header.is-over button[class*="border"] {
+  border-color: rgba(253, 248, 237, 0.72);
+  background: rgba(14, 11, 9, 0.38);
+  backdrop-filter: blur(3px);
+}
 .site-header.is-over a[class*="border"]:hover { border-color: rgba(253, 248, 237, 0.85); }
 
 /* ---------------------------------------------------------------------------
@@ -1255,7 +1289,7 @@ body > * { position: relative; z-index: 1; }
 .film-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; }
 .film-support .btn-quiet {
   color: var(--color-raised);
-  border-color: rgba(253, 248, 237, 0.45);
+  border-color: rgba(253, 248, 237, 0.62);
   background: rgba(253, 248, 237, 0.10);
   backdrop-filter: blur(3px);
 }
@@ -1263,7 +1297,7 @@ body > * { position: relative; z-index: 1; }
 
 .film-controls { display: flex; align-items: center; gap: 0.5rem; }
 .film-btn {
-  border: 1px solid rgba(253, 248, 237, 0.42);
+  border: 1px solid rgba(253, 248, 237, 0.58);
   border-radius: 999px;
   padding: 0.55rem 1.05rem;
   /* 0.72, not 0.52. These sit on a film that runs from a dark wood to a nearly
@@ -1286,7 +1320,7 @@ body > * { position: relative; z-index: 1; }
   place-items: center;
   width: 2.35rem;
   height: 2.35rem;
-  border: 1px solid rgba(253, 248, 237, 0.42);
+  border: 1px solid rgba(253, 248, 237, 0.58);
   border-radius: 999px;
   background: rgba(14, 11, 9, 0.72);
   backdrop-filter: blur(6px);

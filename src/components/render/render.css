@@ -860,6 +860,15 @@
   line-height: 1.6;
   color: var(--color-ink);
 }
+/* MEASURED 2026-10-27: 2.31:1. TextLink hard-codes the brand red, and this
+   note sits on a lit room whose ground samples at #91826c, where that red is
+   nowhere near the 4.5 a 15px link needs. Ink on the same ground is 4.6, so
+   the link takes the note's own colour and keeps the drawn underline as its
+   affordance, which is what `.deep .link-draw` already does on the navy.
+
+   This was invisible to the sweep until the same day, because audit.mjs
+   skipped any element holding a child element and TextLink wraps an arrow. */
+.rk-corr__note .link-draw { color: var(--color-ink); }
 
 /* The sheet. Paper standing against the wall, with the room's light across
    it and the room's shadow under it. Flat on purpose: see the block comment. */

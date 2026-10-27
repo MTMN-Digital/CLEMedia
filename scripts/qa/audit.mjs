@@ -355,26 +355,66 @@ for (const [path, name] of PAGES) {
            not black means the resolve failed and the sample is dropped. */
         return [d[0], d[1], d[2], d[3] / 255];
       };
+      /* THE OWN-TEXT RULE, 2026-10-27. This used to skip any element with a
+         child element, which sounds like a detail and is not: a paragraph
+         with one `<span>`, `<sup>`, `<em>` or inline link in it was never
+         measured AT ALL, and this site writes those everywhere. The child was
+         measured on its own pass, so the glyphs that went unchecked were the
+         ones the author did not style, which is exactly where an inherited
+         colour on an unexpected ground hides. Now the element's OWN text runs
+         are measured, each as its own box, and the children keep their own
+         pass. A run shorter than a few characters is skipped: there are not
+         enough pixels in it to separate glyph from ground. */
+      const ownRuns = (el) => {
+        if (el.children.length === 0) {
+          const r = visibleRect(el);
+          return r ? [r] : [];
+        }
+        /* The same clipping guard the single-node path uses: a run that an
+           overflow ancestor cuts is not where the screenshot thinks it is. */
+        const vr = visibleRect(el);
+        if (!vr) return [];
+        const inside = (r) =>
+          r.left >= vr.left - 1 && r.right <= vr.right + 1 &&
+          r.top >= vr.top - 1 && r.bottom <= vr.bottom + 1;
+        const out = [];
+        for (const node of el.childNodes) {
+          if (node.nodeType !== 3 || !node.textContent.trim()) continue;
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          for (const rect of range.getClientRects()) {
+            if (rect.width >= 24 && rect.height >= 8 && inside(rect)) out.push(rect);
+          }
+          range.detach && range.detach();
+        }
+        return out;
+      };
       document.querySelectorAll("p,a,span,li,dt,dd,h1,h2,h3,h4,button,label,figcaption,th,td,em,strong").forEach((el) => {
         const text = (el.textContent || "").trim();
-        if (!text || el.children.length > 0) return;
+        if (!text) return;
         const cs = getComputedStyle(el);
         if (cs.visibility === "hidden" || cs.display === "none") return;
         const alpha = alphaOf(el);
         if (alpha < 0.05) return;
-        const r = visibleRect(el);
+        const runs = ownRuns(el);
+        if (!runs.length) return;
+        const r = runs[0];
         if (!r || r.width < 10 || r.height < 8) return;
         /* A pinned section cannot be stitched: it is one sticky screen whose
            state changes with scroll, so successive slices photograph the same
            box in different states and stack them. Text inside one is measured
            by hand against a single settled frame instead. */
         if (el.closest(".shot-pin")) return;
-        out.push({
-          x: Math.round(r.left + window.scrollX), y: Math.round(r.top + window.scrollY),
-          w: Math.round(r.width), h: Math.round(r.height), rgba: withAlpha(resolve(cs.color), alpha),
-          px: Math.round(parseFloat(cs.fontSize)), bold: parseInt(cs.fontWeight) >= 700,
-          t: text.slice(0, 36),
-        });
+        for (const run of runs) {
+          if (run.width < 10 || run.height < 8) continue;
+          out.push({
+            x: Math.round(run.left + window.scrollX), y: Math.round(run.top + window.scrollY),
+            w: Math.round(run.width), h: Math.round(run.height),
+            rgba: withAlpha(resolve(cs.color), alpha),
+            px: Math.round(parseFloat(cs.fontSize)), bold: parseInt(cs.fontWeight) >= 700,
+            t: text.slice(0, 36),
+          });
+        }
       });
       return out;
     });

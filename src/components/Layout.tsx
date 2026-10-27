@@ -86,7 +86,7 @@ function NavGroup({ label, items }: { items: readonly { to: string; label: strin
            never let what is beneath it read through. */
         <ul
           className="absolute left-0 top-[calc(100%+0.85rem)] z-20 min-w-[13rem] rounded-[var(--radius-sm)] border bg-raised py-1.5 shadow-[0_12px_28px_-12px_rgba(60,50,28,0.3)]"
-          style={{ borderColor: "var(--color-rule)" }}
+          style={{ borderColor: "var(--color-edge)" }}
         >
           {items.map((i) => (
             <li key={i.to}>
@@ -234,7 +234,7 @@ function Header() {
           aria-expanded={open}
           aria-controls={open ? "mobile-nav" : undefined}
           className="ml-auto flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border text-ink lg:hidden"
-          style={{ borderColor: "var(--color-rule)" }}
+          style={{ borderColor: "var(--color-edge)" }}
         >
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">

@@ -246,11 +246,11 @@ export default function Journal() {
               </div>
             </div>
 
-            <ul className="border-t border-white/20">
+            <ul className="border-t border-edge-dark">
               {RULES.map((r) => (
                 <li
                   key={r.title}
-                  className="grid gap-x-10 gap-y-2 border-b border-white/20 py-6 sm:py-7 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
+                  className="grid gap-x-10 gap-y-2 border-b border-edge-dark py-6 sm:py-7 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
                 >
                   <h3 className="text-[17px] font-semibold">{r.title}</h3>
                   <p className="t-body max-w-[46ch] opacity-85">{r.line}</p>

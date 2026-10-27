@@ -74,7 +74,7 @@ function Specimen() {
       {/* The cut-out, with the dot-to-dot inside it. */}
       <div
         className="relative mx-auto aspect-[4/3.2] w-[78%] rounded-[6px]"
-        style={{ border: "1px dashed color-mix(in srgb, var(--color-body) 32%, transparent)" }}
+        style={{ border: "1px dashed color-mix(in srgb, var(--color-body) 52%, transparent)" }}
       >
         {DOTS.map((d, i) => (
           <span
