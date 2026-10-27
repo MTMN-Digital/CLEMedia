@@ -30,9 +30,11 @@ import { type Episode, COMING_SOON } from "@/lib/episodes";
    320px phone to a 1560px desktop. TEXT is different: the titles, runtimes
    and lines on these screens are real content, and an em that lands at 5px
    on a phone is content nobody can read. So every readable string carries a
-   `max(11px, Nem)` floor: it scales down with the device until 11px and no
-   further. The portrait device is 7:10 rather than 3:4 to give the floored
-   type the height it needs.
+   `max(13px, Nem)` floor: it scales down with the device until 13px and no
+   further. The floor was 11px until 2026-10-27, when the site set 13px as the
+   smallest real text anywhere on it; a title on this screen is as real as a
+   title on the page. The portrait device is 7:10 rather than 3:4 to give the
+   floored type the height it needs.
    ========================================================================== */
 
 export type Stage = "learn" | "watch" | "play";
@@ -66,14 +68,14 @@ export const STAGES: { title: string; id: Stage; line: string }[] = [
 
 /* Readable sizes. One place, so the floor is one number. */
 const T = {
-  body: "text-[length:max(11px,0.85em)] leading-[1.45]",
-  small: "text-[length:max(11px,0.72em)] leading-[1.45]",
-  label: "text-[length:max(11px,0.68em)]",
-  mono: "text-[length:max(11px,0.66em)]",
-  tile: "text-[length:max(11px,0.82em)]",
-  name: "text-[length:max(12px,1.05em)]",
+  body: "text-[length:max(13px,0.85em)] leading-[1.45]",
+  small: "text-[length:max(13px,0.72em)] leading-[1.45]",
+  label: "text-[length:max(13px,0.68em)]",
+  mono: "text-[length:max(13px,0.66em)]",
+  tile: "text-[length:max(13px,0.82em)]",
+  name: "text-[length:max(14px,1.05em)]",
   heading: "text-[length:max(16px,1.5em)] @md:text-[length:max(16px,1.9em)]",
-  button: "text-[length:max(11px,0.78em)]",
+  button: "text-[length:max(13px,0.78em)]",
 };
 
 /* The PupsPlayer mark is a flat single-colour SVG filled with currentColor, so
@@ -174,7 +176,7 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
               <Figure asset={ep.asset} rounded="rounded-none" sizes="(min-width: 1024px) 20vw, 42vw" />
               {/* Below a 384px container the caption stacks and drops the
                   episode number, so the title keeps the width it needs at
-                  its 11px floor. The number is still in the list on the page. */}
+                  its 13px floor. The number is still in the list on the page. */}
               <div className="flex flex-col gap-[0.25em] px-[0.8em] py-[0.6em] @sm:flex-row @sm:items-baseline @sm:gap-[0.55em]">
                 <span className={`${T.mono} tnum hidden font-mono tracking-[0.14em] text-red-deep @sm:inline`}>
                   {ep.n}
@@ -435,10 +437,11 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
             </div>
           </div>
         </div>
-        {/* The "drawn from the plan, not a screenshot" label used to hang
-            here. It is now the standing label at the head of the band, where
-            a reader meets it BEFORE mistaking the render for a capture, which
-            is the whole job of the sentence. */}
+        {/* The "drawn from the plan, not a screenshot" line is the page's,
+            not this component's: AppPage sets it under the device as a small
+            right aligned mono credit, the way every rendered picture on the
+            site is credited, rather than as a label floating at the far edge
+            of the band. */}
       </div>
 
       {/* On a phone the stage line lives here, because three short titles in a

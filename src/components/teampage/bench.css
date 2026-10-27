@@ -1,0 +1,39 @@
+/* ─── The team's opening, in the hero's corners ───────────────────────────
+   See pages/Team.tsx. /team is the one page that does not open on a
+   PageHero: the dark grove bench with the seven faces is a settled decision,
+   so the hero's language is carried INTO the bench instead. The eyebrow, the
+   aside and the headline wear PageHero's own classes (`.page-hero__eyebrow`,
+   `.page-hero__aside`, `.page-hero__title`, used as given, never restyled
+   here), and this is the grid those classes expect to sit in: the same
+   columns, rows and gap as the hero's `.film-copy`, so the corners land
+   where they land on every other page.
+
+   The lead under the headline takes the actions row, the way the home hero
+   puts its own line under its headline rather than in a far corner.
+   ─────────────────────────────────────────────────────────────────────── */
+.team-open {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 1.5rem;
+  min-height: clamp(22rem, 48svh, 34rem);
+}
+.team-open__lead {
+  grid-area: 4 / 1 / 5 / 3;
+  align-self: end;
+  max-width: 50ch;
+  color: var(--color-raised);
+}
+
+/* Phones and small tablets: one column, in reading order, exactly where
+   PageHero folds its own corners. `align-self: end` in a column flex is the
+   RIGHT edge, so everything is stretched instead. */
+@media (max-width: 820px) {
+  .team-open {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    min-height: 0;
+  }
+  .team-open > * { align-self: stretch; }
+}

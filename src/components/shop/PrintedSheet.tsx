@@ -67,14 +67,14 @@ function Specimen() {
       {/* The title band: two rules with the space between them left empty. A
           printable that does not exist has no title, so none is drawn. */}
       <div>
-        <div className="h-px w-full bg-[var(--color-rule)]" />
-        <div className="mt-[14%] h-px w-[58%] bg-[var(--color-rule-soft)]" />
+        <div className="h-[1.5px] w-full bg-[var(--color-rule)]" />
+        <div className="mt-[14%] h-[1.5px] w-[58%] bg-[var(--color-rule-soft)]" />
       </div>
 
       {/* The cut-out, with the dot-to-dot inside it. */}
       <div
         className="relative mx-auto aspect-[4/3.2] w-[78%] rounded-[6px]"
-        style={{ border: "1px dashed color-mix(in srgb, var(--color-body) 52%, transparent)" }}
+        style={{ border: "1.5px dashed color-mix(in srgb, var(--color-body) 52%, transparent)" }}
       >
         {DOTS.map((d, i) => (
           <span
@@ -95,7 +95,7 @@ function Specimen() {
       {/* The fold, then four ruled lines. */}
       <div>
         <div
-          className="h-px w-full"
+          className="h-[1.5px] w-full"
           style={{
             backgroundImage:
               "repeating-linear-gradient(to right, var(--color-rule) 0 7px, transparent 7px 13px)",
@@ -103,7 +103,7 @@ function Specimen() {
         />
         <div className="mt-[11%] space-y-[8%]">
           {[100, 100, 100, 68].map((w, i) => (
-            <div key={i} className="h-px bg-[var(--color-rule-soft)]" style={{ width: `${w}%` }} />
+            <div key={i} className="h-[1.5px] bg-[var(--color-rule-soft)]" style={{ width: `${w}%` }} />
           ))}
         </div>
       </div>
@@ -206,6 +206,13 @@ export function PrintedSheet({
    in the margin. The callouts only appear where there is room for a label to
    sit clear of the object and point at it, which is 1280px and up; under that
    the object stands on its own and the page says the same things in prose.
+
+   Since 2026-10-27 the bench no longer opens /shop: that page opens in the
+   hero's frame, and its one drawn object is the struck checkout. The bench
+   still lights a real product's artwork on /shop/:slug. The caption, when
+   there is one, is a credit: a small right aligned mono line, the way the
+   site writes every provenance note. The drawn lines on the specimen are
+   1.5px, the site's rule weight.
 ---------------------------------------------------------------------------- */
 
 /** Half the sheet's own width. The callouts hang off the edges of the bench
@@ -274,7 +281,7 @@ export function SheetBench({
                 {/* The leader runs from the label to the paper, so it is
                     ordered after the label on the left and before it on the
                     right. */}
-                <span className="h-px min-w-3 flex-1 bg-rule" style={{ order: c.side === "right" ? -1 : 1 }} />
+                <span className="h-[1.5px] min-w-3 flex-1 bg-rule" style={{ order: c.side === "right" ? -1 : 1 }} />
                 <span className="whitespace-nowrap">{c.label}</span>
               </span>
             ))}
@@ -283,7 +290,7 @@ export function SheetBench({
       </div>
 
       {caption && (
-        <p className="mx-auto mt-6 max-w-[46ch] text-center font-mono text-[14.5px] leading-[1.65] text-muted">
+        <p className="ml-auto mt-5 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
           {caption}
         </p>
       )}

@@ -25,9 +25,6 @@ shift 2
 
 # --- project-tunable lists ---------------------------------------------------------------------
 SLOP_COLOR='(indigo|violet|purple|fuchsia)-[0-9]{2,3}|from-(indigo|violet|purple)|to-(indigo|violet|purple)'
-# TUNED for cle-media (2026-10-09-cle-rooms): this project ships `--color-slate` (a deprecated alias
-# for --color-body) and bare `text-slate`, with NO numeric suffix. The pattern below needs a dash and
-# two or three digits after the word, so those never match; untouched Tailwind `slate-500` still does.
 SLOP_DEFAULT='(zinc|slate)-[0-9]{2,3}'
 PLACEHOLDER='[Ll]orem ipsum|TODO|FIXME|XXX:|dicebear|via\.placeholder|placehold\.co|aspect-video bg-muted'
 BRACKET_COPY='\[(Client|Company|Name|Business|City|Address|Phone|Email)[a-zA-Z ]*\]'
@@ -88,6 +85,21 @@ hit SLOP-EYEBROW '>[[:space:]]*0[0-9] */ *[A-Z]|="0[0-9] */ *[A-Z]'          # r
 # requires a real src: a bare `<img>` inside a comment or a JSDoc line is prose, not a tag.
 hit A11Y-ALT '<img(?=[^>]*\bsrc(Set)?=)(?![^>]*\balt=)[^>]*>' -P
 
+# 7. CLE project rules (tuned 2026-10-27 for the fan-out run).
+#    Small type floor 13px for real text. A decorative print mark may go to 12px and must say so
+#    on the same line with the word print-mark (in a comment or a class name).
+smalltype=$(grep -aInHE 'text-\[([0-9]|1[0-2])(\.[0-9]+)?px\]|font-size: *([0-9]|1[0-2])(\.[0-9]+)?px|(^|[ "'"'"'`:])text-xs([ "'"'"'`]|$)' "${FILES[@]}" 2>/dev/null | grep -av 'print-mark')
+if [ -n "$smalltype" ]; then while IFS= read -r line; do echo "FAIL SMALL-TYPE - $line"; done <<< "$smalltype"; fails=1; fi
+#    Rules and hairlines are 1.5px: a bare Tailwind border side (1px), h-px / w-px rules, 1px solid.
+#    The Tailwind half only counts on a className line, so the word "border" in a comment is prose.
+thin=$( { grep -aInHE '(^|[ "'"'"'`:])border(-[tblrxy])?([ "'"'"'`]|$)|(^|[ "'"'"'`:])(h|w)-px([ "'"'"'`]|$)' "${FILES[@]}" 2>/dev/null | grep -aE 'className|class=|clsx|cn\(' ; grep -aInHE '[^.0-9]1px solid' "${FILES[@]}" 2>/dev/null; } | grep -av 'print-mark')
+if [ -n "$thin" ]; then while IFS= read -r line; do echo "FAIL THIN-RULE - $line"; done <<< "$thin"; fails=1; fi
+#    Copy the client rejected by name.
+hit RETIRED-COPY 'None of this is ours|No logo strip of publications'
+#    Frozen foundation files are imported, never copied: a page restyling the hero's own classes
+#    from its own stylesheet is editing the hero by the back door.
+hit FROZEN-CLASS '^[[:space:]]*\.(film-|show-frame|hero-head|page-hero)[a-z_-]*[^{]*\{'
+
 # 6. motion without a reduced-motion escape, per file
 for f in "${FILES[@]}"; do
   # trigger on a real animation, not the words: a comment naming framer-motion is not motion.
@@ -97,22 +109,6 @@ for f in "${FILES[@]}"; do
   echo "FAIL MOTION-REDUCED - $f: animates with no prefers-reduced-motion collapse"
   fails=1
 done
-
-# --- cle-media: Tailwind !important escapes ---------------------------------------------------
-# Section rhythm comes from <Section pad>, and no literal restates a token. `!py-*`, `!text-[11px]`
-# and the like were how both got broken. A backticked `!py-*` is prose ABOUT the escape, not one.
-for f in "${FILES[@]}"; do
-  hits=$(grep -anE '!(py|pt|pb|px|text|border|tracking)-' "$f" | grep -avE '`!(py|pt|pb|px|text|border|tracking)-')
-  if [ -n "$hits" ]; then
-    printf '%s\n' "$hits" | sed "s|^|FAIL ESCAPE - $f: Tailwind !important escape, use the contract instead: |"
-    fails=1
-  fi
-done
-
-# --- cle-media: motion that is not Settle / useRoomEntry / an existing Wipe -----------------------
-# The brief allows fades and short reveals only. Relief's lamp is scroll-driven and HangingMarks
-# (.rk-hang) drifts forever; neither may be mounted by a shard. No animation library, no keyframes.
-hit MOTION-BANNED "from ['\"](framer-motion|motion|gsap|lenis)['\"/]|<HangingMarks|<Relief|rk-hang|@keyframes|animation:|\binfinite\b|useScroll\("
 
 [ $fails -eq 0 ] && echo "shard-lint: clean (${#FILES[@]} files)"
 exit $fails

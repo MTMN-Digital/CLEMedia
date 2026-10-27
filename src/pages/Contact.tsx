@@ -1,19 +1,19 @@
-import { type FormEvent, useState, type CSSProperties } from "react";
+import { type FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { Figure } from "@/components/Figure";
-import { useRoomEntry, Stage } from "@/components/render";
+import { PageHero } from "@/components/PageHero";
 import { Settle } from "@/components/Settle";
-import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
+import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type RouteId, Receipt, type Draft } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
 import { TEAM } from "@/components/team/people";
+import "@/components/contact/sheet.css";
 
 /* ============================================================================
    Contact.
 
-   REBUILT TWICE ON 2026-10-09.
+   REBUILT TWICE ON 2026-10-09, AND OPENED AGAIN ON 2026-10-27.
 
    THE FIRST PASS fixed the usability. The fields were a label with a hairline
    under it, sitting on clay, so a stranger could not see where to type; the
@@ -22,26 +22,34 @@ import { TEAM } from "@/components/team/people";
    like a second form and competed with the real one. Boxes you can see, four
    pills, and the receipt moved to after the send.
 
-   THE SECOND PASS is this one. The client's verdict on the first was that it
-   worked and that it "isn't unique in any way and it doesn't relate to CLÉ",
-   which was fair: it was a cream card on clay, and the same card would have
-   suited an accountancy firm. A contact page is where a stranger meets the
-   company, and this company is five named people who make felted objects by
-   hand and hang them up.
+   THE SECOND PASS answered the client's verdict on the first, that it worked
+   and that it "isn't unique in any way and it doesn't relate to CLÉ". It made
+   the page a lit room from the render kit, with the five people named on
+   every episode's review mounted on the wall and the sheet standing in front
+   of them.
 
-   SO THE PAGE IS THEIR ROOM. One lit scene, built from the render kit the
-   rest of the site already stands its objects in: the five people named on
-   every episode's review are mounted on the wall, and the sheet you write on
-   stands in front of them under the same lamp. It is the same room as /team's
-   review board and /media's studio wall, which is the point. The sentence
-   "write to the people who make it" now has the people in it.
+   THE THIRD PASS, 2026-10-27, takes the room down and keeps what it was for.
+   The home hero was signed off that day as the best thing on the site and
+   every other page now opens in its language, so this one opens on the
+   hero's plain panel in the hero's dark, with the page's identifier top left,
+   who it is for top right and the headline in the bottom corner. No picture:
+   the page's job is the form, and a stranger should reach it fast.
 
-   THE SHEET DOES NOT LEAN. Every other object in this kit sits on a few
-   degrees of 3D rotation. A form cannot: a rotated ancestor blurs the text in
-   every field and moves the caret and the native autofill panel off the
-   control they belong to. The room supplies the light and the shadow; the
-   thing you type into stays square and flat. Usability was the defect that
-   started this, and no amount of scene costs it.
+   THE FACES ARE GONE FROM HERE. By the time the room was built the same five
+   portraits were on the home page, /story, /team and this page, and the
+   fourth listing of the same faces was costing the one thing this page is
+   for: on a phone the five portraits stacked ABOVE the form, so the form
+   began about two and a half screens down. The sentence "write to the people
+   who make it" still has the people in it, as a ruled list of their names
+   and roles beside the sheet, with the line that says who they are and the
+   link to /team, where their faces and their account already live. The form
+   is first in the markup, so on a phone it is first on the page.
+
+   THE SHEET DOES NOT LEAN, still. A form cannot: a rotated ancestor blurs the
+   text in every field and moves the caret and the native autofill panel off
+   the control they belong to. The sheet is a raised card on the paper and
+   stays square and flat (src/components/contact/sheet.css). Usability was
+   the defect that started this, and no amount of scene costs it.
 
    THE RECEIPT IS DEMOTED, NOT DROPPED. Showing a sender the exact notification
    the team receives is a good idea in the wrong place: nobody needs it while
@@ -59,14 +67,14 @@ import { TEAM } from "@/components/team/people";
    and a contact page is where all four arrive at once. The alternative to one
    form with a dropdown is not a second form: it is saying plainly which page
    answers which reader, and letting most of them leave without writing
-   anything. That is the index below the room, and it is why the parents' row
+   anything. That is the index below the sheet, and it is why the parents' row
    sends people off this site entirely, to the show.
 
    What it deliberately does not say: how fast a reply comes, who answers which
    route, a phone number, office hours. None of that has been supplied, and a
    contact page that invents it is the one place a lie gets found out. The
-   registered company number and office are EMPTY ON PURPOSE for the same
-   reason, which is the pattern src/components/ethical-ai/CaseStudy.tsx set.
+   registered office is kept to the legal pages for the same reason, which is
+   the pattern src/components/ethical-ai/CaseStudy.tsx set.
 
    Functional contract, unchanged: POST /api/contact with
    { route, company_website, name, email, organisation, message }. The route
@@ -105,31 +113,22 @@ const ROUTES: { label: string; blurb: string; short: string; id: RouteId }[] = [
   },
 ];
 
-/* Names, roles and portraits as the client supplied them 2026-10-01. No route
-   is assigned to a person here because nothing supplied says who reads what;
+/* Names and roles as the client supplied them 2026-10-01. No route is
+   assigned to a person here because nothing supplied says who reads what;
    this is the company the message is addressed to, no more.
 
-   Two groups, because the lead over the first one has to be true of everyone
-   under it. The five faces are the people named on the review stages of every
-   episode. Mansi and David sit in their own rows beneath with their remit
-   stated in /team's words: she coordinates production and is named on no
-   stage, he is an advisor and /team deliberately places him outside the six
-   stages.
-
-   Mansi has no portrait and gets no tile, no initial and no frame, which is
-   the /team rule: an empty frame on a page about named people reads as a
-   missing person. Her row is simply a different shape. */
-
-/* DERIVED, not retyped, from 2026-10-24. This was five hand-written rows, and
+   DERIVED, not retyped, from 2026-10-24. This was five hand-written rows, and
    every one of their titles was out of date within an hour of the client
    confirming them: Creative Director, Education Director, Executive Producer
    and Child Development Consultant were all superseded in the same document
    and all four were still being printed here. `people.ts` is the one source
    and this reads it, in the order it lists them, taking the five who have a
-   portrait. */
-const FACES = TEAM.flatMap((m) =>
-  m.asset ? [{ name: m.name, role: m.role, asset: m.asset }] : [],
-).slice(0, 5);
+   portrait: those are the five named on the review stages of every episode,
+   which is what the line under the list says. Mansi coordinates production
+   and is named on no stage, David is an advisor /team places outside the
+   stages, so neither is in this five; the portrait is only the marker
+   `people.ts` gives us for the distinction. */
+const READERS = TEAM.flatMap((m) => (m.asset ? [{ name: m.name, role: m.role }] : [])).slice(0, 5);
 
 /* The four audiences the site is written for, each sent to the page that
    already answers them. Every destination is a real page of this site or the
@@ -164,15 +163,7 @@ const ELSEWHERE: { line: string; title: string; who: string; href?: string; to?:
 
 const EMPTY: Draft = { name: "", email: "", organisation: "", message: "" };
 
-/* The lamp sits up and left of the wall, and each column of portraits is lit
-   from the angle to it, so the shadows fan from one point rather than running
-   parallel. Two values because the wall is two plates wide where it matters,
-   which is the desktop; the same maths as the review board, written out
-   because two numbers are shorter than the function that produces them. */
-const PORTRAIT_LIGHT = [-40, -24];
-
 export default function Contact() {
-  const room = useRoomEntry();
   const [route, setRoute] = useState<RouteId>("partnership");
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [sent, setSent] = useState(false);
@@ -215,252 +206,219 @@ export default function Contact() {
         path="/contact"
       />
 
-      {/* ═══ 1. THE ASK. Heading and lead on the open paper, so the room
-          below arrives as a scene rather than as a box with a title in it. ═══ */}
-      <Section pad={["normal", "tight"]}>
+      {/* ═══ 1. THE ASK, in the hero's corners. The plain panel, in the
+          hero's own dark, and short: there is no picture to stand on, and the
+          form is the reason anyone is here. Who it is for sits top right,
+          which is the first sentence of the lead this used to open on; the
+          lead's second sentence has gone to the form, above the choice it
+          describes. No actions, because the form is directly under it. ═══ */}
+      <PageHero
+        id="contact-h"
+        size="short"
+        tone="ink"
+        eyebrow={<>Get in touch<span>CL&Eacute; Family Media, Ireland</span></>}
+        aside={<>Studios, distributors, investors, educators and press.</>}
+        title={<>Write to <em>the people who make it</em></>}
+      />
+
+      {/* ═══ 2. THE SHEET, AND WHO READS IT. The form leads, at the width a
+          form wants and first in the markup; the five who read it stand
+          beside it on a wide screen as a ruled list and follow it on a phone.
+          The section opens on its object, so its heading is in the margin
+          next to it rather than over it. ═══ */}
+      <Section pad={["tight", "normal"]} labelledBy="form-h">
         <Container width="wide">
-          {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
-             site opened with the heading alone in the left column and a lone
-             paragraph parked at the right, bottom aligned to the heading's
-             last line. On a wide screen that leaves the sentence floating in
-             the middle of the band with blank paper above it, and the reader
-             has to jump right and down to find the words the heading was
-             asking for. Heading, then its sentence under it, one left edge. */}
-          <Settle>
-            <h1 className="t-display max-w-[17ch]">Write to the people who make it</h1>
-            <Lead className="mt-7">
-              Studios, distributors, investors, educators and press. Choose what this is about,
-              and the message arrives marked as that, with the company that makes the series.
-            </Lead>
-          </Settle>
-        </Container>
-      </Section>
+          <div className="grid gap-y-12 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
+            <div>
+              <h2 id="form-h" className="sr-only">Your message</h2>
 
-      {/* ═══ 2. THE ROOM. The five named people mounted on the wall, and the
-          sheet standing in front of them. See the header comment for why the
-          sheet is the one object in this kit that does not lean. ═══ */}
-      <Section pad={["none", "normal"]} labelledBy="form-h">
-        <Container width="wide">
-          <div ref={room.ref} className={`rk-studio rk-room ${room.armed ? "is-armed" : ""} ${room.lit ? "is-in" : ""}`}>
-            <span className="rk-rake" aria-hidden="true" />
-
-            <div className="rk-head" aria-hidden="true">
-              <span>Correspondence</span>
-              <span className="rk-head-rule" />
-              <span className="rk-head-meta">CLÉ Family Media</span>
-            </div>
-
-            <div className="rk-corr">
-              <div className="rk-item" style={{ "--i": 0 } as CSSProperties}>
-                <h2 className="sr-only">Who reads what you send</h2>
-                <ul className="rk-corr__people">
-                  {FACES.map((p, i) => (
-                    <li key={p.name}>
-                      {/* Mounted, standing on its own ledge, lit from the
-                          lamp over its column. The same plate /media stands
-                          its title slates on. */}
-                      <Stage
-                        seated
-                        ground="ledge"
-                        light={PORTRAIT_LIGHT[i % 2]}
-                        tilt={5.2 + (i % 3) * 0.8}
-                        turn={i % 2 ? 1.4 : -1.4}
-                        roll={i % 2 ? 0.3 : -0.35}
-                        depth={0.46 + (i % 2) * 0.12}
-                      >
-                        <div className="rk-mat">
-                          <div className="rk-pic">
-                            <Figure
-                              asset={p.asset}
-                              rounded="rounded-none"
-                              className="aspect-square"
-                              sizes="(min-width: 1024px) 180px, 30vw"
-                            />
-                            <span className="rk-light" aria-hidden="true" />
-                          </div>
-                          {/* The caption is printed on the MOUNT, which is
-                              how a framed print carries one, and it is also
-                              the only place it is safe: set on the wall the
-                              role line measured 4.38:1 against the dark end
-                              of the room's own gradient. On cream it is ink
-                              at 13:1 and stays there however deep the room
-                              gets. */}
-                          <div className="rk-corr__caption">
-                            <p className="rk-corr__name">{p.name}</p>
-                            <p className="rk-corr__role">{p.role}</p>
-                          </div>
-                        </div>
-                      </Stage>
-                    </li>
-                  ))}
-                </ul>
-
-                <p className="rk-corr__note">
-                  Not a shared inbox with a logo over it. These five are named on the review
-                  stages of every episode.{" "}
-                  <TextLink to="/team">Read who each of them is<IconArrow size={15} /></TextLink>
-                </p>
-              </div>
-
-              <div className="rk-item" style={{ "--i": 1 } as CSSProperties}>
-                <h2 id="form-h" className="sr-only">Your message</h2>
-
-                {sent ? (
-                  <div className="rk-corr__sheet" role="status">
-                    <p className="eyebrow">Sent</p>
-                    <p className="t-h2 mt-4 font-display">Thank you. It has reached us.</p>
-                    <p className="t-lead mt-5 text-body">
-                      This is the message as the team has it, with the subject line they see.
-                    </p>
-                    <Receipt className="mt-8" route={route} draft={draft} sent />
-                    <div className="mt-8 flex flex-wrap gap-4">
-                      <Button to="/">Back to the home page<IconArrow size={16} /></Button>
-                      <Button to="/team" variant="quiet">Meet the team</Button>
-                    </div>
+              {sent ? (
+                <div className="contact-sheet" role="status">
+                  <p className="eyebrow">Sent</p>
+                  <p className="t-h2 mt-4 font-display">Thank you. It has reached us.</p>
+                  <p className="t-lead mt-5 text-body">
+                    This is the message as the team has it, with the subject line they see.
+                  </p>
+                  <Receipt className="contact-receipt mt-8" route={route} draft={draft} sent />
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    <Button to="/">Back to the home page<IconArrow size={16} /></Button>
+                    <Button to="/team" variant="quiet">Meet the team</Button>
                   </div>
-                ) : (
-                  <form className="rk-corr__sheet" onSubmit={submit}>
-                    <fieldset>
-                      <legend className="field-label">What is this about?</legend>
-                      <div className="flex flex-wrap gap-2.5">
-                        {ROUTES.map((r) => (
-                          <label key={r.id} className="chip" data-on={route === r.id ? "" : undefined}>
-                            <input
-                              type="radio"
-                              name="route"
-                              value={r.id}
-                              checked={route === r.id}
-                              onChange={() => setRoute(r.id)}
-                              className="sr-only"
-                            />
-                            {r.short}
-                          </label>
-                        ))}
-                      </div>
-                      <p className="t-sm mt-3 text-body">
-                        {ROUTES.find((r) => r.id === route)?.blurb}
-                      </p>
-                    </fieldset>
+                </div>
+              ) : (
+                <form className="contact-sheet" onSubmit={submit}>
+                  {/* The second sentence of the old lead, where it is actually
+                      talking: over the choice it describes. */}
+                  <p className="t-body max-w-[52ch] text-body">
+                    Choose what this is about, and the message arrives marked as that, with the
+                    company that makes the series.
+                  </p>
 
-                    {/* Honeypot, no CAPTCHA, which would cost us accessibility. */}
-                    <div aria-hidden="true" className="absolute left-[-9999px]">
-                      <label htmlFor="company-website">Leave this empty</label>
-                      <input id="company-website" name="company_website" tabIndex={-1} autoComplete="off" />
+                  <fieldset className="mt-7">
+                    <legend className="field-label">What is this about?</legend>
+                    <div className="flex flex-wrap gap-2.5">
+                      {ROUTES.map((r) => (
+                        <label key={r.id} className="chip min-h-11" data-on={route === r.id ? "" : undefined}>
+                          <input
+                            type="radio"
+                            name="route"
+                            value={r.id}
+                            checked={route === r.id}
+                            onChange={() => setRoute(r.id)}
+                            className="sr-only"
+                          />
+                          {r.short}
+                        </label>
+                      ))}
                     </div>
+                    <p className="t-sm mt-3 text-body">
+                      {ROUTES.find((r) => r.id === route)?.blurb}
+                    </p>
+                  </fieldset>
 
-                    <div className="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-x-6">
-                      <div>
-                        <label htmlFor="name" className="field-label">Name</label>
-                        <input
-                          id="name" name="name" required autoComplete="name"
-                          value={draft.name} onChange={set("name")}
-                          className="field-input"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="email" className="field-label">Email</label>
-                        <input
-                          id="email" name="email" type="email" required autoComplete="email"
-                          value={draft.email} onChange={set("email")}
-                          className="field-input"
-                        />
-                      </div>
-                    </div>
+                  {/* Honeypot, no CAPTCHA, which would cost us accessibility. */}
+                  <div aria-hidden="true" className="absolute left-[-9999px]">
+                    <label htmlFor="company-website">Leave this empty</label>
+                    <input id="company-website" name="company_website" tabIndex={-1} autoComplete="off" />
+                  </div>
 
-                    <div className="mt-6">
-                      <label htmlFor="organisation" className="field-label">
-                        Organisation <span className="opt">(optional)</span>
-                      </label>
+                  <div className="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-x-6">
+                    <div>
+                      <label htmlFor="name" className="field-label">Name</label>
                       <input
-                        id="organisation" name="organisation" autoComplete="organization"
-                        value={draft.organisation} onChange={set("organisation")}
+                        id="name" name="name" required autoComplete="name"
+                        value={draft.name} onChange={set("name")}
                         className="field-input"
                       />
                     </div>
-
-                    <div className="mt-6">
-                      <label htmlFor="message" className="field-label">Message</label>
-                      <textarea
-                        id="message" name="message" rows={8} required
-                        value={draft.message} onChange={set("message")}
-                        className="field-textarea"
+                    <div>
+                      <label htmlFor="email" className="field-label">Email</label>
+                      <input
+                        id="email" name="email" type="email" required autoComplete="email"
+                        value={draft.email} onChange={set("email")}
+                        className="field-input"
                       />
                     </div>
+                  </div>
 
-                    {error && (
-                      <p role="alert" className="t-sm mt-6 font-medium text-red-deep">{error}</p>
-                    )}
+                  <div className="mt-6">
+                    <label htmlFor="organisation" className="field-label">
+                      Organisation <span className="opt">(optional)</span>
+                    </label>
+                    <input
+                      id="organisation" name="organisation" autoComplete="organization"
+                      value={draft.organisation} onChange={set("organisation")}
+                      className="field-input"
+                    />
+                  </div>
 
-                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-                      <Button type="submit" disabled={busy}>
-                        {busy ? "Sending" : "Send message"}<IconMail size={16} />
-                      </Button>
-                      <p className="t-sm text-body">Name, email and message are required.</p>
+                  <div className="mt-6">
+                    <label htmlFor="message" className="field-label">Message</label>
+                    <textarea
+                      id="message" name="message" rows={8} required
+                      value={draft.message} onChange={set("message")}
+                      className="field-textarea"
+                    />
+                  </div>
+
+                  {error && (
+                    <p role="alert" className="t-sm mt-6 font-medium text-red-deep">{error}</p>
+                  )}
+
+                  <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                    <Button type="submit" disabled={busy}>
+                      {busy ? "Sending" : "Send message"}<IconMail size={16} />
+                    </Button>
+                    <p className="t-sm text-body">Name, email and message are required.</p>
+                  </div>
+
+                  {/* One line, not four bullets of implementation detail. The
+                      page where an investor writes to the company is not the
+                      place to explain the honeypot. */}
+                  <p className="t-sm mt-7 border-t-[1.5px] border-rule pt-5 text-body">
+                    Your address is set as the reply-to, so a reply comes straight back to you.
+                    We store what you send so we can answer it, and use it for nothing else.
+                  </p>
+
+                  {/* The address on the letter. */}
+                  <dl className="mt-7 border-t-[1.5px] border-rule pt-5 text-[15px] leading-relaxed text-body">
+                    <div className="flex flex-wrap gap-x-2">
+                      <dt className="font-semibold text-ink">Writing to:</dt>
+                      <dd>CLÉ Family Media, an Irish company.</dd>
                     </div>
+                    {/* This read "not published yet" until 2026-10-13, which
+                        stopped being true the moment the legal pages started
+                        carrying the registration. A page that invites
+                        investors to write is the worst place on the site to
+                        be caught saying the company has not published
+                        something it has.
 
-                    {/* One line, not four bullets of implementation detail. The
-                        page where an investor writes to the company is not the
-                        place to explain the honeypot. */}
-                    <p className="t-sm mt-7 border-t-[1.5px] border-rule pt-5 text-body">
-                      Your address is set as the reply-to, so a reply comes straight back to you.
-                      We store what you send so we can answer it, and use it for nothing else.
-                    </p>
-
-                    {/* The address on the letter. The company number and the
-                        registered office are NOT INVENTED: nobody has supplied
-                        either, the privacy policy promises both, and the page
-                        that invites investors to write is the worst place on
-                        this site to be caught out. CONTENT-NEEDED.md. */}
-                    <dl className="mt-7 border-t-[1.5px] border-rule pt-5 text-[15px] leading-relaxed text-body">
-                      <div className="flex flex-wrap gap-x-2">
-                        <dt className="font-semibold text-ink">Writing to:</dt>
-                        <dd>CLÉ Family Media, an Irish company.</dd>
-                      </div>
-                      {/* This read "not published yet" until 2026-10-13, which
-                          stopped being true the moment the legal pages started
-                          carrying the registration. A page that invites
-                          investors to write is the worst place on the site to
-                          be caught saying the company has not published
-                          something it has.
-
-                          The registered office is NOT repeated here. David's
-                          call was legal pages only, because it is a family
-                          home; the entity and the number are not the address,
-                          and naming them is what a reader of this page wants. */}
-                      <div className="mt-1.5 flex flex-wrap gap-x-2">
-                        <dt className="font-semibold text-ink">Registered details:</dt>
-                        <dd>
-                          CLE Family Media 25 Limited, registered in Ireland, company number
-                          820427. The registered office is at the head of the{" "}
-                          <TextLink to="/privacy">privacy policy</TextLink>.
-                        </dd>
-                      </div>
-                    </dl>
-                  </form>
-                )}
-              </div>
+                        The registered office is NOT repeated here. David's
+                        call was legal pages only, because it is a family
+                        home; the entity and the number are not the address,
+                        and naming them is what a reader of this page wants. */}
+                    <div className="mt-1.5 flex flex-wrap gap-x-2">
+                      <dt className="font-semibold text-ink">Registered details:</dt>
+                      <dd>
+                        CLE Family Media 25 Limited, registered in Ireland, company number
+                        820427. The registered office is at the head of the{" "}
+                        <TextLink to="/privacy">privacy policy</TextLink>.
+                      </dd>
+                    </div>
+                  </dl>
+                </form>
+              )}
             </div>
+
+            {/* The readers. Held in view beside the sheet on a wide screen,
+                because the sheet is twice its height and a list that scrolls
+                away leaves a blank column under itself. Capped, because at
+                the content cap the column runs to 800px and a name at one
+                edge with its role at the other stops reading as one row. */}
+            <Settle className="lg:sticky lg:top-28 lg:max-w-[36rem] lg:self-start">
+              <h2 className="t-h3 max-w-[16ch]">Who reads what you send</h2>
+              <ul className="mt-6">
+                {READERS.map((p) => (
+                  <li
+                    key={p.name}
+                    className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t-[1.5px] border-rule-soft py-4"
+                  >
+                    <span className="text-[17px] font-semibold text-ink">{p.name}</span>
+                    <span className="font-mono text-[13px] uppercase leading-[1.45] tracking-[0.12em] text-body">
+                      {p.role}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="max-w-[44ch] border-t-[1.5px] border-rule-soft pt-5 text-[15px] leading-[1.6] text-ink">
+                Not a shared inbox with a logo over it. These five are named on the review stages
+                of every episode.{" "}
+                <TextLink to="/team">Read who each of them is<IconArrow size={15} /></TextLink>
+              </p>
+            </Settle>
           </div>
         </Container>
       </Section>
 
       {/* ═══ 3. THE READERS WHO SHOULD NOT BE WRITING A LETTER.
-          Four audiences, four destinations, as hairline rows across the full
+          The claim is the heading, and the line that used to sit under it as
+          a lead is now the small line over the rows it describes. Four
+          audiences, four destinations, as hairline rows across the full
           width. Rows rather than cards on purpose: four boxes with four little
-          icons is the shape this whole pass exists to remove, and an index is
-          what a reader scanning for their own description actually wants. ═══ */}
+          icons is the shape the 2026-10-06 pass existed to remove, and an
+          index is what a reader scanning for their own description actually
+          wants. ═══ */}
       <Section pad={["none", "normal"]} labelledBy="else-h">
         <Container width="wide">
           <div className="hairline pt-14 sm:pt-16">
             <Settle>
-              <h2 id="else-h" className="t-h2 max-w-[18ch]">What the site already sets out</h2>
-              <Lead className="mt-5">
-                Some of this is answered better by a page than by us. Who is asking, and where it
-                is written down.
-              </Lead>
+              <h2 id="else-h" className="t-h2 max-w-[22ch]">
+                Some of this is answered better by a page than by us.
+              </h2>
+              <p className="t-sm mt-10 text-body">Who is asking, and where it is written down.</p>
             </Settle>
 
-            <Settle as="ul" className="mt-10">
+            <Settle as="ul" className="mt-4">
               {ELSEWHERE.map((e) => {
                 const icon = e.href ? <IconExternal size={16} /> : <IconArrow size={16} />;
                 const inner = (
@@ -485,9 +443,9 @@ export default function Contact() {
                 const cls =
                   "group grid items-start gap-x-10 gap-y-2 py-6 sm:grid-cols-[minmax(0,0.45fr)_minmax(0,0.55fr)_minmax(0,1fr)_auto] sm:py-7";
                 return (
-                  /* No closing rule under the last row: the people section
-                     opens with its own, and two hairlines 130px apart read as
-                     a mistake rather than as a frame. */
+                  /* No closing rule under the last row: the footer opens with
+                     its own, and two hairlines 130px apart read as a mistake
+                     rather than as a frame. */
                   <li key={e.who} className="hairline">
                     {e.to ? (
                       <Link to={e.to} className={cls}>{inner}</Link>

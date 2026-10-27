@@ -1,0 +1,52 @@
+/* ─── The acknowledgement, on /shop/:slug ─────────────────────────────────
+   See pages/ShopProduct.tsx. The box that unlocks the Buy button is the one
+   control on the page a buyer has to operate before paying, so it is set as
+   a field rather than as a sentence with a small native tick beside it: a
+   2px edge, which is what every control on the site has, and a hit area that
+   is never under 44px on a phone, because the label wraps the input and the
+   whole field is the tap.
+
+   The input is the native checkbox with its own drawing turned off and the
+   site's edge and accent put on it, so it stays a real checkbox: announced,
+   keyboard operable, associated with its label for free. The tick is an
+   inline SVG stroke, 2.5 wide so it reads at 24px.
+   ─────────────────────────────────────────────────────────────────────── */
+.tickbox.buy-ack {
+  gap: 0.9rem;
+  min-height: 44px;
+  padding: 0.95rem 1.1rem;
+  border: 2px solid var(--color-edge);
+  border-radius: var(--radius-md);
+  background: var(--color-raised);
+  transition: border-color 0.25s var(--ease-out);
+}
+.tickbox.buy-ack:has(:checked) {
+  border-color: var(--color-ink);
+}
+.tickbox.buy-ack input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  flex: none;
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  background: var(--color-raised);
+  transition: background-color 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
+}
+.tickbox.buy-ack input:checked {
+  border-color: var(--color-red-deep);
+  background-color: var(--color-red-deep);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fdf8ed' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tickbox.buy-ack,
+  .tickbox.buy-ack input {
+    transition: none;
+  }
+}

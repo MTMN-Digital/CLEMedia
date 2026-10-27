@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
+import { PageHero } from "@/components/PageHero";
 import { StudioWall } from "@/components/render";
-import { NoStrip } from "@/components/media/NoStrip";
-import { Wipe } from "@/components/Wipe";
-import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
+import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
 import type { MediaItem } from "@/lib/types";
 
 /* ============================================================================
-   Press and appearances, rebuilt 2026-10-06, recomposed against /story.
+   Press and appearances, rebuilt 2026-10-06, carried to the hero 2026-10-27.
 
    WHAT A PRESS PAGE IS FOR. One reader: somebody writing about the company
    who needs to get the facts right and reach a person. So the page is built
@@ -22,18 +21,27 @@ import type { MediaItem } from "@/lib/types";
    founder's title and where the episodes are, which is the one thing every
    press page should have and almost none do.
 
-   THE EMPTY STATE IS THE PAGE. One real fact exists: a UK podcast appearance
-   booked for December, with more to follow around the app launch. It is not
-   padded out with logos of publications that have not written anything, with
-   a "featured in" strip, or with invented quotes. The honesty is the subject
-   of the display statement under the index, and the empty slot is drawn as a
-   slot, so a page with little on it reads as composed rather than unfinished.
+   THE NEWS IS THE HEADLINE, 2026-10-27. One real fact exists: a UK podcast
+   appearance booked for December, with more to follow around the app launch.
+   It used to sit in a ruled "Next" block under a heading that read "Press
+   and appearances", which is a filing label, and the client named that shape
+   as the site's problem. The fact now opens the page, at hero scale, over the
+   meadow frame. Once `media_items` has rows the headline steps back to the
+   plain description of what the index holds, so the hero never carries a
+   booking the index has already outgrown.
 
-   SHAPE, borrowed from /story: a left heading column and a right body column
-   on the paper sections, a captioned full-bleed frame from the show, one
-   statement at display size, and the notes to editors raised onto the wall as
-   a slip of card, which is the page's best object and now carries the weight.
-   Paper, wall, paper, one deep band.
+   WHAT WENT. The grove band that stated, at display size, what the page
+   would not do, and the six empty logo slots drawn under it. The client
+   called that register horrible on 2026-10-27: a heading says what IS. The
+   one fact the band carried, that coverage is listed as it runs, is what the
+   index already says in its empty state. The bench the band spent is now
+   under the notes to editors, which is the page's most useful object.
+
+   SHAPE. The hero frame, then the title slates on the wall, the index and
+   the subjects on paper, the press sheet on the bench, one deep band. Each
+   section opens in its own text shape: a claim over the object, a heading in
+   a left track beside the rows, a claim over a ruled set, a heading beside
+   the sheet.
 
    Entries come from `media_items`, which Conor fills from the admin panel.
    The moment a row exists it takes over from the standing rows below, so
@@ -78,7 +86,9 @@ const SUBJECTS: { topic: string; to: string; line: string; cta: string }[] = [
 /* The standing rows, used until `media_items` has anything in it. The booking
    is the client's own fact and is stated exactly as given: a UK podcast, in
    December, with more expected around the app launch. No show name, no date,
-   no host, because none has been supplied. */
+   no host, because none has been supplied. The second half of that fact,
+   "more to follow around the app launch", lives here rather than in the
+   headline, which stops at the booking so it sets in two lines. */
 const STANDING: { detail: string; pending?: boolean; what: string; when: string }[] = [
   {
     when: "December",
@@ -178,6 +188,11 @@ function monthYear(iso: string | null): string {
 
 type Slip = { status: string; title: string; when: string; body: string; key: string };
 
+/* The one line the right-aligned notes share: the credit under the bench and
+   the line under the index. The same measure Home uses for its provenance
+   note, in the body colour because both sit on paper. */
+const NOTE = "ml-auto max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body";
+
 export default function Media() {
   const { items, load } = useMediaItems();
 
@@ -197,6 +212,18 @@ export default function Media() {
         status: s.pending ? "Expected" : "Booked",
       }));
 
+  /* The status line under the index heading. It used to float at the far
+     right of the heading row, where it read as a stray; it now sits where a
+     reader looks after the heading. */
+  const status =
+    load === "ready" && items
+      ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
+      : load === "empty"
+        ? "Nothing published yet"
+        : load === "failed"
+          ? "The index could not be loaded"
+          : "Loading the index";
+
   return (
     <>
       <Seo
@@ -205,233 +232,203 @@ export default function Media() {
         path="/media"
       />
 
-      {/* ═══ OPENING. Heading column left, the one real fact on the right as a
-          ruled block under the lead. The fact is the next entry in the index
-          and is set at a size that makes it the first thing the eye finds. ═══ */}
-      <Section pad={["normal", "tight"]}>
-        <Container>
-          <Settle className="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
-            <div className="lg:pt-3">
-              <p className="font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-muted lg:max-w-[26ch]">
-                For anyone writing about the company or the series.
+      {/* ═══ OPENING, in the hero's frame. The meadow is the first sight of
+          Finn and Fia on the page and the frame a journalist is most likely
+          to want; the headline is the page's one piece of news. The quiet
+          action is a hand-written anchor rather than a Button, because
+          Button's `href` opens a new tab and this stays on the page. ═══ */}
+      <PageHero
+        id="media-h"
+        asset="show.meadow"
+        position="center 60%"
+        credit={<>Finn and Fia. A frame from the series.</>}
+        eyebrow={
+          <>
+            Press and appearances<span>For anyone writing about the company or the series</span>
+          </>
+        }
+        aside={<>Everything links straight out to the original.</>}
+        title={
+          items ? (
+            <>
+              Interviews, podcast appearances and coverage of the <em>company and the series.</em>
+            </>
+          ) : (
+            <>
+              A UK podcast appearance is booked for <em>December.</em>
+            </>
+          )
+        }
+        actions={
+          <>
+            <Button to="/contact">
+              Press enquiries
+              <IconArrow size={16} />
+            </Button>
+            <a href="#stills-h" className="btn btn-quiet">
+              The title slates
+            </a>
+          </>
+        }
+      />
+
+      {/* ═══ THE STILLS, on the studio wall.
+
+          A press page exists to hand somebody a picture, and this one had not
+          a single object on it: a column of listings, a kit of text, and a
+          statement. The title slates are the show's own artwork and the
+          thing a journalist actually wants, so they stand here as what they
+          are, boards under one lamp on the bench they were made on. The
+          heading is the thing worth knowing about them, not a label for the
+          band; the offer of print resolution is a note under the bench.
+
+          `StudioWall` was built for this and mounted nowhere. It is kept off
+          the home page on purpose, because the same plates cannot stand
+          twice on one page and the filmstrip there already has them. ═══ */}
+      <Section labelledBy="stills-h" pad="normal" className="wall">
+        <Container width="wide">
+          <Settle>
+            <h2 id="stills-h" className="t-h2 max-w-[22ch] scroll-mt-28">
+              Every title is made in wool and photographed, not set in a typeface.
+            </h2>
+          </Settle>
+          <div className="mt-10 lg:mt-14">
+            <StudioWall label="Title slates" meta="Series one" />
+          </div>
+          <p className={`${NOTE} mt-6`}>Ask and we will send them at print resolution.</p>
+        </Container>
+      </Section>
+
+      {/* ═══ THE INDEX, on paper.
+          Rows, not a room: a coverage index is a list of two entries, and
+          rows on paper say that honestly while giving the rooms either side
+          of it their effect back. The heading stands in a left track with
+          the load state under it, the rows beside it.
+          The state logic is unchanged: ready, empty and failed stay
+          distinguished, because "could not load" must never render as
+          "nothing has run". ═══ */}
+      <Section labelledBy="index-h" pad="normal">
+        <Container width="wide">
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16 xl:gap-24">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 id="index-h" className="t-h1 max-w-[16ch]">Appearances, as they are booked.</h2>
+              <p className="mt-6 font-mono text-[13px] uppercase tracking-[0.14em] text-muted" role="status">
+                {status}
               </p>
             </div>
-            <div className="lg:border-l lg:border-rule-soft lg:pl-12">
-              <h1 className="t-display max-w-[12ch]">Press and appearances</h1>
-              <Lead className="mt-7 max-w-[46ch]">
-                Interviews, podcast appearances and coverage of the company and the series.
-                Everything links straight out to the original. There is not much of it yet, and
-                this page would rather be short than padded.
-              </Lead>
 
-              {!items && (
-              <div className="mt-12 max-w-[44rem] border-t-[1.5px] border-rule pt-7">
-                <p className="font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">Next</p>
-                <p className="mt-4 font-sans text-[24px] font-semibold leading-[1.25] text-ink sm:text-[28px]">
-                  A UK podcast appearance is booked for December, with more to follow around the
-                  app launch.
+            <div>
+              <ul className="border-t-[1.5px] border-rule">
+                {slips.map((sl) => (
+                  <li
+                    key={sl.key}
+                    className="grid gap-x-8 gap-y-2 border-b-[1.5px] border-rule py-7 sm:grid-cols-[minmax(0,0.3fr)_minmax(0,1fr)_minmax(0,0.24fr)] sm:py-8"
+                  >
+                    <p className="eyebrow eyebrow-sm">{sl.when}</p>
+                    <div>
+                      <h3 className="text-[18px] font-semibold leading-[1.3] text-ink">{sl.title}</h3>
+                      {sl.body && <p className="t-body mt-2 max-w-[58ch] text-body">{sl.body}</p>}
+                    </div>
+                    <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted sm:justify-self-end">
+                      {sl.status}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+
+              {/* The links sit under the index rather than inside a row, so a
+                  row stays one scannable line per entry. */}
+              {items && items.some((m) => m.link) && (
+                <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+                  {items.filter((m) => m.link).map((m) => (
+                    <li key={m.id}>
+                      <TextLink href={m.link as string}>
+                        Open {m.title}
+                        <IconExternal size={14} />
+                      </TextLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {load === "failed" && (
+                <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
+                  The index could not be loaded just now, so the standing entries above are what is
+                  known. Please try again shortly, or ask through the press route.
                 </p>
-                <p className="mt-4 max-w-[44ch] text-[15px] leading-[1.65] text-body">
-                  It appears in the index below, with the show and the link, on the day it goes out.
+              )}
+              {load === "empty" && (
+                <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
+                  No coverage has run yet, so there is none on this page. The first piece to run
+                  takes the next place on the shelf, with its outlet, its date and a link to the
+                  original.
                 </p>
-              </div>
               )}
             </div>
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ THE STILLS, on the studio wall.
-      
-          A press page exists to hand somebody a picture, and this one had not
-          a single object on it: a column of listings, a kit of text, and a
-          statement. The four title slates are the show's own artwork and the
-          thing a journalist actually wants, so they stand here as what they
-          are, boards under one lamp on the bench they were made on.
-      
-          `StudioWall` was built for this and mounted nowhere. It is kept off
-          the home page on purpose, because the same four plates cannot stand
-          twice on one page and the filmstrip there already has them. ═══ */}
-      <Section labelledBy="stills-h" pad={["tight", "normal"]} className="wall">
+      {/* ═══ WHAT WE ARE GLAD TO BE ASKED. The claim over a ruled set, the
+          rows the full width of the page: the topic in a left column and
+          its line and link beside it. Each row points at the page that
+          already sets out the position, so a journalist can read the source
+          first. ═══ */}
+      <Section labelledBy="subjects-h" pad={["tight", "normal"]}>
         <Container width="wide">
-          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
-            <h2 id="stills-h" className="t-h2 max-w-[18ch]">The title slates, if you need art</h2>
-            <p className="max-w-[40ch] text-[15px] leading-[1.65] text-body">
-              Every title is made in wool and photographed, not set in a typeface. Ask and we will
-              send them at print resolution.
-            </p>
-          </div>
-          <div className="mt-12 lg:mt-16">
-            <StudioWall label="Title slates" meta="Series one" />
-          </div>
-        </Container>
-      </Section>
-
-      {/* ═══ THE INDEX, on paper.
-          This was built as a third lit room, slips standing on a shelf. It
-          was well made and it was one room too many: the page already stands
-          the title slates in a room and the press sheet in another, and a
-          third turned the device into the page's wallpaper. The room is the
-          site's way of showing an OBJECT. A coverage index is not an object,
-          it is a list of two entries, and rows on paper say that honestly
-          while giving the two rooms either side of it their effect back.
-          The state logic is unchanged: ready, empty and failed stay
-          distinguished, because "could not load" must never render as
-          "nothing has run". ═══ */}
-      <Section labelledBy="index-h" pad={["tight", "normal"]}>
-        <Container width="wide">
-          <Settle className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
-            <h2 id="index-h" className="t-h2">The index</h2>
-            <p className="font-mono text-[14.5px] uppercase tracking-[0.12em] text-muted">
-              {load === "ready" && items
-                ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
-                : load === "empty"
-                  ? "Nothing published yet"
-                  : load === "failed"
-                    ? "The index could not be loaded"
-                    : "Loading the index"}
-            </p>
-          </Settle>
-
-          <Settle as="ul" className="mt-10 lg:mt-12">
-            {slips.map((sl) => (
-              <li
-                key={sl.key}
-                className="hairline grid gap-x-10 gap-y-2 py-7 sm:grid-cols-[minmax(0,0.26fr)_minmax(0,1fr)_minmax(0,0.22fr)] sm:py-8"
-              >
-                <p className="eyebrow eyebrow-sm">{sl.when}</p>
-                <div>
-                  <h3 className="text-[17px] font-semibold text-ink">{sl.title}</h3>
-                  {sl.body && <p className="t-body mt-2 max-w-[58ch] text-body">{sl.body}</p>}
-                </div>
-                <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted sm:justify-self-end">
-                  {sl.status}
-                </p>
-              </li>
-            ))}
-          </Settle>
-
-          {/* The links sit under the index rather than inside a row, so a
-              row stays one scannable line per entry. */}
-          {items && items.some((m) => m.link) && (
-            <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-              {items.filter((m) => m.link).map((m) => (
-                <li key={m.id}>
-                  <TextLink href={m.link as string}>
-                    Open {m.title}
-                    <IconExternal size={14} />
-                  </TextLink>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {load === "failed" && (
-            <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
-              The index could not be loaded just now, so the standing entries above are what is
-              known. Please try again shortly, or ask through the press route.
-            </p>
-          )}
-          {load === "empty" && (
-            <p className="mt-8 max-w-[56ch] text-[16px] leading-[1.7] text-body">
-              No coverage has run yet, so there is none on this page. The first piece to run
-              takes the next place on the shelf, with its outlet, its date and a link to the
-              original.
-            </p>
-          )}
-        </Container>
-      </Section>
-
-      {/* The statement. The page's honesty at display size, with room around
-          it. It is the company's own line about itself, not a quotation.
-
-          ON THE BENCH, 2026-10-13. It was the third paper band in a row: the
-          index, this and the subjects ran from 1739 to 4221 on one flat
-          ground, 2482 pixels, nearly half the page, which is what made this
-          page read thin when nothing on it is. This is the band to lift,
-          because it is the page's argument and because it was also its
-          emptiest, 885 pixels carrying one sentence and six slots. Dark, the
-          sentence is the thing in the room. The ink hand inverts on the bench
-          on its own (see draw.css), so the strip came with it.
-
-          IN THE GROVE rather than the umber, 2026-10-13. This band and the
-          home page's "An online and offline balance" are the same kind of
-          thing, the company stating a position about children and screens
-          rather than describing its work, and the olive is now the register
-          those two share. `.grove` only re-points `--color-bench`, so every
-          rule above still applies unchanged. */}
-      <Section pad="open" labelledBy="statement-h" className="bench grove">
-        <Container width="wide">
-          <h2 id="statement-h" className="sr-only">What this page will not do</h2>
-          <Wipe>
-            {/* No `text-ink`: `.bench` sets cream, and the hairline is the
-                measured one from the home page's evidence band, because
-                `--color-rule` is an ink alpha and disappears on a dark band. */}
-            <p className="t-h1 max-w-[24ch] border-y-[1.5px] border-edge-dark py-14 font-display sm:py-20">
-              No logo strip of publications that have not written about us, and no quote nobody
-              said.
-            </p>
-          </Wipe>
-
-          {/* And the strip itself, empty. Every press page on the internet
-              has this shape full of marks the company has no right to; a
-              reader recognises it before reading a word. See
-              components/media/NoStrip.tsx. */}
           <Settle>
-            <NoStrip />
+            <h2 id="subjects-h" className="t-h2 max-w-[20ch]">
+              Four subjects the company has a worked position on.
+            </h2>
+            <p className="mt-6 max-w-[62ch] text-[16px] leading-[1.7] text-body">
+              Everything the company says publicly is on one of these pages, which is also where a
+              quote should be checked against. If what you need is not on one of them, ask.
+            </p>
           </Settle>
-        </Container>
-      </Section>
 
-      {/* ═══ WHAT WE ARE GLAD TO BE ASKED. Heading column left, rows right, on
-          paper. Each row points at the page that already sets out the
-          position, so a journalist can read the source first. ═══ */}
-      <Section labelledBy="subjects-h" pad="tight">
-        <Container>
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20 xl:gap-28">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 id="subjects-h" className="t-h1 max-w-[13ch]">What we are glad to be asked about</h2>
-              <p className="t-lead mt-7 max-w-[38ch] text-ink">
-                Four subjects the company has a worked position on, and the page that sets each one
-                out in full.
-              </p>
-              <p className="mt-8 max-w-[40ch] border-t-[1.5px] border-rule pt-7 text-[16px] leading-[1.7] text-body">
-                Everything the company says publicly is on one of these pages, which is also where
-                a quote should be checked against. If what you need is not on one of them, ask.
-              </p>
-            </div>
-
-            <ul className="border-t-[1.5px] border-rule">
-              {SUBJECTS.map((s) => (
-                <li key={s.topic} className="border-b-[1.5px] border-rule py-7">
-                  <h3 className="t-h3">{s.topic}</h3>
-                  <p className="mt-2.5 max-w-[56ch] text-[16px] leading-[1.68] text-body">{s.line}</p>
+          <Settle as="ul" className="mt-10 border-t-[1.5px] border-rule lg:mt-12">
+            {SUBJECTS.map((s) => (
+              <li
+                key={s.topic}
+                className="grid gap-x-10 gap-y-3 border-b-[1.5px] border-rule py-7 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:py-8"
+              >
+                <h3 className="t-h3 max-w-[16ch]">{s.topic}</h3>
+                <div>
+                  <p className="max-w-[56ch] text-[16px] leading-[1.68] text-body">{s.line}</p>
                   <p className="mt-4">
                     <TextLink to={s.to}>
                       {s.cta}
                       <IconArrow size={15} />
                     </TextLink>
                   </p>
-                </li>
-              ))}
-            </ul>
+                </div>
+              </li>
+            ))}
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ NOTES TO EDITORS, on the wall. The sheet is a slip of card laid on
-          the changed ground, tabbed and a fraction off true, in a room of its
-          own with the route to a person beside it. It is the thing a
-          journalist copies names and marks out of ten minutes before filing,
-          so it gets the weight, not a narrow strip at the bottom. Raised
-          paper, so muted is safe on the card; everything on the wall itself is
-          body or ink. ═══ */}
-      <Section labelledBy="notes-h" className="wall">
+      {/* ═══ NOTES TO EDITORS, on the bench. The sheet lies flat on the
+          bench the slates were made on, lit from the same side, with the
+          route to a person beside it. It is the thing a journalist copies
+          names and marks out of ten minutes before filing, so it gets the
+          page's one dark room, not a narrow strip at the bottom.
+
+          The sheet is the render kit's paper (`rk-corr__sheet`) without the
+          studio around it: the bench IS the room here. The sheet reads
+          `--shade` and `--az` from its wrapper, so they are set on the
+          wrapper, and everything on the card names its own colour because
+          the bench sets cream on everything it does not. ═══ */}
+      <Section labelledBy="notes-h" className="bench">
         <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
+          <Settle className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 xl:gap-24">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 id="notes-h" className="t-h1 max-w-[12ch]">Notes to editors</h2>
-              <p className="t-lead mt-7 max-w-[34ch] text-ink">
+              <h2 id="notes-h" className="t-h2 max-w-[16ch]">
+                Spellings, names and facts, checked before you file.
+              </h2>
+              {/* No `text-body`: `.bench` sets cream, and body is an ink
+                  brown that disappears on it. */}
+              <p className="mt-7 max-w-[44ch] text-[17px] leading-[1.65]">
                 Interview requests, artwork and anything you need checked before you file go
                 through the press route on the contact page. It reaches the team directly.
               </p>
@@ -447,29 +444,28 @@ export default function Media() {
               </div>
             </div>
 
-            <div className="rk-studio rk-room self-start">
-              <span className="rk-rake" aria-hidden="true" />
-              <div className="rk-head" aria-hidden="true">
+            {/* Flat, lit by the bench and not posed by it: this is the block
+                a journalist selects and copies from. */}
+            <div
+              className="rk-corr__sheet self-start text-ink"
+              style={{ "--shade": "var(--color-ink)", "--az": "-32deg" } as React.CSSProperties}
+            >
+              <div className="mb-7 flex items-baseline justify-between gap-6 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
                 <span>Press sheet</span>
-                <span className="rk-head-rule" />
-                <span className="rk-head-meta">CLÉ Family Media</span>
+                <span>CLÉ Family Media</span>
               </div>
-              {/* Flat, lit by the room and not posed by it: this is the block
-                  a journalist selects and copies from. */}
-              <div className="rk-corr__sheet">
-                <dl>
-                  {NOTES.map((n) => (
-                    <div
-                      key={n.k}
-                      className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
-                    >
-                      <dt className="font-mono text-[14.5px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
-                      <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-7 font-mono text-[14.5px] uppercase tracking-[0.2em] text-muted">Ends</p>
-              </div>
+              <dl>
+                {NOTES.map((n) => (
+                  <div
+                    key={n.k}
+                    className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-rule-soft py-4 first:pt-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
+                  >
+                    <dt className="font-mono text-[14.5px] uppercase tracking-[0.1em] text-muted">{n.k}</dt>
+                    <dd className="text-[16px] leading-[1.6] text-ink">{n.v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-7 font-mono text-[14.5px] uppercase tracking-[0.2em] text-muted">Ends</p>
             </div>
           </Settle>
         </Container>

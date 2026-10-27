@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Figure } from "@/components/Figure";
+import { PageHero } from "@/components/PageHero";
 import { Settle } from "@/components/Settle";
-import { Container, Section } from "@/components/ui";
+import { Button, Container, Section } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
 
@@ -12,6 +13,14 @@ import { SITE } from "@/lib/site";
    The old page was a heading, a paragraph and two buttons on an empty field,
    with the whole right half of a 1440 frame blank and a ghost "404" set in
    clay at 1.4:1 against the ground.
+
+   THE OPENING, 2026-10-27. The heading and its grey lead at the left edge of
+   the paper are gone; the page opens the way every page now opens, in the
+   hero's frame. The plain panel in the hero's own dark: "404" and "Page not
+   found" top left, the reassurance top right, "That page has wandered off"
+   bottom left at the hero's scale, and the two routes most people want under
+   it. The lead's first sentence, the one that explains rather than reassures,
+   now stands over the list of routes it was really introducing.
 
    THE DEVICE: the missing frame. This company's trade is a series, so a page
    that is not there is a frame that is not in the reel. The strip is the
@@ -29,9 +38,9 @@ import { SITE } from "@/lib/site";
    the way the stock does. Also dropped: the numeral set huge in Fraunces,
    which competed with the heading and is the least useful thing on the page.
 
-   The routes are real routes, one line each, in the column that used to be
-   empty paper. Held to one screen at 1440 by 900: this page is an
-   interruption, not a destination.
+   The routes are real routes, one line each, in a ruled list under the
+   opening. This page is an interruption, not a destination: the panel, the
+   routes and the strip, and nothing after them.
    ========================================================================== */
 
 const ROUTES_BACK: { href?: string; line: string; to?: string; title: string }[] = [
@@ -99,8 +108,9 @@ function MissingFrame() {
       {/* 0.6, not the 0.42 the edge print uses. The edge print is aria-hidden
           decoration on the margin of the stock; this is the one line that says
           what the picture means, so it is held to AA: 0.42 measures 3.75:1 on
-          the stock and 0.6 measures 6.4:1. */}
-      <p className="absolute bottom-3 left-3 font-mono text-[12.5px] uppercase tracking-[0.18em] text-[rgba(246,240,226,0.6)]">
+          the stock and 0.6 measures 6.4:1. And 13px, the floor for real text,
+          because it is real text. */}
+      <p className="absolute bottom-3 left-3 font-mono text-[13px] uppercase tracking-[0.18em] text-[rgba(246,240,226,0.6)]">
         Frame missing
       </p>
     </div>
@@ -112,23 +122,55 @@ export default function NotFound() {
     <>
       <Seo title="Page not found" description="That page doesn't exist." path="/404" noIndex />
 
-      <Section pad="tight">
-        <Container width="wide">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:gap-20">
-            <Settle>
-              <h1 className="t-display max-w-[12ch]">That page has wandered off</h1>
-              <p className="t-lead mt-5 max-w-[42ch] text-body">
-                The link may be old, or we may have moved something. Everything below is still
-                where it should be.
-              </p>
-            </Settle>
+      {/* ═══ 1. THE OPENING, in the hero's frame.
+          Ink, not wall: a page that is not there opens in the dark of the
+          gaps around the film, which is also the stock the missing frame
+          below sits on. Short, because the routes are the point. ═══ */}
+      <PageHero
+        id="nf-h"
+        size="short"
+        tone="ink"
+        eyebrow={
+          <>
+            404<span>Page not found</span>
+          </>
+        }
+        aside={<>Everything below is still where it should be.</>}
+        title={
+          <>
+            That page has <em>wandered off</em>
+          </>
+        }
+        actions={
+          <>
+            <Button to="/">
+              The home page
+              <IconArrow size={16} />
+            </Button>
+            <Button to="/contact" variant="quiet">
+              Get in touch
+            </Button>
+          </>
+        }
+      />
 
-            <Settle as="ul" className="lg:pt-2">
+      {/* ═══ 2. THE ROUTES BACK.
+          The explanation in a left track, the four routes as a ruled list
+          beside it: the sentence introduces the list, so it sits where the
+          list starts rather than over it. ═══ */}
+      <Section pad="tight" labelledBy="nf-routes-h">
+        <Container width="wide">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] lg:gap-14 xl:gap-20">
+            <h2 id="nf-routes-h" className="t-h3 max-w-[22ch]">
+              The link may be old, or we may have moved something.
+            </h2>
+
+            <Settle as="ul" className="border-t-[1.5px] border-rule">
               {ROUTES_BACK.map((r) => {
                 const inner = (
                   <>
                     <span className="min-w-0">
-                      <span className="block text-[16px] font-semibold text-ink">{r.title}</span>
+                      <span className="block text-[17px] font-semibold text-ink">{r.title}</span>
                       <span className="t-sm mt-1 block text-body">{r.line}</span>
                     </span>
                     <span className="mt-1 shrink-0 text-muted transition-colors group-hover:text-red-deep">
@@ -136,9 +178,9 @@ export default function NotFound() {
                     </span>
                   </>
                 );
-                const cls = "group flex items-start justify-between gap-6 py-4";
+                const cls = "group flex min-h-[44px] items-start justify-between gap-6 py-5";
                 return (
-                  <li key={r.title} className="hairline last:border-b last:border-rule">
+                  <li key={r.title} className="border-b-[1.5px] border-rule">
                     {r.to ? (
                       <Link to={r.to} className={cls}>{inner}</Link>
                     ) : (
@@ -153,18 +195,22 @@ export default function NotFound() {
           </div>
         </Container>
 
-        {/* The strip runs edge to edge, outside the container, because a length
-            of film boxed in a column is a picture of film. `.filmstrip-root`
-            carries the gutter the type above it uses, and `.filmstrip-head` is
-            the class that applies it, which is why the frames are inside one. */}
-        <div className="filmstrip-root mt-14 sm:mt-16">
+        {/* ═══ 3. THE REEL.
+            The strip runs edge to edge, outside the container, because a
+            length of film boxed in a column is a picture of film.
+            `.filmstrip-root` carries the gutter the type above it uses, and
+            `.filmstrip-head` is the class that applies it, which is why the
+            frames are inside one. ═══ */}
+        <div className="filmstrip-root mt-16 sm:mt-20">
           <div className="filmstrip-band overflow-hidden">
             <span className="sprockets sprockets-top" aria-hidden="true" />
             <div className="filmstrip-head flex items-center gap-5 pb-1 pt-2" aria-hidden="true">
+              {/* print-mark: edge print on the stock's margin, decorative */}
               <span className="edge-print whitespace-nowrap font-mono uppercase">
                 CLÉ FAMILY MEDIA
               </span>
               <span className="frame-ticks h-3 flex-1" />
+              {/* print-mark */}
               <span className="edge-print whitespace-nowrap font-mono">404</span>
             </div>
 

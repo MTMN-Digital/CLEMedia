@@ -1,81 +1,49 @@
-import type { CSSProperties } from "react";
 import { Figure } from "@/components/Figure";
-import { useRoomEntry, Stage } from "@/components/render";
 import type { AssetKey } from "@/lib/brand";
 
-/* The three reviewers mounted on the wall the way /contact mounts its five:
-   each print on its own ledge, the caption printed ON the cream mount, and
-   one lamp whose azimuth is read from the portrait's column. */
+/* The three reviewers, as a credits row.
+
+   Until 2026-10-27 they stood on the render kit's studio wall, each print on
+   its own ledge under one lamp, the way /contact mounts its five. That made
+   this the third wall of the same faces on the site (/team, /contact, here),
+   and the mounts set the role line at the kit's 11px floor. The faces are
+   still the point, since this is the app's own claim about who reviews what
+   goes into it, so they stay at a size you can read; the stage goes. One
+   rule, a square print, the name, the role and the one line of what that
+   person checks. Every name, role and sentence is the client's. */
 
 export type Reviewer = { name: string; role: string; line: string; asset: AssetKey };
 
-/* Three across from 30rem up: .rk-corr__people--row in render.css keeps the
-   wide room from dropping to two, so a portrait's column is always
-   i % COLUMNS and the lamp reads it from there. Below 30rem it IS two, since
-   a third of a phone is a 110px column and each of these carries a sentence
-   as well as a name: measured at 390 on 2026-10-16 that sentence was setting
-   two and three words to the line. The lamp keeps reading i % 3 there, which
-   is a few degrees of azimuth wrong on a 165px print and invisible. */
-const COLUMNS = 3;
-const LIGHT = [-26, -6, 16];
-
 export function ReviewerRoom({ people }: { people: Reviewer[] }) {
-  const { ref, armed, lit } = useRoomEntry();
-
   return (
-    <div
-      ref={ref}
-      className={`rk-studio ${armed ? "is-armed" : ""} ${lit ? "is-in" : ""}`}
-    >
-      <span className="rk-rake" aria-hidden="true" />
-
-      <div className="rk-head" aria-hidden="true">
-        <span>Reviewers</span>
-        <span className="rk-head-rule" />
-        <span className="rk-head-meta">CLÉ Family Media</span>
-      </div>
-
-      <div className="rk-item" style={{ "--i": 0 } as CSSProperties}>
-        <ul
-          className="rk-corr__people rk-corr__people--row mx-auto max-w-[44rem]"
+    <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-3 sm:gap-y-10">
+      {people.map((p) => (
+        /* A phone sets the print beside the caption, so three people take
+           three short rows rather than three screens. From 640px up each one
+           is a column: print, then caption under it. */
+        <li
+          key={p.name}
+          className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 border-t-[1.5px] border-rule pt-5 sm:block sm:pt-6"
         >
-          {people.map((p, i) => (
-            <li key={p.name}>
-              <Stage
-                seated
-                ground="ledge"
-                light={LIGHT[i % COLUMNS]}
-                tilt={5.2 + (i % 3) * 0.8}
-                turn={i % 2 ? 1.4 : -1.4}
-                roll={i % 2 ? 0.3 : -0.35}
-                depth={0.46 + (i % 2) * 0.12}
-              >
-                <div className="rk-mat">
-                  <div className="rk-pic">
-                    <Figure
-                      asset={p.asset}
-                      rounded="rounded-none"
-                      className="aspect-square"
-                      sizes="(min-width: 1024px) 220px, 30vw"
-                    />
-                    <span className="rk-light" aria-hidden="true" />
-                  </div>
-                  {/* The whole credit is on the mount: who, what they are,
-                      and what they check. It used to be the name and role
-                      here and then the SAME name and role again in a list
-                      directly underneath, which is the page naming three
-                      people twice in one screen. */}
-                  <div className="rk-corr__caption">
-                    <p className="rk-corr__name">{p.name}</p>
-                    <p className="rk-corr__role">{p.role}</p>
-                    <p className="rk-corr__line">{p.line}</p>
-                  </div>
-                </div>
-              </Stage>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+          <div className="w-[5.5rem] sm:w-full sm:max-w-[12rem]">
+            <Figure
+              asset={p.asset}
+              rounded="rounded-[var(--radius-md)]"
+              className="aspect-square"
+              sizes="(min-width: 640px) 192px, 88px"
+            />
+          </div>
+          <div className="sm:mt-5">
+            <p className="t-body font-semibold text-ink">{p.name}</p>
+            {/* The role is a label inside the credit, which is where a mono
+                label still belongs. 13px, the floor for real text. */}
+            <p className="mt-1 font-mono text-[13px] uppercase leading-[1.6] tracking-[0.14em] text-body">
+              {p.role}
+            </p>
+            <p className="t-sm mt-3 max-w-[32ch] leading-[1.6] text-body">{p.line}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }

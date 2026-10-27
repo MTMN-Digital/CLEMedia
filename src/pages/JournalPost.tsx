@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
+import { PageHero } from "@/components/PageHero";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import { Button, Section, TextLink, Container } from "@/components/ui";
@@ -31,6 +32,12 @@ import type { Category, Post } from "@/lib/types";
    simply has no byline. The entire margin is built from columns that exist in
    `posts`, and src/components/journal/PostBody.tsx renders `body` without ever
    handing a string to the DOM as HTML.
+
+   THE FOUND STATE DOES NOT OPEN ON PageHero. It is a reading layout, and the
+   piece's own title in the display face is its opening. The NOT-FOUND state
+   does (2026-10-27): with nothing published it is the state every
+   /journal/<slug> reaches, so it opens in the hero's frame like every other
+   inner page, with the contents of the journal under it.
    ========================================================================== */
 
 export default function JournalPost() {
@@ -267,17 +274,21 @@ function Article({
 
 /* The close, on the one deep band this page spends. Two routes out and
    nothing else: a piece that has been read to the end has earned a quiet
-   ending rather than a subscription form. */
+   ending rather than a subscription form. The heading is what the journal
+   covers rather than its name: the name is the line under it, and it is in
+   the rail at the top of the page as well. */
 function Close() {
   return (
-    <Section deep>
+    <Section deep labelledBy="close-h">
       <Container width="wide">
         <Settle>
-          <h2 className="t-h2 max-w-[16ch]">The journal of CL&Eacute; Family Media</h2>
+          <h2 id="close-h" className="t-h2 max-w-[28ch]">
+            Four strands: the research, how the work is made, writing for parents, and the
+            business of building this company in Ireland.
+          </h2>
           <div>
-            <p className="t-body mt-5 max-w-[52ch] opacity-85">
-              Four strands: the research, how the work is made, writing for parents, and the
-              business of building this company in Ireland.
+            <p className="t-body mt-6 max-w-[52ch] opacity-85">
+              The journal of CL&Eacute; Family Media.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button to="/journal">
@@ -295,9 +306,11 @@ function Close() {
   );
 }
 
-/* The slug resolved to nothing. Kept short, kept honest, and it keeps the
-   template's own chrome so a reader who followed a dead link still lands
-   somewhere that looks like the journal. */
+/* The slug resolved to nothing. Kept short, kept honest, and opened in the
+   hero's frame (the plain ink panel: there is no picture for a piece that
+   does not exist) so a reader who followed a dead link still lands somewhere
+   that looks like the site. The rail at the top is not needed here: the
+   eyebrow names the journal and the first button goes back to it. */
 function Missing({ slug }: { slug?: string }) {
   return (
     <>
@@ -307,49 +320,51 @@ function Missing({ slug }: { slug?: string }) {
         path={`/journal/${slug ?? ""}`}
         noIndex
       />
-      <Section>
-        <Container>
-          <BackRail />
-          {/* The dead end carries the contents of the journal beside it. With
-              nothing published, this is the state a reader reaches from any
-              /journal/<slug>, and a page that only says "not found" wastes the
-              one thing it could usefully do, which is say what will be here. */}
-          <div className="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] lg:gap-16">
-            <Settle className="max-w-[52ch]">
-              <h1 className="t-h1">
-                We couldn&rsquo;t find that piece
-              </h1>
-              <p className="t-lead mt-6 text-body">
-                It may have been unpublished, or the link may be wrong. The journal index has
-                everything that is live, and the four strands it will fill up with.
-              </p>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Button to="/journal">
-                  Back to the journal
-                  <IconArrow size={16} />
-                </Button>
-                <Button to="/" variant="quiet">
-                  Home
-                </Button>
-              </div>
-            </Settle>
+      <PageHero
+        id="missing-h"
+        tone="ink"
+        size="short"
+        eyebrow={<>The journal</>}
+        aside={<>It may have been unpublished, or the link may be wrong.</>}
+        title={<>We couldn&rsquo;t find that piece</>}
+        actions={
+          <>
+            <Button to="/journal">
+              Back to the journal
+              <IconArrow size={16} />
+            </Button>
+            <Button to="/" variant="quiet">
+              Home
+            </Button>
+          </>
+        }
+      />
 
-            <div className="lg:pt-3">
-              <ul className="border-t-[1.5px] border-rule">
-                {STRANDS.map((s) => (
-                  <li
-                    key={s.slug}
-                    className="flex items-baseline justify-between gap-4 border-b-[1.5px] border-rule py-3.5"
-                  >
-                    <span className="text-[15px] font-semibold text-ink">{s.name}</span>
-                    <span className="shrink-0 font-mono text-[12.5px] uppercase tracking-[0.14em] text-muted">
-                      In preparation
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+      {/* The dead end carries the contents of the journal under it. With
+          nothing published, this is the state a reader reaches from any
+          /journal/<slug>, and a page that only says "not found" wastes the
+          one thing it could usefully do, which is say what will be here. */}
+      <Section as="div" pad="normal">
+        <Container width="wide">
+          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20">
+            <p className="t-lead max-w-[36ch] text-body">
+              The journal index has everything that is live, and the four strands it will fill up
+              with.
+            </p>
+            <ul className="border-t-[1.5px] border-rule">
+              {STRANDS.map((s) => (
+                <li
+                  key={s.slug}
+                  className="flex items-baseline justify-between gap-6 border-b-[1.5px] border-rule py-5"
+                >
+                  <span className="t-h3 text-ink">{s.name}</span>
+                  <span className="shrink-0 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
+                    In preparation
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Settle>
         </Container>
       </Section>
     </>

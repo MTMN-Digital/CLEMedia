@@ -1,9 +1,8 @@
 import { NotifyForm } from "@/components/NotifyForm";
+import { PageHero } from "@/components/PageHero";
 import { Seo } from "@/components/Seo";
-import { ShowFrame } from "@/components/ShowFrame";
 import { StageBoard, type BoardSlip } from "@/components/app/StageBoard";
 import { ReviewerRoom } from "@/components/app/ReviewerRoom";
-import { NoWayOut } from "@/components/app/NoWayOut";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
 import {
@@ -12,7 +11,7 @@ import {
   PupsPlayerWalkthrough,
 } from "@/components/app/PupsPlayerWalkthrough";
 import { EPISODES, RELEASED } from "@/lib/episodes";
-import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
+import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconBell, IconArrow } from "@/components/icons";
 import type { AssetKey } from "@/lib/brand";
 import { APP_LAUNCHED } from "@/lib/site";
@@ -30,14 +29,19 @@ import { APP_LAUNCHED } from "@/lib/site";
    HTML and CSS inside a tablet frame, carrying the four real episode plates and
    their real runtimes, and a reader can step it through Watch, Play and Learn.
 
-   SHAPE, reset 2026-10-08 to the Story pattern. The device is a centrepiece
-   with air around it rather than the thing the page is built out of: the
-   headline shares the top with the ledger of what already exists, the device
-   stands alone on a wall band with open padding, a garden frame takes the
-   page edge to edge, and then Watch, Play and Learn carry the rest as three
-   rows, each with the stage in the left column and its planned features on
-   the right. The five-stage board stands on one StageBoard and the page closes
-   on the one deep band.
+   SHAPE, carried to the home hero's language on 2026-10-27. The page opens
+   the way the home page opens: the hen and the two pugs in the hero frame,
+   which is what the player holds, with the copy in the corners and the
+   headline at hero scale. That frame was two screens down until today, after
+   the walkthrough, which put the biggest real thing on the page behind a
+   drawing of a thing that does not exist yet. The lead that stood under the
+   old headline became a ruled set of its own three facts beside the ledger
+   of what already exists; the device stands alone on a wall band; the five
+   stage board, the one display claim about the walls of the thing, and the
+   reviewers follow; the page closes on the one deep band. The line drawing
+   that illustrated the display claim (a child in a room, a queue, a price tag,
+   a hoarding) is gone: the client reads that sketch register as weak, and
+   the facts it drew now stand beside the sentence as a list.
 
    Nothing is claimed that the page did not already claim. No launch date, no
    store links, no price, no device requirements, no numbers. Where a fact is
@@ -116,6 +120,19 @@ const SLIPS: BoardSlip[] = STAGES.map((s, i) => ({
   items: STAGE_ITEMS[s.id].map((k) => ITEMS[k]),
 }));
 
+/* The walls of the thing, as a list. These four rows are the facts the cut
+   drawing (components/app/NoWayOut.tsx, removed 2026-10-27) put in ink: a
+   queue of episodes that would autoplay, a price tag, an advertising
+   hoarding, and the grown-ups gate the walkthrough's top bar carries. Each
+   row is the page's own claim in its own words, from the commitments above
+   and the Watch line, and nothing is added to them. */
+const WALLS: { label: string; line: string }[] = [
+  { label: "Autoplay", line: "Nothing autoplays after an episode. The next one is chosen, by the child or the adult beside them." },
+  { label: "Purchases", line: "No purchases inside a game." },
+  { label: "Advertising", line: "No advertising to children anywhere in it, and nothing recommending the next thing to watch." },
+  { label: "Grown-ups", line: "Clear settings for parents, behind the Grown-ups button in the player." },
+];
+
 /* The people who check what goes into the app, as the client supplied them.
    The same three review stages the episodes pass: educational review, and
    parent and early years review. */
@@ -140,49 +157,85 @@ export default function AppPage() {
         path="/app"
       />
 
-      {/* ═══ 1. WHAT IT IS, beside what already exists. The headline takes the
-          measure and the ledger of released episodes takes the margin, so the
-          first screen of a page about an unreleased product carries the four
-          things that are real today rather than a headline and air. ═══ */}
-      <Section labelledBy="app-h" pad={["normal", "tight"]}>
+      {/* ═══ 1. THE OPENING, in the hero's frame. The hen and the two pugs,
+          which is what the player holds, with the product's name and state
+          top left, the two promises a parent asks about first top right, and
+          the headline bottom left. The credit is the same wording the frame
+          carried when it hung mid-page. Before launch the two actions are
+          the notify form down the page and the four episodes that already
+          exist, both on this page; after launch, the store links. Plain
+          anchors for the two on-page ones, not Button: Button's href opens a
+          new tab, and these only go down the page. ═══ */}
+      <PageHero
+        id="app-h"
+        asset="home.characters"
+        position="center 45%"
+        credit={
+          <>
+            Finn, Fia and the hen. A frame from The Pawsitive Pugs &amp; Pals&reg;, which is what
+            the player holds.
+          </>
+        }
+        eyebrow={<>PupsPlayer&trade;<span>{APP_LAUNCHED ? "Available now" : "In development"}</span></>}
+        aside={<>Ad-free. No purchases inside a game.</>}
+        title={<>Watch, play and learn <em>in one place</em></>}
+        actions={
+          APP_LAUNCHED && liveLinks.length > 0 ? (
+            <>
+              {liveLinks.map((l) => (
+                <Button key={l.label} href={l.href}>{l.label}<IconExternal size={15} /></Button>
+              ))}
+            </>
+          ) : (
+            <>
+              <a href="#notify" className="btn btn-primary">
+                Hear when it lands<IconArrow size={16} />
+              </a>
+              <a href="#released" className="btn btn-quiet">The four released episodes</a>
+            </>
+          )
+        }
+        size="tall"
+      />
+
+      {/* ═══ 2. WHAT IT IS, beside what already exists. The old lead, set as
+          the three facts it was: the model, the two things it never does,
+          and where the plan stands. Each on its own rule, so they read as
+          three commitments rather than a paragraph of grey. The ledger of
+          released episodes takes the margin, so the first screen under the
+          hero carries the four things that are real today. No heading: the
+          hero's is the heading, and this band is its first paragraph. Open
+          at the top: the hero has just ended on ink, and the first rule
+          needs a breath of paper before it. ═══ */}
+      <Section as="div" pad={["open", "tight"]}>
         <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
-            <div>
-              <h1 id="app-h" className="t-display max-w-[14ch]">Watch, play and learn in one place</h1>
-              <Lead className="mt-6 max-w-[54ch]">
-                PupsPlayer™ will hold the whole Watch, Play, Learn model: ad-free episodes of{" "}
-                <em>The Pawsitive Pugs &amp; Pals</em>®, the songs, puzzles and games built from each
-                one, and the printable and offline activities underneath. There are no purchases
-                inside a game and nothing recommending the next thing to watch.
-                {APP_LAUNCHED
-                  ? ""
-                  : " It is in development and not yet available. Everything on this page is the first release as it is planned, not as it has been tested, and we will say which is which once testing is done."}
-              </Lead>
-              {APP_LAUNCHED && liveLinks.length > 0 ? (
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {liveLinks.map((l) => (
-                    <Button key={l.label} href={l.href}>{l.label}<IconExternal size={15} /></Button>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-8">
-                  {/* A plain anchor, not TextLink: TextLink opens an href in a
-                      new tab, and this one only goes down the page. */}
-                  <a
-                    href="#notify"
-                    className="link-draw inline-flex items-center gap-1.5 text-[15px] font-semibold text-red-deep"
-                  >
-                    Hear when it lands<IconArrow size={15} />
-                  </a>
-                </div>
+          <Settle className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-start lg:gap-16">
+            <ul className="max-w-[58ch]">
+              <li className="t-lead border-t-[1.5px] border-rule py-6 text-ink">
+                The whole Watch, Play, Learn model in one place: ad-free episodes of{" "}
+                <em>The Pawsitive Pugs &amp; Pals</em>&reg;, the songs, puzzles and games built from
+                each one, and the printable and offline activities underneath.
+              </li>
+              <li className="t-lead border-t-[1.5px] border-rule py-6 text-ink">
+                No purchases inside a game and nothing recommending the next thing to watch.
+              </li>
+              {!APP_LAUNCHED && (
+                /* The status line, kept word for word. It is the one row set
+                   in the body colour: a note on the plan, not a promise. */
+                <li className="t-body border-y-[1.5px] border-rule py-6 text-body">
+                  In development and not yet available. Everything on this page is the first
+                  release as it is planned, not as it has been tested, and we will say which is
+                  which once testing is done.
+                </li>
               )}
-            </div>
+              {APP_LAUNCHED && <li className="border-t-[1.5px] border-rule" aria-hidden="true" />}
+            </ul>
 
             {/* The ledger of what exists. It used to sit halfway down the page
                 under the heading of a section about things that do not exist
                 yet, which is exactly the wrong place for the only hard facts
-                on the page. */}
-            <div className="card rounded-[var(--radius-lg)] px-5 py-1 sm:px-6 lg:mb-1.5">
+                on the page. The hero's quiet button lands here. */}
+            <div id="released" className="card scroll-mt-24 rounded-[var(--radius-lg)] px-5 py-1 sm:px-6">
               <p className="eyebrow eyebrow-sm  pt-5">Released so far</p>
               <ul className="mt-2">
                 {RELEASED.map((ep) => (
@@ -209,113 +262,116 @@ export default function AppPage() {
         </Container>
       </Section>
 
-      {/* ═══ 2. THE PRODUCT, in a room of its own. A wall band a stop deeper
+      {/* ═══ 3. THE PRODUCT, in a room of its own. A wall band a stop deeper
           than the ground, with the drawn device standing on it as a lit
           object and the three stages of the model driving it. This is the one
           thing on the page worth looking at before reading anything, so it
           gets the one change of ground. ═══ */}
-      <Section labelledBy="walk-h" pad="open" className="wall">
-        <Container width="wide">
-          <Settle className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
-            {/* Not "Watch, play and learn": that is the h1 a screen above,
-                and two headings a page apart saying the same four words is
-                how a page stops looking authored. This one names what the
-                device actually does, which is walk the model in order. */}
-            <h2 id="walk-h" className="t-h2 max-w-[16ch]">Watch, then play, then learn</h2>
-            {/* The standing label on the whole band. It was under the device,
-                where a reader met it only after taking the picture for a
-                screenshot, which is the misreading it exists to prevent. */}
-            <p className="font-mono text-[14px] uppercase tracking-[0.16em] text-body sm:pb-2">
-              Drawn from the plan, not a screenshot
-            </p>
-          </Settle>
-
-          <Wipe className="mt-14 sm:mt-20">
-            <PupsPlayerWalkthrough episodes={EPISODES} />
-          </Wipe>
-        </Container>
-      </Section>
-
-      {/* ═══ IMAGE MOMENT. The page leaves the drawn interface and shows
-          something that exists. It ran edge to edge until 2026-10-13, where
-          the band kept 58 percent of the frame at 1440; see ShowFrame.tsx.
-          Captioned as what it is, a frame from the show. ═══ */}
-      <ShowFrame
-        asset="home.characters"
-        caption={
-          <>
-            Finn, Fia and the hen. A frame from The Pawsitive Pugs &amp; Pals&reg;, which is what
-            the player holds.
-          </>
-        }
-      />
-
-      {/* ═══ 3. THE THREE STAGES, one row each. Watch, Play, Learn is the spine
-          of the company, so it is the spine of the page: the stage in the
-          left column, the planned features that belong to it on the right.
-          One StageBoard. ═══ */}
-      <Section labelledBy="stages-h" pad={["tight", "none"]}>
-        <Container width="wide">
-          <h2 id="stages-h" className="t-h2 mb-10 max-w-[18ch]">{APP_LAUNCHED ? "What each stage holds" : "What each stage will hold"}</h2>
-          <StageBoard slips={SLIPS} />
-        </Container>
-      </Section>
-
-      {/* A plain statement at display size between two rules, the same
-          sentence the plan already makes about small hands, pulled out of the
-          list above so it can be read from across a room. */}
-      <Section pad="normal" as="div">
+      <Section labelledBy="walk-h" pad={["normal", "open"]} className="wall">
         <Container width="wide">
           <Wipe>
-            <p className="t-h1 max-w-[26ch] border-y-[1.5px] border-rule py-10 font-display text-ink sm:py-14">
-              A young child can find their way around it, and cannot accidentally find their way out of it.
-            </p>
+            {/* The device's own first screen says this, and it is the one
+                sentence about the product that the hero has not already said.
+                "Watch, then play, then learn" stood here until 2026-10-27 and
+                only repeated the headline a screen above. */}
+            <h2 id="walk-h" className="t-h2 max-w-[16ch]">Nothing plays until someone picks it.</h2>
           </Wipe>
 
-          {/* The sentence above, drawn. Everything inside connects to
-              everything inside; the three ways a children's app usually leaks
-              a child out of it stop at the wall. All three are the page's own
-              claims from the feature list. See components/app/NoWayOut.tsx. */}
-          <Settle className="mt-12 lg:mt-16">
-            <NoWayOut />
-          </Settle>
+          <Wipe className="mt-12 sm:mt-16">
+            <PupsPlayerWalkthrough episodes={EPISODES} />
+          </Wipe>
+
+          {/* The standing note on the render, as a credit: the same small
+              right aligned mono line every rendered picture on the site
+              carries, under the device where the eye leaves it. */}
+          <p className="ml-auto mt-6 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
+            Drawn from the plan, not a screenshot.
+          </p>
         </Container>
       </Section>
 
-      {/* ═══ 4. WHO CHECKS IT. A credits block: three faces at a size you can
-          read, over the three lines of what each of them actually does. It
-          used to be a card in a narrow measure with the portraits at 64px,
-          which made the one section on the page that carries named human
-          accountability the quietest thing on it. ═══ */}
-      <Section labelledBy="check-h" pad={["none", "normal"]}>
-        <Container width="default">
-          <Settle className="max-w-[58ch]">
-            <h2 id="check-h" className="t-h2 max-w-[20ch]">
+      {/* ═══ 4. THE THREE STAGES, one slip each. Watch, Play, Learn is the
+          spine of the company, so it is the spine of the page. The heading is
+          the Play slip's own claim, which is the sentence that makes this a
+          model rather than a library with games beside it. No lead under it:
+          the board is the detail. ═══ */}
+      <Section labelledBy="stages-h" pad={["normal", "none"]}>
+        <Container width="wide">
+          <Wipe>
+            <h2 id="stages-h" className="t-h2 max-w-[22ch]">
+              Each episode has activities built from what just happened in it.
+            </h2>
+          </Wipe>
+          <div className="mt-10 sm:mt-12">
+            <StageBoard slips={SLIPS} />
+          </div>
+        </Container>
+      </Section>
+
+      {/* ═══ 5. THE WALLS. The page's best sentence at display size between
+          two rules, with the four facts behind it on their own rules beside
+          it. This is where the drawing stood: a child in a room with a queue,
+          a price tag and a hoarding outside the wall. The sentence did not
+          need it, and the list says in words what the ink said. ═══ */}
+      <Section labelledBy="walls-h" pad="normal">
+        <Container width="wide">
+          <Wipe>
+            <div className="border-y-[1.5px] border-rule py-10 sm:py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
+              <h2 id="walls-h" className="t-display max-w-[18ch] font-display text-ink">
+                A young child can find their way around it, and cannot accidentally find their way
+                out of it.
+              </h2>
+              <dl className="mt-10 lg:mt-0">
+                {WALLS.map((w) => (
+                  <div key={w.label} className="border-t-[1.5px] border-rule-soft py-4 first:border-t-0 first:pt-0">
+                    {/* The label inside the list, mono, as every docket label
+                        on the site is set. */}
+                    <dt className="font-mono text-[13px] uppercase leading-[1.6] tracking-[0.16em] text-body">
+                      {w.label}
+                    </dt>
+                    <dd className="t-body mt-1 text-ink">{w.line}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </Wipe>
+        </Container>
+      </Section>
+
+      {/* ═══ 6. WHO CHECKS IT. The heading in the left track, the one line
+          of how beside it, and the three people under both as a credits row
+          at a size you can read. It is the site's third list of these
+          faces, so it is the plainest: no stage, no lamp, a rule and a
+          print each. ═══ */}
+      <Section labelledBy="check-h" pad={["tight", "normal"]}>
+        <Container width="wide">
+          <Settle className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,38ch)] lg:items-end lg:gap-16">
+            <h2 id="check-h" className="t-h2 max-w-[18ch]">
               Checked by the people who check the episodes
             </h2>
-            <p className="t-body mt-4 text-body">
+            <p className="t-sm max-w-[44ch] leading-[1.6] text-body lg:pb-2">
               Every activity in the app maps back to the early years objective behind its episode,
               and it is read by the same people who read the scripts before Paula gives it her
               final word.
             </p>
           </Settle>
 
-          <div className="mt-10">
+          <div className="mt-10 sm:mt-12">
             <ReviewerRoom people={REVIEWERS} />
           </div>
 
-          {/* No credits list under the room. The room's mounts already carry
-              the name, the role and the line; the list repeated all three a
-              few hundred pixels lower, so the page named the same three
-              people twice on one screen. */}
+          {/* No credits list under the row. Each credit already carries the
+              name, the role and the line; a list repeating all three a few
+              hundred pixels lower named the same three people twice on one
+              screen. */}
 
-          <div className="mt-9">
+          <div className="mt-10">
             <TextLink to="/ethical-ai">The full review sequence<IconArrow size={15} /></TextLink>
           </div>
         </Container>
       </Section>
 
-      {/* ═══ 5. WHERE IT STANDS, and how to hear. The one deep band. The
+      {/* ═══ 7. WHERE IT STANDS, and how to hear. The one deep band. The
           ledger says plainly what is and is not known, which on a pre-launch
           page is the honest version of a launch date. ═══ */}
       {/* The site footer is navy too, so this band and the footer meet with no

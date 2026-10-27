@@ -1,12 +1,13 @@
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { Lead, Section, Container, Button } from "@/components/ui";
+import { Button, Container, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { ADVISORS, PHASES, TEAM } from "@/components/team/people";
 import { StageSequence } from "@/components/team/StageSequence";
 import { Roster } from "@/components/team/Roster";
 import { PeopleStrip } from "@/components/team/PeopleStrip";
+import "@/components/teampage/bench.css";
 
 /* ============================================================================
    Team and advisers.
@@ -38,6 +39,15 @@ import { PeopleStrip } from "@/components/team/PeopleStrip";
    opposite of /story, which is one measure with a mono margin and no grid at
    all.
 
+   IN THE HERO'S LANGUAGE, 2026-10-27. The home hero was signed off and every
+   inner page now opens in its corners. /team keeps its bench (the dark ground
+   is what makes the mismatched portraits sit together, see HANDOVER), so the
+   corners come to the bench instead of a picture: identifier top left, one
+   line top right, the headline bottom left at the hero's size, its sentence
+   under it, and the band still ends on the faces. The two grey blocks that
+   used to sit under the heading went where they were actually talking: the
+   note about the phases is above the board it describes.
+
    There is no group photograph (team.group is null), so the opening is made
    from type and the deeper ground alone. The people, bios and stages live in
    src/components/team/people.ts, all of it the client's own account from the
@@ -53,12 +63,11 @@ export default function Team() {
         path="/team"
       />
 
-      {/* ═══ 1. OPENING, on the wall. The one page on this site whose first
-          screen is not paper: a deeper room, so the grid that follows reads as
-          something laid out on a table rather than more of the same page. The
-          wall's own floor is --color-sunken, where body ink is 6.7:1 and the
-          red eyebrow 5.1:1, both AA. ═══ */}
-      {/* THE BENCH, not the wall. This band ends on the six faces, and `.wall`
+      {/* ═══ 1. OPENING, on the bench, in the hero's corners. The one page on
+          this site whose first screen is not a picture: a deeper room, so the
+          grid that follows reads as something laid out on a table rather than
+          more of the same page. ═══ */}
+      {/* THE BENCH, not the wall. This band ends on the seven faces, and `.wall`
           is within a few percent of the paper above it, so mounted portraits
           with real shadows had nothing to stand out from: the shadows fell on
           a ground the same value as the thing casting them. On the bench the
@@ -71,45 +80,37 @@ export default function Team() {
           a second hue, not a second band, so nothing above changes. Measured
           equal to the umber it replaces, cream at 6.44:1 flat against 6.41 and
           5.39:1 under the lamp against 5.38. See `.grove` in index.css. */}
-      <Section className="bench grove" pad="open">
+      <Section className="bench grove" pad="open" labelledBy="team-h">
         <Container width="wide">
-          {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
-             site opened with the heading alone in the left column and a lone
-             paragraph parked at the right, bottom aligned to the heading's
-             last line. On a wide screen that leaves the sentence floating in
-             the middle of the band with blank paper above it, and the reader
-             has to jump right and down to find the words the heading was
-             asking for. Heading, then its sentence under it, one left edge. */}
+          {/* THE CORNERS, since 2026-10-27. A display heading over a five line
+              grey lead over a hairline over a second grey note was the shape
+              the client named as the site's problem, and it was the first
+              screen of this page. The eyebrow, aside and title are PageHero's
+              own classes, used as given on the bench; `.team-open` is the grid
+              they expect (components/teampage/bench.css). The ink override
+              PageHero applies under 820px lives inside `.film-hero`, so the
+              type stays cream on the bench at every width. */}
           <Wipe>
-            <div className="max-w-[64ch]">
-              <h1 className="t-display max-w-[17ch]">The people who make every episode</h1>
-              <div>
-                <Lead className="mt-7">
-                  A small core team. Between them they decide what gets made, how it gets made and
-                  what it is supposed to do for the child watching. Alan writes and animates, and
-                  the rest of them read every draft and watch every episode before it is released.
-                </Lead>
-                {/* Was an account of a table that no longer exists: the six
-                    stages were a matrix of marks against a legend until
-                    2026-10-03, and the paragraph describing how to read it
-                    outlived two rebuilds of the thing it described. Rewritten
-                    again on 2026-10-24, when the six stages themselves went:
-                    see the note at the top of components/team/people.ts. */}
-                {/* `border-edge-dark`, not `border-rule`: `--color-rule` is an
-                    ink alpha, so on a dark band it drew nothing at all. The
-                    value is the measured one the home and media bands use. */}
-                {/* PROSE, NOT MONO, since 2026-10-26. Three sentences of explanation were set in tracked mono at 13px, which is a label face doing a paragraph's job: on the band it read as machine output rather than as the company talking. */}
-                <p className="t-sm mt-6 max-w-[48ch] border-t-[1.5px] border-edge-dark pt-6 leading-[1.7]">
-                  Below, the five phases an episode goes through, then the same work from the
-                  other side: each person, and the phases they come into. Nobody is claimed for a
-                  phase the company's own account does not place them in.
-                </p>
-              </div>
+            <div className="team-open">
+              <p className="page-hero__eyebrow">
+                Our team<span>Core team and advisers</span>
+              </p>
+              <p className="page-hero__aside">A small core team.</p>
+              <h1 id="team-h" className="page-hero__title">
+                The people who make every episode
+              </h1>
+              <p className="team-open__lead t-lead">
+                Between them they decide what gets made, how it gets made and what it is supposed
+                to do for the child watching. Alan writes and animates, and the rest of them read
+                every draft and watch every episode before it is released.
+              </p>
             </div>
             {/* The band ends on the faces. It used to end on 400px of bare
                 wall, which is the "layouts are thin" complaint in one place:
                 the opening of the page about the team showed nobody. */}
-            <PeopleStrip people={[...TEAM, ...ADVISORS]} />
+            <div className="mt-14 lg:mt-20">
+              <PeopleStrip people={[...TEAM, ...ADVISORS]} />
+            </div>
           </Wipe>
         </Container>
       </Section>
@@ -117,14 +118,20 @@ export default function Team() {
       {/* ═══ 2. THE SEQUENCE, read in order. ═══ */}
       <Section labelledBy="dossier-h" pad="tight">
         <Container width="wide">
+          {/* THE CLAIM IS THE HEADING, 2026-10-27. "How an episode gets made"
+              was a filing label with the real sentence parked in a grey lead
+              under it. The lead's claim is the heading now, and the line that
+              used to introduce the whole page from the bench sits where it is
+              actually talking: a small mono note at the right, directly above
+              the board it describes. No lead. */}
           <Settle className="pb-10 lg:pb-14">
-            <h2 id="dossier-h" className="t-h2 max-w-[20ch]">
-              How an episode gets made
+            <h2 id="dossier-h" className="t-h2 max-w-[24ch]">
+              A script goes round three or four times. The cut goes round until everyone is happy.
             </h2>
-            <p className="t-body mt-5 max-w-[58ch]">
-              In order, from the first draft to the finished episode. Two of the five repeat: a
-              script usually goes round three or four times, and the cut episode goes round again
-              until everyone is happy with it.
+            <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
+              In order, from the first draft to the finished episode. Then the same work from the
+              other side: each person, and the phases they come into. Nobody is claimed for a phase
+              the company's own account does not place them in.
             </p>
           </Settle>
           <StageSequence phases={PHASES} />
@@ -135,18 +142,24 @@ export default function Team() {
           person actually does, written out, with their own biography. ═══ */}
       <Section labelledBy="people-h" pad="tight">
         <Container width="wide">
+          {/* A display claim, not a label: the biographies' own provenance is
+              the sentence worth stopping for, so it is the heading, a size up
+              from the board's so the two sections do not open in one shape.
+              The second half of the old lead is the provenance note at the
+              right, above the roster it qualifies. */}
           <Settle className="pb-10 lg:pb-14">
-            <h2 id="people-h" className="t-h2 max-w-[22ch]">
-              The people, and what each of them does
+            <h2 id="people-h" className="t-h1 max-w-[18ch]">
+              In their own words, cut down and never added to.
             </h2>
-            <p className="t-body mt-5 max-w-[58ch]">
-              The biographies are the team's own, cut down and never added to. Where the company's
-              account does not place a person in a phase, nothing is claimed for them there.
+            <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
+              Where the company's account does not place a person in a phase, nothing is claimed
+              for them there.
             </p>
           </Settle>
           <Roster people={TEAM} phases={PHASES} />
           <div className="mt-16 border-t-[1.5px] border-rule pt-10 lg:mt-20 lg:pt-14">
-            <p className="eyebrow">Adviser</p>
+            {/* A sub-head inside the set, not a mono eyebrow over it. */}
+            <h3 className="t-h3">Adviser</h3>
             <p className="t-body mt-3 max-w-[62ch]">
               Advisers are not employees. Each is described only as they have approved it.
             </p>
@@ -157,7 +170,7 @@ export default function Team() {
         </Container>
       </Section>
 
-      {/* ═══ 3. CLOSE, the one deep band ═══ */}
+      {/* ═══ 4. CLOSE, the one deep band ═══ */}
       <Section deep labelledBy="team-cta-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">

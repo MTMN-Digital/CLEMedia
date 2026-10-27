@@ -1,16 +1,11 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { ShowFrame } from "@/components/ShowFrame";
+import { PageHero } from "@/components/PageHero";
 import { RealDogs } from "@/components/story/RealDogs";
 import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
-import { Bluebell } from "@/components/graphics";
-import { TheGap } from "@/components/story/TheGap";
-import { Hooks } from "@/components/story/Hooks";
-import { Thread } from "@/components/story/Thread";
-import { Stage } from "@/components/render";
 import { Wipe } from "@/components/Wipe";
 import { TextLink, Button, Container, Section, Card } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
@@ -25,40 +20,54 @@ import { TEAM } from "@/components/team/people";
    person, and it has to answer one question, which is whether there is a real
    person and a real reason behind the name.
 
-   THE DEVICE, unchanged and the reason this page works. The margin. A reader
-   like that skims first and reads second, so the page is set the way an
-   annotated letter is: his prose runs in one measure, and a margin carries the
-   things a skimmer is looking for (the section, the names, the faces, the route
-   in and the route out), in mono. A hairline runs down the inside edge of that
-   margin for the whole length of the letter, and it is the page's one quiet
-   detail: it breaks exactly where the page breaks its own measure, so the shape
-   of the argument is readable in the left edge alone.
+   THE OPENING IS THE HERO'S, 2026-10-27. The page used to open on a mounted
+   portrait, a mono note and a display line at the right of a 16rem margin,
+   with no picture and nothing of the home hero's frame; the garden, the
+   strongest image this page owns, sat buried in the middle of the letter as a
+   ShowFrame floating in paper. The garden is now the opening, in the hero's
+   own frame (PageHero), with his name top left, the dek top right, the first
+   line of the letter bottom left and the two routes out under it. The
+   portrait stays where the letter signs off, on the deep band.
 
-   FOUR MOMENTS, raised from two on 2026-10-06. The page was 7,170px tall with
-   the pull quote and the garden as the only changes of pace in a very long
-   read, which meant eight or nine screens of one rhythm. The two new ones are
-   objects rather than sections, so nothing was added to the page to make them:
+   THE DEVICE, unchanged and the reason the letter works. The margin. A reader
+   like that skims first and reads second, so the letter is set the way an
+   annotated one is: his prose runs in one measure, and a margin carries the
+   things a skimmer is looking for. A rule runs down the inside edge of that
+   margin for the length of the letter, and it breaks exactly where the page
+   breaks its own measure.
+
+   WHAT THE MARGIN CARRIES CHANGED, 2026-10-27. It carried a filing label
+   ("Where it started", "Education, from the outset", "Building an
+   alternative", "How it reaches you") over a grey mono note, and the client
+   read that shape, repeated four times down one page, as the site's real
+   problem. The sentence worth stopping for is now the heading: each section
+   opens on the claim its own prose makes, and the note's fact is in the
+   heading or was only restating it. Nothing of his was cut; a sentence that
+   became a heading left the paragraph it came from so it is not read twice.
+
+   THE DRAWINGS WENT THE SAME DAY. Four line sketches stood in or beside the
+   letter (a child at a screen, a stack of screens, the squiggle script, the
+   bluebell beside the pull quote). The client judged the sketch register weak
+   against the real frames, so they are gone rather than restyled. Their
+   component files stay in components/story for the record; nothing mounts
+   them.
+
+   FOUR MOMENTS still change the pace of a long read, and three of them are
+   objects rather than sections:
 
      1. the pull quote, full width between two rules
-     2. the garden, edge to edge
-     3. the route ledger, now a slip of card laid across the top edge of the
-        biography band rather than a second list in a second margin. The margin
-        was doing the same job twice, which is what made the middle of the page
-        read as a repeat of its own opening.
-     4. the film, in a room of its own on the wall ground, with the margin
-        flipped to the right. The one section that is not a letter is the one
-        section whose margin is on the other side.
-
-   AND IT IS DENSER. Padding between the letter's movements came down from a
-   full section gap to 72px, the garden band from 760px to 620px at its tallest,
-   the film from the full container width to the width it needs with its notes
-   beside it, and the sign-off rows from 56px to 40px. No sentence of his was
-   cut: every word on the page on 2026-10-02 is still on it.
+     2. the eight photographs of the real dogs, straight after the frame from
+        the series they were drawn for
+     3. the route ledger, a slip of card laid across the top edge of the
+        biography band, now on the LEFT so the band opens on its object
+     4. the film, in a room of its own on the wall ground, with its one note
+        on the right
 
    EVERY FACT HERE IS THE CLIENT'S. The ledger carries only what his own
    biography states: the trade, the one date he gives, the qualifications, the
    university, the programme, fatherhood. Nothing is ordered by a date he did
-   not supply, and nothing is added.
+   not supply, and nothing is added. Every heading on the page is a sentence
+   from the letter, or the docket's own two ends put together.
    ========================================================================== */
 
 /* The route in, as the client's own biography lists it. The left column is a
@@ -102,24 +111,15 @@ const NEXT: { href?: string; line: string; to?: string; title: string }[] = [
    as a border on the MARGIN column stretches to the margin's own height and a
    sticky margin is short: it drew a 90px stub beside a 400px paragraph. On the
    prose column it is always exactly as long as the prose it is annotating.
+   1.5px, like every rule on the site; it was the one 1px line left on it.
 
-   ── A THIRD TRACK, 2026-10-24 ──────────────────────────────────────────────
-   The letter used to run in its own 1024px box, centred in the viewport, while
-   the garden, the dogs, the biography band and the film beside it all ran at
-   the 1560 cap. Five changes of left edge down one page, and none of them
-   agreed with the header, which starts its own content 208px further left. The
-   letter now starts where the header starts, like everything else.
-
-   Aligning it that way frees about 450px down the right, and the page already
-   had three objects with nowhere good to be: the four faces and the gap drawing
-   were squeezed into a 224px margin that was also carrying a heading and a
-   note, and the characters frame was pushed to the right edge of a 560px
-   measure. They go in the third track. The prose measure itself did not move,
-   because 69 characters is already right.
-
-   The two drawings the text WRAPS around (the hooks, the thread) deliberately
-   stay in the prose. Their whole job is to interrupt the measure, and a drawing
-   parked in a column beside the text interrupts nothing.
+   THE MARGIN IS WIDER, 2026-10-27. It was 14rem at lg and 16rem at xl, which
+   held a two word label. It now holds a sentence at t-h2 ("It started while I
+   was minding a friend's four-year-old.") and at 16rem that sentence set in
+   seven lines, taller than the paragraphs beside it. At 22rem it sets in four
+   or five. The third track had the room to give: since the gap drawing left
+   it, only the four faces and the characters frame stand in it, and they want
+   about 22rem of the 34 it has at 1440.
 
    The prose track is 38rem flat rather than a fraction: 35rem is the measured
    width of the 56ch cap at the prose's own 17px, plus the 3rem the rule and its
@@ -132,7 +132,7 @@ function Spread({
   children,
   className = "",
 }: {
-  /** Optional: the gap drawing's spread has no heading to carry. */
+  /** Optional: a paragraph that carries the letter on has no heading of its own. */
   margin?: ReactNode;
   /** Objects that belong beside the letter rather than inside it. */
   aside?: ReactNode;
@@ -142,12 +142,11 @@ function Spread({
   return (
     /* Centred under 1024, where there is no margin column to sit against. A
        62ch block left aligned in an 836px tablet container left 300px of blank
-       paper down the right of every screen, which is the exact complaint this
-       pass exists to answer. On a phone the cap is wider than the screen, so
-       nothing changes there. */
-    <Settle className={`mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_38rem_minmax(0,1fr)] ${className}`}>
+       paper down the right of every screen. On a phone the cap is wider than
+       the screen, so nothing changes there. */
+    <Settle className={`mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[22rem_38rem_minmax(0,1fr)] ${className}`}>
       <div className="lg:sticky lg:top-28 lg:self-start">{margin}</div>
-      <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
+      <div className="lg:border-l-[1.5px] lg:border-rule-soft lg:pl-12">
         {/* 56ch, not 62. Measured in the browser rather than guessed: the ch
             unit is the width of a zero, which in Hanken is wider than the
             average letter, so 62ch was setting 77 characters to the line and
@@ -162,13 +161,16 @@ function Spread({
   );
 }
 
-/* A line in the margin. Mono, small, muted: muted clears AA on every paper
-   stop, and the margin never sits on the well.
-   The width caps are lg-only on purpose. Under 1024px there is no margin
-   column, the note is a full width line above the prose, and a 26ch cap there
-   set a four word column down the left of a phone. */
-function Note({ children, className = "" }: { className?: string; children: ReactNode }) {
-  return <p className={`font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-muted ${className}`}>{children}</p>;
+/* A credit or a provenance note: a small right aligned mono line, the shape
+   the home page uses under its own frames. `text-body`, not muted: muted is
+   the floor of AA on the lightest paper and this line sits at the foot of a
+   band, where the paper is at its lightest. */
+function Credit({ children, className = "" }: { className?: string; children: ReactNode }) {
+  return (
+    <p className={`ml-auto max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body ${className}`}>
+      {children}
+    </p>
+  );
 }
 
 export default function Story() {
@@ -180,118 +182,86 @@ export default function Story() {
         path="/story"
       />
 
-      {/* ═══ MASTHEAD. The margin is established in the first screen rather
-          than at the second heading: his portrait, his name and the dek sit in
-          the margin column, and the headline starts on the prose axis the rest
-          of the letter is set to. Before this the masthead ran edge to edge in
-          the wide container while the letter ran in the default one, so the
-          page had two different left edges in its first two screens. ═══ */}
-      <Section pad={["tight", "none"]}>
-        <Container width="wide">
-          <Settle className="mx-auto grid max-w-[62ch] gap-8 lg:max-w-none lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-end lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)]">
-            <div>
-              <div className="flex items-center gap-4 lg:block">
-                {/* Width on the wrapper: Figure's own w-full beats a width in
-                    className, which is a Tailwind ordering trap. */}
-                {/* A MOUNTED PRINT, not a circle. The contract has said
-                    "portraits are rounded squares, never circles" since the
-                    sitepass-w2 run and this page had three of them, which is
-                    the same six people rendered two ways on one site. It is
-                    also the letter's only object, so it stands on a ledge
-                    under the room's lamp like every other portrait here. */}
-                <div className="w-[88px] shrink-0 sm:w-[100px] lg:w-[128px]">
-                  <Stage seated ground="ledge" light={-34} tilt={5.4} turn={-1.2} roll={-0.3} depth={0.5}>
-                    <div className="rk-mat">
-                      <div className="rk-pic">
-                        <Figure asset="person.conor" priority rounded="rounded-none" className="aspect-square" sizes="128px" />
-                        <span className="rk-light" aria-hidden="true" />
-                      </div>
-                    </div>
-                  </Stage>
-                </div>
-                <div className="lg:mt-5">
-                  <p className="text-[16px] font-semibold text-ink">Conor Sexton</p>
-                  <p className="eyebrow eyebrow-sm mt-1.5">Founder and CEO</p>
-                </div>
-              </div>
-              <Note className="mt-5 lg:max-w-[26ch]">
-                On what he saw, what he could not find, and what it took to build the alternative.
-              </Note>
-            </div>
-            <div className="lg:border-l lg:border-[var(--color-rule-soft)] lg:pl-12">
-              <h1 className="t-display max-w-[15ch]">I did not set out to start a media company.</h1>
-            </div>
-          </Settle>
-          {/* The rule takes the same cap as the masthead above it. Left at the
-              container width it ran 140px past the centred block on a tablet
-              and underlined nothing. */}
-          <div className="hairline mx-auto mt-12 max-w-[62ch] sm:mt-14 lg:max-w-none" />
-        </Container>
-      </Section>
+      {/* ═══ THE OPENING, in the hero's frame. The garden the series is set
+          in, which was the page's mid-page plate until 2026-10-27, is now what
+          the page opens on. The dek that sat under his portrait is the aside,
+          the first line of the letter is the headline, and the credit says what
+          the picture is, as every frame from the series does. Centre 45 per
+          cent keeps the two pugs on the grass in frame at the hero's crop. ═══ */}
+      <PageHero
+        id="story-h"
+        asset="story.garden"
+        position="center 45%"
+        size="tall"
+        credit={
+          <>
+            The garden the series is set in, with its rope swing. A frame from The Pawsitive Pugs
+            &amp; Pals<sup className="text-[0.7em]">&reg;</sup>.
+          </>
+        }
+        eyebrow={<>Our story<span>Conor Sexton, founder and CEO</span></>}
+        aside={<>On what he saw, what he could not find, and what it took to build the alternative.</>}
+        title={<>I did not set out to start a <em>media company.</em></>}
+        actions={
+          <>
+            <Button to="/team">Meet the team<IconArrow size={16} /></Button>
+            <Button to="/contact" variant="quiet">Get in touch</Button>
+          </>
+        }
+      />
 
       {/* ═══ THE LETTER. Three movements and the pull quote, in ONE section
           rather than three, because three sections meant three lots of 112px
-          of padding doing nothing between four paragraphs of prose. ═══ */}
-      <Section labelledBy="saw-h" pad="tight">
+          of padding doing nothing between four paragraphs of prose. Each
+          movement's heading is the claim its paragraph makes. ═══ */}
+      <Section labelledBy="saw-h" pad={["normal", "tight"]}>
         <Container width="wide">
           <Spread
             margin={
-              <>
-                <h2 id="saw-h" className="t-h2">Where it started</h2>
-                <Note className="mt-4 lg:max-w-[26ch]">Minding a friend's four-year-old, before any of this was a company.</Note>
-              </>
+              /* Was "Where it started" over the note "Minding a friend's
+                 four-year-old, before any of this was a company." The note's
+                 fact is the heading now, in the letter's own words. */
+              <h2 id="saw-h" className="t-h2">It started while I was minding a friend's four-year-old.</h2>
             }
           >
-            {/* The prose runs AROUND the first drawing rather than beside
-                it: the hooks float right of the opening paragraph and the
-                second paragraph carries on around them. See
-                components/story/Hooks.tsx. */}
-            <div className="wrap-flow space-y-5">
-              <p>
-                <Hooks />
-                The idea for CL&Eacute; Family Media began while I was minding a friend's
-                four-year-old son. He was watching YouTube when something came up that was not
-                appropriate for his age. My fianc&eacute;e, Lydia, was pregnant with our little
-                girl at the time.
-              </p>
-              <p>
-                I spent a year researching children's media and developing an approach for a
-                low-stimulation educational cartoon. I knew I could not build it alone, so I began
-                bringing together people with the creative and educational experience the project
-                needed.
-              </p>
-            </div>
+            <p>
+              The idea for CL&Eacute; Family Media began while I was minding a friend's
+              four-year-old son. He was watching YouTube when something came up that was not
+              appropriate for his age. My fianc&eacute;e, Lydia, was pregnant with our little
+              girl at the time.
+            </p>
+            <p>
+              I spent a year researching children's media and developing an approach for a
+              low-stimulation educational cartoon. I knew I could not build it alone, so I began
+              bringing together people with the creative and educational experience the project
+              needed.
+            </p>
           </Spread>
 
           <Spread
             className="mt-16 sm:mt-[4.5rem]"
             margin={
-              <>
-                <h2 id="parent-h" className="t-h2">Education, from the outset</h2>
-                <Note className="mt-4 lg:max-w-[26ch]">The first person I brought in, and why.</Note>
-              </>
+              /* Was "Education, from the outset" over "The first person I
+                 brought in, and why." The paragraph's last sentence is the
+                 heading, so the paragraph no longer ends on it. */
+              <h2 id="parent-h" className="t-h2">Education was part of the project from the outset.</h2>
             }
           >
             <p>
               Paula was involved from the beginning. We had never met in person, but I spoke to
               her online and shared my vision and ambition. She wanted to be involved while the
-              early work on production tools, pacing and voices was still taking shape. Education
-              was part of the project from the outset.
+              early work on production tools, pacing and voices was still taking shape.
             </p>
           </Spread>
         </Container>
 
         {/* MOMENT ONE. The measure breaks: the quote runs the full width
             between two rules, set in the display face with the quotation marks
-            hung in red. Not a box with a coloured edge, which is what it was. */}
+            hung in red. The page's one display moment after the hero. The
+            bluebell that grew beside it is gone with the other sketches. */}
         <Container width="wide" className="my-10 sm:my-14">
           <Wipe>
-            {/* The letter's one drawn moment. The bluebell is the show's own
-                world, it was drawn for this project in graphics.tsx and never
-                mounted anywhere, and it is the only ornament on this page.
-                It grows beside the line rather than sitting on top of it. */}
-            <blockquote className="grid items-center gap-7 border-y-[1.5px] border-rule py-10 sm:py-14 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-12">
-              <Bluebell size={132} className="story-bell hidden text-red-deep lg:block" />
+            <blockquote className="border-y-[1.5px] border-rule py-10 sm:py-14">
               <p className="t-h1 max-w-[26ch] pl-[0.45em] font-display text-ink [text-indent:-0.45em]">
                 <span className="text-red-deep" aria-hidden="true">&ldquo;</span>
                 I knew I could not build it alone, so I began bringing together people with the
@@ -303,12 +273,9 @@ export default function Story() {
         </Container>
 
         <Container width="wide">
-          {/* The drawing of the sentence sits in the object column, not in the
-              margin. "Plenty were gentle, plenty were educational, very few
-              were both" is a shape before it is a sentence, and in a 224px
-              margin the heap of sets it is drawn as was smaller than the
-              paragraph's own first word. See components/story/TheGap.tsx. */}
-          <Spread aside={<TheGap />}>
+          {/* No heading: this paragraph carries the letter on after the
+              quote. The heap-of-sets drawing that stood beside it is gone. */}
+          <Spread>
             <p>
               There was less of it than I expected. Plenty of shows were gentle. Plenty were
               educational. Very few were both, and fewer still would tell you anything about who
@@ -318,37 +285,22 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ MOMENT TWO. The garden: the world the company built, and the
-          one moment where the letter stops and shows the reader something. It
-          ran edge to edge until 2026-10-13, where the band kept 65 percent of
-          the frame at 1440 and 48 percent at 1920; see ShowFrame.tsx. Captioned
-          as what it is, a frame from the show and not a photograph. ═══ */}
-      <ShowFrame
-        asset="story.garden"
-        caption={
-          <>
-            The garden the series is set in, with its rope swing. A frame from The Pawsitive Pugs
-            &amp; Pals&reg;.
-          </>
-        }
-      />
-
-      {/* ═══ THE REAL FINN AND FIA, on paper, straight after the frame from
-          the series. The order is the argument: the drawn garden, then the two
-          dogs it was drawn for. Asked for by the client on 2026-10-24; see
-          components/story/RealDogs.tsx for why each plate is labelled. ═══ */}
+      {/* ═══ THE REAL FINN AND FIA, on paper. The order is the argument: the
+          drawn garden the page opened on, then the two dogs it was drawn for.
+          Asked for by the client on 2026-10-24; see components/story/RealDogs.tsx
+          for why each plate is framed the way it is. ═══ */}
       <Section labelledBy="dogs-h" pad="tight">
         <Container width="wide">
           <RealDogs headingId="dogs-h" />
         </Container>
       </Section>
 
-      {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width.
-          MOMENT THREE is the route itself, which is no longer a second list in
-          a second margin but a slip of card laid across the top edge of the
-          band, tabbed and a fraction off true. The margin was carrying a
-          heading, a note, four faces AND a ledger across the page, so the
-          middle of the letter read as a repeat of its own opening.
+      {/* ═══ HOW I GOT HERE. The changed ground: a sunken well, full width,
+          and the one section of the letter that opens on its object. The
+          route is a slip of card laid across the top edge of the band, tabbed
+          and a fraction off true, on the LEFT since 2026-10-27, with the
+          heading and the biography beside it. The heading is the docket's two
+          ends put together, where it used to be a label over a grey lead.
 
           Muted and red are AA-large only on the sunken fill, so everything on
           the band itself is body or ink; the card is raised paper, where muted
@@ -360,16 +312,19 @@ export default function Story() {
               wrapped to two and the sheet ran 640px tall beside 600px of
               prose, with a 290px hole between them. At 37rem most lines set in
               one, the sheet is a third shorter, and the gutter reads as a
-              gutter instead of as a gap nobody filled. */}
-          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,37rem)] xl:gap-14">
-            <div>
-              <h2 id="here-h" className="t-h1 max-w-[12ch]">How I got here</h2>
-              <p className="t-lead mt-6 max-w-[42ch] text-ink">
-                I spent thirteen years in food retail, starting as an apprentice and finishing as
-                head butcher. It is not the background anyone expects behind a children's media
-                company, and I would not trade it.
-              </p>
-              <div className="mt-5 max-w-[56ch] space-y-4 t-prose text-body">
+              gutter instead of as a gap nobody filled.
+
+              The card is first in the grid at lg and second in the DOM, so a
+              phone reads the heading before the ledger it summarises. */}
+          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,33rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,37rem)_minmax(0,1fr)] xl:gap-16">
+            <div className="lg:order-last">
+              <h2 id="here-h" className="t-h1 max-w-[16ch]">From head butcher to children's media.</h2>
+              <div className="mt-7 max-w-[56ch] space-y-4 t-prose text-body">
+                <p className="text-ink">
+                  I spent thirteen years in food retail, starting as an apprentice and finishing
+                  as head butcher. It is not the background anyone expects behind a children's
+                  media company, and I would not trade it.
+                </p>
                 <p>
                   You learn quickly what people actually want when they are standing in front of
                   you, and you learn to run a counter that does not fall apart on a Saturday.
@@ -410,31 +365,29 @@ export default function Story() {
         </Container>
       </Section>
 
-      {/* ═══ BUILDING AN ALTERNATIVE. The object column carries the four faces
-          the prose names, so "people who knew far more than I did" has people
-          in it, and the characters appear once beside the paragraph that
-          introduces them: supporting cast, on this site. Both of them were in
-          the margin and the prose respectively until 2026-10-24; see the note
-          on `Spread` for why they moved and what the margin keeps. ═══ */}
+      {/* ═══ BUILDING AN ALTERNATIVE. Opens on the paragraph's own first
+          sentence, full width over the three tracks, because a ten word
+          heading does not set in a margin: the margin keeps the route to the
+          process page. The object column carries the four faces the prose
+          names, so "people who knew far more than I did" has people in it, and
+          the characters appear once beside the paragraph that introduces them:
+          supporting cast, on this site. ═══ */}
       <Section labelledBy="build-h" pad="tight">
         <Container width="wide">
+          <Settle>
+            <h2 id="build-h" className="t-h2 max-w-[22ch]">
+              I could not have made this on my own, and I did not try.
+            </h2>
+          </Settle>
           <Spread
+            className="mt-10 sm:mt-12"
             margin={
-              <>
-                <h2 id="build-h" className="t-h2">Building an alternative</h2>
-                <div className="mt-5">
-                  <TextLink to="/ethical-ai">How an episode is made<IconArrow size={15} /></TextLink>
-                </div>
-              </>
+              <TextLink to="/ethical-ai">How an episode is made<IconArrow size={15} /></TextLink>
             }
-            /* The four faces and the frame both moved out of the letter on
-               2026-10-24. The faces were under a heading in a 224px margin, at
-               40px each with their roles wrapping to three lines; the frame was
-               pushed to the right edge of a 560px measure at `sm:ml-auto`,
-               where it read as a paragraph that had been nudged aside rather
-               than as the one picture in this part of the page. Both of them
-               now stand in the object column, at the size they were drawn for,
-               beside the paragraph that names them. */
+            /* The four faces and the frame stand in the object column, at the
+               size they were drawn for, beside the paragraph that names them.
+               They were in a 224px margin and at the right edge of the measure
+               respectively until 2026-10-24. */
             aside={
               <div className="lg:max-w-[22rem] xl:max-w-none">
                 <ul className="space-y-4">
@@ -445,7 +398,7 @@ export default function Story() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-[14.5px] font-semibold leading-tight text-ink">{p.name}</p>
-                        <Note className="mt-1 text-[14px]">{p.role}</Note>
+                        <p className="mt-1 font-mono text-[14px] leading-[1.65] tracking-[0.02em] text-muted">{p.role}</p>
                       </div>
                     </li>
                   ))}
@@ -454,15 +407,12 @@ export default function Story() {
                   <Card className="card-still tilt-a overflow-hidden p-2">
                     <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="(min-width: 1280px) 420px, 352px" />
                   </Card>
-                  {/* `text-body`, not the page's muted `Note`. Measured after
-                      the frame moved into this column: muted is #6b4e3a, and
-                      at the foot of this band the paper has washed down to
-                      #d4c5a8, where it comes out at 4.45:1 against a 4.5
-                      floor. It passed where the frame used to sit, 200px
-                      higher up the same band. Body is 6.74:1 on the same
-                      stop. The token's own note in index.css calls muted "the
-                      floor", and this is where the floor gives way. */}
-                  <figcaption className="mt-2.5 pl-1 font-mono text-[14.5px] leading-[1.65] tracking-[0.02em] text-body">
+                  {/* `text-body`, not muted. Measured after the frame moved
+                      into this column: muted is #6b4e3a, and at the foot of
+                      this band the paper has washed down to #d4c5a8, where it
+                      comes out at 4.45:1 against a 4.5 floor. Body is 6.74:1
+                      on the same stop. Right aligned, like every credit. */}
+                  <figcaption className="ml-auto mt-3 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
                     Finn and Fia, with a hen. A frame from the series.
                   </figcaption>
                 </figure>
@@ -470,27 +420,19 @@ export default function Story() {
             }
           >
             <p>
-              I could not have made this on my own, and I did not try. The company came
-              together around people who knew far more than I did: Alan on the creative side,
-              who writes the scripts, directs and sets the pace of an episode; Paula on the
-              educational side, who brings the learning expertise and reads every draft; Lydia,
-              Kirstie and David bringing the parent, early years and industry perspectives that
-              catch details which may be missed during production.
+              The company came together around people who knew far more than I did: Alan on the
+              creative side, who writes the scripts, directs and sets the pace of an episode;
+              Paula on the educational side, who brings the learning expertise and reads every
+              draft; Lydia, Kirstie and David bringing the parent, early years and industry
+              perspectives that catch details which may be missed during production.
             </p>
-            {/* The second drawing the prose runs around: the script with the
-                learning stitched through it from the first line, floated
-                left so the page zigzags, drawing left then the frame right.
-                See components/story/Thread.tsx. */}
-            <div className="wrap-flow">
-              <p>
-                <Thread />
-                That work became <em>The Pawsitive Pugs &amp; Pals</em>, our first original series.
-                Finn, the fawn pug, and Fia, the black pug, came out of it. The learning was built
-                in from the start rather than added once the scripts were finished, which is a
-                slower way to make a show and, as far as we can tell, the only way to make
-                this one.
-              </p>
-            </div>
+            <p>
+              That work became <em>The Pawsitive Pugs &amp; Pals</em>, our first original series.
+              Finn, the fawn pug, and Fia, the black pug, came out of it. The learning was built
+              in from the start rather than added once the scripts were finished, which is a
+              slower way to make a show and, as far as we can tell, the only way to make
+              this one.
+            </p>
             <p>
               Being a small studio is not something we are apologising for. The people who set
               the story are the same people who read every draft of it, and the work goes round
@@ -501,74 +443,85 @@ export default function Story() {
       </Section>
 
       {/* ═══ MOMENT FOUR. The film, in a room of its own. The one section of
-          this page that is not a letter is the one section whose margin is on
+          this page that is not a letter is the one section whose note is on
           the right, on the wall ground rather than the paper: the reader feels
-          the change of register before reading a word of it.
+          the change of register before reading a word of it. The heading names
+          a film, which is the one label the page keeps.
 
           It used to run the full 1376px of the wide container, which made it
           774px tall and left the page with a single enormous rectangle and
           nothing beside it. At 1030px it is still the largest thing on the
-          page and its notes have somewhere to be. ═══ */}
+          page and its note has somewhere to be. ═══ */}
       <Section labelledBy="film-h" className="wall">
         <Container width="wide">
-          <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-14">
+          <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-x-14">
             <div>
               <h2 id="film-h" className="t-h2 max-w-[18ch]">The mission, in his own words</h2>
               <MissionVideo className="mt-7" eager />
             </div>
             {/* Not sticky, unlike the letter's margin. There is no long column
                 of prose here for a heading to track, and a sticky note beside a
-                600px film just slides about for no reason. */}
+                600px film just slides about for no reason. A credit line, not
+                a grey block: right aligned, on the film's own axis at lg. */}
             <div className="lg:pt-12">
-              <p className="font-mono text-[14.5px] leading-[1.7] tracking-[0.02em] text-body lg:max-w-[30ch]">
+              <Credit className="lg:ml-0 lg:max-w-[30ch]">
                 The film starts muted. Turn the sound on when you are ready to, and the captions
                 are there whether you do or not. Nothing on this site starts talking at you.
-              </p>
+              </Credit>
             </div>
           </Settle>
         </Container>
       </Section>
 
-      {/* ═══ HOW IT REACHES YOU ═══ */}
+      {/* ═══ HOW IT REACHES YOU. No margin track: the heading runs the width
+          of the page over the two paragraphs set side by side, and the two
+          routes out sit under them. Was "How it reaches you" over the mono
+          line "Watch. Play. Learn."; the heading is now what the paragraphs
+          say, free on YouTube now and the player in development. ═══ */}
       <Section labelledBy="reach-h" pad="tight">
         <Container width="wide">
-          <Spread
-            margin={
-              <>
-                <h2 id="reach-h" className="t-h2">How it reaches you</h2>
-                <Note className="mt-4">Watch. Play. Learn.</Note>
-                <ul className="mt-5 space-y-3">
-                  <li>
-                    <TextLink href={SITE.showUrl}>The show's own site<IconExternal size={14} /></TextLink>
-                  </li>
-                  <li>
-                    <TextLink to="/app">{SITE.playerName}, in development<IconArrow size={15} /></TextLink>
-                  </li>
-                </ul>
-              </>
-            }
-          >
-            <p>
-              The model is Watch, Play, Learn, and it is more literal than it sounds. Our Watch,
-              Play, Learn approach connects calm stories with interactive games, creative tasks
-              and practical activities children can explore beyond the screen. Each episode
-              introduces ideas children can then explore through games and practical activities.
-            </p>
-            <p>
-              In practice, families find us free on YouTube, which is simply where
-              discovery happens for a series like ours. The show's own site is where the
-              episodes and the family activities properly live, and we are building a product
-              experience to support ad-free viewing and the offline activities together. That
-              is in development rather than available, and we will say so plainly until the day
-              it is not.
-            </p>
-          </Spread>
+          <Settle>
+            <h2 id="reach-h" className="t-h2 max-w-[20ch]">
+              Free on YouTube for now, with an app on the way.
+            </h2>
+            <div className="mt-10 grid gap-8 sm:mt-12 lg:grid-cols-2 lg:gap-x-14">
+              <p className="max-w-[56ch] t-prose text-body">
+                The model is Watch, Play, Learn, and it is more literal than it sounds. Our Watch,
+                Play, Learn approach connects calm stories with interactive games, creative tasks
+                and practical activities children can explore beyond the screen. Each episode
+                introduces ideas children can then explore through games and practical activities.
+              </p>
+              <p className="max-w-[56ch] t-prose text-body">
+                In practice, families find us free on YouTube, which is simply where
+                discovery happens for a series like ours. The show's own site is where the
+                episodes and the family activities properly live, and we are building a product
+                experience to support ad-free viewing and the offline activities together. That
+                is in development rather than available, and we will say so plainly until the day
+                it is not.
+              </p>
+            </div>
+            <ul className="mt-9 flex flex-wrap gap-x-10 gap-y-3">
+              <li>
+                <TextLink href={SITE.showUrl}>The show's own site<IconExternal size={14} /></TextLink>
+              </li>
+              <li>
+                {/* One span: TextLink is an inline-flex with a gap, so a bare
+                    <sup> beside the name became its own item with a gap
+                    before it, and the mark floated off the word. */}
+                <TextLink to="/app">
+                  <span>{SITE.playerName}<sup className="text-[0.7em]">&trade;</sup>, in development</span>
+                  <IconArrow size={15} />
+                </TextLink>
+              </li>
+            </ul>
+          </Settle>
         </Container>
       </Section>
 
       {/* ═══ THE SIGN-OFF, on the one deep band. A letter ends with a name and
           an address, so this one does: his, and three places the reader can
-          go to check what he has said. Rows, not cards. ═══ */}
+          go to check what he has said. Rows, not cards. The portrait that
+          opened the page until 2026-10-27 lives here now, and only here. ═══ */}
       <Section deep labelledBy="next-h" pad="tight">
         <Container width="wide">
           <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">

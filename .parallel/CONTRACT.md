@@ -1,490 +1,283 @@
-# CONTRACT: CLÉ Family Media site pass
-
-Frozen at `6307ee9`. No shard may edit anything in the convergence points list.
-If you think you need to, that is a contract gap: report it, do not edit.
-
-## Reference to mirror
-
-**`src/pages/Story.tsx`.** Every shard matches its pattern language, not an
-abstract idea of good. What it does, and what to copy:
-
-- A left heading column and a right body column, repeated down the page, so the
-  eye has one consistent place to find "what is this section".
-- Surfaces travel through the VALUE RANGE, they do not alternate within a
-  sliver of it. See "The surfaces" below: this rule used to read "paper, then
-  `.wall`, then paper, closing on one `deep` band", and following it produced
-  nine pages that measured as one tone.
-- One full-bleed image moment, captioned.
-- One pull-quote moment at display size.
-- One card moment, a table or a panel set into the column.
-- Sections vary in width. Not every section is the same container.
-
-## Convergence points: integration only
-
-`src/App.tsx` · `src/components/Layout.tsx` · `src/styles/index.css` ·
-`src/components/ui.tsx` · `src/lib/*` · `src/components/Seo.tsx`
-
-## The spacing contract
-
-`<Section pad="...">` is the ONLY way to set section rhythm. There are no
-`!py-*` escapes left in the codebase and no shard may add one.
-
-| Step | Desktop | Use |
-|---|---|---|
-| `tight` | 80px | a section that leans on its neighbour |
-| `normal` | 112px | the default |
-| `open` | 160px | a section that needs air around it |
-| `none` | 0 | a section that butts against the next |
-
-Asymmetric: `pad={["tight", "none"]}` is top then bottom.
-
-## Buttons
-
-`<Button variant="primary" | "quiet" size="normal" | "large">`. Two variants,
-because there are two treatments. There used to be five names and three of them
-silently rendered as `quiet`. `size="large"` is for a page whose whole job is
-one action, the download and the buy button, and nothing else.
-
-Do not restyle a button with `className`. `.deep .btn-quiet` already handles a
-quiet button on the navy band.
-
-## Type and tokens
-
-- Headings `t-display` / `t-h2` / `t-h3`, body `t-body`, small `t-sm`.
-- `.eyebrow` for section labels, `.eyebrow eyebrow-sm` for a role line.
-- Colour, radius and easing come from `var(--color-*)`, `var(--radius-*)`,
-  `var(--ease-out)`. No literal that restates a token.
-- Prefer the Tailwind utility over the long form: `border-rule` not
-  `border-[var(--color-rule)]`, `ease-out` not `ease-[var(--ease-out)]`.
-- `--color-slate`, `--color-deep`, `--color-clay`, `--color-cream` and
-  `--color-hairline` are DEPRECATED aliases. Nothing new uses them.
-
-## Shared primitives, use before building
-
-`Container` (`width="wide" | "text"`) · `Section` · `Button` · `TextLink` ·
-`Card` · `Kicker` · `Lead` · `Note` · `Figure` · `Settle` · `Wipe` ·
-`DisclosurePanel` · `NotifyForm`
-
-Eight chassis primitives were deleted at integration: `SectionHeading`, `Tile`,
-`Well`, `Panel`, `ArchCard`, `Rail`, `EmptyState` and `Capsule`. None had a
-consumer, two were aliases of `Card`, and `ArchCard` drew a circular portrait,
-which this contract forbids. `.tile`, `.well` and `.hairline` remain as classes
-and are used directly.
-
-## Non-negotiables
-
-- NEVER an em dash or an en dash. Anywhere. Comma, colon, parentheses or two
-  sentences.
-- No AI-generated imagery. No stock photography of families or children.
-- Do not invent claims, statistics, testimonials, logos or awards. A missing
-  fact goes in `CONTENT-NEEDED.md`, not into the page.
-- WCAG 2.1 AA on every text element, measured not assumed.
-- The Pawsitive Pugs & Pals®, PupsPlayer™, CLÉ Family Media, Conor Sexton.
-- Mobile first: 390px must work, not just 1440px.
-
-## Run sitepass-w2 additions
-
-**Portraits are rounded squares, never circles.** `rounded-[var(--radius-md)]`
-with `aspect-square`, as `src/components/team/PeopleStrip.tsx` does it. `/contact`
-currently uses circles for the same six faces, which is the same people rendered
-two ways on one site. Wave 1 showed two shards independently reaching for the
-same image because nothing said which; this says it.
-
-**Three image slots on this entire site are filled**: `home.hero`,
-`home.characters` and `story.garden`. They are FRAMES FROM THE ANIMATED SHOW,
-not photographs, and `src/lib/brand.ts` says so at the top of the file. Never
-caption one as a photograph. This contract said "three real photographs" for
-two waves, which was wrong, and a cold review caught it by reading brand.ts.
-Everything else in `src/lib/brand.ts` with `base: null` is an unfilled
-placeholder. Do NOT add a full-bleed image moment
-unless you can name which of those three it is and no other page already uses it
-that way. `story.garden` belongs to `/story`, `home.characters` to `/app`,
-`home.hero` to `/`. A page without an image finds its change of pace in a card,
-a quote, or a change of surface instead.
-
-
-## The surfaces, and the flatness this fixes (2026-10-08)
-
-Measured across the palette: every ground the site used for a section sat
-between **0.94 and 0.57** relative luminance, and then jumped to navy at
-**0.033**. The whole middle of the range was empty. A page went light, a
-shade less light, a shade less light, then one dark band at the end, which is
-why adding objects to pages kept failing to make them less flat. The objects
-were cream on tan, so they had nowhere to stand out from.
-
-| Surface | Luminance | What it is for |
-|---|---|---|
-| `card-stock` / `.card` | 0.94 | an object ON a ground, never a ground itself |
-| paper (default) | 0.84 | reading |
-| `.wall` | 0.64 to 0.57 | a change of room, still light |
-| **`.bench`** | **0.11** | **where a page WORKS: objects lit against dark** |
-| `.deep` | 0.03 | where a page ENDS, cool and final |
-
-**A page may carry one `.bench` and one `.deep`.** They are not two dark bands
-doing the same job: the bench is warm and lit from the same lamp as every
-staged object, the close is cool and flat. Put the page's objects on the bench,
-because that is the only ground on this site they can be lit against.
-
-**A light surface inside a dark band keeps its own ink.** `.bench h3` and
-`.deep h3` are descendant selectors, so a card on the bench had cream headings
-on cream paper and its titles vanished. `index.css` carries explicit
-`.bench .card-stock h3` style rules to put the ink back; they use real classes
-rather than `:where()` so they outrank the inverted rule instead of tying with
-it and losing on source order.
-
-**Cream on the bench is 5.3:1 and the margin is thin.** Do not dim it with
-`opacity`, and do not brighten the bench's lamp: at a 17% cream radial the
-brightest corner measured 4.29:1, which is a fail, and the lift is largest
-exactly where a heading sits.
-## Run 2026-10-09-cle-rooms additions: THE LIT ROOM
-
-Everything above still holds. This section adds the one thing the earlier
-contract predates: the render kit, and the reading of it that `/contact` and
-`/team` now ship. Those two pages are the reference for this run. Open them
-before writing anything.
-
-### Why this exists
-
-The client's verdict on the site, four times in one session, was that it was
-flat, and then, after a correct but generic rebuild of `/contact`, that it
-"isn't unique in any way and it doesn't relate to CLÉ". The answer both times
-is the same: the company makes needle-felted objects by hand, photographs them
-and hangs them up, so its site shows objects standing in a lit room rather than
-content sitting in boxes on a page. A card with a hairline and a soft shadow is
-a sheet on a page. An object reads as present when it has a position in a
-space, a light falling on it from somewhere in particular, a shadow that
-belongs to that light, and a surface it stands on. The kit supplies those four
-things and nothing else.
-
-### The two references, and what each is for
-
-**`src/pages/Contact.tsx` plus `.rk-corr` in render.css: THE ROOM.** One
-`.rk-studio` panel holding a two-column scene. Five people mounted on the wall
-on their own ledges, and the sheet you write on standing in front of them. Copy
-this when a page has a few important objects and one block of content that has
-to stay perfectly readable.
-
-**`src/components/team/StageSequence.tsx` plus `.rk-board` / `.rk-slip`: THE
-SHELF.** Six numbered slips standing on two shelves under one lamp, read left
-to right, three across and two down, aligned by their FEET so they stand at
-their own heights. Copy this when a page has a set of peer items that belong in
-an order.
-
-Mirror whichever is closer. Do not invent a third reading of the kit.
-
-### The classes, and what each needs around it
-
-| Class | What it is | Needs |
-|---|---|---|
-| `.rk-studio` | the room: wall panel, radius, padding, `container-name: studio` | `is-armed` / `is-in` from `useRoomEntry()` |
-| `.rk-room` | modifier on `.rk-studio` that raises the wall's dark floor | a TALL room only. See the gradient trap below |
-| `.rk-rake` | the raking light across the wall | first child of `.rk-studio`, `aria-hidden` |
-| `.rk-head` | the picture rail: a functional shelf label, never a strapline | inside `.rk-studio`; pairs with `.rk-head-rule` + `.rk-head-meta` |
-| `.rk-bench` | the grid of objects: 1 / 2 / 4 across by container width | direct children are `.rk-item` |
-| `.rk-board .rk-bench` | the same grid at 3 across, with one ledge per row of three | the `.rk-board` modifier on `.rk-studio` |
-| `.rk-item` | one cell; owns the shelf under its row via `::after` | `--i` set inline for the entry stagger |
-| `.rk-plate` | the object's own box; margin-bottom equals the ledge height | wraps a `Stage` |
-| `.rk-mat` | the cream mount a print sits on | holds `.rk-pic`, and the caption if there is one |
-| `.rk-pic` | the clipped picture window inside the mount | holds `Figure` plus `.rk-light` |
-| `.rk-light` | the light falling across the face of the picture | inside `.rk-pic`, `aria-hidden` |
-| `.rk-tag` | a small cream label card standing at the object's foot | positioned against `.rk-plate` |
-| `.rk-corr__sheet` | a FLAT lit sheet, not on a Stage | anything with text fields or controls |
-
-`Stage` is the lit-object primitive: `seated`, `ground="ledge"`, `light`
-(azimuth in degrees, 0 overhead, negative from the left), `tilt`, `turn`,
-`roll`, `depth` 0 to 1, `backdrop`, `rake`, `lift`, `radius`. A board on a
-ledge is `tilt` 5 to 8. Hand-place every pose so no two objects match: three
-objects with identical poses is a shop display, not a studio.
-
-### One lamp, not N lamps
-
-There is ONE light in the room and every object's azimuth is the angle from
-that light to that object. Compute it from the object's COLUMN, not its index,
-so a second row is lit the same way as the first (the lamp is above them both).
-`StageSequence.tsx` and `StudioWall.tsx` both show the two-line version of
-this. A row of objects each lit by its own identical sweep reads as a row of
-separate lights, which is the single tell that separates a rendered scene from
-a row of cards with drop shadows.
-
-### The sheet does not lean
-
-Every object in this kit sits on a few degrees of 3D rotation. **Anything
-holding a form field, a control, or a long block of reading does not.** A
-rotated ancestor blurs text in every field and moves the caret and the native
-autofill panel off the control they belong to. The room supplies the light and
-the shadow; the thing the visitor has to use stays square and flat. Use
-`.rk-corr__sheet`, which is lit by the room without being posed by it.
-
-### The four contrast traps this codebase has already paid for
-
-1. **Never dim a text colour with `opacity`.** Four separate AA failures so
-   far, every one of them `opacity` on ink or on muted. Hierarchy comes from
-   size, face and tracking. Use the token at full strength.
-2. **`--color-muted` is the floor, and only on PAPER.** On the render kit's
-   wall, text is `--color-ink` at full strength or it does not go on the wall.
-3. **A caption on a lit wall belongs INSIDE the `.rk-mat`, on cream.** That is
-   how a framed print carries one, and it is the only place its contrast stops
-   depending on how deep the room is.
-4. **The wall gradient darkens down the panel, and `.grain` multiplies on top.**
-   A painted pixel is roughly 10% darker than the CSS colour says. A room
-   tuned over 600px fails at 1200px: that is what `.rk-room` is for.
-
-### Motion
-
-`Settle` and `useRoomEntry` only. Both reveal once on entry and both collapse
-under `prefers-reduced-motion`. No animation library, no `@keyframes`, no
-infinite loop, no parallax, no scroll pinning. `Relief` (the scroll-driven
-lamp) and `HangingMarks` (`.rk-hang`, which drifts forever) are mounted by the
-footer and by `/contact` and are NOT for a shard to add: the brief puts the
-characters in the supporting cast and allows one dedicated module, which is
-already spent.
-
-### Images
-
-`src/lib/brand.ts` is the whole universe. Every image goes through `Figure`
-with a key from the `AssetKey` union. There is no image generation on this
-project and no stock photography. A key whose `base` is `null` is an unfilled
-placeholder and renders a labelled block: that is correct behaviour, not
-something to work around.
-
-### Typecheck, and the one command a shard may run
-
-`npx tsc --noEmit -p tsconfig.app.json`
-
-That is the only build command. Four shards run concurrently in ONE checkout
-against one `node_modules` and one `dist/`, so no shard runs `npm install`,
-`npm run build` or a dev server. `tsconfig.app.json` is not incremental, so
-concurrent typechecks are safe. Integration runs the real build. This overrides
-item 1 of the earlier `DONE-WHEN.md`.
-
-### Integration rulings, run 2026-10-09-cle-rooms
-
-- **A database image is not an AssetKey.** `Figure` is for `src/lib/brand.ts`
-  keys. A product thumbnail from Supabase renders as a plain `img` inside the
-  same `.rk-mat` / `.rk-pic` mount, `alt=""` when the tag beside it names the
-  product. `src/components/shop/Shelf.tsx` is the reference.
-- **The launch flag is `APP_LAUNCHED` in `src/lib/site.ts`.** No page keeps its
-  own copy.
-- **A wall of three portraits with no sheet beside it** uses
-  `.rk-corr__people--row`, which holds three across in the wide room. No inline
-  `gridTemplateColumns`.
-- **Board light is read from the 3-across column** (`i % 3`) at every width, as
-  `StageSequence` does. At 1 and 2 columns the azimuth is the desktop column's,
-  which is accepted: the poses still differ and nothing reads as N lamps.
-- **`ShopProduct` is out of scope for this run** and keeps its current layout.
-- **A page carries at most TWO render-kit rooms.** The room is how this site
-  shows an OBJECT. `/media` came out of the fan-out with three (the title
-  slates, a coverage index, the press sheet) and the device stopped reading as
-  a room and started reading as the page's wallpaper. The index went back to
-  hairline rows on paper, because a list of two coverage entries is a list, not
-  a set of objects. Ask what the objects are before reaching for a room.
-- **A credit is printed once.** The mount carries the name, the role and the
-  line (`.rk-corr__caption` with `.rk-corr__name` / `.rk-corr__role` /
-  `.rk-corr__line`). `/app` had the room's captions and then the same three
-  names and roles again in a list below it. If the mount names someone, nothing
-  under it names them again.
-- **A room's rail carries no state the page already prints.** `/shop` had
-  "Nothing on sale yet" on the `.rk-head` rail AND in the page's own heading
-  row, where it is state-aware across loading / ready / empty / failed. The
-  rail says what the shelf IS; the page says what is on it.
-- **One lamp means the azimuth is computed, every time.** `light={-32}` on
-  every object in a row is six objects each with its own light, and it is the
-  single tell that separates a rendered scene from a row of cards with drop
-  shadows. Three places still had it after the fan-out: `/journal`'s four
-  strand cards, `/team`'s opening portrait strip, and (correctly) two
-  single-object stages, which need no column. The two rows now use the same
-  two-line `azimuthFor(column, columns)` the review board uses. A single object
-  on its own may take a fixed azimuth; a row never may.
-- **A card lying on a surface is `seated`.** Without it a Stage draws the cast
-  shadow but no contact pool, so the object reads as laid OVER the ground
-  rather than ON it. `/journal`'s strands had that for a week.
-
-## Run 2026-10-09 drawings: the second visual language
-
-The lit room shows an OBJECT. It cannot show an ARGUMENT, and this site is
-mostly argument, which is why nine pages came out of the fan-out carrying one
-object each and several hundred words of prose. The client's verdict was "so
-many words, and blocks of words" and "maybe one render per page".
-
-So there is a second language beside the room: **ink line drawings on paper**,
-and it has rules.
-
-- **A drawing replaces a LAYOUT, never a sentence.** Not one word has been cut
-  to make room for any of these. The drawing goes above or beside the prose
-  and says the same thing in one look; the prose stays complete underneath for
-  the reader who wants it.
-- **Draw the argument the page is actually making.** `/shop` refuses a
-  checkout, so it draws a checkout with every field struck but one.
-  `/ethical-ai` is about a line nobody crosses, so it draws that line with
-  people above it and tools below. Home's three stages are one journey, so one
-  stroke runs out of a screen and lands on a sheet. None of these would fit
-  another page, which is the test.
-- **Never an icon row.** Three or four small marks in a line, one per feature,
-  is the tell this language exists to avoid. One drawing per idea, at scale.
-- **Every label is lifted from the page's own copy.** A drawing is a new way
-  to read a claim, never a new claim. A diagram that states something the page
-  does not is the worst kind of invented fact, because it looks authoritative.
-- **Ink line work, one rationed accent, no fills beyond the paper tone.** The
-  accent marks the one moment that matters (the child getting up, the line
-  itself, the strike). Everything else is ink at 1.4 to 2.5 stroke.
-- **It draws itself once, then stops.** `stroke-dasharray` on a
-  `pathLength="1"` path, or a `scaleX` transform on a rule, run from a CSS
-  keyframe with `forwards`. CSS and not a motion library, because the contrast
-  sweep zeroes `animation-duration` and pins the iteration count, so a
-  `forwards` keyframe lands on its final frame for the capture where a JS
-  tween photographs mid-draw. Reduced motion drops the animation and the
-  drawing is simply complete.
-- **A drawing needs a composition at 390 too.** The home arc is horizontal
-  above 900px and vertical below it: same three marks, laid out for the space.
-  A 1200-wide drawing on a phone is 110px tall and is not a drawing.
-
-### The drawing hand, settled 2026-10-09
-
-`src/components/draw/draw.css` is the hand. Every drawing on the site uses its
-classes and nothing defines its own stroke weight. A drawing that needs a
-weight the file does not have is a change to that file, made once.
-
-- `.ink` the svg wrapper, `.ink-line` the 2px edge, `.ink-thin` detail inside
-  an object, `.ink-heavy` a surface something stands on, `.ink-accent` the one
-  rationed accent, `.ink-fill` paper inside a drawn object.
-- Arriving: `.ink-draw` (a stroke that draws itself, REQUIRES
-  `pathLength="1"`), `.ink-in` (lands where the stroke reaches it),
-  `.ink-extend` (a rule that extends), `.ink-open` (a ring opening outward).
-  Delay with `--d`, duration with `--dur`.
-- Labels are HTML beside the svg, never `<text>`: real fonts, selectable,
-  readable, and they reflow.
-
-**Three traps this cost us, all now fixed in the kit:**
-
-1. **`.ink-draw` cannot also be dashed.** It animates `stroke-dashoffset`
-   against `stroke-dasharray: 1`, so a dash attribute on the same path is
-   overridden and silently does nothing. A path that must be dashed uses
-   `.ink-in`, or the dash goes on a sibling underneath.
-2. **`--color-muted` is a PAPER-ONLY floor.** `.ink-label` shipped as muted
-   and measured 4.39 to 4.44:1 on the `.wall` and `.well` grounds. The kit
-   now defaults labels to `--color-body` and takes ink on the deeper grounds.
-3. **A drawing needs its own composition at 390,** not a scaled-down one.
-
-**And one judgement, learned by getting it wrong:** draw the right SUBJECT.
-Watch / Play / Learn was first drawn as a journey out of a screen onto paper.
-It read well and it was wrong: the episode does not travel, it stays ten
-minutes long, and what changes is how far out from it the child gets. It is
-rings now, the episode small at the centre, which is the page's own pull
-quote. Ask what is actually moving before drawing an arrow.
-
-### LEGIBLE BEATS UNIQUE, settled 2026-10-10
-
-The drawing rules said "never an icon row" and "if the drawing would fit
-another page it is decoration". Both are still true. But they were read as
-"every item in a set must get a DIFFERENT mark", and that is where the six
-review-stage marks went wrong.
-
-What happened: six marks were commissioned for the six review stages, each
-required to be unique in kind and silhouette. The brief was followed well and
-the result failed anyway. Four of the six stages are genuinely the same action
-(a named person reads the work and can object to it), so the only way to make
-six different marks was to reach for a different metaphor each time: a bean
-frame for "concept and story", two posts and sightlines for "parent and early
-years review". Each was defensible in a sentence and none of them could be
-read without that sentence. A drawing whose caption has to teach it is not
-working.
-
-THE RULE NOW:
-
-1. **Legibility first.** A reader must get the drawing from the drawing. If it
-   only resolves once the caption explains the metaphor, redraw it or drop it.
-2. **Ask whether the set actually differs before drawing per item.** If the
-   items are alike, draw the SET once, or not at all. Six marks for six things
-   that are four-fifths the same is the mistake, not the execution.
-3. **Where two items genuinely do the same thing, they carry the same mark.**
-   A script page at stage 02 and a script page at stage 04 is correct, because
-   both stages handle a script. Repetition across a set is honest when the
-   things repeat. Difference is earned, never manufactured.
-4. **Draw the artefact, not the abstraction.** "Educational review" has no
-   shape. The activity sheet it reviews does. Where a stage, a step or a
-   feature is an abstract process, draw the real object it acts on.
-
-"Never an icon row" still stands, and is not in conflict with this: an icon
-row is six interchangeable glyphs in matched boxes standing in for categories.
-A set of drawn artefacts, at different sizes, some repeating because the work
-repeats, is not that.
-
-### The hand got craft, settled 2026-10-11
-
-The client's verdict on the drawings as they stood: "some drawings are still
-sub par ... and some don't fully encapsulate what it is they are trying to."
-
-The cause was the same every time, and it was not the metaphor. Every drawing
-was authored as an **icon**: one uniform 2px stroke, perfect geometry, outline
-only, no tone, no weight hierarchy. Any individual drawing could be swapped
-for a better idea and the page would still read as a line-icon set, because
-icon-ness was a property of the hand, not of any one picture.
-
-Three things were added centrally rather than per drawing, so that one change
-fixes every drawing including the ones nobody flagged:
-
-**1. A wobble, applied at paint time.** `components/draw/InkDefs.tsx` holds one
-SVG turbulence and displacement filter, mounted once in `Layout`, and `.ink`
-references it. Paths stay exact in the source, which is what keeps them
-editable; the hand-drawn quality is added when they are painted. Never bake
-wobble into coordinates and never add a second filter. `.ink--exact` is the
-opt-out and exists for one case: a drawing whose whole point is a ruled
-straight line, where the displacement shows as a half-pixel step rather than
-a bend.
-
-**2. A tone wash.** `.ink-wash` and `.ink-wash--deep` are flat tone fills drawn
-under the line work. This is the biggest single lift available to a drawing.
-Outline-only is why a page of these read flat: every object carried the same
-value, so nothing was in front of anything. Tone, never colour, and never the
-accent: a drawing says one thing in red and that thing is a stroke.
-
-**3. A weight hierarchy that means something.** `.ink-edge` (2.8) is an
-object's own silhouette, `.ink-line` (2) is ordinary line, `.ink-thin` (1.4 at
-55%) is detail inside an object. **A drawing authored entirely in `.ink-line`
-has thrown this away and will look like an icon whatever else is done to it.**
-This is now the first thing to check in a drawing review.
-
-The round's own brief, with the five redraws it commissioned, is in
-`.parallel/HAND-2026-10-11.md`.
-
-### The graphite, and the unit, settled 2026-10-11
-
-The wobble was not enough on its own. The client's verdict: "they feel a tiny
-bit off, because they are solid lines that are trying to look handdrawn. i
-think the solution is making the drawings larger so then we can apply like a
-pencil texture to the strokes." He was right about both halves.
-
-**The tooth.** `InkDefs.tsx` now carries a second, finer noise, turned into
-an alpha mask and composited into the stroke, so the ink is eaten away along
-its edge the way graphite misses the troughs in paper. Four erosion settings
-were photographed side by side before one was picked: gentler is merely soft,
-stronger turns the washes dirty and dissolves a red accent into pink dots.
-
-**THE UNIT IS NOW A DESIGN CONSTRAINT, and this is the part to remember.**
-A stroke needs about four device pixels for the tooth to sit in. Every
-drawing on the site was authored at roughly one user unit per CSS pixel,
-which put a 2 unit line at 2 pixels: half. So each drawing was either given
-more room or re-authored at half its coordinates against the same rendered
-width, which gets the same result with no layout change at all. Stroke
-widths come from the kit and are NEVER scaled with the geometry; that is the
-whole trick, the stroke keeps its device size while the drawing gets finer
-around it.
-
-Three things do not halve with everything else, and all three were caught by
-looking rather than by typechecking: **a dash array**, because the dash is
-measured against a stroke that did not change, so a halved dash becomes a
-dotted line; **a gap between two strokes**, which closes up and reads as one
-mark; and **a hole**, which fills in. Each of those is set against the stroke
-rather than against the drawing.
-
-**`.ink--fine`** is the kit's answer for a drawing whose size is set by
-something other than the drawing: a float bounded by the prose measure, a
-mark inside a card. It keeps the wobble and drops the tooth. Using it is a
-real answer, not a failure; shipping a 2 pixel stroke full of noise is the
-failure. The six stage marks and the two letter floats take it.
-
-**There is no mobile fallback and there must not be one.** A full width
-drawing at 390 looks like noise in a screenshot, and the screenshot is wrong:
-it is taken at a device pixel ratio of 1, real phones are 2 or 3, the filter
-rasterises at device resolution, and at `deviceScaleFactor: 3` the tooth is
-clean. Measure in DEVICE pixels before adding a breakpoint.
+# CONTRACT: carry the home page to every other page (run 2026-10-27-fanout)
+
+Read this whole file, then `CLAUDE.md`, then your BRIEF. Nothing is committed
+in this run: never `git add`, never `git commit`.
+
+## 0. What this run is
+
+The home page (`src/pages/Home.tsx`) was signed off by the client today. Its
+hero is, in the client's words, "by far and away the best thing" on the site.
+Every other route now has to read as if it belongs to that hero. You are not
+inventing a new direction: you are carrying a settled one to your pages,
+section by section, and the reference for every judgement is
+`/tmp/claude-1000/-home-david-Documents-GitHub/dc2a40e8-4359-4bc5-b088-0e04ff88e12e/scratchpad/fanout/home-1440.png`
+(the home page at 1440, full length). The BEFORE capture of your own pages is
+in `.../scratchpad/fanout/before-1440/<key>.png` and `before-390/<key>.png`.
+
+The failure mode this client has named three times is **timid moves**: small
+polite changes inside the existing boxes that leave a page reading the same.
+Clear is the floor, not the goal. Do what your brief says at full strength.
+
+## 1. File ownership
+
+You edit ONLY the paths your shard owns. Everything else is read only.
+
+| shard | owns |
+|---|---|
+| story | `src/pages/Story.tsx`, `src/components/story/*` |
+| team-casestudy | `src/pages/Team.tsx`, `src/pages/CaseStudy.tsx`, `src/components/casestudy/*`, `src/components/teampage/*` |
+| ethical-ai | `src/pages/EthicalAi.tsx`, `src/components/ethical-ai/*` |
+| app | `src/pages/AppPage.tsx`, `src/components/app/*` |
+| journal | `src/pages/Journal.tsx`, `src/pages/JournalPost.tsx`, `src/components/journal/*` |
+| media | `src/pages/Media.tsx`, `src/components/media/*` |
+| shop | `src/pages/Shop.tsx`, `src/pages/ShopProduct.tsx`, `src/pages/Download.tsx`, `src/components/shop/*` |
+| contact | `src/pages/Contact.tsx`, `src/components/contact/*` |
+| utility | `src/pages/Legal.tsx`, `src/pages/NotFound.tsx`, `src/components/legal/*` |
+
+### FROZEN (never edit, not even one character)
+
+`src/styles/index.css` · `src/lib/*` · `src/App.tsx` · `src/components/Layout.tsx` ·
+`src/components/ui.tsx` · `src/components/Figure.tsx` · `src/components/ShowFrame.tsx` ·
+`src/components/Settle.tsx` · `src/components/Wipe.tsx` · `src/components/MissionVideo.tsx` ·
+`src/components/icons.tsx` · `src/components/draw/*` · `src/components/render/*` ·
+`src/components/home/*` · `src/components/team/*` (shared with Home) · `src/pages/Home.tsx` ·
+`src/components/PageHero.tsx` (added by this foundation) · `src/components/Seo.tsx` ·
+`src/components/NotifyForm.tsx` · `src/components/AssetPlaceholder.tsx` · `api/*` ·
+`scripts/*` · `.parallel/*` · every other shard's files.
+
+If you believe a frozen file must change, that is a contract gap: say so in
+your report and build around it. Do not edit it.
+
+### Per-page CSS
+
+Page-specific CSS goes in a NEW `.css` file inside a folder you own (for
+example `src/components/story/opening.css`), imported from the component or
+page that uses it. Existing per-folder CSS files you own (`dogs.css`,
+`routes.css`, `pline.css`, `corr.css`, `nostrip.css`, `noway.css`, ...) may be
+edited. You may never restate or override a frozen class (`.film-*`,
+`.show-frame*`, `.hero-head*`, `.page-hero*`, `.t-*`, `.btn*`, `.wall`,
+`.bench`, `.grove`, `.deep`, `.hairline`, `.card*`, `.eyebrow*`) in your CSS;
+the lint fails any rule whose selector starts with `.film-`, `.show-frame`,
+`.hero-head` or `.page-hero`. Prefer Tailwind utilities in the JSX and
+tokens (`var(--color-*)`, `var(--radius-*)`, `var(--ease-out)`) over new hex.
+
+## 2. The direction, as rules
+
+### 2.1 Every page opens in the hero's language
+
+Every route opens with **`PageHero`** (`import { PageHero } from "@/components/PageHero";`),
+except where your brief says otherwise (the `/team` bench, the journal post
+and shop product reading layouts). It is the page's `<h1>`; remove the old
+`<h1>` so the page has exactly one.
+
+```tsx
+<PageHero
+  id="story-h"                         // the h1 id; the section is labelled by it
+  asset="story.garden"                 // a still from src/lib/brand.ts; OMIT for the plain panel
+  position="center 40%"                // optional object-position to keep the subject in frame
+  credit={<>The garden the series is set in. A frame from the series.</>} // REQUIRED with any frame from the series
+  eyebrow={<>Our story<span>Conor Sexton, founder and CEO</span></>}      // top left, mono uppercase; 2nd line in <span>
+  aside={<>On what he saw, and what it took to build the alternative.</>}  // top right, ONE short line (two at most)
+  title={<>I did not set out to start a <em>media company.</em></>}       // bottom left; <em> = accent colour, not italic
+  actions={<><Button to="/team">Meet the team<IconArrow size={16} /></Button>
+             <Button to="/contact" variant="quiet">Get in touch</Button></>} // optional, at most two buttons
+  size="tall"                          // "full" | "tall" (default) | "short"
+  tone="ink"                           // plain panel only: "ink" (default, the hero's dark) | "wall" (deeper paper)
+/>
+```
+
+What it gives you, so do not rebuild any of it:
+
+- **Picture variant** (`asset` set): the hero's own frame (`.film-hero` /
+  `.film-frame`: gutter `clamp(10px,1.1vw,16px)`, radius `clamp(20px,2.2vw,32px)`,
+  dark gaps), the header floating over it in cream (Layout does this for any
+  `.film-hero`), a scrim measured for a two to three line headline over every
+  still in `public/brand` (headline 5.28:1 or better, corners 4.99:1 or
+  better), the four corners, and the credit as a small right aligned mono line
+  in the bottom right corner. Under 820px it collapses exactly like the home
+  hero: picture first (4:3, rounded), credit right aligned under it, then the
+  copy on paper in ink.
+- **Plain variant** (no `asset`): the same corner grid on a rounded panel,
+  `tone="ink"` (cream type on the hero's dark) or `tone="wall"` (ink type on
+  the deeper paper, edged with a 1.5px rule). For pages with no picture.
+- **The page's one orchestrated entrance.** The picture settles, then
+  eyebrow, aside, headline and actions arrive in order on the house easing,
+  CSS only, collapsed under `prefers-reduced-motion`. **Do not add a second
+  entrance** to the opening, and do not wrap PageHero in `Settle` or `Wipe`.
+- Headline face: Fraunces 700 at `clamp(2.6rem, 1.4rem + 5vw, 6rem)` (94px at
+  1440), max 17ch, balanced. Keep titles to about 12 words so they set in two
+  or three lines.
+
+Real stills you may use (keys in `src/lib/brand.ts`, all wired):
+`story.garden` (swing tree, 3:2), `home.characters` (hen and the pugs, 16:10),
+`show.meadow` and `show.snail` (2:1), `home.hero` (bluebell garden, 4:3, also
+the film poster), `slate.ep1` to `slate.ep6` (felted title slates, 16:9), the
+eight `dog.*` photographs (the only real photography). Every rendered frame
+from the series carries a credit saying it is a frame from the series. The
+dogs are photographs and say so. Never caption anything with a claim about how
+that specific image was made beyond what `brand.ts` records.
+
+### 2.2 Type scale and the claim as heading
+
+Classes (frozen in `index.css`): `.t-display` 88px at 1440, `.t-h1` 66px,
+`.t-h2` 54px, `.t-h3` 30px, `.t-lead`, `.t-body`, `.t-prose`, `.t-sm`
+(15px), `.eyebrow` / `.eyebrow-sm` (14px) / `.eyebrow-xs` (13px). Leads and
+body are untouched by this run; the RATIO between a heading and the text
+under it is what carries a page.
+
+- **No filing-label heading over a grey lead.** "Where it started",
+  "The index", "What a purchase is" over a two or three line grey paragraph
+  is the shape the client is reading as the site's real problem. The sentence
+  worth stopping for IS the heading. The rest of the paragraph moves to where
+  it is actually talking (a small line above the list it introduces, a
+  caption beside the object it explains) or is cut if it only restates the
+  heading. Facts are never cut: they move.
+- **Each section opens in its own text shape.** Down one page, no two
+  consecutive sections may open with the same heading class at the same left
+  edge followed by a `t-lead`/`Lead`. Vary it: a display claim on its own, a
+  heading in a left track beside the object, a heading over a ruled set with
+  no lead, a pull line, a section that opens on its object and puts the
+  heading in the margin.
+- A section heading is at least `.t-h2` unless it is a sub-head inside a set
+  (`.t-h3`). Do not set section headings with arbitrary `text-[NNpx]`.
+- Mono eyebrows over section headings stay RETIRED (removed site-wide on
+  2026-10-24). The only mono labels are: PageHero's eyebrow, labels inside an
+  object (a docket, a dl, a card tab), and status messages.
+
+### 2.3 Small type, rules and strokes
+
+- **13px floor for real text.** No `text-xs`, no `text-[12px]`, no
+  `text-[12.5px]`, no CSS `font-size` under 13px. A purely decorative print
+  mark (edge print on film stock) may sit at 12px and its line must contain
+  the word `print-mark` (a comment or a class name) so the lint passes it.
+- **Rules and hairlines 1.5px.** Use `.hairline` (frozen) or
+  `border-t-[1.5px] border-rule` / `border-l-[1.5px] border-rule-soft`. No bare
+  `border`, `border-l`, `border-b`, `h-px`, `w-px` or `1px solid` as a rule.
+- **Control edges 2px** (buttons, fields, chips, toggles). `Button` already
+  is; a hand-built chip or field is `border-2`.
+- **Icon and drawn strokes 2** (`strokeWidth={2}`); `icons.tsx` already is.
+
+### 2.4 Plates and credits
+
+- A frame from the series shown mid-page is a **`ShowFrame`**
+  (`import { ShowFrame } from "@/components/ShowFrame";`
+  `<ShowFrame asset="show.snail" caption="A frame from the series." />`). It
+  hangs at the hero's gutter and radius, caption bottom left over a scrim,
+  slow scroll-driven drift, caption under the picture on phones. Do not build
+  another framed picture treatment. At most ONE ShowFrame per page, and never
+  the same asset as that page's PageHero.
+- Smaller inline pictures use `Figure` (`@/components/Figure`, props `asset`,
+  `rounded`, `className`, `sizes`, `fill`, `position`, `priority`).
+- **Credits and provenance notes are small right aligned mono lines**:
+  `ml-auto max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em]`
+  in the body colour on paper (or `text-[#eee9df]` on a dark ground, as Home
+  does). Never a centred full-width line, never a paragraph.
+
+### 2.5 Drawings, sparingly
+
+The drawn kit (`components/draw`: `Underline`, `DrawnRule`, `DrawnBracket`,
+`Watermark`, ...) is used sparingly. The drawn pug-face watermark was judged
+poor and removed; the Watch/Play/Learn line sketches are judged weak.
+**Prefer a real show frame, a felted slate or a real photograph over a
+drawing.** At most ONE drawn object per page (a `Underline` on one key phrase,
+or one diagram that genuinely explains a process, such as the production line
+on `/ethical-ai`). No `Watermark` on any inner page. Decorative line sketches
+that illustrate a sentence (a person at a screen, a stack of screens, a
+squiggle, a bluebell) are cut, not restyled.
+
+### 2.6 Surfaces, colour, motion
+
+- Warm committed paper surfaces. Rooms available (frozen classes): `.wall`
+  (deeper paper), `className="bench"` (warm umber, cream type), `bench grove`
+  (green), `<Section deep>` (navy, one per page, the close). One `bench` and
+  one `deep` per page at most. No new surface colours, no gradients beyond
+  what those classes already carry.
+- The red is rationed: buttons, one `<em>` accent in the PageHero title,
+  active states. Never a red heading, never a red section ground.
+- Motion: `PageHero` is the page's orchestrated entrance. Below it, section
+  reveals use `Settle` (staggered children) or `Wipe` (one block wiping in),
+  both frozen, both already collapse under reduced motion. Any NEW motion you
+  write (CSS keyframes in your own css file) must carry a
+  `@media (prefers-reduced-motion: reduce)` collapse in the same file, use
+  `var(--ease-out)`, run once and settle. Nothing loops, bounces, drifts or
+  auto-rotates.
+- Section rhythm only through `<Section pad>` (`"open" | "normal" | "tight" | "close" | "none"`
+  or a `[top, bottom]` pair) and `<Container width>` (`"wide" | "default" | "text" | "measure"`).
+  No `!py-*` escapes.
+
+### 2.7 Layout on phones
+
+390px must work: no horizontal overflow, nothing cramped, tap targets at
+least 44px for controls you build. On phones the thing a visitor came for
+comes first (the form on `/contact`, the download button on `/download`).
+
+## 3. Copy rules
+
+- Spellings (`CLAUDE.md`): **The Pawsitive Pugs & Pals®** with the registered
+  mark on first use per page (`&reg;` or `<sup>&reg;</sup>`), **PupsPlayer™**
+  with the mark on first use, **CLÉ Family Media** with the accent (`CL&Eacute;`
+  or `CLÉ`), **Conor Sexton**.
+- **Zero em dashes (U+2014) and zero en dashes (U+2013)** anywhere: copy,
+  comments, class names, alt text. Use a comma, colon, full stop or "to".
+- Irish audience, Irish/UK spelling (colour, programme, organise), € prices.
+- **No invented facts, figures, quotes, dates, testimonials, partners or
+  awards.** Every heading you write must be a sentence the page already
+  contains or a plain restatement of a fact already on the page. If you
+  reword, the meaning must not grow.
+- **Keep every existing factual claim, link, legal text, price, status and
+  form behaviour intact.** Moving a sentence is fine; deleting a fact is not.
+  Purely restating sentences (a lead that repeats its heading) may be cut.
+  Legal page bodies, the privacy wording on `/case-study`, the purchase terms
+  and the download messages are reproduced word for word.
+- Headings read confident and plain. Never a disclaimer, never a cute
+  negation ("None of this is ours." was rejected today as "horrible";
+  "No logo strip of publications that have not written about us" is the same
+  register). A heading says what IS.
+- Characters are supporting cast: Finn and Fia may appear in frames and
+  credits; they never lead a heading.
+
+## 4. Verification procedure (do all of it, in order)
+
+1. Lint: `bash .parallel/shard-lint.sh <ExportName> <exportPath> <owned paths...>`
+   from the repo root, until it prints `shard-lint: clean`. The export and
+   paths for each shard are listed in `.parallel/CHECKLIST.md` item C1.
+2. Typecheck: `npx tsc -p tsconfig.app.json --noEmit`. Zero errors in your
+   files. An error in a file another shard owns is not yours; note it, do not
+   touch it.
+3. Your own dev server, on your own port, never the shared one (two sweeps
+   against one server produce phantom failures):
+   ```
+   /home/david/.local/bin/pbuild run --weight 2G -- bash -c '(setsid timeout 2400 npx vite --port <PORT> --strictPort >/dev/null 2>&1 &); sleep 5'
+   ```
+   Ports: story 5411, team-casestudy 5412, ethical-ai 5413, app 5414,
+   journal 5415, media 5416, shop 5417, contact 5418, utility 5419. The
+   journal and shop shards start theirs with
+   `VITE_SUPABASE_URL=http://stub.invalid VITE_SUPABASE_ANON_KEY=stub` in
+   front of `npx vite` so `--stub` can serve the post and product.
+4. Capture and measure at 1440 and 390, one key at a time, one sweep at a time:
+   ```
+   OUT=/tmp/claude-1000/-home-david-Documents-GitHub/dc2a40e8-4359-4bc5-b088-0e04ff88e12e/scratchpad/fanout/<shard>
+   node scripts/qa/audit.mjs --port <PORT> --only <key> --out $OUT/after-1440
+   node scripts/qa/audit.mjs --port <PORT> --only <key> --out $OUT/after-390 --width 390 --height 844
+   ```
+   Keys: story, team, case-study, ethical-ai, app, journal, media, shop,
+   contact, privacy, terms, cookies, 404. For the post and product add
+   `--stub --also "/journal/qa-fixture|journal-post"` with `--only journal-post`
+   (and `"/shop/qa-fixture|shop-product"` with `--only shop-product`).
+   Required result on every key: `overflow: 0   contrast failures: 0   pages that never loaded: 0`.
+   "Pages that never loaded" above zero means the run is void: re-run it alone.
+   A contrast failure naming a lightened near-miss of a token (`#755945`,
+   `#9a3f3d`) on a loaded machine is a phantom (HANDOVER section 6, trap 6):
+   re-run once before believing it.
+5. LOOK at the whole page, not a crop: slice the full-length png with
+   python3 PIL (`Image.MAX_IMAGE_PIXELS=None`, crop 2400px bands, scale 0.4)
+   and read every slice at 1440 and at 390, beside `home-1440.png`. Fix what
+   reads weaker than home, then repeat 1 to 5.
+6. Kill your dev server when done (`pkill -f "vite --port <PORT>"`).
+
+## 5. Reporting
+
+Report: files changed, the PageHero props you used per route, every heading
+you rewrote (old to new, with the sentence on the page it comes from), every
+fact you moved and where to, anything you cut, the audit result lines for each
+key at 1440 and 390, lint and typecheck output, and any contract gap.

@@ -2,6 +2,7 @@ import { useRef, useState, useMemo, type ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
+import { PageHero } from "@/components/PageHero";
 import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 
@@ -32,6 +33,17 @@ import { IconArrow } from "@/components/icons";
    sheet of card with three tabs, the one you are reading raised into the
    paper of the sheet and the other two sitting behind it. That is the page's
    signature, and it is the folder these three things actually live in.
+
+   THE OPENING, 2026-10-27. The title used to stand at the left edge of the
+   paper over a grey lead, with the document's facts in a small list hard
+   right. It now opens the way every page opens, in the hero's frame: the
+   plain panel on the deeper paper, the company and the draft status in the
+   top left corner, the date and the jurisdiction in the top right, and the
+   document's name in the bottom left at the hero's scale. The name stays the
+   name ("Privacy policy", not a claim): on a legal page, saying what the
+   document is beats saying what it says. The one-line summary that used to
+   be the lead is the first line of the sheet instead, where it introduces
+   the clauses it summarises.
 
    THE COMPANY DETAILS, CLOSED 2026-10-13. The registered name, number and
    office now head every one of the three documents, taken from the signed
@@ -380,37 +392,46 @@ export default function Legal({ doc }: { doc: DocId }) {
     <>
       <Seo title={d.title} description={d.description} path={`/${doc}`} />
 
-      {/* ═══ 1. THE HEAD, across the full frame.
-          Title and opening on the left at a reading measure, the document's
-          own facts hard against the right edge. This is the one place the page
-          uses the whole width; the document itself never does, because a
-          clause set 1,400px wide is a clause nobody finishes. ═══ */}
-      <Section pad={["normal", "none"]}>
-        <Container width="wide">
-          <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16">
+      {/* ═══ 1. THE HEAD, in the hero's frame.
+          The plain panel on the deeper paper: the document has no picture to
+          stand on, and a policy should open quietly. The corners carry what
+          the old facts list carried, word for word: who published it and its
+          status top left, when and under which law top right. The h1 is the
+          document's name, which is the one heading on the site allowed to be
+          a label: a reader checking a company wants "Terms", not a sentence
+          about terms. No actions: the document is the action. ═══ */}
+      <PageHero
+        id="legal-h"
+        size="short"
+        tone="wall"
+        eyebrow={
+          <>
+            CL&Eacute; Family Media<span>Draft</span>
+          </>
+        }
+        aside={
+          /* Inline pairs, not a two-column grid: the aside is right aligned
+             in the frame and left aligned once the panel collapses on a
+             phone, and inline text follows that without knowing about it. */
+          <dl>
             <div>
-              <h1 className="t-h1 max-w-[16ch]">{d.title}</h1>
-              <p className="t-lead mt-6 max-w-[56ch] text-body">{d.intro}</p>
+              <dt className="inline">Last updated</dt>{" "}
+              <dd className="tnum inline whitespace-nowrap">{updated}</dd>
             </div>
-            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 font-mono text-[14.5px] leading-relaxed lg:pb-2 lg:text-right">
-              <dt className="text-muted">Last updated</dt>
-              <dd className="tnum text-ink lg:text-right">{updated}</dd>
-              <dt className="text-muted">Status</dt>
-              <dd className="text-ink lg:text-right">Draft</dd>
-              <dt className="text-muted">Jurisdiction</dt>
-              <dd className="text-ink lg:text-right">Ireland</dd>
-            </dl>
-          </Settle>
-          <div className="hairline mt-12 sm:mt-14" />
-        </Container>
-      </Section>
+            <div>
+              <dt className="inline">Jurisdiction:</dt> <dd className="inline">Ireland</dd>
+            </div>
+          </dl>
+        }
+        title={d.title}
+      />
 
       {/* ═══ 2. THE DOCUMENT.
           A sheet of card with three tabs. The sheet sits in the default
           container, not the wide one: the index and a 68ch measure are all
           that belongs on it, and padding either side of a document is how a
           document is meant to look. ═══ */}
-      <Section pad={["none", "normal"]}>
+      <Section pad={["tight", "normal"]}>
         <Container width="wide">
           {/* 70rem, not the 5xl container and not the wide one. A 64rem sheet
               under a 97rem header read as a column dropped into the middle of
@@ -431,10 +452,14 @@ export default function Legal({ doc }: { doc: DocId }) {
                     key={id}
                     to={`/${id}`}
                     aria-current={on ? "page" : undefined}
-                    className={`rounded-t-[7px] px-4 font-mono text-[14.5px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
+                    /* A 2px edge on three sides, the house's control edge; the
+                       raised tab's edge is the sheet's own colour so it reads
+                       as part of the card rather than as a box on it. 44px
+                       tall, so each is a thumb's target on a phone. */
+                    className={`flex min-h-[44px] items-center rounded-t-[7px] border-2 border-b-0 px-4 font-mono text-[14.5px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
                       on
-                        ? "bg-raised pb-3 pt-2.5 text-ink"
-                        : "mt-1 bg-sunken pb-3 pt-2 text-body hover:text-ink"
+                        ? "border-raised bg-raised pb-0.5 text-ink"
+                        : "mt-1 border-sunken bg-sunken text-body hover:text-ink"
                     }`}
                   >
                     {DOCS[id].tab}
@@ -460,6 +485,14 @@ export default function Legal({ doc }: { doc: DocId }) {
                 </div>
 
                 <div ref={body} className="max-w-[68ch]">
+                  {/* The document's own summary, the line that used to be the
+                      lead under the title. It is the first line of the sheet
+                      because it is the sheet's own first line: the short
+                      version of the clauses under it, in ink at the reading
+                      lead so it reads as the document's voice rather than as
+                      a caption on it. Verbatim. */}
+                  <p className="t-lead mb-9 max-w-[56ch] text-ink sm:mb-11">{d.intro}</p>
+
                   {/* Who the trader is, in the slot where the draft stamp
                       stood until 2026-10-13. Same stamp, not a box: the
                       house's own anti-pattern is the card with a coloured left
@@ -482,18 +515,24 @@ export default function Legal({ doc }: { doc: DocId }) {
                       className="scroll-mt-28 pt-9 sm:pt-11"
                       aria-labelledby={`s${i + 1}-h`}
                     >
+                      {/* An h2 inside a document, set at the scale's sub-head
+                          (`.t-h3`, 30px at 1440) rather than the literal 18px
+                          it used to be, so the clause heads sit on the same
+                          scale as every other heading on the site. The
+                          number beside it stays mono at 14px: it is a mark in
+                          the margin, not a heading. */}
                       <div className="grid gap-x-5 sm:grid-cols-[2rem_minmax(0,1fr)]">
-                        <p aria-hidden="true" className="tnum hidden font-mono text-[14px] leading-[1.75] text-muted sm:block">
+                        <p aria-hidden="true" className="tnum hidden font-mono text-[14px] leading-[2.4] text-muted sm:block">
                           {i + 1}
                         </p>
                         <div>
-                          <h2 id={`s${i + 1}-h`} className="font-sans text-[18px] font-bold leading-snug tracking-normal">
-                            <span aria-hidden="true" className="tnum mr-2 font-mono text-[14px] font-normal text-muted sm:hidden">
+                          <h2 id={`s${i + 1}-h`} className="t-h3 font-sans font-bold tracking-[-0.01em]">
+                            <span aria-hidden="true" className="tnum mr-2 font-mono text-[14px] font-normal tracking-normal text-muted sm:hidden">
                               {i + 1}
                             </span>
                             {s.h}
                           </h2>
-                          <div className="mt-3.5 space-y-4 text-[16px] leading-[1.72] text-body">
+                          <div className="mt-4 space-y-4 text-[16px] leading-[1.72] text-body">
                             {marked[i].map((para, j) => (
                               <p key={j}>{para}</p>
                             ))}
@@ -516,7 +555,9 @@ export default function Legal({ doc }: { doc: DocId }) {
       {/* ═══ 3. THE SHELF, full width again.
           The three documents are one set and a reader checking a company
           usually wants more than the one they landed on. Hairline rows, the
-          one in hand marked rather than linked. ═══ */}
+          one in hand marked rather than linked. "The documents" stays as the
+          heading: a shelf of the three legal documents is literally that, and
+          this page's exemption from the claim-as-heading rule covers it. ═══ */}
       <Section pad={["none", "normal"]} labelledBy="shelf-h">
         <Container width="wide">
           <div className="hairline pt-12 sm:pt-14">
@@ -558,7 +599,7 @@ export default function Legal({ doc }: { doc: DocId }) {
                 const cls =
                   "grid items-start gap-x-10 gap-y-2 py-6 sm:grid-cols-[minmax(0,0.5fr)_minmax(0,1.1fr)_minmax(0,0.3fr)] sm:py-7";
                 return (
-                  <li key={id} className="hairline last:border-b last:border-rule">
+                  <li key={id} className="hairline last:border-b-[1.5px] last:border-rule">
                     {here ? (
                       <div className={cls}>{inner}</div>
                     ) : (

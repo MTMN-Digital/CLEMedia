@@ -44,7 +44,7 @@ function Pills({
         {options.map((o) => (
           <label
             key={o.value}
-            className={`chip ${closed ? "cursor-not-allowed" : ""}`}
+            className={`chip min-h-[44px] ${closed ? "cursor-not-allowed" : ""}`}
             data-on={value === o.value ? "" : undefined}
           >
             <input

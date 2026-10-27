@@ -62,18 +62,18 @@ const SHOTS: Shot[] = [
   { a: "dog.fia-2", cell: "h", w: 100.0, h: 141.2, l: 0.0, t: -9.0, at: "46% 42%" },
 ];
 
+/* THE HEADING IS THE CLAIM, 2026-10-27. "Meet the real Finn and Fia" over a
+   grey two line lead was a filing label, and the characters were leading a
+   heading on the company site. The sentence the lead was making is the
+   heading now, and it is about the photographs; the rest of the lead is the
+   credit under the grid, where a provenance line belongs. */
 export function RealDogs({ headingId }: { headingId: string }) {
   return (
     <>
       <Settle>
-        <h2 id={headingId} className="t-h2 max-w-[18ch]">
-          Meet the real Finn and Fia
+        <h2 id={headingId} className="t-h2 max-w-[22ch]">
+          The eight below are photographs of the real Finn and Fia.
         </h2>
-        <p className="t-body mt-5 max-w-[58ch]">
-          Finn and Fia in the series are drawn. <strong className="font-semibold text-ink">The
-          eight below are photographs</strong> of the fawn pug and the black pug they are named
-          after.
-        </p>
       </Settle>
 
       <Settle className="dogs">
@@ -106,6 +106,12 @@ export function RealDogs({ headingId }: { headingId: string }) {
           ))}
         </ul>
       </Settle>
+      {/* `text-body`, not muted: this line sits at the foot of the band where
+          the paper is lightest and muted is the floor of AA there. */}
+      <p className="ml-auto mt-4 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
+        Finn and Fia in the series are drawn. These are the fawn pug and the black pug they are
+        named after.
+      </p>
     </>
   );
 }

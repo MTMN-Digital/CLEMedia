@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { PLATFORMS, STATIONS, DO_NOT } from "./stations";
-import { StageMark } from "@/components/team/StageMark";
 import "@/components/draw/draw.css";
 import "./pline.css";
 
@@ -234,20 +233,23 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
 
       {/* The gates in words, under the track, in the same order. A reader who
           wants the detail reads across; a reader who wants the shape has
-          already had it from the drawing. */}
+          already had it from the drawing.
+
+          RELABELLED 2026-10-27. Each phase opened on "01 PERSON DECIDES" in
+          mono over its name, which is the numbered-eyebrow pattern the house
+          retired, and then carried one of the six stage marks under the name.
+          The phase name is the label now, in the display face with its number
+          set as part of it, and who decides is a plain line under it. The
+          marks went: a drawing beside a title that already says what it is
+          was decoration, and the line above is the page's one drawing. */}
       <Settle as="ol" className="pline__gates">
         {people.map((s) => (
           <li key={s.index} className={s.kind === "gate" ? "pline__gate pline__gate--hold" : "pline__gate"}>
-            <p className="ink-label">
-              <span className="tnum">{s.index}</span>
-              {s.kind === "gate" ? " Everyone signs off" : " Person decides"}
-            </p>
-            <h3>{s.title}</h3>
-            {s.index && (
-              <div className="pline__mark">
-                <StageMark n={s.index} />
-              </div>
-            )}
+            <h3>
+              <span className="pline__num tnum">{s.index}</span>
+              {s.title}
+            </h3>
+            <p className="pline__role">{s.kind === "gate" ? "Everyone signs off" : "Person decides"}</p>
             <p className="pline__who">{s.who}</p>
             {s.faces && s.faces.length > 0 && (
               <ul className="pline__faces">
