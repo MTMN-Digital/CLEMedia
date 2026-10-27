@@ -58,7 +58,7 @@ function Login() {
           </div>
           {error && <p role="alert" className="text-[13.5px] text-red-deep">{error}</p>}
           <button type="submit" disabled={busy || !isSupabaseConfigured}
-            className="w-full rounded-full bg-red px-6 py-3 text-[15px] font-semibold text-paper disabled:opacity-60">
+            className="w-full rounded-full bg-red-fill px-6 py-3 text-[15px] font-semibold text-paper disabled:opacity-60">
             {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>

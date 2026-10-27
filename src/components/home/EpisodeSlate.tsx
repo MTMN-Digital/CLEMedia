@@ -67,7 +67,7 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
               EP {ep.n}
             </span>
             <span className="h-3 w-px bg-white/25" aria-hidden="true" />
-            <span className="truncate font-mono text-[12px] tracking-[0.1em] text-white/70">
+            <span className="truncate font-mono text-[12px] tracking-[0.1em] text-white/90">
               PAWSITIVE PUGS &amp; PALS
             </span>
             {/* A runtime if there is one, and the mark if there is not. They

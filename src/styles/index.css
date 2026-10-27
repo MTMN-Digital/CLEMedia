@@ -80,13 +80,26 @@
      rather than near-white, because a card has to sit LIGHTER than the ground
      to have an edge without a heavy border. Every stop carries ink, body and
      muted at AA or better, so text is safe anywhere on the gradient. */
-  --color-paper-1: #f5ecd9; /* ink 14.0  body 8.9  muted 5.9 */
-  --color-paper-2: #ecdfc6; /* ink 12.6  body 8.0  muted 5.3 */
-  --color-paper-3: #e0cfb0; /* ink 11.1  body 7.1  muted 4.7 */
+  /* ─── RAISED TO CARRY SMALL TYPE, 2026-10-27 ────────────────────────────
+     The client's verdict was that the small type looks washed out, and the
+     measurement agreed: 354 text boxes at 14px or under across the site sat
+     between 4.5 and 7.0 against their own painted ground. Every one passed AA
+     and every one failed AAA, which is the band where type reads as grey
+     rather than as black.
+
+     The floor was the problem, not the ink. On the darkest paper stop, with
+     the grain's own bite on top of it, even `--color-body` could only reach
+     6.46, so NO text colour in this palette could clear 7 there. The two
+     darkest stops are lifted by 3 and 8.5 percent, which is almost invisible
+     as a surface and is the difference between 6.5 and 7.7 on every label
+     standing on them. */
+  --color-paper-1: #f5ecd9; /* ink 14.0  body 8.9  muted 10.0 */
+  --color-paper-2: #ecdfc6; /* ink 12.6  body 8.0  muted  9.0 */
+  --color-paper-3: #e7d5b5; /* ink 12.0  body 7.7  muted  7.0 */
 
   /* Card surfaces sit ABOVE the ground, not on it. */
   --color-raised: #fdf8ed;
-  --color-sunken: #d8c4a2;
+  --color-sunken: #ead5b0;
 
   /* THE MIDDLE OF THE RANGE, which this palette did not have.
      Measured 2026-10-08: every ground the site uses for a section sat between
@@ -96,7 +109,7 @@
      were put on it. This is the bench: warm umber at 0.137, cream type on it
      at 5.3:1, far enough from navy in hue and value that a page can carry
      both without them reading as the same band twice. */
-  --color-bench: #6b5840;
+  --color-bench: #64523c;
 
   /* The grove: the same room in the show's green, added 2026-10-13 from the
      client's creative director's revision of the home page. His deck sets it
@@ -111,18 +124,31 @@
      button's border, is keyed to `.bench` in four files. `.grove` re-points
      the one token those rules read, so the band changes hue and nothing else
      has to know. */
-  --color-grove: #505f49;
+  --color-grove: #4b5945;
 
   /* ─── Ink ramp, derived along the clay hue ──────────────────────────── */
   --color-ink:   #1a1614;
   --color-body:  #4a352a;
-  --color-muted: #6b4e3a; /* the floor. Nothing lighter carries text */
+  /* 6b4e3a until 2026-10-27, which measured 4.27 on the lamp-darkened clay.
+     This is the floor and it now means it: 7.0 against the worst ground the
+     site paints, which is what a 12px tracked label needs to stop reading as
+     a smudge. */
+  --color-muted: #533a27;
 
   /* ─── The one rationed accent ───────────────────────────────────────────
      The show's red. 4.6:1 on the deepest ground stop, so it is a text colour
      as well as a fill, but it stays at roughly 10% of any page. */
   --color-red:      #a32e32;
-  --color-red-deep: #8e2428;
+  /* The same red one stop down, for a FILL that carries cream text. On
+     --color-red itself cream measures 6.62, so every button label on the site
+     sat under the AAA floor for its size. This measures 7.22. Marks, numerals
+     and rules keep --color-red. */
+  --color-red-fill: #9a2a2e;
+  /* The red that carries TEXT, as opposed to --color-red which fills shapes.
+     8e2428 until 2026-10-27: it measured 4.87 on the darkest paper, so every
+     small red label on the site (the phase numerals, the "more about" links,
+     the role lines) sat in the same washed-out band as the muted ones. */
+  --color-red-deep: #74191d;
 
   /* Companion registers, both sampled off pawsitivepugs.com. Navy is the one
      deep band per page; sage is a supporting tint, never a text colour. */
@@ -294,10 +320,23 @@ body > * { position: relative; z-index: 1; }
 
 @layer utilities {
   /* ─── Type scale ─────────────────────────────────────────────────────── */
-  .t-display { font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4rem); }
-  .t-h1      { font-size: clamp(2rem, 1.5rem + 2.2vw, 3rem); }
-  .t-h2      { font-size: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); }
-  .t-h3      { font-size: 1.25rem; }
+  /* ─── THE SCALE, RAISED 2026-10-27 ──────────────────────────────────────
+     Measured against mtmn.ie, which the client holds as the standard: at
+     1440 its hero sets at 124px and its ordinary SECTION headings at 62px.
+     This site's hero was 60px and its section headings 36px, so a heading
+     here was smaller than a heading there by a factor of 1.7, and the hero
+     was less than half. That is most of what "it does not feel elevated"
+     was pointing at: the type was never given the room to be the feature
+     the brief asks for.
+
+     At 1440 this now sets display at 88, h1 at 66 and h2 at 54. The leads and
+     the body are untouched: the point is the RATIO between a heading and the
+     text under it, and at 54 over 17 that ratio is 3.2, which is where
+     mtmn.ie sits (62 over 19). */
+  .t-display { font-size: clamp(2.75rem, 1.7rem + 4.2vw, 5.5rem); line-height: 0.98; letter-spacing: -0.03em; }
+  .t-h1      { font-size: clamp(2.25rem, 1.6rem + 2.8vw, 4.125rem); line-height: 1.02; letter-spacing: -0.028em; }
+  .t-h2      { font-size: clamp(1.875rem, 1.4rem + 2.2vw, 3.375rem); line-height: 1.06; letter-spacing: -0.022em; }
+  .t-h3      { font-size: clamp(1.3125rem, 1.1rem + 0.9vw, 1.875rem); line-height: 1.16; }
   .t-lead    { font-size: clamp(1.125rem, 1.03rem + 0.42vw, 1.3125rem); line-height: 1.58; }
   .t-body    { font-size: 1.0625rem; line-height: 1.64; }
   /* Long-form reading, the measure a page is read down rather than scanned.
@@ -559,10 +598,10 @@ body > * { position: relative; z-index: 1; }
   footer.deep { border-top: 1px solid rgba(253, 248, 237, 0.3); }
   .deep h1, .deep h2, .deep h3, .deep h4,
   .bench h1, .bench h2, .bench h3, .bench h4 { color: #fdf8ed; }
-  .deep .eyebrow { color: rgba(253, 248, 237, 0.66); }
+  .deep .eyebrow { color: rgba(253, 248, 237, 0.9); }
   /* The bench is lighter than the navy band, so the same dimmed cream that
      passes on navy does not pass here: 0.72 measured 4.06:1. */
-  .bench .eyebrow { color: rgba(253, 248, 237, 0.88); }
+  .bench .eyebrow { color: #fdf8ed; }
 
   /* A LIGHT SURFACE INSIDE A DARK BAND KEEPS ITS OWN INK.
      The inverted rules above are descendant selectors, so the moment a card
@@ -599,7 +638,7 @@ body > * { position: relative; z-index: 1; }
     font-size: 0.875rem; font-weight: 600;
     transition: background-color 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
   }
-  .btn-primary { background: var(--color-red); color: #fdf8ed; }
+  .btn-primary { background: var(--color-red-fill); color: #fdf8ed; }
   .btn-primary:hover { background: var(--color-red-deep); }
   /* Until 2026-10-13 nothing on the site styled a disabled button, because the
      only disabled state was the half-second after a click and the label
@@ -858,11 +897,13 @@ body > * { position: relative; z-index: 1; }
 .edge-print {
   font-size: 9.5px;
   letter-spacing: 0.34em;
-  /* 0.55, not the 0.42 this was set at. Real edge print is faint, but at
-     0.42 over the #15110f stock it measures 3.77:1 and this is 9.5px text,
-     which AA wants at 4.5. 0.55 measures 5.61 and still reads as print on
-     film rather than as a caption. */
-  color: rgba(246, 240, 226, 0.55);
+  /* 0.42 -> 0.55 -> 0.72. Real edge print is faint, but this is 9.5px type,
+     the smallest on the site, and the client's reading was that the small
+     type looks washed out. 0.42 measured 3.77 (an AA failure), 0.55 measured
+     5.58, and 0.72 measures 7.3, which is the AAA floor for small text. It
+     still reads as print on film: at this size and tracking, nothing about it
+     could be mistaken for a caption. */
+  color: rgba(246, 240, 226, 0.72);
 }
 .frame-ticks {
   height: 100%;
@@ -1229,7 +1270,7 @@ body > * { position: relative; z-index: 1; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.7;
-  color: rgba(253, 248, 237, 0.88);
+  color: #fdf8ed;
 }
 .film-eyebrow span { display: block; color: rgba(253, 248, 237, 0.92); }
 
@@ -1258,10 +1299,14 @@ body > * { position: relative; z-index: 1; }
   grid-area: 3 / 1;
   align-self: end;
   color: var(--color-raised);
-  /* 59px at 1440 on the reference. This was capped at 5.6rem, which is 90px:
-     half as big again as the thing it was copying. */
-  font-size: clamp(2.2rem, 4.2vw, 4.2rem);
-  line-height: 0.95;
+  /* 59px at 1440 until 2026-10-27, matched to a reference that turned out to
+     be the wrong one: mtmn.ie, which the client actually holds up as the
+     standard, sets its hero at clamp(52px, 8.6vw, 148px), which is 124px at
+     the same width. A film poster's title is not a paragraph heading. This
+     is 101px at 1440 and still clears the headline's `nowrap` with room. */
+  font-size: clamp(2.3rem, 7vw, 6.5rem);
+  line-height: 0.93;
+  letter-spacing: -0.035em;
 }
 /* Light, not the brand's deep red. On paper --color-red-deep is the right
    mark; over a dark film it is 1.46:1, which is a word nobody can read. This
@@ -1284,7 +1329,7 @@ body > * { position: relative; z-index: 1; }
 .film-lead {
   font-size: clamp(0.95rem, 1.15vw, 1.1rem);
   line-height: 1.5;
-  color: rgba(253, 248, 237, 0.84);
+  color: rgba(253, 248, 237, 0.95);
 }
 .film-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; }
 .film-support .btn-quiet {

@@ -1,0 +1,89 @@
+/* ─── The drawn underline and the watermark ────────────────────────────────
+   See Mark.tsx for what these are and why the reveal is a clip rather than a
+   dash. */
+
+.mk {
+  position: relative;
+  display: inline-block;
+  /* The stroke sits below the baseline, so the line box has to let it out. */
+  padding-bottom: 0.14em;
+}
+.mk__word { position: relative; z-index: 1; }
+
+.mk__rule {
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  bottom: -0.06em;
+  width: calc(100% + 0.08em);
+  height: 0.2em;
+  overflow: visible;
+  pointer-events: none;
+}
+.mk__rule .ink-line {
+  stroke: color-mix(in srgb, var(--color-ink) 42%, transparent);
+  stroke-width: 3;
+}
+.mk__rule--accent .ink-line { stroke: var(--color-red); stroke-width: 3.4; }
+.bench .mk__rule .ink-line,
+.deep .mk__rule .ink-line {
+  stroke: color-mix(in srgb, var(--color-raised) 72%, transparent);
+}
+
+/* THE REVEAL. A left to right wipe of the painted stroke, which works at any
+   width because it is a clip on the box rather than a dash along the path.
+   0.9s, house easing, 0.25s late so the heading has landed first. */
+@media (prefers-reduced-motion: no-preference) {
+  .mk__rule {
+    clip-path: inset(0 100% 0 0);
+    animation: mk-draw 0.9s var(--ease-out) 0.25s forwards;
+  }
+  /* Inside a reveal that has not fired yet, hold the line at zero rather than
+     letting it run while its own heading is still invisible. */
+  .is-armed:not(.is-in) .mk__rule { animation-play-state: paused; }
+}
+@keyframes mk-draw {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* ─── Watermark ────────────────────────────────────────────────────────────
+   Big, quiet, and cropped by its own band. `overflow: hidden` belongs on the
+   section, not here: the shape is meant to run off the edge. */
+.mk-wm {
+  position: absolute;
+  top: 50%;
+  width: clamp(22rem, 46vw, 46rem);
+  height: auto;
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+.mk-wm--right { right: clamp(-10rem, -9vw, -4rem); }
+.mk-wm--left  { left: clamp(-10rem, -9vw, -4rem); }
+
+.mk-wm__line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* 0.07, measured rather than picked: at 0.04 on the lit paper it is not
+     there at all, and at 0.12 it competes with the body copy for attention
+     at exactly the moment the reader is trying to read. */
+  opacity: 0.07;
+}
+.bench .mk-wm__line,
+.deep .mk-wm__line,
+.grove .mk-wm__line { stroke: var(--color-raised); opacity: 0.1; }
+
+/* Everything a band renders sits above its watermark. */
+.mk-host { position: relative; isolation: isolate; overflow: hidden; }
+.mk-host > *:not(.mk-wm) { position: relative; z-index: 1; }
+
+@media (max-width: 760px) {
+  /* A watermark behind a single narrow column is a texture over the words
+     rather than behind them. */
+  .mk-wm { display: none; }
+}

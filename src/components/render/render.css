@@ -50,11 +50,17 @@
      and the whole thing read as a pale wash: a room has to be a different
      brightness from the page it is printed on before any amount of lighting
      reads as lighting. */
+  /* 72/58 until 2026-10-27. The rail across the top of this wall is 11px
+     tracked mono in ink, and it measured 6.3 at the top of the gradient and
+     under 6 at the bottom, which is the washed-out band the client named.
+     84/76 puts the whole wall between 8.0 and 8.5 for ink while keeping the
+     stop between top and bottom that makes it read as lit. The room is still
+     a full step deeper than the page it is printed on. */
   background:
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-sunken) 72%, var(--color-ink)),
-      color-mix(in srgb, var(--color-sunken) 58%, var(--color-ink))
+      color-mix(in srgb, var(--color-sunken) 84%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 76%, var(--color-ink))
     );
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-paper-1) 24%, transparent);
   padding: clamp(1.25rem, 6cqw, 3rem);
@@ -264,11 +270,17 @@
      and the whole thing read as a pale wash: a room has to be a different
      brightness from the page it is printed on before any amount of lighting
      reads as lighting. */
+  /* 72/58 until 2026-10-27. The rail across the top of this wall is 11px
+     tracked mono in ink, and it measured 6.3 at the top of the gradient and
+     under 6 at the bottom, which is the washed-out band the client named.
+     84/76 puts the whole wall between 8.0 and 8.5 for ink while keeping the
+     stop between top and bottom that makes it read as lit. The room is still
+     a full step deeper than the page it is printed on. */
   background:
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-sunken) 72%, var(--color-ink)),
-      color-mix(in srgb, var(--color-sunken) 58%, var(--color-ink))
+      color-mix(in srgb, var(--color-sunken) 84%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 76%, var(--color-ink))
     );
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-paper-1) 24%, transparent);
   padding: var(--pad);
@@ -765,8 +777,14 @@
   background:
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-sunken) 74%, var(--color-ink)),
-      color-mix(in srgb, var(--color-sunken) 66%, var(--color-ink))
+      /* 74/66 until 2026-10-27, which put ink at 6.98 at the top of the wall
+         and 5.77 at the bottom. Every label on this wall is 11px tracked
+         mono, so it is exactly the type the client called washed out. 84/80
+         puts the whole wall between 8.0 and 8.7 and the room still reads as
+         lit, because what does that is the difference between the top and the
+         bottom, not how dark either of them is. */
+      color-mix(in srgb, var(--color-sunken) 84%, var(--color-ink)),
+      color-mix(in srgb, var(--color-sunken) 80%, var(--color-ink))
     );
 }
 

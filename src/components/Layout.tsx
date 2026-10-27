@@ -338,7 +338,7 @@ function Footer() {
                 where they start. Clipped by the band, so they do not reach up
                 into whatever section the page ends on. */}
             <Wordmark size={176} className="-mt-9 lg:-mt-11" />
-            <p className="mt-7 max-w-[32ch] font-body text-[14.5px] leading-relaxed opacity-80">
+            <p className="mt-7 max-w-[32ch] font-body text-[14.5px] leading-relaxed opacity-95">
               Calm, purposeful edutainment for young children, built on research and made by people.
             </p>
           </div>
@@ -374,7 +374,7 @@ function Footer() {
               <ul className="mt-5 space-y-4">
                 <li>
                   <ShowSiteLink className="link-draw inline-flex font-body text-[14.5px] font-bold" />
-                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-75">
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-95">
                     Episodes, characters and activities.
                   </p>
                 </li>
@@ -383,7 +383,7 @@ function Footer() {
                     <IconMail size={15} />
                     Partnership enquiries
                   </TextLink>
-                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-75">
+                  <p className="mt-1.5 max-w-[26ch] font-body text-[13.5px] leading-relaxed opacity-95">
                     Distribution, investment and press.
                   </p>
                 </li>
@@ -393,7 +393,7 @@ function Footer() {
         </div>
 
         <div className="hairline mt-12 flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-body text-[12.5px] opacity-65">
+          <p className="font-body text-[12.5px] opacity-90">
             © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® and
             PupsPlayer™ are trade marks of CLÉ Family Media.
           </p>
@@ -404,7 +404,7 @@ function Footer() {
               ["/cookies", "Cookies"],
             ].map(([to, label]) => (
               <li key={to}>
-                <Link to={to} className="font-body text-[12.5px] opacity-65 hover:opacity-100">
+                <Link to={to} className="font-body text-[12.5px] opacity-90 hover:opacity-100">
                   {label}
                 </Link>
               </li>

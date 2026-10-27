@@ -237,7 +237,7 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
           <div className="flex aspect-square w-[min(100%,max(8.5rem,11em))] items-center justify-center rounded-full bg-sage/35">
             <div className="flex aspect-square w-[68%] items-center justify-center rounded-full bg-sage">
               <span
-                className={`${T.button} rounded-full bg-red px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
+                className={`${T.button} rounded-full bg-red-fill px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
               >
                 Start
               </span>
@@ -298,7 +298,7 @@ function LearnScreen({ episode }: { episode: AppEpisode }) {
             line={`A printable from ${episode.title}, to take to the table.`}
           />
           <span
-            className={`${T.button} mt-[1.2em] inline-block rounded-full bg-red px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
+            className={`${T.button} mt-[1.2em] inline-block rounded-full bg-red-fill px-[1.3em] py-[0.65em] font-mono uppercase tracking-[0.14em] text-raised`}
           >
             Print
           </span>

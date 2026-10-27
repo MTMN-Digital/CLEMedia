@@ -15,6 +15,7 @@ import { BeyondScreen } from "@/components/home/BeyondScreen";
 import { GetInTouch } from "@/components/home/GetInTouch";
 import { EpisodeRings } from "@/components/home/EpisodeRings";
 import { DrawnBracket } from "@/components/draw/kit";
+import { Watermark, Underline } from "@/components/draw/Mark";
 import {
   Lead, Section, Container, Button,
 } from "@/components/ui";
@@ -119,7 +120,11 @@ export default function Home() {
           seam is unavoidable without merging two separately labelled sections
           into one, so it is moved into open space instead, where a change of
           light reads as light rather than as a rule. */}
-      <Section labelledBy="thesis-h" pad={["normal", "tight"]} className="wall">
+      <Section labelledBy="thesis-h" pad={["normal", "tight"]} className="wall mk-host">
+          {/* See components/draw/Mark.tsx. The band was a flat surface with a
+              radial lamp on it and nothing else; this gives it something to
+              be lit, without a second colour and without a gradient. */}
+          <Watermark shape="sun" at="right" />
           <Container width="wide">
             {/* STACKED, NOT A SPREAD, since 2026-10-26. Ten sections across the
                site opened with the heading alone in the left column and a lone
@@ -133,7 +138,8 @@ export default function Home() {
                 We are not going to tell anyone their child watches too much television.
               </h2>
               <p className="mt-8 max-w-[34ch] font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.14] tracking-[-0.01em] text-red-deep">
-                We would rather an episode started something a child carries on with.
+                We would rather an episode started something a child{" "}
+                <Underline accent>carries on with</Underline>.
               </p>
             </Wipe>
 
@@ -365,7 +371,8 @@ export default function Home() {
           cleanly, so two dark bands meeting here read as two rooms rather than
           as mud. The two cards keep their own ink through the light-surface
           guard in index.css. */}
-      <Section labelledBy="beyond-h" pad="normal" className="bench grove">
+      <Section labelledBy="beyond-h" pad="normal" className="bench grove mk-host">
+        <Watermark shape="leaf" at="right" />
         <Container width="wide">
           <BeyondScreen headingId="beyond-h" />
         </Container>
@@ -400,11 +407,13 @@ export default function Home() {
 
           The record is a FLAT card: it is a block of reading, so it is never
           posed on a Stage. ═══ */}
-      <Section labelledBy="ai-h" pad="open" className="wall">
+      <Section labelledBy="ai-h" pad="open" className="wall mk-host">
+          <Watermark shape="pug" at="left" />
         <Container width="wide">
           <Settle>
             <h2 id="ai-h" className="t-display max-w-[17ch]">
-              AI is a production tool. People remain responsible for the work.
+              AI is a production tool. <Underline v={2}>People remain responsible</Underline> for
+              the work.
             </h2>
           </Settle>
 
