@@ -408,7 +408,6 @@ export default function Home() {
           The record is a FLAT card: it is a block of reading, so it is never
           posed on a Stage. ═══ */}
       <Section labelledBy="ai-h" pad="open" className="wall mk-host">
-          <Watermark shape="pug" at="left" />
         <Container width="wide">
           <Settle>
             <h2 id="ai-h" className="t-display max-w-[17ch]">

@@ -281,7 +281,13 @@ export function HeroFilm() {
           className={`film-splash${splash === "leaving" ? " is-leaving" : ""}`}
           onTransitionEnd={() => setSplash("off")}
         >
-          <img src="/brand/mark-lockup.webp" alt="" width={589} height={591} />
+          {/* The ropes run up off the top of the screen, so the mark hangs
+              into the page rather than floating in it. The rope is a slice of
+              the mark's own rope, tiled. */}
+          <div className="film-splash__hang">
+            <span className="film-splash__ropes" />
+            <img src="/brand/mark-splash@2x.webp" alt="" width={1182} height={1183} />
+          </div>
         </div>
       )}
       <div className="film-frame">
