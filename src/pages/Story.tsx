@@ -72,8 +72,6 @@ const OPEN_GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-c
 /* Running text: one column, centred. `flow-root` keeps a float inside its
    own block so it never hangs into the next one. */
 const PROSE = "flow-root t-lead text-body [&>p]:mb-6 [&>p:last-child]:mb-0";
-/* A plate inside the letter: the container's full width. */
-const PLATE = "";
 
 /* A provenance line under a picture. Mono, 13px, `text-body` rather than
    muted (muted is the floor of AA on the lightest paper). Right-aligned from
@@ -276,16 +274,6 @@ export function Story() {
         </Container>
       </Section>
 
-      {/* ═══ THE ENCLOSURE. The eight photographs of the real Finn and Fia,
-          straight after the drawn pair. The one time the page leaves the
-          letter's own columns, and the one place on the site where real
-          photography stands at scale. Asked for by the client on 2026-10-24;
-          see components/story/RealDogs.tsx for the framing. ═══ */}
-      <Section labelledBy="dogs-h" pad="tight">
-        <Container width="wide">
-          <RealDogs headingId="dogs-h" />
-        </Container>
-      </Section>
 
       {/* ═══ THE LETTER, continued: how it reaches you, the signature, the
           postscript, the closing line. Same surface, same columns. ═══ */}
@@ -335,13 +323,32 @@ export function Story() {
             </div>
           </Settle>
 
+        </Container>
+      </Section>
+      {/* ═══ THE ENCLOSURE. The eight photographs of the real Finn and Fia,
+          after the letter and its signature, just above the film. The one time the page leaves the
+          letter's own columns, and the one place on the site where real
+          photography stands at scale. Asked for by the client on 2026-10-24;
+          see components/story/RealDogs.tsx for the framing. ═══ */}
+      <Section labelledBy="dogs-h" pad="tight">
+        <Container width="wide">
+          <RealDogs headingId="dogs-h" />
+        </Container>
+      </Section>
+
+      {/* ═══ THE POSTSCRIPT, after the photographs, 2026-10-28: the client moved
+          the gallery down to sit just above the film, and asked for the film
+          larger, so it takes the container's full width rather than the
+          letter's column. ═══ */}
+      <Section as="div" pad={["tight", "normal"]}>
+        <Container width="wide">
           {/* THE POSTSCRIPT. The film, on paper like everything else, with
               one mono line above it and the credit under it. No heading: the
               page says nothing about who is speaking until the client
               confirms the narration. The length is as measured on the file
               (63.85 s). */}
-          <Settle className={`${GRID} mt-16`}>
-            <figure className={PLATE} aria-label="The mission film">
+          <Settle>
+            <figure aria-label="The mission film">
               <p className="font-mono text-[14px] leading-[1.7] tracking-[0.02em] text-body">{filmPs}</p>
               <div className="letter-print mt-4">
                 <DrawnBox v={2} />
