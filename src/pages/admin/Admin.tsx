@@ -28,6 +28,22 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  /* "Forgot your password?" sends Supabase's reset email, whose link lands
+     back on /admin where SetPassword takes over. The reply never says whether
+     the address has an account. */
+  async function onForgot() {
+    if (!supabase || !email.trim()) {
+      setError("Enter your email address first, then choose Forgot your password.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/admin` });
+    setBusy(false);
+    setSent(true);
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -70,9 +86,17 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)} className="field-input" />
         </div>
         {error && <p role="alert" className="adm-error">{error}</p>}
+        {sent && (
+          <p role="status" className="adm-muted mt-4">
+            If that address has an account, an email with a link to set a new password is on its way.
+          </p>
+        )}
         <AdminButton type="submit" className="mt-5 w-full" busy={busy} busyLabel="Signing in" disabled={!isSupabaseConfigured || !email || !password}>
           Sign in
         </AdminButton>
+        <button type="button" onClick={onForgot} className="adm-linkbtn mt-4 min-h-[44px]" disabled={busy || !isSupabaseConfigured}>
+          Forgot your password?
+        </button>
       </form>
     </main>
   );
@@ -178,8 +202,61 @@ function Console({ email }: { email: string }) {
   );
 }
 
+/* Shown after an invite or a password-reset link signs someone in: the link
+   gives a session but no password, so the first thing they do is choose one. */
+function SetPassword({ invited, onDone }: { invited: boolean; onDone: () => void }) {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!supabase) return;
+    if (password.length < 10) return setError("Use at least 10 characters.");
+    if (password !== confirm) return setError("The two passwords do not match.");
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase.auth.updateUser({ password });
+    setBusy(false);
+    if (error) return setError("That did not save. Try again, or ask for a new link if this one has expired.");
+    window.history.replaceState(null, "", window.location.pathname);
+    onDone();
+  }
+
+  return (
+    <main className="adm-main adm-narrow" style={{ paddingTop: "12vh" }}>
+      <p className="adm-label">CL&Eacute; Family Media</p>
+      <h1 className="mt-1 font-display text-[32px] leading-[1.1] text-ink">
+        {invited ? "Choose a password" : "Set a new password"}
+      </h1>
+      <form onSubmit={onSubmit} className="adm-card mt-6" noValidate>
+        <div className="adm-field">
+          <label htmlFor="admin-new-password" className="field-label">New password</label>
+          <input id="admin-new-password" type="password" required autoComplete="new-password" value={password}
+            onChange={(e) => setPassword(e.target.value)} className="field-input" />
+        </div>
+        <div className="adm-field">
+          <label htmlFor="admin-confirm-password" className="field-label">Type it again</label>
+          <input id="admin-confirm-password" type="password" required autoComplete="new-password" value={confirm}
+            onChange={(e) => setConfirm(e.target.value)} className="field-input" />
+        </div>
+        {error && <p role="alert" className="adm-error">{error}</p>}
+        <AdminButton type="submit" className="mt-5 w-full" busy={busy} busyLabel="Saving" disabled={!password || !confirm}>
+          Save password
+        </AdminButton>
+      </form>
+    </main>
+  );
+}
+
 export default function Admin() {
   const [auth, setAuth] = useState<AuthState>(isSupabaseConfigured ? { kind: "loading" } : { kind: "signed-out" });
+  /* Read before supabase-js consumes the link's hash. */
+  const [linkType, setLinkType] = useState<null | "recovery" | "invite">(() => {
+    const m = window.location.hash.match(/type=(invite|recovery)/);
+    return m ? (m[1] as "invite" | "recovery") : null;
+  });
 
   useEffect(() => {
     if (!supabase) return;
@@ -197,6 +274,7 @@ export default function Admin() {
     const { data: sub } = client.auth.onAuthStateChange((event, s) => {
       // A token refresh is the same person; re-checking would flash the console.
       if (event === "TOKEN_REFRESHED") return;
+      if (event === "PASSWORD_RECOVERY") setLinkType("recovery");
       // Deferred: calling the client inside this callback can deadlock on
       // supabase-js's auth lock.
       const email = s?.user?.email;
@@ -216,8 +294,11 @@ export default function Admin() {
       </Helmet>
       {auth.kind === "loading" && <p className="adm-main adm-muted" role="status">Loading...</p>}
       {auth.kind === "signed-out" && <Login />}
-      {auth.kind === "not-admin" && <NotAdmin email={auth.email} />}
-      {auth.kind === "admin" && <Console email={auth.email} />}
+      {linkType && (auth.kind === "admin" || auth.kind === "not-admin") && (
+        <SetPassword invited={linkType === "invite"} onDone={() => setLinkType(null)} />
+      )}
+      {!linkType && auth.kind === "not-admin" && <NotAdmin email={auth.email} />}
+      {!linkType && auth.kind === "admin" && <Console email={auth.email} />}
     </div>
   );
 }
