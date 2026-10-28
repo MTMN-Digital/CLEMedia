@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { PageHero } from "@/components/PageHero";
 import { Settle } from "@/components/Settle";
 import { Wipe } from "@/components/Wipe";
-import { Button, Section, TextLink, Container } from "@/components/ui";
+import { Container, Section, TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { PostBody } from "@/components/journal/PostBody";
-import { STRANDS, usePost, formatDate } from "@/components/journal/data";
+import { Contents, type ContentsRow } from "@/components/journal/Contents";
+import { formatDate, usePost, useJournal, resolveStrands } from "@/components/journal/data";
 import { SITE } from "@/lib/site";
 import type { Category, Post } from "@/lib/types";
 
@@ -33,11 +33,18 @@ import type { Category, Post } from "@/lib/types";
    `posts`, and src/components/journal/PostBody.tsx renders `body` without ever
    handing a string to the DOM as HTML.
 
-   THE FOUND STATE DOES NOT OPEN ON PageHero. It is a reading layout, and the
-   piece's own title in the display face is its opening. The NOT-FOUND state
-   does (2026-10-27): with nothing published it is the state every
-   /journal/<slug> reaches, so it opens in the hero's frame like every other
-   inner page, with the contents of the journal under it.
+   THE TITLE IS THE FIRST THING AT READING SCALE, 2026-10-28. Above it only
+   the running head: the way back to "Notes from the studio" on the left and
+   the publisher on the right, on one rule. The title is set in .t-h1 (the
+   subpage headline size), not the home display face. The page ends on "More
+   in {strand}" when the strand holds something else, otherwise on the back
+   link under the body: one line, one link, then the footer. The NOT-FOUND
+   state is the same running head, a plain h1, two text links and the live
+   contents of the journal, so a dead link still shows what will be here.
+
+   CORRECTIONS ARE INLINE. A correction is a paragraph in `body` that begins
+   "Correction, {date}." and PostBody renders it like any other paragraph,
+   which keeps it on the piece and says what changed. No column, no strike.
    ========================================================================== */
 
 export default function JournalPost() {
@@ -74,12 +81,15 @@ function Spread({ margin, children }: { children: ReactNode; margin: ReactNode }
   );
 }
 
+/* A 44px tap box on a text link, without moving the line it sits on. */
+const TAP = "py-2.5 -my-2.5";
+
 function BackRail() {
   return (
     <div className="flex items-center justify-between gap-6 border-b-[1.5px] border-rule pb-5">
-      <TextLink to="/journal" className="uppercase tracking-[0.14em]">
+      <TextLink to="/journal" className={`${TAP} uppercase tracking-[0.14em]`}>
         <IconArrow size={14} className="rotate-180" />
-        The journal
+        Notes from the studio
       </TextLink>
       <span className="hidden font-mono text-[14px] uppercase tracking-[0.18em] text-muted sm:block">
         CL&Eacute; Family Media
@@ -145,9 +155,8 @@ function Article({
         jsonLd={jsonLd}
       />
 
-      {/* ═══ THE HEAD. The title takes the hero face and the full prose
-          column, with the standfirst under it and the byline on a rule, the
-          way a feature opens. ═══ */}
+      {/* ═══ THE HEAD. The running head, then the title in the full prose
+          column with the standfirst under it. ═══ */}
       {/* The reading pages sit in the DEFAULT container, not the wide one. On
           a 1440 screen a 67 character measure plus a 13rem margin inside the
           1560px cap left the right third of the frame as empty paper, which is
@@ -166,9 +175,7 @@ function Article({
                 )
               }
             >
-              <h1 className="t-display max-w-[20ch]">
-                {post.title}
-              </h1>
+              <h1 className="t-h1 max-w-[22ch]">{post.title}</h1>
               {post.excerpt && (
                 <p className="t-lead mt-7 max-w-[56ch] text-body">{post.excerpt}</p>
               )}
@@ -220,7 +227,7 @@ function Article({
             )}
 
             <div className="mt-12 border-t-[1.5px] border-rule pt-6 sm:mt-16">
-              <TextLink to="/journal">
+              <TextLink to="/journal" className={TAP}>
                 <IconArrow size={15} className="rotate-180" />
                 Back to the journal
               </TextLink>
@@ -267,51 +274,25 @@ function Article({
         </Section>
       )}
 
-      <Close />
     </>
   );
 }
 
-/* The close, on the one deep band this page spends. Two routes out and
-   nothing else: a piece that has been read to the end has earned a quiet
-   ending rather than a subscription form. The heading is what the journal
-   covers rather than its name: the name is the line under it, and it is in
-   the rail at the top of the page as well. */
-function Close() {
-  return (
-    <Section deep labelledBy="close-h">
-      <Container width="wide">
-        <Settle>
-          <h2 id="close-h" className="t-h2 max-w-[28ch]">
-            Four strands: the research, how the work is made, writing for parents, and the
-            business of building this company in Ireland.
-          </h2>
-          <div>
-            <p className="t-body mt-6 max-w-[52ch] opacity-85">
-              The journal of CL&Eacute; Family Media.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button to="/journal">
-                Every piece
-                <IconArrow size={16} />
-              </Button>
-              <Button to="/contact" variant="quiet">
-                Suggest a subject
-              </Button>
-            </div>
-          </div>
-        </Settle>
-      </Container>
-    </Section>
-  );
-}
-
-/* The slug resolved to nothing. Kept short, kept honest, and opened in the
-   hero's frame (the plain ink panel: there is no picture for a piece that
-   does not exist) so a reader who followed a dead link still lands somewhere
-   that looks like the site. The rail at the top is not needed here: the
-   eyebrow names the journal and the first button goes back to it. */
+/* The slug resolved to nothing. Kept short and honest: the running head,
+   a plain h1, two ways out, then the contents of the journal under a rule.
+   With nothing published this is the state every /journal/<slug> reaches,
+   and a page that only says "not found" wastes the one thing it could do,
+   which is show what will be here. The contents is the SAME component as
+   the index, with counts from the CMS, not a second drawing of the list. */
 function Missing({ slug }: { slug?: string }) {
+  const { posts, categories } = useJournal();
+  const rows: ContentsRow[] = resolveStrands(categories).map((s) => ({
+    slug: s.slug,
+    name: s.name,
+    blurb: s.blurb,
+    count: s.id ? posts.filter((p) => p.category_id === s.id).length : 0,
+  }));
+
   return (
     <>
       <Seo
@@ -320,51 +301,28 @@ function Missing({ slug }: { slug?: string }) {
         path={`/journal/${slug ?? ""}`}
         noIndex
       />
-      <PageHero
-        id="missing-h"
-        tone="ink"
-        size="short"
-        eyebrow={<>The journal</>}
-        aside={<>It may have been unpublished, or the link may be wrong.</>}
-        title={<>We couldn&rsquo;t find that piece</>}
-        actions={
-          <>
-            <Button to="/journal">
-              Back to the journal
-              <IconArrow size={16} />
-            </Button>
-            <Button to="/" variant="quiet">
-              Home
-            </Button>
-          </>
-        }
-      />
-
-      {/* The dead end carries the contents of the journal under it. With
-          nothing published, this is the state a reader reaches from any
-          /journal/<slug>, and a page that only says "not found" wastes the
-          one thing it could usefully do, which is say what will be here. */}
-      <Section as="div" pad="normal">
-        <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20">
-            <p className="t-lead max-w-[36ch] text-body">
-              The journal index has everything that is live, and the four strands it will fill up
-              with.
+      <Section pad={["normal", "normal"]}>
+        <Container>
+          <BackRail />
+          <Settle className="mt-10 sm:mt-14">
+            <h1 className="t-h1 max-w-[16ch]">We couldn&rsquo;t find that piece</h1>
+            <p className="t-body mt-6 max-w-[48ch] text-body">
+              It may have been unpublished, or the link may be wrong.
             </p>
-            <ul className="border-t-[1.5px] border-rule">
-              {STRANDS.map((s) => (
-                <li
-                  key={s.slug}
-                  className="flex items-baseline justify-between gap-6 border-b-[1.5px] border-rule py-5"
-                >
-                  <span className="t-h3 text-ink">{s.name}</span>
-                  <span className="shrink-0 font-mono text-[13px] uppercase tracking-[0.14em] text-muted">
-                    In preparation
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-7 flex flex-wrap gap-x-8 gap-y-3">
+              <TextLink to="/journal" className={TAP}>
+                <IconArrow size={15} className="rotate-180" />
+                Back to the journal
+              </TextLink>
+              <TextLink to="/" className={TAP}>
+                Home
+              </TextLink>
+            </div>
           </Settle>
+
+          <div className="mt-14 sm:mt-20">
+            <Contents rows={rows} />
+          </div>
         </Container>
       </Section>
     </>

@@ -33,6 +33,22 @@ const BUNDLED: Lists = { team: TEAM, advisors: ADVISORS };
 /** Named rather than `*`, so a column added for the admin never lands in the
  *  public bundle by accident. */
 const COLS = "name,role,bio,photo,photo_alt,type,sort_order,phases,asset_key";
+/** The 0001 columns, for a database 0008 has not reached yet. A select that
+ *  names a missing column fails outright, so the read retries with these and
+ *  takes the three 0008 fields (phases, photo_alt, asset_key) from the bundled
+ *  person of the same name, or leaves them empty for someone new. */
+const COLS_0001 = "name,role,bio,photo,type,sort_order";
+const BUNDLED_BY_NAME = new Map([...TEAM, ...ADVISORS].map((m) => [m.name.trim().toLowerCase(), m]));
+
+function fill(r: Partial<Row> & Omit<Row, "photo_alt" | "phases" | "asset_key">): Row {
+  const b = BUNDLED_BY_NAME.get(r.name.trim().toLowerCase());
+  return {
+    ...r,
+    asset_key: r.asset_key !== undefined ? r.asset_key : (b?.asset ?? null),
+    phases: r.phases !== undefined ? r.phases : (b?.phases ?? []),
+    photo_alt: r.photo_alt !== undefined ? r.photo_alt : null,
+  };
+}
 
 interface Row {
   sort_order: number;
@@ -76,14 +92,22 @@ async function load(): Promise<Lists> {
       if (!supabase) return BUNDLED;
       /* RLS already hides rows with visible = false; the filter here is belt
          and braces, not the boundary. */
-      const { data, error } = await supabase
+      let { data, error }: { error: unknown; data: Parameters<typeof fill>[0][] | null } = await supabase
         .from("people")
         .select(COLS)
         .eq("visible", true)
         .order("sort_order")
         .order("name");
+      if (error) {
+        ({ data, error } = await supabase
+          .from("people")
+          .select(COLS_0001)
+          .eq("visible", true)
+          .order("sort_order")
+          .order("name"));
+      }
       if (error || !data || data.length === 0) return BUNDLED;
-      const rows = data as Row[];
+      const rows = data.map(fill);
       return {
         team: rows.filter((r) => r.type === "team").map(toMember),
         advisors: rows.filter((r) => r.type === "advisor").map(toMember),

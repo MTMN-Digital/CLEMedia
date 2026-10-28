@@ -1,11 +1,20 @@
-import { type ReactNode, useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { type ReactNode, useRef } from "react";
 import { Seo } from "@/components/Seo";
-import { Settle } from "@/components/Settle";
-import { PageHero } from "@/components/PageHero";
-import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
-import { IconArrow } from "@/components/icons";
+import { Container, Section } from "@/components/ui";
 import { splitParagraphs, useBlock } from "@/lib/content";
+import {
+  DocStatus,
+  DocFoot,
+  DocPublisher,
+  longDate,
+  DocSheet,
+  REVISED_LABEL,
+  DocContents,
+  DocumentsShelf,
+  useActiveSection,
+  DocClause,
+} from "@/components/doc";
+import "@/components/legal/legal.css";
 
 /* ============================================================================
    The three legal documents: /privacy, /terms, /cookies.
@@ -33,25 +42,25 @@ import { splitParagraphs, useBlock } from "@/lib/content";
    THE SHEET. The three documents are one set, so they are drawn as one: a
    sheet of card with three tabs, the one you are reading raised into the
    paper of the sheet and the other two sitting behind it. That is the page's
-   signature, and it is the folder these three things actually live in.
+   signature, and it is the folder these three things actually live in. The
+   shell itself (tabs, sheet, rail, clause, foot, shelf) is the document kit in
+   components/doc, shared with the Responsible AI position so the four
+   documents on the site cannot drift apart.
 
-   THE OPENING, 2026-10-27. The title used to stand at the left edge of the
-   paper over a grey lead, with the document's facts in a small list hard
-   right. It now opens the way every page opens, in the hero's frame: the
-   plain panel on the deeper paper, the company and the draft status in the
-   top left corner, the date and the jurisdiction in the top right, and the
-   document's name in the bottom left at the hero's scale. The name stays the
-   name ("Privacy policy", not a claim): on a legal page, saying what the
-   document is beats saying what it says. The one-line summary that used to
-   be the lead is the first line of the sheet instead, where it introduces
-   the clauses it summarises.
+   THE OPENING, 2026-10-28. The page IS the folder. The only thing above the
+   tabs is the header; the document's own title block is printed on the sheet,
+   in the document's own two-column grid, so the cover and the clauses share
+   one set of column lines. The left column carries the publisher and two
+   status rows (the wording's revision date and the governing law, both true
+   in this file); the right column carries the name, the intro and who the
+   trader is. No panel, no scrim, no status word: these are published terms
+   (David, 2026-10-13) and the draft notice came out then. No version number
+   either: the company has not numbered its documents and the site must not
+   number them for it.
 
    THE COMPANY DETAILS, CLOSED 2026-10-13. The registered name, number and
    office now head every one of the three documents, taken from the signed
-   proposal CFM-02. See `COMPANY` below. The draft notice that used to sit in
-   that slot came out in the same edit, on David's instruction: these are
-   published terms now, and the exposure sits with CLÉ and MTMN rather than
-   with a solicitor who has not seen them.
+   proposal CFM-02. See `COMPANY` below.
 
    STILL OPEN: a public email address. The documents send every request
    through /contact, which works, but a privacy policy that names no address
@@ -247,17 +256,6 @@ export const LEGAL_COPY: Record<DocId, Record<string, string>> = {
   cookies: copyFor(DOCS.cookies),
 };
 
-/* The ISO date is read as UTC, so the formatted day cannot slip backwards for a
-   reader west of Greenwich. */
-function longDate(iso: string): string {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IE", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
 const DFN =
   "font-semibold not-italic text-ink underline decoration-dotted decoration-muted/45 underline-offset-[5px]";
 
@@ -286,96 +284,18 @@ function markTerms(text: string, terms: string[], used: Set<string>): ReactNode 
   );
 }
 
-/* ----------------------------------------------------------------------------
-   The index.
-
-   Shared by the sticky rail on a desktop and the disclosure on a phone, so the
-   two can never drift apart. `active` is the section the reader is in; it is
-   only ever a mark, never a scroll or a transform.
----------------------------------------------------------------------------- */
-function Contents({
-  sections,
-  active,
-  onPick,
-}: {
-  active: string;
-  sections: { h: string }[];
-  onPick?: () => void;
-}) {
-  return (
-    <ol>
-      {sections.map((s, i) => {
-        const id = `s${i + 1}`;
-        const on = active === id;
-        return (
-          <li key={s.h} className={`border-l-2 pl-3 ${on ? "border-red" : "border-transparent"}`}>
-            <a
-              href={`#${id}`}
-              onClick={onPick}
-              aria-current={on ? "true" : undefined}
-              className={`grid grid-cols-[1.35rem_minmax(0,1fr)] items-baseline gap-x-2 py-[0.3rem] text-[15px] leading-snug transition-colors ${
-                on ? "font-semibold text-ink" : "text-body hover:text-ink"
-              }`}
-            >
-              <span className={`tnum font-mono text-[13.5px] ${on ? "text-red-deep" : "text-muted"}`}>
-                {i + 1}
-              </span>
-              <span>{s.h}</span>
-            </a>
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-/** The contents list on a phone, behind the shared `DisclosurePanel`. The
- *  closed panel holds real links, so being out of the tab order matters here. */
-function MobileContents({ sections, active }: { sections: { h: string }[]; active: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-y-[1.5px] border-rule lg:hidden">
-      <div>
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-controls="legal-contents"
-          className="flex w-full items-center justify-between gap-4 py-3.5 text-left font-mono text-[14.5px] uppercase tracking-[0.14em] text-ink"
-        >
-          Contents
-          <span className="flex items-center gap-3">
-            <span className="tnum text-muted">{sections.length} sections</span>
-            <span
-              aria-hidden="true"
-              className={`text-red-deep transition-transform duration-300 ease-out ${open ? "rotate-90" : ""}`}
-            >
-              <IconArrow size={15} />
-            </span>
-          </span>
-        </button>
-      </div>
-      <DisclosurePanel id="legal-contents" open={open}>
-        <div className="pb-4">
-          <Contents sections={sections} active={active} />
-        </div>
-      </DisclosurePanel>
-    </div>
-  );
-}
-
 /* Keyed by document. The three routes render this same component at the same
    point in the tree, so without the key React would carry one instance from
    /privacy to /terms, and the two documents resolve a different number of
    blocks: a hook count that changed between renders. A fresh instance per
-   document keeps the count constant for the life of each. */
+   document keeps the count constant for the life of each, and the remount is
+   also what replays the sheet's settle when a tab is switched. */
 export default function Legal({ doc }: { doc: DocId }) {
   return <Document key={doc} doc={doc} />;
 }
 
 function Document({ doc }: { doc: DocId }) {
   const d = DOCS[doc];
-  const [active, setActive] = useState("");
   const body = useRef<HTMLDivElement>(null);
 
   /* The wording, resolved block by block: the published clause until a row
@@ -397,276 +317,117 @@ function Document({ doc }: { doc: DocId }) {
   const used = new Set<string>();
   const marked = sections.map((s) => s.p.map((p) => markTerms(p, d.defined, used)));
 
-  /* Which section the reader is in. A mark in the index, nothing more: no
-     scrolling is driven from here and nothing moves, so there is nothing for
-     reduced motion to switch off.
+  /* Which section the reader is in: a mark in the index, nothing more. */
+  const active = useActiveSection(body, doc);
 
-     Read on scroll, not through an IntersectionObserver. The observer version
-     of this was wrong twice: a band one fifth of the viewport tall contains no
-     section for most of a long document, so the callback simply never fires
-     while the reader moves through a section, and after a jump to the top it
-     fires with everything leaving and nothing entering, which left the mark
-     stuck on the last section the reader had reached. Eight getBoundingClientRect
-     calls once per animation frame is cheaper than being wrong. */
-  useEffect(() => {
-    const host = body.current;
-    if (!host) return;
-    const secs = Array.from(host.querySelectorAll<HTMLElement>("section[id]"));
-    if (!secs.length) return;
-    let frame = 0;
-    const read = () => {
-      frame = 0;
-      const line = window.innerHeight * 0.28;
-      let current = secs[0];
-      for (const s of secs) if (s.getBoundingClientRect().top <= line) current = s;
-      setActive(current.id);
-    };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(read);
-    };
-    read();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [doc]);
-
-  const updated = longDate(DRAFTED);
+  const revised = longDate(DRAFTED);
+  const contents = sections.map((s, i) => ({ id: `s${i + 1}`, n: String(i + 1), label: s.h }));
 
   return (
     <>
       <Seo title={title} description={d.description} path={`/${doc}`} />
 
-      {/* ═══ 1. THE HEAD, in the hero's frame.
-          The plain panel on the deeper paper: the document has no picture to
-          stand on, and a policy should open quietly. The corners carry what
-          the old facts list carried, word for word: who published it and its
-          status top left, when and under which law top right. The h1 is the
-          document's name, which is the one heading on the site allowed to be
-          a label: a reader checking a company wants "Terms", not a sentence
-          about terms. No actions: the document is the action. ═══ */}
-      <PageHero
-        id="legal-h"
-        size="short"
-        tone="wall"
-        eyebrow={
-          <>
-            CL&Eacute; Family Media<span>Draft</span>
-          </>
-        }
-        aside={
-          /* Inline pairs, not a two-column grid: the aside is right aligned
-             in the frame and left aligned once the panel collapses on a
-             phone, and inline text follows that without knowing about it. */
-          <dl>
-            <div>
-              <dt className="inline">Last updated</dt>{" "}
-              <dd className="tnum inline whitespace-nowrap">{updated}</dd>
-            </div>
-            <div>
-              <dt className="inline">Jurisdiction:</dt> <dd className="inline">Ireland</dd>
-            </div>
-          </dl>
-        }
-        title={title}
-      />
-
-      {/* ═══ 2. THE DOCUMENT.
-          A sheet of card with three tabs. The sheet sits in the default
-          container, not the wide one: the index and a 68ch measure are all
-          that belongs on it, and padding either side of a document is how a
-          document is meant to look. ═══ */}
-      <Section pad={["tight", "normal"]}>
+      {/* ═══ 1. THE DOCUMENT.
+          Header, 40px of paper, then the tabs and the sheet, flush with the
+          left gutter of the 1560 shell. 70rem, not the 5xl container and not
+          the wide one: this is the width at which the index, the measure and
+          the margin are all the size they should be. Flush left, because the
+          sheet is the document the page is about and the air is on the
+          right, which is where a document keeps its margin. ═══ */}
+      <Section pad={["none", "normal"]}>
         <Container width="wide">
-          {/* 70rem, not the 5xl container and not the wide one. A 64rem sheet
-              under a 97rem header read as a column dropped into the middle of
-              a monitor; at the full width the document would have a 400px
-              right margin of nothing. This is the width at which the index,
-              the measure and the margin are all the size they should be.
+          <div className="legal-sheet pt-6 sm:pt-10">
+            <DocSheet
+              navLabel="Legal documents"
+              width="legal"
+              tabs={ORDER.map((id) => ({ label: DOCS[id].tab, to: `/${id}`, current: id === doc }))}
+            >
+              {/* ─── The title block: the cover of the document, on the
+                  document's own column lines.
 
-              Flush left, not centred: centred, its left edge landed 130px
-              inside the title above it and the two read as unrelated objects.
-              Aligned, the sheet is the document the page is about and the air
-              is on the right, which is where a document keeps its margin. */}
-          <div className="relative max-w-[70rem] pt-10 sm:pt-12">
-            <nav aria-label="Legal documents" className="flex gap-1 pl-5 sm:pl-7">
-              {ORDER.map((id) => {
-                const on = id === doc;
-                return (
-                  <Link
-                    key={id}
-                    to={`/${id}`}
-                    aria-current={on ? "page" : undefined}
-                    /* A 2px edge on three sides, the house's control edge; the
-                       raised tab's edge is the sheet's own colour so it reads
-                       as part of the card rather than as a box on it. 44px
-                       tall, so each is a thumb's target on a phone. */
-                    className={`flex min-h-[44px] items-center rounded-t-[7px] border-2 border-b-0 px-4 font-mono text-[14.5px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
-                      on
-                        ? "border-raised bg-raised pb-0.5 text-ink"
-                        : "mt-1 border-sunken bg-sunken text-body hover:text-ink"
-                    }`}
-                  >
-                    {DOCS[id].tab}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="card-stock px-5 py-9 sm:px-8 sm:py-11 lg:px-14 lg:py-16">
-              <div className="grid gap-9 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-20">
-                {/* The index. Sticky beside the document on a desktop, a
-                    disclosure above it on a phone, where a sticky rail would
-                    eat the screen the document needs. */}
-                <div className="lg:sticky lg:top-28 lg:self-start">
-                  <p className="hidden font-mono text-[14px] uppercase tracking-[0.14em] text-muted lg:block">
-                    Contents
-                  </p>
-                  <div className="mt-4 hidden lg:block">
-                    <Contents sections={sections} active={active} />
+                  At `lg` the left column is the publisher and the two status
+                  rows and the right column is the name, the intro and the
+                  trader; the two wrappers are real blocks. On a phone the
+                  wrappers dissolve (`contents`) and the five pieces take the
+                  cover's reading order instead: publisher, name, intro,
+                  status rows, trader. One DOM, two orders. ─── */}
+              <div className="legal-title flex flex-col lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-20">
+                <div className="contents lg:block">
+                  <div className="order-1">
+                    <DocPublisher>CL&Eacute; Family Media</DocPublisher>
                   </div>
-
-                  <MobileContents sections={sections} active={active} />
+                  {/* Plain ruled rows, no leader: the leader is the journal's.
+                      Both facts are true in this file: the date is DRAFTED,
+                      the law is the clause at "Governing law". */}
+                  <DocStatus
+                    className="order-4 mt-7 lg:mt-5"
+                    rows={[
+                      { label: REVISED_LABEL, value: revised },
+                      { label: "Governing law", value: "Ireland" },
+                    ]}
+                  />
                 </div>
 
-                <div ref={body} className="max-w-[68ch]">
-                  {/* The document's own summary, the line that used to be the
-                      lead under the title. It is the first line of the sheet
-                      because it is the sheet's own first line: the short
-                      version of the clauses under it, in ink at the reading
-                      lead so it reads as the document's voice rather than as
-                      a caption on it. Verbatim. */}
-                  <p className="t-lead mb-9 max-w-[56ch] text-ink sm:mb-11">{intro}</p>
+                <div className="contents lg:block">
+                  {/* The document's name, which is the one heading on the site
+                      allowed to be a label: a reader checking a company wants
+                      "Terms", not a sentence about terms. */}
+                  <h1 className="t-h1 order-2 mt-4 max-w-[14ch] lg:mt-0">{title}</h1>
+                  <p className="t-lead order-3 mt-6 max-w-[56ch] text-ink">{intro}</p>
 
-                  {/* Who the trader is, in the slot where the draft stamp
-                      stood until 2026-10-13. Same stamp, not a box: the
-                      house's own anti-pattern is the card with a coloured left
-                      edge, and this is a fact about the document rather than a
-                      warning about it. */}
-                  <div className="border-y-[1.5px] border-rule py-5">
+                  {/* Who the trader is, between its two rules, ruled the same
+                      1.5px as the status rows so the cover is one weight of
+                      line end to end. */}
+                  <div className="order-5 mt-7 border-y-[1.5px] border-rule py-5 lg:mt-9">
                     <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
                       Who you are dealing with
                     </p>
-                    <p className="mt-2.5 text-[15px] leading-relaxed text-ink">
-                      {COMPANY.legal}, registered in Ireland, company number {COMPANY.cro}.
-                      Registered office: {COMPANY.office}. Trading as CL&Eacute; Family Media.
+                    <p className="t-body mt-2.5 max-w-[60ch] text-ink">
+                      {COMPANY.legal}, registered in Ireland, company number {COMPANY.cro}. Registered
+                      office: {COMPANY.office}. Trading as CL&Eacute; Family Media.
                     </p>
                   </div>
-
-                  {sections.map((s, i) => (
-                    <section
-                      key={i}
-                      id={`s${i + 1}`}
-                      className="scroll-mt-28 pt-9 sm:pt-11"
-                      aria-labelledby={`s${i + 1}-h`}
-                    >
-                      {/* An h2 inside a document, set at the scale's sub-head
-                          (`.t-h3`, 30px at 1440) rather than the literal 18px
-                          it used to be, so the clause heads sit on the same
-                          scale as every other heading on the site. The
-                          number beside it stays mono at 14px: it is a mark in
-                          the margin, not a heading. */}
-                      <div className="grid gap-x-5 sm:grid-cols-[2rem_minmax(0,1fr)]">
-                        <p aria-hidden="true" className="tnum hidden font-mono text-[14px] leading-[2.4] text-muted sm:block">
-                          {i + 1}
-                        </p>
-                        <div>
-                          <h2 id={`s${i + 1}-h`} className="t-h3 font-sans font-bold tracking-[-0.01em]">
-                            <span aria-hidden="true" className="tnum mr-2 font-mono text-[14px] font-normal tracking-normal text-muted sm:hidden">
-                              {i + 1}
-                            </span>
-                            {s.h}
-                          </h2>
-                          <div className="mt-4 space-y-4 text-[16px] leading-[1.72] text-body">
-                            {marked[i].map((para, j) => (
-                              <p key={j}>{para}</p>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </section>
-                  ))}
-
-                  <p className="mt-12 border-t-[1.5px] border-rule pt-5 font-mono text-[14.5px] text-muted">
-                    {title}. Last updated {updated}.
-                  </p>
                 </div>
               </div>
-            </div>
+
+              {/* ─── The rail and the clauses, under one rule across the full
+                  inner width of the sheet. The first clause's own top padding
+                  is pulled back so its heading sits level with the rail's
+                  "Contents" label at `lg`; on a phone the same pull cancels
+                  the grid gap under the contents disclosure, leaving the
+                  clause's own padding as the space between the two. ─── */}
+              <div className="mt-8 border-t-[1.5px] border-rule pt-6 sm:mt-12 sm:pt-12">
+                <div className="grid gap-9 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-20">
+                  <DocContents
+                    items={contents}
+                    active={active}
+                    summary={`${sections.length} sections`}
+                    id="legal-contents"
+                  />
+
+                  <div ref={body} className="-mt-9 max-w-[68ch] sm:-mt-11">
+                    {sections.map((s, i) => (
+                      <DocClause key={i} id={`s${i + 1}`} n={String(i + 1)} title={s.h}>
+                        {marked[i].map((para, j) => (
+                          <p key={j}>{para}</p>
+                        ))}
+                      </DocClause>
+                    ))}
+
+                    <DocFoot title={title} revised={revised} />
+                  </div>
+                </div>
+              </div>
+            </DocSheet>
           </div>
         </Container>
       </Section>
 
-      {/* ═══ 3. THE SHELF, full width again.
-          The three documents are one set and a reader checking a company
-          usually wants more than the one they landed on. Hairline rows, the
-          one in hand marked rather than linked. "The documents" stays as the
-          heading: a shelf of the three legal documents is literally that, and
-          this page's exemption from the claim-as-heading rule covers it. ═══ */}
-      <Section pad={["none", "normal"]} labelledBy="shelf-h">
-        <Container width="wide">
-          <div className="hairline pt-12 sm:pt-14">
-            <h2 id="shelf-h" className="t-h2 max-w-[20ch]">The documents</h2>
-
-            <Settle as="ul" className="mt-8">
-              {ORDER.map((id) => {
-                const o = DOCS[id];
-                const here = id === doc;
-                const inner = (
-                  <>
-                    {/* The marker rides with the title on a phone, where the
-                        third column has collapsed under it. */}
-                    <span className="flex items-start justify-between gap-5">
-                      <span className="text-[17px] font-semibold text-ink">{o.title}</span>
-                      {!here && (
-                        <span className="mt-0.5 shrink-0 text-muted transition-colors group-hover:text-red-deep sm:hidden">
-                          <IconArrow size={15} />
-                        </span>
-                      )}
-                    </span>
-                    <span className="t-body max-w-[52ch] text-body">{o.description}</span>
-                    <span className="hidden items-center gap-2 font-mono text-[14.5px] text-muted sm:flex sm:justify-end">
-                      {here ? (
-                        "You are reading this"
-                      ) : (
-                        <span className="transition-colors group-hover:text-red-deep">
-                          <IconArrow size={15} />
-                        </span>
-                      )}
-                    </span>
-                    {here && (
-                      <span className="font-mono text-[14.5px] text-muted sm:hidden">
-                        You are reading this
-                      </span>
-                    )}
-                  </>
-                );
-                const cls =
-                  "grid items-start gap-x-10 gap-y-2 py-6 sm:grid-cols-[minmax(0,0.5fr)_minmax(0,1.1fr)_minmax(0,0.3fr)] sm:py-7";
-                return (
-                  <li key={id} className="hairline last:border-b-[1.5px] last:border-rule">
-                    {here ? (
-                      <div className={cls}>{inner}</div>
-                    ) : (
-                      <Link to={`/${id}`} className={`${cls} group`}>{inner}</Link>
-                    )}
-                  </li>
-                );
-              })}
-            </Settle>
-
-            <p className="mt-9 max-w-[58ch] text-[15px] leading-relaxed text-body">
-              Anything in these documents you want put differently, or a question about what we
-              hold:{" "}
-              <TextLink to="/contact">write to us</TextLink>
-              .
-            </p>
-          </div>
-        </Container>
-      </Section>
+      {/* ═══ 2. THE SHELF.
+          The four documents on the site, the Responsible AI position first,
+          the one in hand marked rather than linked. Its closing sentence and
+          the footer are the page's ending; there is no band. ═══ */}
+      <DocumentsShelf current={doc} />
     </>
   );
 }

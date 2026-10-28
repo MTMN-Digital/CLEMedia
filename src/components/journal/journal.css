@@ -1,0 +1,49 @@
+/* ============================================================================
+   The journal's own rows. Classes prefixed jr-.
+
+   Two objects carry the dotted leader on this page (see `.leader` at the end
+   of src/styles/index.css): the masthead's status rows and the contents rows.
+   Both are a label, a leader and an answer on one line, which is what makes
+   the page a printed contents and not a document. The colophon's rules are
+   plain ruled rows and never take a leader.
+   ========================================================================== */
+
+/* Masthead status rows: dt, leader, dd on one line, 44px tall, no rules.
+   On a phone a long answer wraps right-aligned under its own leader rather
+   than squeezing the leader out of the line. */
+.jr-status {
+  max-width: 30rem;
+}
+.jr-status-row {
+  display: flex;
+  align-items: baseline;
+  min-height: 44px;
+  padding: 0.55rem 0;
+}
+.jr-status-row dt {
+  flex: none;
+  white-space: nowrap;
+}
+.jr-status-row dd {
+  flex: 0 1 auto;
+  min-width: 0;
+  text-align: right;
+}
+/* The dots run on the row's FIRST line: a wrapped answer hangs its second
+   line under the leader, the leader does not drop to meet it. */
+.jr-status-row > .leader {
+  align-self: baseline;
+}
+
+/* Contents rows: the strand's name, the leader, the status. The name may wrap
+   to two lines at 390 ("Parents Helping Parents"), so the leader and the
+   status sit on the name's LAST line, which is where a contents page puts
+   its dots. */
+.jr-row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(2rem, 1fr) auto;
+  align-items: last baseline;
+}
+.jr-row > .leader {
+  align-self: end;
+}

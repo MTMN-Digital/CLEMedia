@@ -1,48 +1,76 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Wipe } from "@/components/Wipe";
-import { PageHero } from "@/components/PageHero";
 import { ProductionFlat } from "@/components/ethical-ai/ProductionFlat";
 import { TheLineTable } from "@/components/ethical-ai/TheLineTable";
+import { ToolsTable } from "@/components/ethical-ai/ToolsTable";
 import { ForTheChild } from "@/components/ethical-ai/ForTheChild";
-import { Container, TextLink, Button, Section, DisclosurePanel } from "@/components/ui";
-import { IconArrow } from "@/components/icons";
-import { useBlock, emphasis } from "@/lib/content";
+import { STATIONS, DO_NOT } from "@/components/ethical-ai/stations";
+import { APPROVED_BY, ADOPTED, REVISED } from "@/components/ethical-ai/document";
 import { COPY } from "@/components/ethical-ai/copy";
+import {
+  useActiveSection,
+  DocSheet,
+  DOC_GRID,
+  DocContents,
+  DocStatus,
+  DocClause,
+  DocFoot,
+  DocSubClause,
+  REVISED_LABEL,
+  longDate,
+  DocPublisher,
+  DocumentsShelf,
+} from "@/components/doc";
+import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
+import { IconArrow } from "@/components/icons";
+import { useBlock } from "@/lib/content";
+import "@/components/ethical-ai/pos.css";
 
 /* ============================================================================
-   Responsible AI.
+   Responsible AI: the company's position, published as a document.
 
    The most important trust page on the site, for investors and educators. A
    company that makes children's media with AI tools has to say exactly what
    the tools do, what people decide, and where the work can be stopped.
 
-   SHAPE, set 2026-10-06, carried to the hero's language 2026-10-27. One
-   drawing owns the middle of this page: the flat production line on a
-   full-bleed wall band, with the dashed return climbing back from the final
-   sign-off to the tools. With the text blurred it is a dark panel at the top
-   (the opening, in the gaps-around-the-film dark, because this page argues
-   about how pictures are made and no still on the site can be credited with
-   more than "a frame from the series"), one tall paper band with a line
-   across it, a pair of large sentences, a ruled table and six commitments,
-   a sheet of questions, then the navy foot.
+   REBUILT 2026-10-28 (docs/SUBPAGE-PLANS-2026-10-28.md, "## ethical-ai").
+   The page used to open on a dark panel with the position line set large in
+   the hero face, then said the same position six times under six claim
+   headings across five bands. An investor wants a document with clauses, not
+   a speech given six times. So it is a position statement now, on the same
+   shell as /privacy, /terms and /cookies (components/doc): one sheet of
+   card with a "Position statement" tab, a title block with the document's
+   facts, a contents rail, six numbered clauses and an appendix, with the
+   production line set into it as Figure 1 the way a figure sits in a
+   research paper. The page is type, numbers and one drawing. No bands, no
+   buttons, no boxes.
 
-   WHAT CHANGED 2026-10-27. The page used to open on the position line over
-   two grey paragraphs: the exact heading-and-grey-lead shape the client
-   named as the site's real problem. The position line is now the PageHero
-   headline, the two tool names are its aside, and the two facts from the
-   paragraphs moved to where they are talking: the decisions sentences open
-   the band beside its heading, and the "sequence an episode goes through"
-   note is the small line directly above the drawing. The drawn boundary
-   (TheLine) was a second diagram on a page allowed one; it is a two-row
-   ruled table now, every label kept. The honesty section is the page's pull
-   moment and is set as the large pair. Every section opens in its own shape.
+   THE FACTS ON THE TITLE BLOCK are only the ones the company has set.
+   "Wording last revised" is the day the wording was last written (REVISED
+   in components/ethical-ai/document.ts), labelled so it cannot read as
+   adoption. "Adopted" and "Approved by" render only when the client supplies
+   them (ADOPTED, APPROVED_BY are null until then); there is no version
+   constant to print. "Applies to" names the episodes only, because the
+   position text in stations.ts covers production of the episodes and
+   nothing covers the activity books. The tools table has no "Where on the
+   line" column until TOOL_PLACEMENT (stations.ts) holds the client's own
+   sentence, and no phase number is attached to the tools anywhere on the
+   page.
 
-   Every sentence here is the client's own position or already in the repo.
-   Nothing is added: no incident, no number, no date. The real sent-back
-   episode has not been supplied and is not invented here either
-   (CONTENT-NEEDED.md).
+   THE SUB-CLAUSE NUMBERING IN CLAUSE 2. The company counts five phases and
+   says production is not one of them (stations.ts: "Production is not one of
+   the five"). The document keeps that count: the five phases are 2.1 to 2.5
+   and carry the company's own phase number after the title; the tool station
+   sits between 2.2 and 2.3 where Figure 1 puts it, marked "Tools" instead of
+   a numeral, because a document that numbered it would be making it a sixth
+   phase. 2.6 is the return and 2.7 is what the reviews are for.
+
+   Every sentence here is the client's own position or already in the repo,
+   except the connective sentences the plan drafts in quotes (the third
+   paragraph of clause 1, the opening sentence of clause 2). Nothing is
+   added: no incident, no number, no date. The real sent-back episode has
+   not been supplied and is not invented here either (CONTENT-NEEDED.md).
    ========================================================================== */
 
 const LINES = [
@@ -91,9 +119,23 @@ const QUESTIONS = [
   },
 ];
 
-/** One question. The panel is the shared `DisclosurePanel`; the button is here
- *  because it is a heading, and the open state belongs to the list so that
- *  opening one answer closes the last. */
+/* The five phases and the tool station, in the order Figure 1 draws them.
+   The numerals are the document's; the phase numbers after the titles are
+   the company's own (stations.ts `index`). See the note at the top. */
+const SUB_CLAUSES = (() => {
+  let n = 0;
+  return STATIONS.map((s) => {
+    if (s.kind === "tool") return { ...s, n: "Tools", suffix: "" };
+    n += 1;
+    return { ...s, n: `2.${n}`, suffix: s.index ? ` (phase ${s.index})` : "" };
+  });
+})();
+
+const CONTENTS_IDS = ["position", "made", "tools", "never", "commitments", "review"] as const;
+
+/** One question in Appendix A. The panel is the shared `DisclosurePanel`;
+ *  the button is here because it is a heading, and the open state belongs
+ *  to the list so that opening one answer closes the last. */
 function Question({ id, q, a, open, onToggle }: { open: boolean; onToggle: () => void; q: string; id: string; a: string }) {
   return (
     <li className="hairline">
@@ -103,42 +145,112 @@ function Question({ id, q, a, open, onToggle }: { open: boolean; onToggle: () =>
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={id}
-          className="flex w-full items-start justify-between gap-6 py-6 text-left"
+          className="flex min-h-[44px] w-full items-start justify-between gap-6 py-4 text-left"
         >
-          <span className="t-h3">{q}</span>
+          <span className="font-sans text-[1.25rem] font-bold leading-snug text-ink">{q}</span>
           <span
             aria-hidden="true"
-            className={`mt-0.5 shrink-0 text-red-deep transition-transform duration-300 ease-out ${open ? "rotate-90" : ""}`}
+            className={`mt-1 shrink-0 text-red-deep transition-transform duration-300 ease-out motion-reduce:transition-none ${open ? "rotate-90" : ""}`}
           >
             <IconArrow size={18} />
           </span>
         </button>
       </h3>
       <DisclosurePanel id={id} open={open}>
-        <p className="t-body max-w-[62ch] pb-7 text-body">{a}</p>
+        <p className="t-body max-w-[62ch] pb-6 text-body">{a}</p>
       </DisclosurePanel>
     </li>
   );
 }
 
+/** Figure 1 with its caption and key. Mounted twice, under the title block
+ *  at `lg` and inside clause 2 below it; only one is displayed, so a screen
+ *  reader meets the figure once. */
+function FigureOne({
+  first,
+  caption,
+  captionFirst = false,
+  className = "",
+}: {
+  first: string;
+  caption: string;
+  /** On a phone the drawing is 358px wide and reads as a scratch, so the
+   *  caption leads and carries the argument in words (plan, section 6). */
+  captionFirst?: boolean;
+  className?: string;
+}) {
+  return (
+    <figure className={`flex flex-col ${className}`}>
+      <ProductionFlat className={captionFirst ? "order-2 mt-5" : ""} />
+      <div className={`flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-10 ${captionFirst ? "order-1" : "mt-5"}`}>
+        <figcaption className="max-w-[72ch] text-[15px] leading-[1.6] text-body">
+          <span className="mr-2 font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep">Figure 1</span>
+          {first} {caption}
+        </figcaption>
+        <ul
+          className="flex shrink-0 flex-wrap gap-x-6 gap-y-2.5 font-mono text-[14px] uppercase tracking-[0.14em] text-body"
+          aria-label="Key to Figure 1"
+        >
+          <li className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border-[1.5px] border-rule bg-raised" />
+            Person decides
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span
+              aria-hidden="true"
+              className="h-3.5 w-3.5 rounded-[3px] border-[1.5px] border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))]"
+            />
+            Tool assists
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full bg-raised ring-2 ring-red/70" />
+            Everyone signs off
+          </li>
+        </ul>
+      </div>
+    </figure>
+  );
+}
+
 export default function EthicalAi() {
   const [open, setOpen] = useState<number | null>(0);
+  const body = useRef<HTMLDivElement>(null);
+  const active = useActiveSection(body);
 
-  /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's
-     own wording (components/ethical-ai/copy.ts) until a content_blocks row
-     replaces it. The headline's accent clause is written between *stars*.
-     The six commitments and the four answers are the position itself and
-     stay in this file. */
-  const heroEyebrow = useBlock("ethical-ai", "hero.eyebrow", COPY["hero.eyebrow"]);
-  const heroEyebrowSub = useBlock("ethical-ai", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
-  const heroAside = useBlock("ethical-ai", "hero.aside", COPY["hero.aside"]);
-  const heroTitle = useBlock("ethical-ai", "hero.title", COPY["hero.title"]);
-  const lineHeading = useBlock("ethical-ai", "line.heading", COPY["line.heading"]);
-  const lineLead = useBlock("ethical-ai", "line.lead", COPY["line.lead"]);
-  const linesHeading = useBlock("ethical-ai", "lines.heading", COPY["lines.heading"]);
-  const faqHeading = useBlock("ethical-ai", "faq.heading", COPY["faq.heading"]);
+  /* EDITABLE FROM THE ADMIN. Every string below is the page's own wording
+     (components/ethical-ai/copy.ts) until a content_blocks row replaces it.
+     Called unconditionally, the same number of times on every render. */
+  const title = useBlock("ethical-ai", "title", COPY.title);
+  const summary = useBlock("ethical-ai", "hero.title", COPY["hero.title"]);
+  const applies = useBlock("ethical-ai", "applies.value", COPY["applies.value"]);
+  const toolsNamed = useBlock("ethical-ai", "hero.aside", COPY["hero.aside"]);
+  const figureFirst = useBlock("ethical-ai", "line.heading", COPY["line.heading"]);
+  const figureCaption = useBlock("ethical-ai", "figure.caption", COPY["figure.caption"]);
+  const h1 = useBlock("ethical-ai", "clause.1.heading", COPY["clause.1.heading"]);
+  const h2 = useBlock("ethical-ai", "clause.2.heading", COPY["clause.2.heading"]);
+  const h3 = useBlock("ethical-ai", "clause.3.heading", COPY["clause.3.heading"]);
+  const h4 = useBlock("ethical-ai", "clause.4.heading", COPY["clause.4.heading"]);
+  const h5 = useBlock("ethical-ai", "clause.5.heading", COPY["clause.5.heading"]);
+  const h6 = useBlock("ethical-ai", "clause.6.heading", COPY["clause.6.heading"]);
+  const hA = useBlock("ethical-ai", "appendix.heading", COPY["appendix.heading"]);
+  const positionFirst = useBlock("ethical-ai", "line.lead", COPY["line.lead"]);
+  const positionSecond = useBlock("ethical-ai", "position.second", COPY["position.second"]);
+  const positionThird = useBlock("ethical-ai", "position.third", COPY["position.third"]);
+  const madeLead = useBlock("ethical-ai", "made.lead", COPY["made.lead"]);
+  const returnBody = useBlock("ethical-ai", "return.body", COPY["return.body"]);
+  const reviewsLine = useBlock("ethical-ai", "reviews.line", COPY["reviews.line"]);
+  const toolsNote = useBlock("ethical-ai", "tools.note", COPY["tools.note"]);
   const commitHeading = useBlock("ethical-ai", "commit.heading", COPY["commit.heading"]);
   const commitLead = useBlock("ethical-ai", "commit.lead", COPY["commit.lead"]);
+  const reviewBody = useBlock("ethical-ai", "review.body", COPY["review.body"]);
+  const reviewLink = useBlock("ethical-ai", "review.link", COPY["review.link"]);
+
+  const headings = [h1, h2, h3, h4, h5, h6];
+  const contents = [
+    ...CONTENTS_IDS.map((id, i) => ({ id, n: String(i + 1), label: headings[i] })),
+    { id: "appendix-a", n: "A", label: hA },
+  ];
+  const revised = longDate(REVISED);
 
   return (
     <>
@@ -148,235 +260,194 @@ export default function EthicalAi() {
         path="/ethical-ai"
       />
 
-      {/* ═══ 1. THE POSITION, in the hero's frame. The client's own line, which
-          the home page already carries as a section heading, is the whole page
-          in twelve words, so it is the h1 and nothing paraphrases it. Plain
-          panel, no still: the page argues about how pictures are made, so the
-          opening stays typographic and dark, like the gaps around the film.
-          The aside is the one fact an investor wants first (which tools), and
-          "People remain responsible" takes the accent because it is the
-          company's position in three words.
-
-          The first action is a hand-written anchor rather than `Button`:
-          `Button to` goes through the router (no hash scroll) and `Button
-          href` opens a new tab. Same classes, same look. ═══ */}
-      <PageHero
-        id="ai-h"
-        size="tall"
-        tone="ink"
-        eyebrow={<>{heroEyebrow}<span>{heroEyebrowSub}</span></>}
-        aside={<>{heroAside}</>}
-        title={emphasis(heroTitle)}
-        actions={
-          <>
-            <a href="#line-h" className="btn btn-primary">
-              See the five phases<IconArrow size={16} />
-            </a>
-            <Button to="/team" variant="quiet">Who is in the sequence</Button>
-          </>
-        }
-      />
-
-      {/* ═══ 2. THE LINE. The page's one band and its whole argument. Full
-          bleed on the wall ground, because this is a different room rather
-          than more of the same page, and because a drawing that is the
-          argument should not be boxed to the width of a paragraph.
-
-          The heading is the claim the drawing makes. The two decisions
-          sentences that used to be the page's grey lead open the band BESIDE
-          the heading, not under it, so the band does not start in the shape
-          the hero just avoided; the note about the sequence is the small line
-          directly above the drawing it introduces, with the key beside it. ═══ */}
-      <Section labelledBy="line-h" className="wall">
+      {/* ═══ THE DOCUMENT. One sheet of card, end to end, on the paper
+          ground. The "Position statement" tab is a label: this is not one of
+          the three legal policies, and the shelf at the foot does the
+          cross-referencing. 86rem, centred, the width Figure 1 was tuned
+          for. ═══ */}
+      <Section pad={["close", "normal"]}>
         <Container width="wide">
-          <Settle className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-x-16">
-            <h2 id="line-h" className="t-h2 max-w-[18ch] scroll-mt-28">
-              {lineHeading}
-            </h2>
-            <p className="t-lead max-w-[40ch] text-ink lg:justify-self-end">{lineLead}</p>
-          </Settle>
+          <div className="pt-4 sm:pt-6">
+            <DocSheet tabs={[{ label: "Position statement", current: true }]} width="wide">
+              {/* The page's one entrance: the sheet's contents settle in
+                  order, title block, then Figure 1, then the body. The
+                  clauses below do not settle one by one. */}
+              <Settle>
+                {/* ── Title block: what the document is, when its wording
+                    was last set, what it covers. The h1 is the document's
+                    name, two words in the display face; the position line
+                    is the summary under it, in ink at the reading lead, one
+                    sentence with nothing coloured in it. ── */}
+                <div className="grid gap-x-20 gap-y-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
+                  <div>
+                    <DocPublisher />
+                    <h1 className="t-h1 mt-5 text-ink">{title}</h1>
+                    <p className="t-lead mt-7 max-w-[56ch] text-ink">{summary}</p>
+                  </div>
+                  {/* The document's facts. Adopted and Approved by are
+                      hidden rather than shown empty; there is no Version. */}
+                  <DocStatus
+                    rows={[
+                      { label: REVISED_LABEL, value: revised },
+                      { label: "Applies to", value: applies },
+                      { label: "Tools named", value: toolsNamed },
+                      { label: "Adopted", value: ADOPTED },
+                      { label: "Approved by", value: APPROVED_BY },
+                    ]}
+                  />
+                </div>
 
-          <Settle className="mt-14 flex flex-col gap-5 border-t-[1.5px] border-rule pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
-            <p className="t-sm max-w-[52ch] text-body">
-              Below is the sequence an episode goes through before it reaches a child. It goes back
-              round until everyone is happy.
-            </p>
-            <ul className="flex flex-wrap gap-x-7 gap-y-3 font-mono text-[14px] uppercase tracking-[0.14em] text-body" aria-label="Key">
-              <li className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border-[1.5px] border-rule bg-raised" />
-                Person decides
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-[3px] border-[1.5px] border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))]" />
-                Tool assists
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full bg-raised ring-2 ring-red/70" />
-                Everyone signs off
-              </li>
-            </ul>
-          </Settle>
+                {/* ── Figure 1, across the full sheet at `lg`: the shape of
+                    the argument in one look, before any clause, on card so
+                    the graphite and the red return read at full contrast.
+                    Under `lg` it mounts inside clause 2 instead, where the
+                    text introduces it and the caption leads. ── */}
+                <FigureOne
+                  first={figureFirst}
+                  caption={figureCaption}
+                  className="mt-10 hidden border-t-[1.5px] border-rule pt-8 lg:block"
+                />
 
-          {/* One Settle around the whole line, not one per phase: the draw-on
-              of the return path keys off this element's own .is-armed.is-in, and
-              a per-phase Settle would arm seven separate clocks for one line. */}
-          <Settle className="mt-6">
-            <ProductionFlat gateSlot={<ForTheChild />} />
-          </Settle>
+                {/* ── The body: contents rail, then the clauses. The rule
+                    above it closes Figure 1 at `lg`; under `lg` the status
+                    rows end on their own rule and the contents bar brings
+                    its own, so a third would be a blank ruled row. ── */}
+                <div className={`${DOC_GRID} mt-7 lg:mt-10 lg:border-t-[1.5px] lg:border-rule lg:pt-10`}>
+                  <DocContents items={contents} active={active} summary="6 clauses, 1 appendix" id="pos-contents" />
 
-          <Settle className="mt-14 flex max-w-[64ch] gap-4">
-            <span aria-hidden="true" className="mt-3 h-0 w-8 shrink-0 border-t-2 border-dashed border-red" />
-            <p className="t-body text-body">
-              The dashed return is the part that matters. When the final review asks for changes,
-              the work goes back into production and is re-reviewed, and the team watches and
-              revises again until everyone is happy with the episode and signs it off for release.
-            </p>
-          </Settle>
-        </Container>
-      </Section>
+                  <div ref={body} className="max-w-[68ch]">
+                    {/* 1 Position. Three paragraphs: the company's line, the
+                        two descriptions it refuses (once, at reading size),
+                        and the contents sentence. */}
+                    <DocClause id="position" n="1" title={h1} className="!pt-0">
+                      <p>{positionFirst}</p>
+                      <p>{positionSecond}</p>
+                      <p>{positionThird}</p>
+                    </DocClause>
 
-      {/* ═══ 3. NEITHER WORD IS TRUE. The page's pull moment: the two
-          descriptions the company refuses, as one large pair in the display
-          face, side by side with a rule between them. The pair IS the
-          heading; the sentence that used to sit over it ("We would rather
-          describe that accurately...") only said that the pair was coming, so
-          it is gone, and the two NOT labels went with it because each
-          sentence already says which word it refuses. ═══ */}
-      <Section labelledBy="honest-h">
-        <Container width="wide">
-          <Wipe>
-            <h2 id="honest-h" className="grid gap-9 xl:grid-cols-2 xl:gap-0">
-              <span className="block font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] tracking-[-0.005em] text-ink xl:max-w-[22ch] xl:pr-14">
-                Calling this work handmade would be untrue.
-              </span>
-              <span className="block border-t-[1.5px] border-rule-soft pt-9 font-display text-[clamp(1.5rem,1.1rem+1.5vw,2.375rem)] leading-[1.18] tracking-[-0.005em] text-ink xl:max-w-[24ch] xl:border-l-[1.5px] xl:border-t-0 xl:pl-14 xl:pt-0">
-                Calling it AI-generated would erase the people who actually make the decisions.
-              </span>
-            </h2>
-            <div className="mt-7 grid gap-6 xl:grid-cols-2 xl:gap-0">
-              <p className="t-body max-w-[44ch] text-body xl:pr-14">
-                Runway and ElevenLabs sit inside final production, and this page says so by name.
-              </p>
-              <p className="t-body max-w-[44ch] text-body xl:pl-14">
-                The story, the script, the direction, every review and the final approval are theirs.
-              </p>
-            </div>
-          </Wipe>
-        </Container>
-      </Section>
+                    {/* 2 How an episode is made. The opening sentence says
+                        what Figure 1 draws and nothing more; the sub-clauses
+                        carry the sequence in words, which is what a phone
+                        reader gets instead of a 75px scratch. */}
+                    <DocClause id="made" n="2" title={h2}>
+                      <p>{madeLead}</p>
+                      <FigureOne first={figureFirst} caption={figureCaption} captionFirst className="!mt-6 lg:hidden" />
+                      <div className="!mt-8 space-y-7">
+                        {SUB_CLAUSES.map((s) => (
+                          <DocSubClause
+                            key={s.title}
+                            n={s.n}
+                            title={`${s.title}${s.suffix}`}
+                            className={s.kind === "gate" ? "pos-hold" : ""}
+                          >
+                            <p className="!mt-1 text-[15px] font-semibold leading-[1.5] text-ink">{s.who}</p>
+                            <p>{s.body}</p>
+                          </DocSubClause>
+                        ))}
 
-      {/* ═══ 4. THE LINES WE HOLD. The heading is the boundary the old drawing
-          drew; the boundary itself is a two-row ruled table now (see
-          TheLineTable.tsx), because the production line above is the page's
-          one diagram. Then the six commitments as a long read in hairline
-          rows, not six icon cards: a principle is a sentence a reader holds
-          the company to, and it is easier to hold someone to a sentence than
-          to a pictogram. ═══ */}
-      <Section labelledBy="lines-h" pad={["tight", "tight"]}>
-        <Container width="wide">
-          <Settle>
-            <h2 id="lines-h" className="t-h2 max-w-[22ch]">
-              {linesHeading}
-            </h2>
-          </Settle>
+                        <DocSubClause n="2.6" title="The return">
+                          <div className="flex gap-4">
+                            <span aria-hidden="true" className="mt-3 h-0 w-8 shrink-0 border-t-2 border-dashed border-red" />
+                            <p>{returnBody}</p>
+                          </div>
+                        </DocSubClause>
 
-          <TheLineTable />
+                        <DocSubClause n="2.7" title="What the reviews are for">
+                          <ForTheChild />
+                          <p className="!mt-5">
+                            {reviewsLine}{" "}
+                            <TextLink to="/team">
+                              The team<IconArrow size={15} />
+                            </TextLink>
+                          </p>
+                        </DocSubClause>
+                      </div>
+                    </DocClause>
 
-          {/* TWO-UP AT XL. Six hairline rows one under another was both the
-              empty right third and the tallest run of prose left on the page;
-              two columns of three spend the width and take about 900px of
-              scroll out of it. The titles stack over their bodies at that
-              breakpoint, because a 14rem title track inside a 573px cell
-              leaves the body about 190px, which is not a measure. */}
-          <Settle as="ol" className="mt-16 xl:grid xl:grid-cols-2 xl:gap-x-14">
-            {LINES.map((l) => (
-              <li key={l.title} className="hairline grid content-start gap-y-2 py-7 md:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] md:gap-x-10 xl:grid-cols-1 xl:gap-x-0">
-                {/* The 16ch cap was sized for a side track about 400px wide. Stacked over
-                    a 558px body it broke four of the six titles onto three lines, so it
-                    opens up where the title sits above rather than beside. */}
-                <h3 className="t-h3 max-w-[16ch] xl:max-w-[26ch]">{l.title}</h3>
-                {/* Measured at 1440, not guessed: the free column set 89
-                    characters to the line and a 68ch cap still set 80, because
-                    `ch` on Hanken is about 8.7px against an average character
-                    of 7.3. 62ch lands at 73, which is inside the 75 the house
-                    reads as a measure rather than as a scan. */}
-                <p className="t-body max-w-[62ch] text-body">{l.body}</p>
-              </li>
-            ))}
-          </Settle>
-        </Container>
-      </Section>
+                    {/* 3 The tools. The only table on the page; a fourth
+                        column waits on the client (ToolsTable.tsx). The
+                        imagery statement for this clause is NEEDED FROM
+                        CLIENT and nothing renders for it meanwhile. */}
+                    <DocClause id="tools" n="3" title={h3}>
+                      <div className="!mt-6">
+                        <ToolsTable />
+                      </div>
+                      <p className="!mt-6">{toolsNote}</p>
+                    </DocClause>
 
-      {/* ═══ 5. THE QUESTIONS PEOPLE ACTUALLY ASK. On a sheet, not on the
-          ground: the rows above are already a full-width stack of hairline
-          rows, and two of those in a row is exactly the sameness this pass is
-          for. A sheet with a tab reads as a document handed over, which is
-          what a set of answers to standing questions is. The heading is the
-          four questions in one line. ═══ */}
-      <Section labelledBy="faq-h" pad={["tight", "normal"]}>
-        <Container width="wide">
-          {/* The sheet takes the width and the heading sits in the margin of
-              it. Nothing inside the sheet widens: the answers keep their 62ch
-              cap, so the extra width becomes paper rather than a longer line.
-              Air inside an object reads as an object; air beside a column
-              reads as a mistake, which is what this section was. */}
-          <div className="xl:grid xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:items-start xl:gap-x-14">
-            <Settle>
-              <h2 id="faq-h" className="t-h2 max-w-[18ch]">
-                {faqHeading}
-              </h2>
-            </Settle>
-            <Settle className="mt-9 xl:mt-0">
-              <div className="card-stock px-5 pb-2 pt-9 sm:px-9 sm:pt-10">
-                <span className="card-tab" aria-hidden="true">ASKED AND ANSWERED</span>
-                <ul>
-                  {QUESTIONS.map((f, i) => (
-                    <Question
-                      key={f.q}
-                      id={`ai-q-${i}`}
-                      q={f.q}
-                      a={f.a}
-                      open={open === i}
-                      onToggle={() => setOpen(open === i ? null : i)}
-                    />
-                  ))}
-                </ul>
-              </div>
-            </Settle>
+                    {/* 4 What a tool is never used for. The boundary as a
+                        two-row table, then the three refusals, numbered. */}
+                    <DocClause id="never" n="4" title={h4}>
+                      <div className="!mt-6">
+                        <TheLineTable />
+                      </div>
+                      <ol className="pos-refusals !mt-8">
+                        {DO_NOT.map((d, i) => (
+                          <li key={d}>
+                            <span className="pos-n" aria-hidden="true">
+                              4.{i + 1}
+                            </span>
+                            <p className="t-body text-body">{d}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </DocClause>
+
+                    {/* 5 Six commitments. One column; a document reads down. */}
+                    <DocClause id="commitments" n="5" title={h5}>
+                      <div className="!mt-7 space-y-7">
+                        {LINES.map((l, i) => (
+                          <DocSubClause key={l.title} n={`5.${i + 1}`} title={l.title}>
+                            <p>{l.body}</p>
+                          </DocSubClause>
+                        ))}
+                      </div>
+                    </DocClause>
+
+                    {/* 6 Review of this position. Two paragraphs, the page's
+                        one closing link, and the foot line. A document ends
+                        in a sentence. */}
+                    <DocClause id="review" n="6" title={h6}>
+                      <p>
+                        {commitHeading} {commitLead}
+                      </p>
+                      <p>{reviewBody}</p>
+                      <p className="!mt-6">
+                        <TextLink to="/contact">
+                          {reviewLink}
+                          <IconArrow size={15} />
+                        </TextLink>
+                      </p>
+                      <DocFoot title={title} revised={revised} />
+                    </DocClause>
+
+                    {/* Appendix A. The four questions as the disclosure
+                        list, first open, one at a time. */}
+                    <DocClause id="appendix-a" n="A" title={hA} className="mt-12 border-t-[1.5px] border-rule">
+                      <ul className="!mt-2 border-b-[1.5px] border-rule">
+                        {QUESTIONS.map((f, i) => (
+                          <Question
+                            key={f.q}
+                            id={`pos-q-${i}`}
+                            q={f.q}
+                            a={f.a}
+                            open={open === i}
+                            onToggle={() => setOpen(open === i ? null : i)}
+                          />
+                        ))}
+                      </ul>
+                    </DocClause>
+                  </div>
+                </div>
+              </Settle>
+            </DocSheet>
           </div>
         </Container>
       </Section>
 
-      {/* ═══ 6. THE COMMITMENT, the one deep band ═══ */}
-      {/* The site footer is navy too, so this band and the footer meet with no
-          edge between them. Its bottom padding is cut back accordingly: at the
-          full section rhythm the two together read as 900px of unbroken navy
-          with a hundred words in it. */}
-      <Section deep labelledBy="commit-h" pad={["normal", "tight"]}>
-        <Container width="wide">
-          <Settle className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
-            <div>
-              <h2 id="commit-h" className="t-h2 max-w-[20ch]">
-                {commitHeading}
-              </h2>
-              <p className="t-lead mt-6 max-w-[52ch] opacity-85">{commitLead}</p>
-            </div>
-            <div className="lg:pt-2">
-              <p className="t-body max-w-[42ch] opacity-85">
-                If something here does not satisfy you, whether you are a parent, an educator or a
-                distribution partner, we would genuinely rather have the conversation than have you
-                assume.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
-                <Button to="/contact">Get in touch<IconArrow size={16} /></Button>
-                <TextLink to="/team">
-                  The people in the sequence<IconArrow size={15} />
-                </TextLink>
-              </div>
-            </div>
-          </Settle>
-        </Container>
-      </Section>
+      {/* ═══ THE DOCUMENTS. The shelf the legal pages share, with this one
+          marked as in hand. Then the footer. ═══ */}
+      <DocumentsShelf current="ethical-ai" />
     </>
   );
 }

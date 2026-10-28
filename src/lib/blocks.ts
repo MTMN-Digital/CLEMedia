@@ -83,7 +83,7 @@ export const PAGES: PageDef[] = [
   { id: "case-study", label: "Case study", path: "/case-study", wiredBy: "cms-wiring" },
   { id: "journal", label: "Journal (front page)", path: "/journal", wiredBy: "cms-wiring" },
   { id: "app", label: "App", path: "/app", wiredBy: "media-app-links" },
-  { id: "media", label: "Press and appearances", path: "/media", wiredBy: "media-app-links" },
+  { id: "media", label: "Press kit", path: "/media", wiredBy: "media-app-links" },
   { id: "shop", label: "Shop", path: "/shop", wiredBy: "shop" },
   { id: "contact", label: "Get in touch", path: "/contact", wiredBy: "cms-wiring" },
   { id: "privacy", label: "Privacy policy", path: "/privacy", wiredBy: "cms-wiring" },
@@ -104,18 +104,6 @@ const image = (page: PageId, section: string, key: string, label: string, asset:
   page, key, label, kind: "image", required: false, section, asset, source,
 });
 
-/** The four corners every inner page opens with (PageHero). */
-function hero(page: PageId, file: string, opts: { aside?: boolean; title?: boolean; emphasis?: boolean; sub?: boolean; eyebrow?: boolean }): BlockDef[] {
-  const out: BlockDef[] = [];
-  const S = "Top of the page";
-  if (opts.eyebrow) out.push(line(page, S, "hero.eyebrow", "Small label, top left", `${file}: PageHero eyebrow, the text before <span>`));
-  if (opts.sub) out.push(line(page, S, "hero.eyebrow_sub", "Second line of the small label", `${file}: PageHero eyebrow, the <span> text`));
-  if (opts.aside) out.push(line(page, S, "hero.aside", "Short note, top right", `${file}: PageHero aside`));
-  if (opts.title !== false)
-    out.push(line(page, S, "hero.title", "Main headline", `${file}: PageHero title`, opts.emphasis === false ? {} : { emphasis: true }));
-  return out;
-}
-
 /* ─── The registry ───────────────────────────────────────────────────────── */
 
 const HOME = "src/pages/Home.tsx";
@@ -132,8 +120,8 @@ const SHOP = "src/pages/Shop.tsx";
 const LEGAL = "src/pages/Legal.tsx";
 
 const legal = (page: "cookies" | "privacy" | "terms", sections: string[]): BlockDef[] => [
-  line(page, "Top of the page", "title", "Document title", `${LEGAL}: DOCS.${page}.title`),
-  para(page, "Top of the page", "intro", "Opening paragraph", `${LEGAL}: DOCS.${page}.intro`),
+  line(page, "Top of the page", "title", "Document name (printed on the sheet and in the browser tab)", `${LEGAL}: DOCS.${page}.title`),
+  para(page, "Top of the page", "intro", "Opening summary under the document name", `${LEGAL}: DOCS.${page}.intro`),
   ...sections.flatMap((h, i) => [
     line(page, `Section ${i + 1}: ${h}`, `section.${i + 1}.heading`, "Section heading", `${LEGAL}: DOCS.${page}.sections[${i}].h`),
     para(page, `Section ${i + 1}: ${h}`, `section.${i + 1}.body`, "Section text", `${LEGAL}: DOCS.${page}.sections[${i}].p joined with "\\n\\n"`, { multi: true }),
@@ -159,86 +147,165 @@ export const BLOCKS: BlockDef[] = [
   line("home", "Updates sign-up", "updates.heading", "Headline", `${HOME}: h2#updates-h`),
   para("home", "Updates sign-up", "updates.body", "Paragraph", `${HOME}: p after h2#updates-h`),
 
-  /* Our story */
-  ...hero("story", STORY, { eyebrow: true, sub: true, aside: true }),
-  image("story", "Top of the page", "hero.image", "Photograph behind the headline", "story.garden", `${STORY}: PageHero asset`),
-  line("story", "How it started", "saw.heading", "Headline", `${STORY}: h2#saw-h`),
-  line("story", "Education from the outset", "parent.heading", "Headline", `${STORY}: h2#parent-h`),
-  line("story", "Conor's background", "here.heading", "Headline", `${STORY}: h2#here-h`),
-  line("story", "The people who build it", "build.heading", "Headline", `${STORY}: h2#build-h`),
-  line("story", "The mission film", "film.heading", "Headline", `${STORY}: h2#film-h`),
-  line("story", "Where to watch", "reach.heading", "Headline", `${STORY}: h2#reach-h`),
-  line("story", "Working with us", "next.heading", "Headline", `${STORY}: h2#next-h`),
-  para("story", "Working with us", "next.lead", "Paragraph", `${STORY}: p.t-lead after h2#next-h`),
+  /* Our story: a letter from Conor, signed. */
+  para("story", "Top of the letter", "hero.eyebrow_sub", "Name, title and place under the portrait (one per line)", `${STORY}: dateline beside the portrait`),
+  line("story", "Top of the letter", "hero.title", "Main headline (first sentence of the letter)", `${STORY}: h1`),
+  image("story", "Top of the letter", "hero.image", "Conor's portrait", "person.conor", `${STORY}: letter portrait`),
+  para("story", "Top of the letter", "letter.open", "Rest of the opening paragraph", `${STORY}: first paragraph after the h1`),
+  para("story", "How it started", "letter.saw", "How it started (paragraphs 2 to 4)", `${STORY}: letter paragraphs 2 to 4`, { multi: true }),
+  line("story", "How it started", "garden.caption", "Caption under the garden picture", `${STORY}: garden figcaption`, { required: false }),
+  para("story", "Conor's background", "letter.here", "Conor's background (paragraphs 5 to 8)", `${STORY}: letter paragraphs 5 to 8`, { multi: true }),
+  para("story", "The people who build it", "letter.people", "The people who build it", `${STORY}: letter paragraph on the team`),
+  para("story", "The people who build it", "letter.build", "The series and the studio (the first paragraph shows before the Finn and Fia picture)", `${STORY}: letter paragraphs on the series`, { multi: true }),
+  line("story", "The people who build it", "build.link", "Link to how an episode is made", `${STORY}: TextLink to /ethical-ai`),
+  line("story", "The people who build it", "characters.caption", "Caption under Finn and Fia", `${STORY}: characters figcaption`, { required: false }),
+  para("story", "Where families find us", "letter.reach", "Where families find us", `${STORY}: letter paragraphs on reach`, { multi: true }),
+  line("story", "Where families find us", "reach.show_link", "Link to the show's site", `${STORY}: TextLink to SITE.showUrl`),
+  line("story", "Where families find us", "reach.app_link", "Link to PupsPlayer", `${STORY}: TextLink to /app`),
+  para("story", "Sign-off", "next.lead", "Invitation to get in touch", `${STORY}: last paragraph of the letter`),
+  line("story", "Sign-off", "next.link", "Contact link", `${STORY}: TextLink to /contact`),
+  line("story", "Sign-off", "sign.name", "Signature name", `${STORY}: signature`),
+  line("story", "Sign-off", "sign.role", "Role under the signature", `${STORY}: signature role`),
+  line("story", "The mission film", "film.ps", "P.S. line above the film", `${STORY}: P.S. before MissionVideo`),
+  para("story", "The mission film", "film.note", "Note under the film about sound and captions", `${STORY}: note under MissionVideo`, { required: false }),
+  line("story", "Closing", "close.line", "Closing sentence", `${STORY}: ClosingLine`),
+  line("story", "Closing", "close.link", "Closing link to the team page", `${STORY}: ClosingLine link`),
 
-  /* Our team. The opening is not a PageHero but uses its classes. */
-  line("team", "Top of the page", "hero.eyebrow", "Small label, top left", `${TEAM}: p.page-hero__eyebrow, text before <span>`),
-  line("team", "Top of the page", "hero.eyebrow_sub", "Second line of the small label", `${TEAM}: p.page-hero__eyebrow <span>`),
-  line("team", "Top of the page", "hero.aside", "Short note, top right", `${TEAM}: p.page-hero__aside`),
-  line("team", "Top of the page", "hero.title", "Main headline", `${TEAM}: h1#team-h`),
-  para("team", "Top of the page", "hero.lead", "Paragraph under the headline", `${TEAM}: p.team-open__lead`),
-  line("team", "How the work goes round", "dossier.heading", "Headline", `${TEAM}: h2#dossier-h`),
-  line("team", "The people", "people.heading", "Headline", `${TEAM}: h2#people-h`),
-  line("team", "Closing band", "cta.heading", "Headline", `${TEAM}: h2#team-cta-h`),
-  para("team", "Closing band", "cta.lead", "Paragraph", `${TEAM}: p.t-lead after h2#team-cta-h`),
+  /* Our team: faces, then the register. */
+  line("team", "Top of the page", "hero.title", "Page title", `${TEAM}: h1`),
+  para("team", "Top of the page", "hero.lead", "Paragraph beside the page title", `${TEAM}: p.t-lead beside the h1`),
+  line("team", "The people", "register.heading", "Heading over the biographies", `${TEAM}: register h2`),
+  para("team", "The people", "register.lead", "Note under the biographies heading", `${TEAM}: register provenance note`),
+  para("team", "The people", "register.key", "Sentence after the five phase names, before the Responsible AI link", `${TEAM}: register key line`, { required: false }),
+  line("team", "Adviser", "adviser.heading", "Heading over the adviser", `${TEAM}: adviser h2`),
+  para("team", "Adviser", "adviser.lead", "Note under the adviser heading", `${TEAM}: adviser sentence`),
+  para("team", "Closing", "close.lead", "Closing sentence at the foot of the page", `${TEAM}: ClosingLine`),
+  line("team", "Closing", "close.link", "Text of the closing link to the Responsible AI page", `${TEAM}: ClosingLine link`),
 
-  /* Responsible AI */
-  ...hero("ethical-ai", EAI, { eyebrow: true, sub: true, aside: true }),
-  line("ethical-ai", "Who decides", "line.heading", "Headline", `${EAI}: h2#line-h`),
-  para("ethical-ai", "Who decides", "line.lead", "Paragraph", `${EAI}: p.t-lead beside h2#line-h`),
-  line("ethical-ai", "The lines we hold", "lines.heading", "Headline", `${EAI}: h2#lines-h`),
-  line("ethical-ai", "Questions", "faq.heading", "Headline", `${EAI}: h2#faq-h`),
-  line("ethical-ai", "Our commitment", "commit.heading", "Headline", `${EAI}: h2#commit-h`),
-  para("ethical-ai", "Our commitment", "commit.lead", "Paragraph", `${EAI}: p.t-lead after h2#commit-h`),
+  /* Responsible AI: the position statement. */
+  line("ethical-ai", "Title block", "title", "Document name (the big heading)", `${EAI}: h1`),
+  line("ethical-ai", "Title block", "hero.title", "One-sentence summary under the heading", `${EAI}: p.t-lead under the h1`),
+  line("ethical-ai", "Title block", "applies.value", "Applies to (status row)", `${EAI}: DocStatus "Applies to"`),
+  line("ethical-ai", "Title block", "hero.aside", "Tools named (status row)", `${EAI}: DocStatus "Tools named"`),
+  line("ethical-ai", "Figure 1", "line.heading", "Figure 1 caption, first sentence", `${EAI}: Figure 1 caption`),
+  line("ethical-ai", "Figure 1", "figure.caption", "Figure 1 caption, second sentence", `${EAI}: Figure 1 caption`, { required: false }),
+  line("ethical-ai", "1 Position", "clause.1.heading", "Clause 1 heading", `${EAI}: DocClause s1`),
+  para("ethical-ai", "1 Position", "line.lead", "Clause 1, first paragraph (the position)", `${EAI}: clause 1`),
+  para("ethical-ai", "1 Position", "position.second", "Clause 1, second paragraph (handmade and AI-generated)", `${EAI}: clause 1`),
+  para("ethical-ai", "1 Position", "position.third", "Clause 1, third paragraph (what this document covers)", `${EAI}: clause 1`, { required: false }),
+  line("ethical-ai", "2 How an episode is made", "clause.2.heading", "Clause 2 heading", `${EAI}: DocClause s2`),
+  para("ethical-ai", "2 How an episode is made", "made.lead", "Clause 2 opening sentence", `${EAI}: clause 2`),
+  para("ethical-ai", "2 How an episode is made", "return.body", "Sub-clause 2.6, The return", `${EAI}: DocSubClause 2.6`),
+  line("ethical-ai", "2 How an episode is made", "reviews.line", "Sentence before the team link (end of clause 2)", `${EAI}: clause 2 team line`, { required: false }),
+  line("ethical-ai", "3 The tools", "clause.3.heading", "Clause 3 heading", `${EAI}: DocClause s3`),
+  para("ethical-ai", "3 The tools", "tools.note", "Paragraph under the tools table", `${EAI}: clause 3`),
+  line("ethical-ai", "4 What a tool is never used for", "clause.4.heading", "Clause 4 heading", `${EAI}: DocClause s4`),
+  line("ethical-ai", "5 Six commitments", "clause.5.heading", "Clause 5 heading", `${EAI}: DocClause s5`),
+  line("ethical-ai", "6 Review of this position", "clause.6.heading", "Clause 6 heading", `${EAI}: DocClause s6`),
+  line("ethical-ai", "6 Review of this position", "commit.heading", "Clause 6 opening sentence", `${EAI}: clause 6`),
+  para("ethical-ai", "6 Review of this position", "commit.lead", "Clause 6 first paragraph (what we keep reviewing)", `${EAI}: clause 6`),
+  para("ethical-ai", "6 Review of this position", "review.body", "Clause 6 second paragraph (if something does not satisfy you)", `${EAI}: clause 6`),
+  line("ethical-ai", "6 Review of this position", "review.link", "Closing link text (goes to the contact page)", `${EAI}: clause 6 TextLink`),
+  line("ethical-ai", "Appendix A", "appendix.heading", "Appendix heading", `${EAI}: DocClause appendix-a`),
 
-  /* Case study. The aside follows STUDY_OPEN and is not editable. */
-  ...hero("case-study", CS, { eyebrow: true, sub: true }),
-  image("case-study", "Top of the page", "hero.image", "Picture behind the headline", "slate.ep3", `${CS}: PageHero asset`),
-  line("case-study", "What we are asking", "ask.heading", "Headline", `${CS}: h2#ask-h`),
-  line("case-study", "The two routes", "route.heading", "Headline", `${CS}: h2#route-h`),
-  line("case-study", "The materials", "mat.heading", "Headline", `${CS}: h2#mat-h`),
-  line("case-study", "The questionnaire", "q.heading", "Headline", `${CS}: h2#q-h`),
-  line("case-study", "Where it stands", "out.heading", "Headline", `${CS}: h2#out-h`),
-  line("case-study", "Your answers", "data.heading", "Headline", `${CS}: h2#data-h`),
+  /* Case study: the protocol sheet. The status rows follow STUDY_OPEN and are not editable. */
+  line("case-study", "Opening", "hero.title", "Page title", `${CS}: h1`),
+  para("case-study", "Opening", "hero.lead", "Opening paragraph under the title", `${CS}: p.t-lead`),
+  para("case-study", "Opening", "status.foot", "Note under the status rows", `${CS}: note under FactRows`),
+  line("case-study", "The route", "route.label", "Label for the route row", `${CS}: SheetRow label`),
+  para("case-study", "The route", "route.heading", "Paragraph explaining the two routes (Aistear and EYFS)", `${CS}: route row`),
+  line("case-study", "Who it is for", "who.label", "Label for the 'who it is for' row", `${CS}: SheetRow label`),
+  line("case-study", "Who it is for", "ask.heading", "Who the study is for, in one line", `${CS}: who row`),
+  para("case-study", "Who it is for", "ask.body", "Note on age range, settings and time needed", `${CS}: who row`),
+  line("case-study", "The four steps", "steps.label", "Label for the steps row", `${CS}: SheetRow label`),
+  line("case-study", "The four steps", "step.1.title", "Step 1 title", `${CS}: steps row`),
+  line("case-study", "The four steps", "step.2.title", "Step 2 title", `${CS}: steps row`),
+  line("case-study", "The four steps", "step.3.title", "Step 3 title", `${CS}: steps row`),
+  line("case-study", "The four steps", "step.4.title", "Step 4 title", `${CS}: steps row`),
+  para("case-study", "The four steps", "steps.watch", "Note on watching the episode first", `${CS}: steps row`, { required: false }),
+  line("case-study", "To be published", "pub.label", "Label for the 'to be published' row", `${CS}: SheetRow label`),
+  line("case-study", "To be published", "pub.study", "Heading over what is published for the study", `${CS}: publication row`),
+  line("case-study", "To be published", "out.heading", "Heading over what is kept apart from the study", `${CS}: publication row`),
+  line("case-study", "The questionnaire", "q.label", "Label for the questionnaire row", `${CS}: SheetRow label`),
+  para("case-study", "The questionnaire", "q.body", "What the questionnaire asks, and when to fill it in", `${CS}: questionnaire row`),
+  line("case-study", "Your answers", "data.heading", "Heading for the section on how answers are handled", `${CS}: data h2`),
+  para("case-study", "Your answers", "data.lead", "Note that the study opens only after the participant information is published", `${CS}: data paragraph`),
+  line("case-study", "Closing", "close.line", "Closing sentence at the foot of the page", `${CS}: ClosingLine`),
+  line("case-study", "Closing", "close.link", "Text of the closing link (goes to Responsible AI)", `${CS}: ClosingLine link`),
 
-  /* Journal front page. The aside counts posts and is not editable. */
-  ...hero("journal", JOURNAL, { eyebrow: true, sub: true }),
-  line("journal", "Why it exists", "why.heading", "Headline", `${JOURNAL}: h2#why-h`),
-  line("journal", "The strands", "strands.heading", "Headline", `${JOURNAL}: h2#strands-h`),
-  line("journal", "Standing rules", "rules.heading", "Headline", `${JOURNAL}: h2#rules-h`),
+  /* Journal front page: a contents page. Post counts are not editable. */
+  line("journal", "Masthead", "hero.title", "Page title, the journal's name", `${JOURNAL}: h1`),
+  line("journal", "Masthead", "hero.eyebrow", "Small capitals line under the title (who publishes it)", `${JOURNAL}: mono line under the h1`),
+  line("journal", "Masthead", "status.cadence", "Status row: how often pieces will come", `${JOURNAL}: Cadence status row`),
+  para("journal", "Masthead", "intro.lead", "Opening paragraph beside the title", `${JOURNAL}: p.t-lead`),
+  line("journal", "Masthead", "intro.line", "Line that introduces the list of strands", `${JOURNAL}: line above the contents`),
+  line("journal", "How this journal is run", "rules.title", "Heading at the foot: How this journal is run", `${JOURNAL}: h2#rules-h`),
+  para("journal", "How this journal is run", "rules.why", "Why the journal exists", `${JOURNAL}: colophon paragraph`),
+  para("journal", "How this journal is run", "rules.heading", "Paragraph introducing the four rules", `${JOURNAL}: colophon paragraph`),
+  line("journal", "How this journal is run", "rules.1.title", "Rule 1 name", `${JOURNAL}: rules dl`),
+  para("journal", "How this journal is run", "rules.1.line", "Rule 1 wording", `${JOURNAL}: rules dl`),
+  line("journal", "How this journal is run", "rules.1.link", "Rule 1 link text (goes to Responsible AI)", `${JOURNAL}: rules dl`),
+  line("journal", "How this journal is run", "rules.2.title", "Rule 2 name", `${JOURNAL}: rules dl`),
+  para("journal", "How this journal is run", "rules.2.line", "Rule 2 wording", `${JOURNAL}: rules dl`),
+  line("journal", "How this journal is run", "rules.3.title", "Rule 3 name", `${JOURNAL}: rules dl`),
+  para("journal", "How this journal is run", "rules.3.line", "Rule 3 wording", `${JOURNAL}: rules dl`),
+  line("journal", "How this journal is run", "rules.4.title", "Rule 4 name", `${JOURNAL}: rules dl`),
+  para("journal", "How this journal is run", "rules.4.line", "Rule 4 wording", `${JOURNAL}: rules dl`),
+  line("journal", "How this journal is run", "rules.4.link", "Rule 4 link text (goes to Get in touch)", `${JOURNAL}: rules dl`),
 
-  /* App */
-  ...hero("app", APP, { aside: true }),
-  image("app", "Top of the page", "hero.image", "Picture behind the headline", "home.characters", `${APP}: PageHero asset`),
-  line("app", "The walkthrough", "walk.heading", "Headline", `${APP}: h2#walk-h`),
-  line("app", "Activities", "stages.heading", "Headline", `${APP}: h2#stages-h`),
-  line("app", "Who checks it", "check.heading", "Headline", `${APP}: h2#check-h`),
-  line("app", "Where it stands", "next.heading", "Headline", `${APP}: h2#next-h`),
+  /* App: the product sheet. */
+  line("app", "Top of the page", "device.name", "Product name, the big headline (the ™ is added automatically)", `${APP}: h1`),
+  para("app", "Top of the page", "device.lead", "One-sentence description under the name (the show title is set in italics automatically)", `${APP}: p.t-lead`),
+  { page: "app", key: "device.capture", label: "Real screenshot of the app, shown inside the drawn tablet (replaces the drawing and removes the 'Drawn from the plan' note)", kind: "image", required: false, section: "Top of the page", source: `${APP}: PupsPlayerWalkthrough capture` },
+  line("app", "Status", "status.holds", "Status table: what the app holds", `${APP}: FactRows HOLDS`),
+  line("app", "Status", "status.for", "Status table: who it is for", `${APP}: FactRows FOR`),
+  line("app", "What is in it", "contents.heading", "Heading of the 'What is in it' section", `${APP}: h2`),
+  line("app", "What is in it", "watch.footnote", "Small line under the six episode tiles", `${APP}: Watch row`),
+  line("app", "What is in it", "play.subhead", "Small label above the list of planned games", `${APP}: Play row`),
+  line("app", "What is in it", "learn.away_caption", "Caption beside the 'activities away from the screen' page", `${APP}: Learn row`),
+  para("app", "What is in it", "learn.note", "Note under the sample pages about where the books are sold or included", `${APP}: Learn row`),
+  line("app", "What it will not do", "walls.heading", "Heading of the 'What it will not do' section", `${APP}: h2`),
+  line("app", "What it will not do", "walls.lead", "Sentence under the 'What it will not do' heading", `${APP}: p.t-lead`),
+  para("app", "Who checks it", "check.line", "Sentence about who checks the activities (above the 'full review sequence' link)", `${APP}: check paragraph`),
+  line("app", "Hear when it lands", "next.heading", "Heading of the email sign-up", `${APP}: h2`),
+  line("app", "Hear when it lands", "next.lead", "Sentence under the sign-up heading", `${APP}: sign-up line`),
+  para("app", "Hear when it lands", "next.note", "Status note beside the sign-up (in development, not yet tested)", `${APP}: status note`),
+  line("app", "Closing", "close.line", "Closing sentence at the foot of the page, above the shop and show-site links", `${APP}: closing sentence`),
 
-  /* Press and appearances */
-  ...hero("media", MEDIA, { eyebrow: true, sub: true, aside: true, title: false }),
-  line("media", "Top of the page", "hero.title_booked", "Main headline, before any appearance is listed", `${MEDIA}: PageHero title when there are no media_items`, { emphasis: true }),
-  line("media", "Top of the page", "hero.title_listing", "Main headline, once appearances are listed", `${MEDIA}: PageHero title when media_items has rows`, { emphasis: true }),
-  image("media", "Top of the page", "hero.image", "Picture behind the headline", "show.meadow", `${MEDIA}: PageHero asset`),
-  line("media", "The title cards", "stills.heading", "Headline", `${MEDIA}: h2#stills-h`),
-  line("media", "Appearances", "index.heading", "Headline", `${MEDIA}: h2#index-h`),
-  line("media", "Subjects", "subjects.heading", "Headline", `${MEDIA}: h2#subjects-h`),
-  line("media", "Notes to editors", "notes.heading", "Headline", `${MEDIA}: h2#notes-h`),
-  line("media", "For journalists", "press.heading", "Headline", `${MEDIA}: h2#press-h`),
-  para("media", "For journalists", "press.lead", "Paragraph", `${MEDIA}: p.t-lead after h2#press-h`),
+  /* Press kit. Fact rows, spellings and file captions are facts kept in the page. */
+  line("media", "Top of the page", "kit.title", "Page title (the company name)", `${MEDIA}: h1`),
+  para("media", "Top of the page", "kit.intro", "Opening paragraph under the title", `${MEDIA}: intro paragraph`),
+  para("media", "Art for download", "art.intro", "The line above the files", `${MEDIA}: art intro`),
+  line("media", "Art for download", "people.note", "The note under the list of people", `${MEDIA}: People row note`),
+  para("media", "Press route", "press.lead", "The Enquiries paragraph", `${MEDIA}: Enquiries row`),
 
-  /* Shop */
-  ...hero("shop", SHOP, { sub: true, aside: true }),
-  line("shop", "How buying works", "refuse.heading", "Headline", `${SHOP}: h2#refuse-h`),
-  para("shop", "How buying works", "refuse.lead", "Paragraph", `${SHOP}: p.t-lead after h2#refuse-h`),
-  line("shop", "The download", "terms.heading", "Headline", `${SHOP}: h2#terms-h`),
-  line("shop", "Free things", "free.heading", "Headline", `${SHOP}: h2#free-h`),
-  para("shop", "Free things", "free.lead", "Paragraph", `${SHOP}: p.t-lead after h2#free-h`),
+  /* Shop: the catalogue, the product page and the download page. */
+  line("shop", "The shelf", "shelf.label", "Small label above the shop headline", `${SHOP}: mono label`),
+  line("shop", "The shelf", "shelf.title", "Shop headline", `${SHOP}: h1`),
+  para("shop", "The shelf", "credit.lead", "One sentence under the shelf saying what the packs are", `${SHOP}: credit line`),
+  para("shop", "How buying works", "terms.line", "How buying works, the short strip under the shelf", `${SHOP}: terms strip`),
+  line("shop", "How buying works", "terms.toggle", "Wording on the open and close control under the buying strip", `${SHOP}: terms toggle`),
+  line("shop", "When nothing shows", "empty.line", "Message shown when nothing is on sale", `${SHOP}: empty state`),
+  line("shop", "When nothing shows", "failed.lead", "First line shown when the shop cannot load", `${SHOP}: failed state`),
+  line("shop", "When nothing shows", "failed.line", "Second line shown when the shop cannot load", `${SHOP}: failed state`),
+  para("shop", "Closing", "close.line", "Closing sentence at the foot of the shop", `${SHOP}: ClosingLine`),
+  line("shop", "Closing", "close.show", "Closing link to the show's free activities", `${SHOP}: ClosingLine link`),
+  line("shop", "Product page", "product.samples.heading", "Heading over the three sample pages", "src/pages/ShopProduct.tsx: samples heading"),
+  line("shop", "Product page", "product.samples.credit", "Illustrator credit under the sample pages", "src/pages/ShopProduct.tsx: samples credit"),
+  line("shop", "Product page", "product.shelf.link", "Link back to the shelf", "src/pages/ShopProduct.tsx: shelf link"),
+  para("shop", "Product page", "product.free.line", "Sentence about free activities", "src/pages/ShopProduct.tsx: free line"),
+  para("shop", "Product page", "product.docket.foot", "Note under the purchase terms about saving the file", "src/pages/ShopProduct.tsx: docket foot"),
+  line("shop", "Product page", "product.wrong.line", "What to do if a download goes wrong", "src/pages/ShopProduct.tsx: wrong line"),
+  line("shop", "Download page", "download.close.line", "Closing sentence", "src/pages/Download.tsx: closing line"),
+  line("shop", "Download page", "download.close.link", "Closing link to the show's site", "src/pages/Download.tsx: closing link"),
 
-  /* Get in touch */
-  ...hero("contact", CONTACT, { eyebrow: true, sub: true, aside: true }),
-  line("contact", "Who reads it", "readers.heading", "Headline", `${CONTACT}: h2 "Who reads what you send"`),
-  line("contact", "Other pages", "else.heading", "Headline", `${CONTACT}: h2#else-h`),
+  /* Get in touch: the form. Form controls and route blurbs are not editable. */
+  line("contact", "Top of the page", "title", "Page title", `${CONTACT}: h1`),
+  para("contact", "Top of the page", "lead", "Sentence beside the title, who the page is for", `${CONTACT}: p.t-lead`),
+  line("contact", "Who reads it", "readers.heading", "Heading over the five readers", `${CONTACT}: readers h2`),
+  para("contact", "Who reads it", "readers.note", "Line under the five readers", `${CONTACT}: readers note`, { required: false }),
+  line("contact", "Answered elsewhere", "else.heading", "Heading over the other-pages list", `${CONTACT}: h2#else-h`),
+  line("contact", "Answered elsewhere", "else.line", "Small line beside that heading", `${CONTACT}: line beside h2#else-h`, { required: false }),
 
   /* Legal. Whole sections, so a solicitor's correction is one edit. */
   ...legal("privacy", ["Who we are", "What we collect", "Why we collect it", "Legal basis", "Who we share it with", "How long we keep it", "Your rights", "Changes to this policy"]),
@@ -246,8 +313,10 @@ export const BLOCKS: BlockDef[] = [
   ...legal("cookies", ["What we use", "Payments", "Analytics", "Managing cookies"]),
 
   /* Page not found */
-  ...hero("404", NF, { sub: true, aside: true }),
-  line("404", "Where to go", "routes.heading", "Headline", `${NF}: h2#nf-routes-h`),
+  line("404", "Top of the page", "hero.eyebrow_sub", "Status line after '404 ·' at the top", `${NF}: status line`),
+  line("404", "Top of the page", "hero.title", "Headline", `${NF}: h1`),
+  line("404", "Top of the page", "routes.heading", "First sentence of the paragraph under the headline", `${NF}: lead paragraph`),
+  line("404", "Top of the page", "hero.aside", "Second sentence of the paragraph under the headline", `${NF}: lead paragraph`),
 ];
 
 /* ─── Where each page's COPY lives ───────────────────────────────────────

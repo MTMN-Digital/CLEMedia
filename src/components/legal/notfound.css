@@ -1,0 +1,71 @@
+/* ============================================================================
+   404: the notice's grid and the paw trail.
+
+   THE GRID. The notice has three pieces: the title block, the reel and the
+   routes back. On a phone they stack in that order, so the missing frame is
+   on the first screen with the headline; at `lg` the routes move up beside
+   the title and the reel runs under both. The reel is full bleed, so the
+   grid cannot live inside the container: instead the grid is the full width
+   of the page and its text columns are padded by the same gutter the
+   container uses, which `.filmstrip-root` already computes from 100%. The
+   gutter tracks are grid columns, so the percentage resolves against the
+   grid itself and the reel child (spanning every column) sees the full
+   width, exactly as it would under a Section.
+
+   THE TRAIL. The nine paws in the missing frame appear one after another,
+   left to right, 70ms apart, each over 400ms on the house curve, each to its
+   own opacity (set per paw as --o, 0.46 falling to 0.12), so the reader
+   watches the animal leave the frame. It waits for the type and the list to
+   settle first. CSS only, keyed by --i, so the QA sweep can zero the
+   durations and reduced motion shows the trail simply there.
+   ========================================================================== */
+
+.doc404-grid {
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, 1fr) var(--gutter);
+  row-gap: 2.5rem;
+}
+
+.doc404-title,
+.doc404-routes {
+  grid-column: 2;
+}
+
+.doc404-reel {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 64rem) {
+  .doc404-grid {
+    grid-template-columns: var(--gutter) minmax(0, 0.7fr) 5rem minmax(0, 1fr) var(--gutter);
+    row-gap: 4rem;
+  }
+  .doc404-title {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .doc404-routes {
+    grid-column: 4;
+    grid-row: 1;
+  }
+  .doc404-reel {
+    grid-row: 2;
+  }
+}
+
+@keyframes doc404-paw {
+  from {
+    opacity: 0;
+  }
+}
+
+.doc404-paw {
+  opacity: var(--o);
+  animation: doc404-paw 400ms cubic-bezier(0.22, 1, 0.36, 1) calc(520ms + var(--i, 0) * 70ms) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc404-paw {
+    animation: none;
+  }
+}

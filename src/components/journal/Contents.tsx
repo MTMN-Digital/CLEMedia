@@ -1,25 +1,26 @@
 import { Settle } from "@/components/Settle";
 import type { Strand } from "@/components/journal/data";
+import "./journal.css";
 
 /* ============================================================================
-   The contents, as a ruled index.
+   The contents: four strands as a ruled list with dotted leaders.
 
-   WHAT THIS REPLACED, 2026-10-27. Four strands as four tabbed cards laid on
-   the bench, each with its own lean, its own tab position and its own depth
-   off the surface, and every tab saying "in preparation". Four matched cards
-   with the same status is the same stutter four times, and a staged object
-   is the wrong register for a contents list: a journal's contents is a
-   column of rules, not a desk.
+   REBUILT 2026-10-28 from the bench index. The same four rows now sit on
+   bare paper: the strand's name on the left, a dotted leader, and the honest
+   answer to what is in it on the right, the way a printed contents runs a
+   name to a page number. Under each, what the strand is for, word for word
+   from data.ts or the admin panel's override.
 
-   SO: one object, four rows, on the bench. The strand's name large on the
-   left, what it is for in the middle, and the honest answer to what is in it
-   as a mono label on the right. The label is INSIDE the object, which is the
-   one place a mono label still lives on this site. Every description is the
-   written one from data.ts, word for word, or the admin panel's if Conor has
-   written his own.
+   The leader is this page's signature (docs/SUBPAGE-PLANS-2026-10-28.md,
+   journal section 5). It draws itself from the name to the status as each
+   row settles, and reduced motion shows it finished. The list is its own
+   Settle so the draw happens when the list enters, not on page load.
 
-   THE ORDINALS STAY GONE. `01 / THE RESEARCH` above a strand is the numbered
-   mono eyebrow the house retired, and the strands have no order anyway.
+   The names are h2s: on the index they follow the h1 directly, and on a
+   missing post they follow that page's h1, so a level is never skipped.
+
+   No note above the list, no heading reading the list out, no icons: four
+   strand icons on a journal with no posts would be the tell.
    ========================================================================== */
 
 export interface ContentsRow extends Strand {
@@ -29,34 +30,23 @@ export interface ContentsRow extends Strand {
 
 export function Contents({ rows }: { rows: ContentsRow[] }) {
   return (
-    <div>
-      {/* What the right hand column is. A short line in the object's own
-          corner rather than a lead under the heading. */}
-      <p className="t-sm ml-auto mb-4 max-w-[44ch] text-right opacity-85">
-        The status beside each one is the honest answer to what is in it.
-      </p>
-      <Settle as="ol" className="border-t-[1.5px] border-edge-dark">
-        {rows.map((row) => {
-          const status =
-            row.count > 0 ? `${row.count} ${row.count === 1 ? "piece" : "pieces"}` : "In preparation";
-          return (
-            <li
-              key={row.slug}
-              className="grid gap-x-10 gap-y-3 border-b-[1.5px] border-edge-dark py-7 sm:py-9 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)_minmax(9rem,auto)] lg:items-baseline"
-            >
-              <h3 className="t-h3 max-w-[14ch]">{row.name}</h3>
-              {row.blurb ? (
-                <p className="t-body max-w-[54ch] opacity-85">{row.blurb}</p>
-              ) : (
-                <span className="hidden lg:block" aria-hidden="true" />
-              )}
-              <p className="tnum font-mono text-[13px] uppercase tracking-[0.14em] lg:text-right">
+    <Settle as="ol" className="border-t-[1.5px] border-rule">
+      {rows.map((row) => {
+        const status =
+          row.count > 0 ? `${row.count} ${row.count === 1 ? "piece" : "pieces"}` : "In preparation";
+        return (
+          <li key={row.slug} className="border-b-[1.5px] border-rule py-7 lg:py-9">
+            <div className="jr-row">
+              <h2 className="t-h3 text-ink">{row.name}</h2>
+              <span className="leader" aria-hidden="true" />
+              <p className="tnum font-mono text-[13px] uppercase tracking-[0.14em] text-muted sm:text-[14px]">
                 {status}
               </p>
-            </li>
-          );
-        })}
-      </Settle>
-    </div>
+            </div>
+            {row.blurb && <p className="t-body mt-3 max-w-[54ch] text-body">{row.blurb}</p>}
+          </li>
+        );
+      })}
+    </Settle>
   );
 }

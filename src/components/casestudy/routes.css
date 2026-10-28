@@ -16,16 +16,40 @@
   display: grid;
   gap: 0.85rem;
 }
-/* The two that are a choice sit in from the two that are not. */
-.routes__list-branch { padding-left: 1.1rem; position: relative; }
+/* The two that are a choice sit in from the two that are not, and each
+   carries a marker: a hollow ring, filled with the accent when it is the
+   route chosen by the chips above the list. */
+.routes__list-branch { padding-left: 1.25rem; position: relative; }
 .routes__list-branch::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.55em;
-  width: 0.7rem;
-  border-top: 1.5px solid var(--color-rule);
+  top: 0.3em;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-rule);
+  background: transparent;
+  transition: background-color 240ms var(--ease-out), border-color 240ms var(--ease-out);
 }
+.routes__list-branch--on::before {
+  background: var(--color-red);
+  border-color: var(--color-red);
+}
+.routes__list-branch .ink-label { transition: color 240ms var(--ease-out); }
+.routes__list-branch--on .ink-label { color: var(--color-ink); }
+
+/* ─── The switch ──────────────────────────────────────────────────────────
+   The chosen branch's two paths take a heavier stroke, the other branch
+   thins (`.ink-thin` from the kit, 1.4 at 0.55), and the chosen mid node
+   swaps its paper fill for the accent fill. 240ms on each, nothing else.
+   The draw animation only touches the dash offset, so the stroke width and
+   the fill can transition under it without the two fighting. */
+.routes__art path {
+  transition: stroke-width 240ms var(--ease-out), opacity 240ms var(--ease-out);
+}
+.routes__art .routes__path--on { stroke-width: 2.6; opacity: 1; }
+.routes__art .routes__node { transition: fill 240ms var(--ease-out); }
 
 @media (min-width: 640px) {
   .routes__list { display: none; }
@@ -70,4 +94,13 @@
     white-space: normal;
     line-height: 1.45;
   }
+}
+
+/* Asked for stillness: the switch swaps state at once. The draw itself
+   collapses under the kit's own rule in draw.css. */
+@media (prefers-reduced-motion: reduce) {
+  .routes__art path,
+  .routes__art .routes__node,
+  .routes__list-branch::before,
+  .routes__list-branch .ink-label { transition: none; }
 }

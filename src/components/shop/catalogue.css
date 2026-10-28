@@ -1,0 +1,151 @@
+/* ─── The catalogue, /shop and /shop/:slug ───────────────────────────────
+   Page-local rules for the shelf and the sample pages. Everything else the
+   shop renders is the house kit (Section, Container, Settle, Stage, Docket,
+   DisclosurePanel) and Tailwind utilities on the tokens in index.css.
+
+   THE SHELF. A ul of covers at the true A4 landscape proportion, three
+   across from 1100, two from 900, one below. Each item is one link wrapping
+   the cover and a two-line tag. No box, no radius over 2px, no hover lift:
+   the cover is the whole item and the tag is two lines of type.
+
+   THE SAMPLE PAGES. Three real pages in one row at one height: two landscape
+   pages and the portrait booklet page, so the grid is 2 : 2 : 1. Under 640px
+   the row becomes a scroll-snap row, each page 78% of the column, which is a
+   row the reader moves and not a carousel: nothing advances on its own.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* No margin or padding set here: the preflight already zeroes a ul, and an
+   unlayered rule would beat the page's spacing utilities. */
+.cat-shelf {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 40px;
+  row-gap: 40px;
+  list-style: none;
+}
+@media (min-width: 900px) {
+  .cat-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 56px;
+  }
+}
+@media (min-width: 1100px) {
+  .cat-shelf {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.cat-item {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.cat-item:focus-visible {
+  outline: 2px solid var(--color-raised);
+  outline-offset: 6px;
+}
+
+/* The cover. A4 landscape, 1.414 : 1, the file's own proportion. */
+.cat-cover {
+  display: block;
+  aspect-ratio: 1.414 / 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-paper-3);
+}
+.cat-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The tag: title, then price and the book count. Cream on the bench is set
+   by .bench; the tag only sets size and weight. */
+.cat-tag {
+  display: block;
+  margin-top: 14px;
+}
+.cat-tag-title {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.cat-tag-meta {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.cat-item:hover .cat-tag-title,
+.cat-item:focus-visible .cat-tag-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
+}
+
+/* While the catalogue answers: six empty slots, no text. */
+.cat-slot {
+  aspect-ratio: 1.414 / 1;
+  width: 100%;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-paper-3) 40%, transparent);
+}
+
+/* ─── Sample pages, /shop/:slug ─────────────────────────────────────── */
+.cat-samples {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 8px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.cat-samples > li {
+  flex: 0 0 78%;
+  scroll-snap-align: start;
+}
+/* The booklet page is portrait. In the snap row it takes a narrower slot so
+   it stands at about the height of the two landscape pages beside it, and
+   the row is not a page taller than its captions. */
+.cat-samples > li:last-child {
+  flex-basis: 56%;
+}
+@media (min-width: 640px) {
+  .cat-samples {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 28px;
+    overflow: visible;
+    scroll-snap-type: none;
+    align-items: start;
+  }
+  .cat-samples > li,
+  .cat-samples > li:last-child {
+    flex: none;
+  }
+}
+.cat-page {
+  display: block;
+  width: 100%;
+  border: 1.5px solid var(--color-rule);
+  background: var(--color-paper-1);
+}
+.cat-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-samples {
+    scroll-behavior: auto;
+  }
+}

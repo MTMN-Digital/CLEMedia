@@ -1,8 +1,10 @@
-import { type KeyboardEvent, useRef, useId, useState } from "react";
+import { type ReactNode, type CSSProperties, useId, type KeyboardEvent, useState, useRef } from "react";
+import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { IconLock, IconCheck } from "@/components/icons";
-import { LOGOS } from "@/lib/brand";
+import { PupsMark } from "@/components/app/PupsMark";
 import { type Episode, COMING_SOON } from "@/lib/episodes";
+import type { ImageOverride } from "@/lib/content";
 
 /* ============================================================================
    The drawn product.
@@ -78,30 +80,6 @@ const T = {
   button: "text-[length:max(13px,0.78em)]",
 };
 
-/* The PupsPlayer mark is a flat single-colour SVG filled with currentColor, so
-   it is applied as a mask over the current text colour rather than loaded as
-   an image, which would render it black. */
-function PupsMark({ className = "" }: { className?: string }) {
-  if (!LOGOS.pupsPlayer) return null;
-  const url = `url(${LOGOS.pupsPlayer})`;
-  return (
-    <span
-      aria-hidden="true"
-      className={`inline-block bg-current ${className}`}
-      style={{
-        WebkitMaskImage: url,
-        maskImage: url,
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        WebkitMaskPosition: "center",
-        maskPosition: "center",
-      }}
-    />
-  );
-}
-
 /* The app's own header. The grown-ups pill is the one claim the plan makes
    about control: a child can find their way around and cannot accidentally
    find their way out. */
@@ -111,7 +89,10 @@ function TopBar() {
       <PupsMark className="h-[max(16px,1.9em)] w-[max(16px,1.9em)] text-navy" />
       <span className={`${T.name} font-bold leading-none text-ink`}>PupsPlayer</span>
       <span
-        className={`${T.label} ml-auto inline-flex items-center gap-[0.45em] rounded-full border-[1.5px] border-rule px-[0.9em] py-[0.45em] font-mono uppercase leading-none tracking-[0.12em] text-body`}
+        /* A soft rectangle, not a pill: on a fully rounded border the lines
+           sweep samples the apex of the curve and reads the ground, so the
+           1.5px rule it does carry was reported as invisible. */
+        className={`${T.label} ml-auto inline-flex items-center gap-[0.45em] rounded-[0.55em] border-[1.5px] border-edge px-[0.9em] py-[0.45em] font-mono uppercase leading-none tracking-[0.12em] text-body`}
       >
         <IconLock className="h-[1.1em] w-[1.1em]" />
         Grown-ups
@@ -322,11 +303,43 @@ function LearnScreen({ episode }: { episode: AppEpisode }) {
 /* ---------------------------------------------------------------------------
    The device and the tablist that drives it.
 --------------------------------------------------------------------------- */
-export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) {
+/* The product sheet's opening (2026-10-28). The walkthrough now lays out the
+   whole first screen, because the page's title block and the three stage tabs
+   share one column beside the device and only one grid can centre them on it:
+
+     lead (mark, name, descriptor)   |  the device
+     the tablist                     |  (spans both rows)
+                                     |  the credit
+
+   `lead` is the title block; `credit` is the page's "Drawn from the plan, not
+   a screenshot" line, right aligned under the device. On a phone the order is
+   lead, device, tabs, the active stage line, credit: the object before the
+   facts, and a caption describing the selected tab AFTER the control.
+
+   `capture`: the admin's `device.capture` image slot. The day a real
+   screenshot exists it shows in the frame in place of the drawn screens, the
+   tabs become a plain list (there is nothing for them to drive) and the page
+   drops the credit in the same render. Until then it is null and the drawn
+   screens stand. */
+export function PupsPlayerWalkthrough({
+  episodes,
+  lead,
+  credit,
+  after,
+  capture = null,
+}: {
+  episodes: AppEpisode[];
+  lead?: ReactNode;
+  credit?: ReactNode;
+  /** Rows under the whole opening, full width: the sheet's status rows. */
+  after?: ReactNode;
+  capture?: ImageOverride | null;
+}) {
   const [stage, setStage] = useState<Stage>("watch");
   const base = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const first = episodes[0];
+  const interactive = !capture;
 
   const move = (e: KeyboardEvent<HTMLDivElement>) => {
     const i = STAGES.findIndex((s) => s.id === stage);
@@ -343,62 +356,75 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
 
   const current = STAGES.find((s) => s.id === stage) ?? STAGES[0];
 
-  return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,1fr)] lg:items-center lg:gap-14">
-      {/* The three stages. Vertical beside the device on desktop, a row of
-          three beneath it on a phone. Only the titles are shown in the row;
-          the active stage's line follows the device as a caption instead. */}
-      <div
-        role="tablist"
-        aria-label="The three stages of the model"
-        onKeyDown={move}
-        className="order-2 grid grid-cols-3 gap-x-3 lg:order-1 lg:grid-cols-1 lg:gap-0"
+  /* The three stages: one row each, a red dot, the title, and at lg the stage
+     line under the active one. Inactive stages run at --color-body on paper. */
+  const stageRow = (s: (typeof STAGES)[number], i: number) => {
+    const on = s.id === stage;
+    const cls = `hairline group block w-full py-4 text-left transition-colors duration-300 lg:py-5 ${
+      on ? "text-ink" : "text-body hover:text-ink"
+    }`;
+    const inner = (
+      <>
+        <span className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className={`h-2.5 w-2.5 shrink-0 rounded-full border-[1.5px] border-red transition-colors duration-300 ${
+              on ? "bg-red" : "bg-transparent"
+            }`}
+          />
+          <span id={`${base}-title-${s.id}`} className="t-h3 font-bold">{s.title}</span>
+        </span>
+        {/* The stage line under the active tab only, at lg; the other two
+            are a title and a dot, so the column stays shorter than the
+            device it is centred on. On a phone the line is the caption. */}
+        {on && <span className="t-sm mt-2.5 hidden leading-relaxed text-ink lg:block">{s.line}</span>}
+      </>
+    );
+    if (!interactive) return <div key={s.id} className={cls}>{inner}</div>;
+    return (
+      <button
+        key={s.id}
+        ref={(el) => { tabs.current[i] = el; }}
+        type="button"
+        role="tab"
+        id={`${base}-tab-${s.id}`}
+        aria-selected={on}
+        aria-labelledby={`${base}-title-${s.id}`}
+        aria-controls={`${base}-panel`}
+        tabIndex={on ? 0 : -1}
+        onClick={() => setStage(s.id)}
+        className={cls}
       >
-        {/* Inactive stages run at --color-body, not --color-muted. The device
-            now stands on the `.wall` ground, where muted measures 4.44:1 and
-            fails AA; body is 6.7:1 on the same fill. */}
-        {STAGES.map((s, i) => {
-          const on = s.id === stage;
-          return (
-            <button
-              key={s.id}
-              ref={(el) => { tabs.current[i] = el; }}
-              type="button"
-              role="tab"
-              id={`${base}-tab-${s.id}`}
-              aria-selected={on}
-              aria-labelledby={`${base}-title-${s.id}`}
-              aria-controls={`${base}-panel`}
-              tabIndex={on ? 0 : -1}
-              onClick={() => setStage(s.id)}
-              className={`hairline group block w-full py-4 text-left transition-colors duration-300 lg:py-6 ${
-                on ? "text-ink" : "text-body hover:text-ink"
-              }`}
-            >
-              <span className="flex items-center gap-3">
-                <span
-                  aria-hidden="true"
-                  className={`h-2.5 w-2.5 shrink-0 rounded-full border-[1.5px] border-red transition-colors duration-300 ${
-                    on ? "bg-red" : "bg-transparent"
-                  }`}
-                />
-                <span id={`${base}-title-${s.id}`} className="t-h3 font-bold">{s.title}</span>
-              </span>
-              <span className={`t-sm mt-2.5 hidden leading-relaxed lg:block ${on ? "text-ink" : "text-body"}`}>
-                {s.line}
-              </span>
-            </button>
-          );
-        })}
+        {inner}
+      </button>
+    );
+  };
+
+  /* The one entrance. Settle staggers its direct children by their `--i`:
+     the device settles first, the title block and tabs 120ms behind it, the
+     status rows 120ms behind that. Reduced motion renders all of it settled. */
+  const order = (i: number) => ({ "--i": String(i) } as CSSProperties);
+
+  return (
+    <Settle className="grid gap-x-14 gap-y-8 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto]">
+      {lead && <div style={order(2)} className="order-1 lg:col-start-1 lg:row-start-1 lg:self-end">{lead}</div>}
+
+      {/* The three stages. Under the title block beside the device on desktop,
+          a row of three beneath the device on a phone. Only the titles are
+          shown in the row; the active stage's line follows as a caption. */}
+      <div
+        {...(interactive ? { role: "tablist", "aria-label": "The three stages of the model", onKeyDown: move } : {})}
+        style={order(2)}
+        className="order-3 grid grid-cols-3 gap-x-3 lg:col-start-1 lg:row-start-2 lg:grid-cols-1 lg:gap-0 lg:self-start"
+      >
+        {STAGES.map(stageRow)}
       </div>
 
-      <div className="order-1 lg:order-2">
+      <div style={order(0)} className="order-2 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:self-center">
         <div className="@container">
           <div
-            id={`${base}-panel`}
-            role="tabpanel"
-            aria-labelledby={`${base}-tab-${stage}`}
-            className="mx-auto w-full text-[length:clamp(7px,2.6cqw,16px)] @md:text-[length:clamp(7px,2.1cqw,16px)]"
+            {...(interactive ? { id: `${base}-panel`, role: "tabpanel", "aria-labelledby": `${base}-tab-${stage}` } : {})}
+            className="mx-auto w-full max-w-[880px] text-[length:clamp(7px,2.6cqw,16px)] @md:text-[length:clamp(7px,2.1cqw,16px)]"
           >
             {/* The frame: a dark bezel on the tablet, a drawn camera, and the
                 screen as the lightest paper stop so it reads as lit. */}
@@ -407,50 +433,78 @@ export function PupsPlayerWalkthrough({ episodes }: { episodes: AppEpisode[] }) 
                 aria-hidden="true"
                 className="absolute left-1/2 top-[0.35em] hidden h-[0.28em] w-[0.28em] -translate-x-1/2 rounded-full bg-raised/35 @md:block"
               />
-              {/* 16/10 in landscape, not 4/3. On a 1440 screen the device is
-                  close to a metre of band and at 4/3 its own content floated
-                  in the middle of 740px of empty screen, which made the one
-                  object the page is built around look thin. 16/10 is a real
-                  tablet ratio and takes 120px of air out of the interior. */}
+              {/* 7/10 in portrait, 16/10 in landscape: real tablet ratios, and
+                  the portrait one gives the floored type the height it needs. */}
               <div className="relative aspect-[7/10] overflow-hidden rounded-[1.6em] bg-paper-1 @md:aspect-[16/10]">
-                {STAGES.map((s) => {
-                  const on = s.id === stage;
-                  return (
-                    <div
-                      key={s.id}
-                      aria-hidden={!on}
-                      /* inert takes an inactive screen out of the tab order and
-                         the accessibility tree. React 18 only forwards it as a
-                         string attribute, hence the spread. */
-                      {...(on ? {} : { inert: "" })}
-                      className={`absolute inset-0 flex flex-col p-[1.5em] transition-opacity duration-700 ease-[var(--ease-out)] ${
-                        on ? "opacity-100" : "pointer-events-none opacity-0"
-                      }`}
-                    >
-                      {s.id === "watch" && <WatchScreen episodes={episodes} />}
-                      {s.id === "play" && <PlayScreen episode={first} />}
-                      {s.id === "learn" && <LearnScreen episode={first} />}
-                    </div>
-                  );
-                })}
+                {capture ? (
+                  <img
+                    src={capture.url}
+                    alt={capture.alt}
+                    width={1600}
+                    height={1000}
+                    loading="eager"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  STAGES.map((s) => {
+                    const on = s.id === stage;
+                    return (
+                      <div
+                        key={s.id}
+                        aria-hidden={!on}
+                        /* inert takes an inactive screen out of the tab order and
+                           the accessibility tree. React 18 only forwards it as a
+                           string attribute, hence the spread. */
+                        {...(on ? {} : { inert: "" })}
+                        /* `invisible` as well as opacity 0: an inactive screen
+                           is out of the paint as well as out of the tree, and
+                           visibility transitions at the end of the fade out
+                           and the start of the fade in, so the crossfade is
+                           unchanged. */
+                        className={`absolute inset-0 flex flex-col p-[1.5em] transition-[opacity,visibility] duration-700 ease-[var(--ease-out)] ${
+                          on ? "visible opacity-100" : "pointer-events-none invisible opacity-0"
+                        }`}
+                      >
+                        {s.id === "watch" && <WatchScreen episodes={episodes} />}
+                        {s.id === "play" && <PlayScreen episode={first} />}
+                        {s.id === "learn" && <LearnScreen episode={first} />}
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
         </div>
-        {/* The "drawn from the plan, not a screenshot" line is the page's,
-            not this component's: AppPage sets it under the device as a small
-            right aligned mono credit, the way every rendered picture on the
-            site is credited, rather than as a label floating at the far edge
-            of the band. */}
+        {/* The credit, right aligned under the device, in the device's own
+            cell so it follows the device wherever the grid centres it. On a
+            phone it is hidden here and printed after the stage line instead,
+            so a caption describing the selected tab comes before it. */}
+        {credit && <div className="mx-auto mt-5 hidden w-full max-w-[880px] lg:block">{credit}</div>}
       </div>
 
       {/* On a phone the stage line lives here, because three short titles in a
-          row leave no room for it beside them. order-3 and not inside the
+          row leave no room for it beside them. After the tabs, not inside the
           device column: a caption describing the selected tab has to come
-          AFTER the tabs, or a reader meets the answer before the control. */}
-      <p className="order-3 t-body text-body lg:hidden" aria-live="polite">
-        {current.line}
-      </p>
-    </div>
+          AFTER the control, or a reader meets the answer before it. */}
+      {interactive && (
+        <p style={order(3)} className="order-4 t-body text-body lg:hidden" aria-live="polite">
+          {current.line}
+        </p>
+      )}
+
+      {credit && (
+        <div style={order(3)} className="order-5 lg:hidden">
+          {credit}
+        </div>
+      )}
+
+      {after && (
+        <div style={order(4)} className="order-6 mt-4 lg:col-span-2 lg:col-start-1 lg:row-start-3 lg:mt-8">
+          {after}
+        </div>
+      )}
+    </Settle>
   );
 }

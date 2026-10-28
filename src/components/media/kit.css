@@ -1,0 +1,43 @@
+/* The press kit's own rules. Everything else on /media is the shared type
+   scale and the shared tokens. */
+
+/* A file on the contact sheet: on approach the box's rule firms up and the
+   item lifts 2px. No scale, no shadow. The resting rule is the edge token:
+   the soft rule measured 2.02:1 on this paper and the plain rule 2.68:1 in
+   lines.mjs, both under the 3:1 floor; the edge measures above it. */
+.kit-thumb {
+  transition: transform 0.35s var(--ease-out);
+}
+.kit-thumb > span:first-child {
+  transition: border-color 0.35s var(--ease-out);
+}
+.kit-thumb:hover,
+.kit-thumb:focus-visible {
+  transform: translateY(-2px);
+}
+.kit-thumb:hover > span:first-child,
+.kit-thumb:focus-visible > span:first-child {
+  border-color: var(--color-muted);
+}
+.kit-thumb:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 4px;
+}
+
+/* The copy control's underline is the house link rule; the control itself
+   needs a visible ring for a keyboard. */
+.kit-copy:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-thumb,
+  .kit-thumb > span:first-child {
+    transition: none;
+  }
+  .kit-thumb:hover,
+  .kit-thumb:focus-visible {
+    transform: none;
+  }
+}

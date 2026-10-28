@@ -1,3 +1,5 @@
+import { STUDY_OPEN } from "@/components/casestudy/config";
+
 /** Single source of truth for cross-site links and company details. */
 /**
  * `??` only falls back on null/undefined, so an env var that is present but
@@ -58,7 +60,11 @@ export const NAV = [
       { to: "/story", label: "Our story" },
       { to: "/team", label: "Our team" },
       { to: "/ethical-ai", label: "Responsible AI" },
-      { to: "/case-study", label: "Case study" },
+      /* Out of the menu until the study opens (subpage plan, 2026-10-28):
+         an investor opening About first should not land on a page that is
+         mostly "not yet". The footer keeps the link. Flip STUDY_OPEN in
+         components/casestudy/config.ts and it comes back here. */
+      ...(STUDY_OPEN ? [{ to: "/case-study", label: "Case study" }] : []),
     ],
   },
   { to: "/journal", label: "Journal" },
@@ -102,9 +108,9 @@ export const FOOTER_GROUPS = [
   {
     title: "Work with us",
     links: [
-      { to: "/contact", label: "Broadcasters" },
-      { to: "/contact", label: "Schools" },
-      { to: "/media", label: "Press" },
+      { to: "/contact?route=partnership", label: "Broadcasters" },
+      { to: "/contact?route=educator", label: "Schools" },
+      { to: "/media", label: "Press kit" },
     ],
   },
 ] as const;

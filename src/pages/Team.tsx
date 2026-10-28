@@ -1,216 +1,150 @@
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
-import { Wipe } from "@/components/Wipe";
-import { Button, Container, Section } from "@/components/ui";
-import { IconArrow } from "@/components/icons";
+import { ClosingLine } from "@/components/ClosingLine";
+import { Container, Section, TextLink } from "@/components/ui";
 import { PHASES } from "@/components/team/people";
 import { useTeam } from "@/components/team/useTeam";
-import { StageSequence } from "@/components/team/StageSequence";
-import { Roster } from "@/components/team/Roster";
-import { PeopleStrip } from "@/components/team/PeopleStrip";
 import { useBlock } from "@/lib/content";
 import { COPY } from "@/components/teampage/copy";
-import "@/components/teampage/bench.css";
+import { Faces } from "@/components/teampage/Faces";
+import { Register } from "@/components/teampage/Register";
 
 /* ============================================================================
-   Team and advisers.
+   Team and advisers: a register.
 
-   The site's argument is "the same people read everything". This is the page where that
-   has to be visible rather than asserted.
+   REBUILT 2026-10-28 (docs/SUBPAGE-PLANS-2026-10-28.md, "## team"). The page
+   is a credits page: the faces are the first screen at the scale of a
+   magazine masthead, and under them one ruled register in which every person
+   has a name, a role, what they do here in one paragraph, and a roll call of
+   the five phases showing which ones they are in. Reading down the phase
+   column tells the whole production story without a diagram.
 
-   REBUILT 2026-10-06 ON ONE STRUCTURE. The page used to be two: a band at the
-   top showing six review stages on a track with the answerable person's face
-   sitting at each, and a ledger below listing the same six people with the same
-   six stage marks against their names. Both were good; together they said one
-   thing twice, and the reader had to carry the first half in their head to use
-   the second. The track is gone, the stages are the COLUMNS of the ledger, and
-   the answer to "who answers for what" is now one grid read in one move.
+   WHAT CAME OFF. The corner grid on the bench (identifier, aside, a claim
+   headline at the hero's size), the per-print lean on the portraits, the
+   sideways scroll strip on a phone, the lit review board of five slips (the
+   five-phase sequence now has two renderings on the site, the home strip and
+   the Responsible AI drawing, and this page carries the per-person key
+   instead), the display claim over the biographies, the dots on a track, and
+   the navy closing band with its two buttons. Every fact survives: the phase
+   names are in the key line, the five phase sentences are the Responsible AI
+   page's, and nothing in any biography is cut.
 
-   THE PAGE IS THEREFORE THREE MOVEMENTS, NOT FOUR. The separate adviser card
-   went into the roster as a row under a rule, with the statement that the
-   sequence does not apply to him in place of his stages, which says "outside
-   the process" harder than a card on a different axis ever did and takes a
-   quarter of the height. Nothing was cut: every biography, every stage
-   sentence and the adviser's whole entry are still on the page.
+   The title is a label, not a sentence making a case. The home page argues;
+   this page lists.
 
-   THE SHAPE, with the text blurred out, 2026-10-09: a bench band of type
-   ending on the faces, then a lit room with six slips standing on two shelves,
-   then a wide ruled roster with a column of portraits down its left edge, then
-   a navy close. The matrix that paragraph used to describe was replaced twice
-   over; see StageSequence.tsx for both attempts and why this is the third.
-   Nothing else on this site looks like it, and in particular it is the
-   opposite of /story, which is one measure with a mono margin and no grid at
-   all.
-
-   IN THE HERO'S LANGUAGE, 2026-10-27. The home hero was signed off and every
-   inner page now opens in its corners. /team keeps its bench (the dark ground
-   is what makes the mismatched portraits sit together, see HANDOVER), so the
-   corners come to the bench instead of a picture: identifier top left, one
-   line top right, the headline bottom left at the hero's size, its sentence
-   under it, and the band still ends on the faces. The two grey blocks that
-   used to sit under the heading went where they were actually talking: the
-   note about the phases is above the board it describes.
-
-   There is no group photograph (team.group is null), so the opening is made
-   from type and the deeper ground alone. The people, bios and stages live in
-   src/components/team/people.ts, all of it the client's own account from the
-   2026-10-01 handoff.
+   The people, bios and phases live in src/components/team/people.ts, all of
+   it the client's own account, and arrive through useTeam() so rows saved in
+   the admin's Team panel replace the bundled lists once they load.
    ========================================================================== */
 
 export default function Team() {
-  /* The people come through useTeam() since 2026-10-27: the bundled lists
-     render first, and rows saved in the admin's Team panel replace them once
-     they arrive. An empty table keeps the bundled lists, so nothing here
-     changes until Conor changes it. */
   const { team, advisors } = useTeam();
 
   /* EDITABLE FROM THE ADMIN. Every string below is the page's own wording
      (components/teampage/copy.ts) until a content_blocks row replaces it. */
-  const heroEyebrow = useBlock("team", "hero.eyebrow", COPY["hero.eyebrow"]);
-  const heroEyebrowSub = useBlock("team", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
-  const heroAside = useBlock("team", "hero.aside", COPY["hero.aside"]);
   const heroTitle = useBlock("team", "hero.title", COPY["hero.title"]);
   const heroLead = useBlock("team", "hero.lead", COPY["hero.lead"]);
-  const dossierHeading = useBlock("team", "dossier.heading", COPY["dossier.heading"]);
-  const peopleHeading = useBlock("team", "people.heading", COPY["people.heading"]);
-  const ctaHeading = useBlock("team", "cta.heading", COPY["cta.heading"]);
-  const ctaLead = useBlock("team", "cta.lead", COPY["cta.lead"]);
+  const registerHeading = useBlock("team", "register.heading", COPY["register.heading"]);
+  const registerLead = useBlock("team", "register.lead", COPY["register.lead"]);
+  const registerKey = useBlock("team", "register.key", COPY["register.key"]);
+  const adviserHeading = useBlock("team", "adviser.heading", COPY["adviser.heading"]);
+  const adviserLead = useBlock("team", "adviser.lead", COPY["adviser.lead"]);
+  const closeLead = useBlock("team", "close.lead", COPY["close.lead"]);
+  const closeLink = useBlock("team", "close.link", COPY["close.link"]);
 
   return (
     <>
       <Seo
         title="Team and advisers"
-        description="The people behind CLÉ Family Media: the five phases an episode goes through from first draft to release, the five who read every draft, and the core team's own biographies."
+        description="The people behind CLÉ Family Media: the core team and advisers, what each of them does on an episode, and the five phases every episode passes through, in the company's own words."
         path="/team"
       />
 
-      {/* ═══ 1. OPENING, on the bench, in the hero's corners. The one page on
-          this site whose first screen is not a picture: a deeper room, so the
-          grid that follows reads as something laid out on a table rather than
-          more of the same page. ═══ */}
-      {/* THE BENCH, not the wall. This band ends on the seven faces, and `.wall`
-          is within a few percent of the paper above it, so mounted portraits
-          with real shadows had nothing to stand out from: the shadows fell on
-          a ground the same value as the thing casting them. On the bench the
-          faces are lit.
-
-          AND IN THE GROVE, 2026-10-13. The olive is the green of the knitted
-          jumpers Finn and Fia wear in every render, which makes it the right
-          room for the people who make them: this is the one band on the site
-          where the company's own faces are the content. It is the same band in
-          a second hue, not a second band, so nothing above changes. Measured
-          equal to the umber it replaces, cream at 6.44:1 flat against 6.41 and
-          5.39:1 under the lamp against 5.38. See `.grove` in index.css. */}
-      <Section className="bench grove" pad="open" labelledBy="team-h">
+      {/* ═══ 1. THE OPENING BAND: the label, the one paragraph, the faces.
+          On the grove, the green of the knitted jumpers Finn and Fia wear in
+          every render, the one band on the site where the company's own
+          faces are the content. The dark ground is what makes eight sittings
+          taken in eight places read as one group. The band ends on the
+          second row's roles; no rule anywhere in it. ═══ */}
+      {/* `open` above, `normal` below: the plan asks for 96px under the
+          second row's roles, and 88 is the nearest step the spacing contract
+          has. */}
+      <Section className="bench grove" pad={["open", "normal"]} labelledBy="team-h">
         <Container width="wide">
-          {/* THE CORNERS, since 2026-10-27. A display heading over a five line
-              grey lead over a hairline over a second grey note was the shape
-              the client named as the site's problem, and it was the first
-              screen of this page. The eyebrow, aside and title are PageHero's
-              own classes, used as given on the bench; `.team-open` is the grid
-              they expect (components/teampage/bench.css). The ink override
-              PageHero applies under 820px lives inside `.film-hero`, so the
-              type stays cream on the bench at every width. */}
-          <Wipe>
-            <div className="team-open">
-              <p className="page-hero__eyebrow">
-                {heroEyebrow}<span>{heroEyebrowSub}</span>
-              </p>
-              <p className="page-hero__aside">{heroAside}</p>
-              <h1 id="team-h" className="page-hero__title">
-                {heroTitle}
-              </h1>
-              <p className="team-open__lead t-lead">{heroLead}</p>
-            </div>
-            {/* The band ends on the faces. It used to end on 400px of bare
-                wall, which is the "layouts are thin" complaint in one place:
-                the opening of the page about the team showed nobody. */}
-            <div className="mt-14 lg:mt-20">
-              <PeopleStrip people={[...team, ...advisors]} />
-            </div>
-          </Wipe>
-        </Container>
-      </Section>
-
-      {/* ═══ 2. THE SEQUENCE, read in order. ═══ */}
-      <Section labelledBy="dossier-h" pad="tight">
-        <Container width="wide">
-          {/* THE CLAIM IS THE HEADING, 2026-10-27. "How an episode gets made"
-              was a filing label with the real sentence parked in a grey lead
-              under it. The lead's claim is the heading now, and the line that
-              used to introduce the whole page from the bench sits where it is
-              actually talking: a small mono note at the right, directly above
-              the board it describes. No lead. */}
-          <Settle className="pb-10 lg:pb-14">
-            <h2 id="dossier-h" className="t-h2 max-w-[24ch]">
-              {dossierHeading}
-            </h2>
-            <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
-              In order, from the first draft to the finished episode. Then the same work from the
-              other side: each person, and the phases they come into. Nobody is claimed for a phase
-              the company's own account does not place them in.
-            </p>
+          {/* The masthead line: the label left, the paragraph right, aligned
+              to the baseline end. The label is the h1 in Calistoga; the
+              paragraph is the only sentence in the band. No eyebrow, no
+              sub-line, no pill pair. */}
+          {/* The right column is 34rem, which is 46ch of the lead at its own
+              21px; `46ch` on the grid would resolve at the section's 17px
+              and wrap the paragraph a line longer, pushing the second row of
+              faces under the fold at 1440 x 900. The paragraph itself keeps
+              its 46ch cap. */}
+          <Settle className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:items-end lg:gap-16">
+            <h1 id="team-h" className="t-h1">
+              {heroTitle}
+            </h1>
+            <p className="t-lead max-w-[46ch] text-raised">{heroLead}</p>
           </Settle>
-          <StageSequence phases={PHASES} />
-        </Container>
-      </Section>
 
-      {/* ═══ 3. THE PEOPLE. The same fact from the other side: what each
-          person actually does, written out, with their own biography. ═══ */}
-      <Section labelledBy="people-h" pad="tight">
-        <Container width="wide">
-          {/* A display claim, not a label: the biographies' own provenance is
-              the sentence worth stopping for, so it is the heading, a size up
-              from the board's so the two sections do not open in one shape.
-              The second half of the old lead is the provenance note at the
-              right, above the roster it qualifies. */}
-          <Settle className="pb-10 lg:pb-14">
-            <h2 id="people-h" className="t-h1 max-w-[18ch]">
-              {peopleHeading}
-            </h2>
-            <p className="ml-auto mt-10 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:mt-14">
-              Where the company's account does not place a person in a phase, nothing is claimed
-              for them there.
-            </p>
-          </Settle>
-          <Roster people={team} phases={PHASES} />
-          <div className="mt-16 border-t-[1.5px] border-rule pt-10 lg:mt-20 lg:pt-14">
-            {/* A sub-head inside the set, not a mono eyebrow over it. */}
-            <h3 className="t-h3">Adviser</h3>
-            <p className="t-body mt-3 max-w-[62ch]">
-              Advisers are not employees. Each is described only as they have approved it.
-            </p>
-            <div className="mt-10">
-              <Roster people={advisors} phases={PHASES} />
-            </div>
+          {/* The register's faces, in the register's order: TEAM then
+              ADVISORS, portraits only. Four and four at lg, two across on a
+              phone. */}
+          <div className="mt-10 lg:mt-14">
+            <Faces people={[...team, ...advisors]} />
           </div>
         </Container>
       </Section>
 
-      {/* ═══ 4. CLOSE, the one deep band ═══ */}
-      <Section deep labelledBy="team-cta-h" pad="tight">
+      {/* ═══ 2. THE REGISTER, on paper. ═══ */}
+      <Section className="bg-paper-2" pad={["none", "normal"]} labelledBy="register-h">
         <Container width="wide">
-          <Settle className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
-            <div>
-              <h2 id="team-cta-h" className="t-h2 max-w-[18ch]">
-                {ctaHeading}
-              </h2>
-              <p className="t-lead mt-5 max-w-[46ch] opacity-85">{ctaLead}</p>
-            </div>
-            {/* The quiet button is ink on a hairline, which disappears on navy.
-                The earlier page shipped two of them here, invisible. One
-                primary, and one quiet relit in the band's own paper. */}
-            <div className="flex flex-wrap items-start gap-4 lg:justify-end">
-              <Button to="/ethical-ai">
-                How we make it
-                <IconArrow size={16} />
-              </Button>
-              <Button to="/contact" variant="quiet">
-                Partnership enquiries
-                <IconArrow size={16} />
-              </Button>
-            </div>
+          <Settle className="pt-18">
+            {/* A label on a list, not a second headline, so `.t-h3`. */}
+            <h2 id="register-h" className="t-h3">
+              {registerHeading}
+            </h2>
+            <p className="t-body mt-4 max-w-[62ch]">{registerLead}</p>
+            {/* The key, one line: the five phase names in mono, then the
+                sentence in the company's words, then where the full account
+                is. Middle dots between the names, never a dash. */}
+            <p className="t-body mt-5 max-w-[78ch]">
+              <strong className="font-bold">Phases</strong>{" "}
+              {PHASES.map((s, i) => (
+                <span key={s.n}>
+                  <span className="whitespace-nowrap font-mono text-[14px] uppercase tracking-[0.14em]">
+                    {Number(s.n)} {s.phase}
+                  </span>
+                  {i < PHASES.length - 1 ? " · " : ". "}
+                </span>
+              ))}
+              {registerKey} The full account is on the{" "}
+              <TextLink to="/ethical-ai" className="text-[17px]!">
+                Responsible AI page
+              </TextLink>
+              .
+            </p>
           </Settle>
+
+          <div className="mt-10 lg:mt-12">
+            <Register people={team} phases={PHASES} />
+          </div>
+
+          {/* The adviser block: a rule, a sub-head inside the set, the note,
+              then the row in the same shape. */}
+          <div className="hairline mt-16 pt-10 lg:mt-20 lg:pt-14">
+            <h2 className="t-h3">{adviserHeading}</h2>
+            <p className="t-body mt-3 max-w-[62ch]">{adviserLead}</p>
+            <div className="mt-10">
+              <Register people={advisors} phases={PHASES} />
+            </div>
+          </div>
+
+          {/* ═══ 3. THE CLOSING: one line and one link, then the footer. The
+              reading order is team to Responsible AI. ═══ */}
+          <ClosingLine className="mt-18" link={{ to: "/ethical-ai", label: closeLink }}>
+            {closeLead}
+          </ClosingLine>
         </Container>
       </Section>
     </>

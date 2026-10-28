@@ -30,6 +30,15 @@ import type { Product } from "@/lib/types";
  *  the admin wrote for the cover, and the running order the shelf keeps. */
 const COLUMNS =
   "id, title, slug, description, price_cents, currency, thumbnail, thumbnail_alt, file_path, active, sort_order";
+/** The same read against a database that has not had 0008 applied: the
+ *  0001 columns only. A select naming a missing column fails outright, so
+ *  every public read tries COLUMNS first and falls back to these, with
+ *  `thumbnail_alt` null and `sort_order` 0 (the shelf then runs newest first). */
+const COLUMNS_0001 = "id, title, slug, description, price_cents, currency, thumbnail, file_path, active, created_at";
+
+function withDefaults(row: Product): Product {
+  return { ...row, thumbnail_alt: row.thumbnail_alt ?? null, sort_order: row.sort_order ?? 0 };
+}
 
 /**
  * What a purchase arrives as, read off the stored file rather than assumed.
@@ -66,7 +75,7 @@ type Query<T> =
   | { state: "empty" }
   | { state: "failed" };
 
-/** EUR 3.50, in the reader's own locale, from integer cents. Never a float. */
+/** A euro price in the reader's own locale, from integer cents. Never a float. */
 export function formatPrice(cents: number, currency: string): string {
   return new Intl.NumberFormat("en-IE", {
     style: "currency",
@@ -96,15 +105,22 @@ export function useProducts(): Query<Product[]> {
       }
       // The running order set in the admin panel first; among products that
       // were never reordered (sort_order 0), the newest stands first.
-      const { data, error } = await supabase
+      let { data, error }: { error: unknown; data: Product[] | null } = await supabase
         .from("products")
         .select(COLUMNS)
         .eq("active", true)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
+      if (error) {
+        ({ data, error } = await supabase
+          .from("products")
+          .select(COLUMNS_0001)
+          .eq("active", true)
+          .order("created_at", { ascending: false }));
+      }
       if (!live) return;
       setQ(
-        error ? { state: "failed" } : !data?.length ? { state: "empty" } : { state: "ready", data: data as Product[] },
+        error ? { state: "failed" } : !data?.length ? { state: "empty" } : { state: "ready", data: (data as Product[]).map(withDefaults) },
       );
     })().catch(() => {
       if (live) setQ({ state: "failed" });
@@ -135,14 +151,22 @@ export function useProduct(slug: string | undefined): Query<Product> {
       }
       // maybeSingle, not single: a slug that matches nothing is a 404 page,
       // not an error to log.
-      const { data, error } = await supabase
+      let { data, error }: { error: unknown; data: Product | null } = await supabase
         .from("products")
         .select(COLUMNS)
         .eq("slug", slug)
         .eq("active", true)
         .maybeSingle();
+      if (error) {
+        ({ data, error } = await supabase
+          .from("products")
+          .select(COLUMNS_0001)
+          .eq("slug", slug)
+          .eq("active", true)
+          .maybeSingle());
+      }
       if (!live) return;
-      setQ(error ? { state: "failed" } : !data ? { state: "empty" } : { state: "ready", data: data as Product });
+      setQ(error ? { state: "failed" } : !data ? { state: "empty" } : { state: "ready", data: withDefaults(data as Product) });
     })().catch(() => {
       if (live) setQ({ state: "failed" });
     });

@@ -439,7 +439,7 @@ export function Layout() {
       first.current = false;
       return;
     }
-    main.current?.focus();
+    main.current?.focus({ preventScroll: true });
   }, [pathname]);
 
   return (

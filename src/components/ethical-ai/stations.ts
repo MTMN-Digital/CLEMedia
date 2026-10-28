@@ -84,6 +84,15 @@ export const PLATFORMS: { body: string; name: string; role: string }[] = [
   },
 ];
 
+/* Where on the line the two tools are used, in the client's own sentence.
+   NEEDED FROM CLIENT (CONTENT-NEEDED.md, "Where in the sequence the AI tools
+   run"). While this is null the tools table (clause 3) has no "Where on the
+   line" column and nothing on the page attaches a phase number to the tools:
+   Figure 1 draws them at one point and the clause may restate the drawing,
+   but a dated document cannot assert a placement the company has not stated.
+   When Conor's sentence arrives it goes here and both rows print it. */
+export const TOOL_PLACEMENT: string | null = null;
+
 export const DO_NOT = [
   "Decide what a story should teach, how a character should behave, or what is appropriate for the children watching.",
   "Generate and publish anything automatically. Every output is directed, reviewed and approved by the team before publication.",

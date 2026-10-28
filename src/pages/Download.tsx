@@ -1,16 +1,18 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { type ReactNode, useCallback, useRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { PageHero } from "@/components/PageHero";
-import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
-import { IconArrow, IconExternal, IconDownload } from "@/components/icons";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
+import { IconDownload, IconArrow } from "@/components/icons";
+import { ClosingLine } from "@/components/ClosingLine";
 import { Docket } from "@/components/shop/Docket";
 import { fileFormat, formatLabel } from "@/components/shop/catalogue";
+import { COPY } from "@/components/shop/copy";
+import { useBlock } from "@/lib/content";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
-   The download page, rebuilt 2026-10-06, carried to the hero's language
-   2026-10-27.
+   The download page, rebuilt 2026-10-06, made a receipt on 2026-10-28
+   (docs/SUBPAGE-PLANS-2026-10-28.md, "## shop", 4.4).
 
    This is the last thing the company does in a transaction, and the shop's
    whole argument is that it asks for nothing: no account, no email gate, no
@@ -18,41 +20,30 @@ import { SITE } from "@/lib/site";
    to come back to, so this page has to be calm, certain and impossible to
    misread, and the file has to be the largest thing on it.
 
-   EVERY STATE OPENS IN THE HERO'S FRAME. The plain ink panel, short: the
-   kicker the state used to carry is the eyebrow, the state's sentence is the
-   headline, and in the ready state the download button is the hero's action,
-   so on a phone it is the first thing under the headline rather than the
-   first thing under the fold. The "save it now" line and every error message
-   sit immediately under the panel, word for word.
+   TYPE ONLY. Every state opens on a status line, the state's sentence as a
+   plain h1, and in the ready state the download button directly under it,
+   before anything else. Then the two-column body: the sentence and what to
+   do on the left, the docket on the right, which is the same object the
+   product page showed before the purchase, with the figures filled in. A
+   buyer who read /shop/:slug recognises the receipt.
 
-   WHAT CHANGED BEFORE THAT. The terms used to sit in a tinted box with a
-   coloured left border, below the fold of the sentence, in the same voice as
-   everything else. They are now a docket: the same object the shop shows
-   BEFORE a purchase, with the figures filled in. A buyer who read /shop
-   recognises the receipt, which is the point of using one document for both.
-
-   The expiry is stated as a time, not as "24 hours". The API has always
-   returned `expiresAt` and this page threw it away, so a buyer had to work
-   out when their link died from when they thought they had paid.
+   The expiry is stated as a time, not as "24 hours". The API returns
+   `expiresAt`; the label is the only date on the page and it is the link's
+   own.
 
    THE FUNCTIONAL CONTRACT IS UNTOUCHED. GET /api/download?token=… , the same
    four error codes, the same single signed URL, which the browser never keeps
-   and which the server counts only once it has been issued.
+   and which the server counts only once it has been issued. The six-try poll
+   for a webhook that has not written the order yet is as it was.
 
    ONE THING THIS PAGE CANNOT DO. Stripe's success_url is /download/pending,
-   carrying a session_id, and nothing maps a session_id to a download token:
-   api/download.ts reads tokens only. So `pending` is handled as its own state
-   and says plainly what to do, rather than rendering "We couldn't find that
-   download" at somebody who has just paid. Logged in CONTENT-NEEDED.md under
-   Shop and media: it needs an API change, which is not this page's to make.
+   carrying a session_id; where nothing maps it to a token the `pending`
+   state says plainly what to do, rather than rendering "We couldn't find
+   that download" at somebody who has just paid.
 
-   THE FORMAT ON THE RECEIPT, 2026-10-27. The first products are episode
-   packs, a zip folder of PDFs each, and the receipt used to print "Format:
-   PDF" as a constant. The signed link the API returns carries the stored
-   file's name, so the row now reads the format off it, and the line about
-   what the browser does with the file is true of a zip: it is saved, not
-   opened in a tab. The pending receipt, which has no file yet, states no
-   format at all rather than guessing one.
+   THE CLOSE. The navy band that used to end this page is gone from every
+   subpage; its one fact survives as the closing line, with the show site as
+   the one link.
    ========================================================================== */
 
 type ErrorCode = "exhausted" | "server_error" | "not_found" | "expired";
@@ -104,12 +95,28 @@ function expiryLabel(iso?: string): string | null {
    do on the left, the docket on the right. */
 const BODY_GRID = "grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-20 xl:gap-28";
 
+/** The opening of every state: a status, the sentence as a plain h1, and
+ *  the state's action directly under it. Type only. */
+function Head({ kicker, title, actions }: { title: string; kicker: string; actions?: ReactNode }) {
+  return (
+    <Section labelledBy="download-h" pad={["normal", "close"]}>
+      <Container width="wide">
+        <Kicker className="eyebrow-sm">{kicker}</Kicker>
+        <h1 id="download-h" className="t-h1 mt-6 max-w-[20ch]">{title}</h1>
+        {actions && <div className="mt-8 flex flex-wrap gap-4">{actions}</div>}
+      </Container>
+    </Section>
+  );
+}
+
 export default function Download() {
   const { token } = useParams();
   const [state, setState] = useState<State>({ k: "loading" });
   /* Bounded: six retries two seconds apart, then the pending screen. An
      unbounded poll on a payment page is a page that never stops asking. */
   const tries = useRef(0);
+  const closeLine = useBlock("shop", "download.close.line", COPY["download.close.line"]);
+  const closeLink = useBlock("shop", "download.close.link", COPY["download.close.link"]);
 
   const fetchLink = useCallback(async () => {
     if (!token) {
@@ -118,7 +125,7 @@ export default function Download() {
     }
     /* Two ways in. The ordinary one is a download token in the path. The other
        is the redirect Stripe performs the instant a payment succeeds, which
-       lands on /download/pending carrying a session id: api/download.ts now
+       lands on /download/pending carrying a session id: api/download.ts
        resolves that to the same order, so somebody who has just paid reaches
        their file instead of a page telling them to go and find a receipt. */
     const session = token === "pending" ? new URLSearchParams(window.location.search).get("session_id") : null;
@@ -177,54 +184,32 @@ export default function Download() {
           reader without anything being clicked. ─── */}
       {state.k === "loading" && (
         <div role="status" aria-live="polite">
-          <PageHero
-            id="download-h"
-            size="short"
-            tone="ink"
-            eyebrow={
-              <>
-                Payment received<span>Your download</span>
-              </>
-            }
-            aside={<>One moment. Do not close this page.</>}
-            title={
-              <>
-                Getting your file <em>ready</em>
-              </>
-            }
-          />
+          <Head kicker="Payment received" title="Getting your file ready" />
+          <Section pad={["close", "normal"]}>
+            <Container width="wide">
+              <Lead className="max-w-[44ch]">One moment. Do not close this page.</Lead>
+            </Container>
+          </Section>
         </div>
       )}
 
-      {/* ─── The file. The download button is the hero's action, so it is the
-          first thing under the headline on every screen. Under the panel:
-          the one sentence that matters, then the terms on the right as the
-          same docket the shop showed before the purchase. ─── */}
+      {/* ─── The file. The download button is the first thing under the
+          headline on every screen. Then the one sentence that matters, and
+          the terms on the right as the same docket the product page showed
+          before the purchase. ─── */}
       {state.k === "ready" && (
         <>
-          <PageHero
-            id="download-h"
-            size="short"
-            tone="ink"
-            eyebrow={
-              <>
-                Payment received<span>Your download</span>
-              </>
-            }
-            aside={<>Save it to your device now.</>}
-            title={
-              <>
-                {state.title} <em>is ready.</em>
-              </>
-            }
+          <Head
+            kicker="Payment received"
+            title={`${state.title} is ready.`}
             actions={
-              <Button href={state.url} size="large">
+              <Button href={state.url} size="large" className="w-full justify-center sm:w-auto">
                 Download {state.title}
                 <IconDownload size={19} />
               </Button>
             }
           />
-          <Section pad={["tight", "normal"]}>
+          <Section pad={["close", "normal"]}>
             <Container width="wide">
               <div className={BODY_GRID}>
                 <div>
@@ -233,7 +218,7 @@ export default function Download() {
                     place the file lives for you.
                   </Lead>
 
-                  <p className="mt-6 max-w-[46ch] text-[15.5px] leading-[1.7] text-body">
+                  <p className="t-body mt-6 max-w-[46ch] text-body">
                     {fileFormat(state.url) === "pdf"
                       ? "The file opens in a new tab. If your browser asks where to put it, anywhere you will find it again is the right answer."
                       : "The file is a zip folder with the PDFs inside. If your browser asks where to put it, anywhere you will find it again is the right answer, and opening the folder unpacks the books and sheets."}
@@ -280,21 +265,9 @@ export default function Download() {
       {/* ─── Paid, but the link has not reached this page. ─── */}
       {state.k === "pending" && (
         <>
-          <PageHero
-            id="download-h"
-            size="short"
-            tone="ink"
-            eyebrow={
-              <>
-                Payment received<span>Your download</span>
-              </>
-            }
-            aside={<>Your download link is not on this page.</>}
-            title={
-              <>
-                Thank you. Your payment <em>went through.</em>
-              </>
-            }
+          <Head
+            kicker="Payment received"
+            title="Thank you. Your payment went through."
             actions={
               <>
                 <Button to="/contact">
@@ -307,7 +280,7 @@ export default function Download() {
               </>
             }
           />
-          <Section pad={["tight", "normal"]}>
+          <Section pad={["close", "normal"]}>
             <Container width="wide">
               <div className={BODY_GRID}>
                 <div>
@@ -315,7 +288,7 @@ export default function Download() {
                     Your download link is not on this page. Send us the receipt Stripe has just
                     emailed you and we will put the file straight into your hands.
                   </Lead>
-                  <p className="mt-6 max-w-[46ch] text-[16px] leading-[1.7] text-body">
+                  <p className="t-body mt-6 max-w-[46ch] text-body">
                     This is the one step in the shop that is not automatic yet, and we would rather
                     say so than leave you looking at a page that says nothing.
                   </p>
@@ -343,18 +316,15 @@ export default function Download() {
         </>
       )}
 
-      {/* ─── The three ways a link can fail, plus the server fault. The hero
-          takes at most two buttons, so the server fault keeps "Try again" and
-          "Get in touch" as actions and puts the shop link under the message;
-          the other three keep the shop as their second button. ─── */}
+      {/* ─── The three ways a link can fail, plus the server fault. The
+          server fault keeps "Try again" and "Get in touch" as its actions
+          and puts the shop link under the message; the other three keep the
+          shop as their second action. ─── */}
       {state.k === "error" && (
         <>
-          <PageHero
-            id="download-h"
-            size="short"
-            tone="ink"
-            eyebrow={<>Download</>}
-            title={<>{MESSAGES[state.code].h}</>}
+          <Head
+            kicker="Download"
+            title={MESSAGES[state.code].h}
             actions={
               state.code === "server_error" ? (
                 <>
@@ -377,7 +347,7 @@ export default function Download() {
               )
             }
           />
-          <Section pad={["tight", "normal"]}>
+          <Section pad={["close", "normal"]}>
             <Container width="wide">
               <div className={BODY_GRID}>
                 <div role="alert">
@@ -417,26 +387,13 @@ export default function Download() {
         </>
       )}
 
-      {/* ═══ The quiet close. The same on every state: what the company is,
-          and where the rest of it lives. A transaction page that ends in a
-          dead end is the last impression a buyer takes away. ═══ */}
-      <Section deep labelledBy="prints-h">
+      {/* ═══ The close, the same on every state: one line and one link, then
+          the footer. ═══ */}
+      <Section as="div" pad={["tight", "open"]}>
         <Container width="wide">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div>
-              <h2 id="prints-h" className="t-h2 max-w-[18ch]">While it prints</h2>
-              <p className="t-lead mt-6 max-w-[48ch] opacity-85">
-                The episodes behind these sheets are free to watch, and the show's own site carries
-                the activities that go with them.
-              </p>
-            </div>
-            <div>
-              <Button href={SITE.showUrl}>
-                Visit the show site
-                <IconExternal size={16} />
-              </Button>
-            </div>
-          </div>
+          <ClosingLine rule link={{ href: SITE.showUrl, label: closeLink }}>
+            {closeLine}
+          </ClosingLine>
         </Container>
       </Section>
     </>

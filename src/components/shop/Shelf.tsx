@@ -1,98 +1,110 @@
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { Stage, useRoomEntry } from "@/components/render";
+import { Settle } from "@/components/Settle";
 import type { Product } from "@/lib/types";
-import { PrintedSheet } from "@/components/shop/PrintedSheet";
-import { formatPrice } from "@/components/shop/catalogue";
+import { Cover } from "@/components/shop/Cover";
+import { fileFormat, formatLabel, paragraphs, formatPrice } from "@/components/shop/catalogue";
+import { packFor, coverFor } from "@/components/shop/samples";
+import { Stage } from "@/components/render";
+import { PACKS } from "@/lib/books";
 
 /* ============================================================================
-   The lit shelf: the shop's products standing on a ledge in a .rk-studio room,
-   the same furniture as the review board on /team (StageSequence.tsx).
+   The shelf: the shop's products as covers on the bench, one per episode in
+   the admin's running order, each the same size at the true A4 landscape
+   proportion of the file the buyer prints. The item is the link; there is no
+   button, no chip, no badge, because the episode's own title and motif on
+   the cover do the differentiating.
 
-   One lamp, up and left of the shelf. Each object's azimuth is the angle from
-   that lamp to its COLUMN, so a second row is lit the same way as the first.
-   Poses are hand-placed so no two neighbours match.
-
-   The price printed on a tag is the one the database returned. Nothing here
-   states a price of its own.
+   Rebuilt 2026-10-28 from the lit studio shelf (rk-studio, lamp poses, the
+   "Downloads / One file each" head), which drew six slabs at six angles over
+   an empty catalogue. The price on a tag is the one the database returned;
+   the book count comes from the episode's pack (src/lib/books.ts) or, for a
+   row that names no episode, from the lines of its description's first
+   paragraph, one line per book; and when neither can count, the tag names
+   the format instead.
    ========================================================================== */
 
-export const POSE = [
-  { tilt: 6.4, turn: -2.0, roll: -0.35, depth: 0.58 },
-  { tilt: 5.0, turn: -0.4, roll: 0.3, depth: 0.42 },
-  { tilt: 7.1, turn: 1.8, roll: -0.2, depth: 0.62 },
-  { tilt: 5.5, turn: -1.5, roll: 0.4, depth: 0.46 },
-  { tilt: 6.7, turn: 0.6, roll: -0.3, depth: 0.55 },
-  { tilt: 4.9, turn: 2.1, roll: 0.2, depth: 0.4 },
-];
+const SIZES = "(min-width: 1100px) 33vw, (min-width: 900px) 50vw, 100vw";
 
-const LAMP_X = -0.6;
-const LAMP_H = 2.2;
-export function azimuthFor(column: number, columns: number) {
-  const x = (column + 0.5) / columns;
-  return (Math.atan2(x - LAMP_X, LAMP_H) * 180) / Math.PI - 52;
+/** "3 books", or "zip of PDFs" when nothing on the row counts books. */
+export function bookCount(p: Product): string {
+  const pack = packFor(p);
+  if (pack) return `${pack.books} books`;
+  const lines = (paragraphs(p.description)[0] ?? "").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length >= 2) return `${lines.length} books`;
+  return formatLabel(fileFormat(p.file_path));
 }
 
 export function Shelf({ products }: { products: Product[] }) {
-  const { ref, armed, lit } = useRoomEntry();
-
   return (
-    <div
-      ref={ref}
-      className={`rk-studio rk-board ${armed ? "is-armed" : ""} ${lit ? "is-in" : ""}`}
-    >
-      <span className="rk-rake" aria-hidden="true" />
+    <Settle as="ul" className="cat-shelf">
+      {products.map((p, i) => (
+        <li key={p.id} style={{ "--i": i } as CSSProperties}>
+          <Link to={`/shop/${p.slug}`} className="cat-item">
+            <Cover product={p} sizes={SIZES} priority={i < 3} />
+            <span className="cat-tag">
+              <span className="cat-tag-title">{p.title}</span>
+              <span className="cat-tag-meta">
+                {formatPrice(p.price_cents, p.currency)} · {bookCount(p)}
+              </span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </Settle>
+  );
+}
 
-      <div className="rk-head" aria-hidden="true">
-        <span>Downloads</span>
-        <span className="rk-head-rule" />
-        <span className="rk-head-meta">One file each</span>
-      </div>
-
-      <ul className="rk-bench">
-        {products.map((p, i) => {
-          const pose = POSE[i % POSE.length];
-          return (
-            <li key={p.id} className="rk-item" style={{ "--i": i } as CSSProperties}>
-              <Link to={`/shop/${p.slug}`} className="rk-plate">
-                <div className="mx-auto" style={{ width: i % 2 ? "84%" : "92%" }}>
-                  <Stage
-                    seated
-                    light={azimuthFor(i % 3, 3)}
-                    tilt={pose.tilt}
-                    turn={pose.turn}
-                    roll={pose.roll}
-                    depth={pose.depth}
-                    radius="3px"
-                    className="[container-type:inline-size]"
-                  >
-                    {p.thumbnail ? (
-                      <div className="rk-mat">
-                        <div className="rk-pic aspect-[1/1.3]">
-                          <img
-                            src={p.thumbnail}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            className="h-full w-full object-cover"
-                          />
-                          <span className="rk-light" aria-hidden="true" />
-                        </div>
-                      </div>
-                    ) : (
-                      <PrintedSheet />
-                    )}
-                  </Stage>
-                </div>
-                <span className="rk-tag">
-                  <span className="rk-tag-title">{p.title}</span>
-                  <span className="rk-tag-title tnum">{formatPrice(p.price_cents, p.currency)}</span>
+/** The six episode packs as covers, unlinked and tagged "Coming soon", for a
+ *  catalogue with nothing published (or one that did not answer). The books
+ *  are finished and in hand, so the shelf shows them rather than an empty
+ *  page; nothing here takes a price or a payment. */
+export function ShelfComing() {
+  return (
+    <Settle as="ul" className="cat-shelf">
+      {PACKS.map((pack, i) => {
+        const pic = coverFor(pack);
+        return (
+          <li key={pack.episode} style={{ "--i": i } as CSSProperties}>
+            <div className="cat-item">
+              <Stage seated tilt={0} turn={0} roll={0} depth={0.35} radius="2px">
+                <span className="cat-cover">
+                  <picture>
+                    <source type="image/webp" srcSet={`${pic.webp} ${pic.width}w, ${pic.webp2x} ${pic.width * 2}w`} sizes={SIZES} />
+                    <img
+                      src={pic.jpg}
+                      srcSet={`${pic.jpg} ${pic.width}w, ${pic.jpg2x} ${pic.width * 2}w`}
+                      sizes={SIZES}
+                      width={pic.width}
+                      height={pic.height}
+                      alt={pic.alt}
+                      loading={i < 3 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                  </picture>
                 </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+              </Stage>
+              <span className="cat-tag">
+                <span className="cat-tag-title">{pack.title}</span>
+                <span className="cat-tag-meta">Coming soon · {pack.books} books</span>
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </Settle>
+  );
+}
+
+/** Six empty slots while the catalogue answers. */
+export function ShelfLoading() {
+  return (
+    <ul className="cat-shelf" aria-hidden="true">
+      {Array.from({ length: 6 }, (_, i) => (
+        <li key={i}>
+          <div className="cat-slot" />
+        </li>
+      ))}
+    </ul>
   );
 }

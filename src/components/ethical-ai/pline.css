@@ -1,10 +1,12 @@
-/* ─── The production line, flat ───────────────────────────────────────────
-   See components/ethical-ai/ProductionFlat.tsx and the 2,700px vertical
-   chain it replaced. Marks in components/draw/draw.css; layout only here.
-   ─────────────────────────────────────────────────────────────────────── */
-.pline { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
+/* The production line, flat: Figure 1 of the Responsible AI position.
+   See components/ethical-ai/ProductionFlat.tsx. Marks in
+   components/draw/draw.css; layout only here.
+
+   TRIMMED 2026-10-28. The gates grid, the two-column detail block and the
+   case slot went with the page's rebuild as a document; the phases, the
+   tools and the refusals are clauses in the page file now. */
 .pline__draw { position: relative; }
-.pline__art { max-width: 100%; }
+.pline__art { display: block; width: 100%; max-width: 100%; height: auto; }
 
 /* The sentence inside the return loop. Positioned in the drawing's own
    proportions: the loop's rail is at 25/125 of the height and the track at
@@ -25,97 +27,3 @@
   pointer-events: none;
 }
 @media (min-width: 900px) { .pline__return { display: block; } }
-
-.pline__gates {
-  list-style: none;
-  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
-  padding: 0;
-  display: grid;
-  gap: clamp(1.5rem, 3vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
-}
-@media (min-width: 680px) { .pline__gates { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1100px) { .pline__gates { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-.pline__gate { border-top: 1.5px solid var(--color-rule); padding-top: 0.9rem; }
-/* The last phase, in the accent. It used to mark the one gate that could
-   hold a release; from 2026-10-24 it marks the sign-off that releases the
-   episode, which is the same place on the line and the same emphasis. */
-.pline__gate--hold { border-top-color: var(--color-red-deep); }
-/* The phase name is the label (2026-10-27), in the display face with its
-   number set as part of it: the number in the body colour and the name in
-   ink, one line, so "01 First draft" reads as a title and not as a numbered
-   eyebrow over one. The stage marks that used to sit under the name are gone
-   with the mono label; see ProductionFlat.tsx. */
-.pline__gate h3 {
-  margin-top: 0.35rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
-}
-.pline__num {
-  margin-right: 0.45em;
-  font-weight: 400;
-  color: var(--color-body);
-}
-.pline__role { margin-top: 0.55rem; font-size: 0.9375rem; line-height: 1.4; color: var(--color-body); }
-.pline__who { margin-top: 0.15rem; font-size: 0.9375rem; font-weight: 600; color: var(--color-ink); }
-.pline__body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 42ch; }
-.pline__faces { list-style: none; margin: 0.7rem 0 0; padding: 0; display: flex; gap: 0.4rem; }
-.pline__faces > li {
-  width: 40px;
-  border-radius: 6px;
-  padding: 2px;
-  background: var(--color-raised);
-  border: 1.5px solid var(--color-rule);
-}
-
-.pline__detail {
-  margin-top: clamp(2rem, 4vw, 3rem);
-  padding-top: clamp(1.5rem, 3vw, 2rem);
-  border-top: 1.5px solid var(--color-rule);
-  display: grid;
-  gap: clamp(1.75rem, 3vw, 3rem);
-}
-@media (min-width: 900px) { .pline__detail { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
-.pline__tools ul,
-.pline__never ul { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 1rem; }
-.pline__tools h4 {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--color-ink);
-}
-.pline__tools h4 span {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  /* Same trap as .ink-label: muted is a paper-only floor and this sits on
-     the well, where it measured 4.40:1. */
-  color: var(--color-body);
-  margin-left: 0.5rem;
-}
-.pline__tools p { margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-body); max-width: 48ch; }
-.pline__never li {
-  position: relative;
-  padding-left: 1.1rem;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--color-body);
-  max-width: 48ch;
-}
-.pline__never li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.62em;
-  width: 9px;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--color-red-deep);
-}
-.pline__case { margin-top: clamp(2rem, 4vw, 3rem); }

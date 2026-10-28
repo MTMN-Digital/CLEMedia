@@ -1,12 +1,10 @@
-import type { ReactNode } from "react";
 import { Settle } from "@/components/Settle";
-import { Figure } from "@/components/Figure";
-import { PLATFORMS, STATIONS, DO_NOT } from "./stations";
+import { STATIONS } from "./stations";
 import "@/components/draw/draw.css";
 import "./pline.css";
 
 /* ============================================================================
-   The production line, flat.
+   The production line, flat: Figure 1 of the Responsible AI position.
 
    WHAT THIS REPLACED, 2026-10-09. A centred vertical chain, 2,700 pixels tall,
    with the stations alternating left and right of a spine, circular portraits
@@ -28,16 +26,21 @@ import "./pline.css";
    SO IT IS FLAT AND IT IS DRAWN. One track left to right, the phases on it in
    order, the two tools sitting BELOW the track at the single point they are
    used, and the return path looping back from the final gate along a rail
-   above the track and down into the tools. Around 300px tall. The shape of the argument is visible in one look: people the whole
-   way across, tools at one point underneath, and a way back from the end.
+   above the track and down into the tools. The shape of the argument is
+   visible in one look: people the whole way across, tools at one point
+   underneath, and a way back from the end.
 
-   NO LEGEND. A gate says who decides on the gate. The tools are below the
-   line because they are below the line, which is the same thing the drawn
-   boundary further up the page says, in the same hand.
+   DRAWING ONLY, 2026-10-28. This file used to carry the phases in words under
+   the track (a three-column grid), the platforms and the three refusals in a
+   two-column block, and a slot for "what the reviews are for". The page is a
+   document now (docs/SUBPAGE-PLANS-2026-10-28.md) and a document numbers its
+   steps down the page: the phases are sub-clauses 2.1 to 2.5 of the page
+   file, the tools are clause 3's table, the refusals are clause 4. What is
+   left here is the figure and its in-loop label, which is what a figure in a
+   research paper is. The caption and the key sit beside it in the page file.
 
-   The detail that used to hang off the chain in cards is unchanged and sits
-   under the drawing: the platforms, what neither tool is allowed to do, and
-   the held-release case. Not one word of it was cut.
+   NO LEGEND INSIDE THE DRAWING. A gate says who decides on the gate. The tools
+   are below the line because they are below the line.
    ========================================================================== */
 
 /* Geometry. The track is the full viewBox width; the phases sit at even
@@ -49,9 +52,9 @@ import "./pline.css";
    read as pencil rather than noise. The drawing is already full width, so
    the page could not give it more room; instead every coordinate in here is
    half what it was and the box is 600 by 125. Same rendered size, same
-   shape, and a user unit is now 2.3 CSS pixels (0.58 on a 390 phone, up
-   from 0.29). The stroke widths come from the kit and were NOT halved: that
-   is the point. */
+   shape, and a user unit is now 2.1 CSS pixels in the sheet's 1264px body
+   (0.58 on a 390 phone). The stroke widths come from the kit and were NOT
+   halved: that is the point. */
 const VB_W = 600;
 /* Sized to what is drawn and no more. The first pass left 70px of empty box
    under the tools and pushed the return arc off the top edge, where the
@@ -70,7 +73,7 @@ const gateX = (i: number, n: number) => X0 + ((X1 - X0) * i) / (n - 1);
    What it is now: a conveyor return. Up from the final gate, straight back
    along a rail above the track, down onto the track at the tools, with a
    head big enough to read at the size the drawing actually renders (about
-   2.3px per unit in a 1376px column, a quarter of that on a phone). Two
+   2.1px per unit in the sheet, a quarter of that on a phone). Two
    right-angle corners, rounded, because a belt that goes back is a loop
    with corners, not an arc. The rail sits at RETURN_Y, well inside the box:
    nothing in this drawing may leave its own box. */
@@ -96,7 +99,7 @@ function arrowHeadFromEndTangent(
   return `M${backX + normalX} ${backY + normalY} L${endX} ${endY} L${backX - normalX} ${backY - normalY}`;
 }
 
-export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
+export function ProductionFlat({ className = "" }: { className?: string }) {
   const people = STATIONS.filter((s) => s.kind !== "tool");
   const n = people.length;
   const toolX = (gateX(1, n) + gateX(2, n)) / 2;
@@ -137,15 +140,16 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
   const railChevron = arrowHeadFromEndTangent(railMidX - 6, RETURN_Y, railMidX, RETURN_Y);
 
   return (
-    <div className="pline">
-      {/* Wrapped so the kit's hold-until-seen gate applies: this drawing
-          sits well below the fold and was finishing before anyone reached it. */}
-      <Settle className="pline__draw">
+    /* Wrapped in its own Settle so the kit's hold-until-seen gate applies:
+       on a phone the figure sits inside clause 2, well below the fold, and
+       would otherwise finish drawing before anyone reached it. The page's
+       entrance Settle is a separate clock; this one only gates the ink. */
+    <Settle className={`pline__draw ${className}`}>
       <svg
         className="ink pline__art"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="The five phases of an episode in a line, with the two production tools sitting below the line at the one point they are used, and a dashed return path from the final sign-off back along the top and down into the animation."
+        aria-label="Figure 1. The five phases of an episode in a line, with the two production tools sitting below the line at the one point they are used, and a dashed return path from the final sign-off back along the top and down into the animation."
       >
         {/* The track. People run the whole length of it. */}
         <path
@@ -191,15 +195,13 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
 
         {/* The return. It leaves the final gate, goes back along the rail
             above the track and re-enters production at the tools: the single
-            most important fact on the page, and the chain buried it in a
-            footnote under 2,700px of column.
+            most important fact on the page.
 
-            DASHED, because the caption under this drawing calls it "the
-            dashed return" and carries a dashed swatch. `.ink-draw` cannot be
-            dashed (the class sets its own dash array), so the run is an
-            `.ink-in` with the dash on the attribute, and the head is the part
-            that draws. Edge weight, and the only accent stroke in the
-            drawing.
+            DASHED, because sub-clause 2.6 calls it "the dashed return" and
+            carries a dashed swatch. `.ink-draw` cannot be dashed (the class
+            sets its own dash array), so the run is an `.ink-in` with the dash
+            on the attribute, and the head is the part that draws. Edge
+            weight, and the only accent stroke in the drawing.
 
             The dash array is in user units and was deliberately NOT halved
             with the geometry: the stroke it sits on was not halved either,
@@ -225,71 +227,10 @@ export function ProductionFlat({ gateSlot }: { gateSlot?: ReactNode }) {
           style={{ "--d": "2.0s", "--dur": "0.5s" } as React.CSSProperties}
         />
       </svg>
-      {/* Said in words inside the loop, lifted from the hero paragraph above
-          the drawing. Hidden on a phone, where the loop is 20px tall and the
-          caption under the drawing says the same thing. */}
+      {/* Said in words inside the loop. Hidden under 900px, where the loop is
+          about 20px tall and the caption under the drawing says the same
+          thing. */}
       <p className="ink-label pline__return">The episode goes back until everyone is happy</p>
-      </Settle>
-
-      {/* The gates in words, under the track, in the same order. A reader who
-          wants the detail reads across; a reader who wants the shape has
-          already had it from the drawing.
-
-          RELABELLED 2026-10-27. Each phase opened on "01 PERSON DECIDES" in
-          mono over its name, which is the numbered-eyebrow pattern the house
-          retired, and then carried one of the six stage marks under the name.
-          The phase name is the label now, in the display face with its number
-          set as part of it, and who decides is a plain line under it. The
-          marks went: a drawing beside a title that already says what it is
-          was decoration, and the line above is the page's one drawing. */}
-      <Settle as="ol" className="pline__gates">
-        {people.map((s) => (
-          <li key={s.index} className={s.kind === "gate" ? "pline__gate pline__gate--hold" : "pline__gate"}>
-            <h3>
-              <span className="pline__num tnum">{s.index}</span>
-              {s.title}
-            </h3>
-            <p className="pline__role">{s.kind === "gate" ? "Everyone signs off" : "Person decides"}</p>
-            <p className="pline__who">{s.who}</p>
-            {s.faces && s.faces.length > 0 && (
-              <ul className="pline__faces">
-                {s.faces.map((f) => (
-                  <li key={f}>
-                    <Figure asset={f} rounded="rounded-[5px]" className="aspect-square" sizes="40px" />
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="pline__body">{s.body}</p>
-          </li>
-        ))}
-      </Settle>
-
-      <div className="pline__detail">
-        <div className="pline__tools">
-          <p className="ink-label">The tools, at one point on the line</p>
-          <ul>
-            {PLATFORMS.map((p) => (
-              <li key={p.name}>
-                <h4>
-                  {p.name} <span>{p.role}</span>
-                </h4>
-                <p>{p.body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="pline__never">
-          <p className="ink-label">Neither tool is used to</p>
-          <ul>
-            {DO_NOT.map((d) => (
-              <li key={d}>{d}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {gateSlot && <div className="pline__case">{gateSlot}</div>}
-    </div>
+    </Settle>
   );
 }

@@ -178,7 +178,10 @@ function inline(text: string, key: string): ReactNode[] {
         </strong>
       );
     } else {
-      out.push(<em key={k}>{star ?? under}</em>);
+      /* Italic is set as <i>: a show title in running text is a cited
+         title, not stress, and the house sets no emphasis element on a
+         subpage. */
+      out.push(<i key={k}>{star ?? under}</i>);
     }
     last = m.index + full.length;
     n += 1;

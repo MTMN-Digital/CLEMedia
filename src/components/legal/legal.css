@@ -1,0 +1,38 @@
+/* ============================================================================
+   The legal documents: the one motion on the page.
+
+   The sheet settles once on mount (14px rise and a fade over 640ms on the
+   house curve) and the title block's type follows 120ms behind over 480ms.
+   The tabs do not move: they are the folder, and the folder is already on the
+   desk. Switching tabs remounts the Document (keyed by doc in Legal.tsx), so
+   the same settle plays for the next sheet and nothing else is added.
+
+   CSS only, so the QA sweep can zero the durations and so reduced motion
+   collapses to the finished state in one place.
+   ========================================================================== */
+
+@keyframes legal-settle {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.legal-sheet .card-stock {
+  animation: legal-settle 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.legal-sheet .legal-title {
+  animation: legal-settle 480ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legal-sheet .card-stock,
+  .legal-sheet .legal-title {
+    animation: none;
+  }
+}

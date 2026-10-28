@@ -1,5 +1,5 @@
 /* ============================================================================
-   What the review is actually for, in the slot beside the line.
+   What the reviews are for: sub-clause 2.7 of the Responsible AI position.
 
    WHAT THIS REPLACES. Until 2026-10-24 this slot held a ruled, empty ledger
    waiting for the first episode the review sent back: "Held for the first
@@ -13,11 +13,16 @@
    automatically. Explain the review process clearly once, then use the
    remaining space to show the value for children, parents and educators."
 
-   The line beside this slot already explains the process once. So this is the
-   remaining space, spent the way the document asks. Every line below is the
-   company's own commitment from its own documents, and not one of them is a
-   claim about what the review caught, because nothing has been supplied
-   about what the review caught.
+   Clause 2 explains the process once. So this is the remaining space, spent
+   the way the document asks. Every line below is the company's own
+   commitment from its own documents, and not one of them is a claim about
+   what the review caught, because nothing has been supplied about what the
+   review caught.
+
+   UNBOXED 2026-10-28. It used to sit in a rounded, bordered box beside the
+   drawing: a sheet on a sheet, once the page became a document. It is three
+   ruled rows now, the mono `dt` over a 17px `dd`, under a sub-clause heading
+   the page file sets.
    ========================================================================== */
 
 const FOR = [
@@ -37,18 +42,13 @@ const FOR = [
 
 export function ForTheChild() {
   return (
-    <div className="rounded-[var(--radius-lg)] border-[1.5px] border-rule p-5 sm:p-7">
-      <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep">
-        What the reviews are for
-      </p>
-      <dl className="mt-5">
-        {FOR.map((f) => (
-          <div key={f.who} className="hairline py-4 first:pt-0">
-            <dt className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">{f.who}</dt>
-            <dd className="t-body mt-1.5 max-w-[46ch] text-body">{f.line}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
+    <dl className="border-b-[1.5px] border-rule">
+      {FOR.map((f) => (
+        <div key={f.who} className="hairline py-4">
+          <dt className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">{f.who}</dt>
+          <dd className="t-body mt-1.5 max-w-[58ch] text-ink">{f.line}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

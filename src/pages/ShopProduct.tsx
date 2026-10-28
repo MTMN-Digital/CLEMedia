@@ -1,60 +1,52 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { PageHero } from "@/components/PageHero";
-import { TextLink, Button, Section, Container, Lead } from "@/components/ui";
+import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
 import { IconDownload, IconArrow } from "@/components/icons";
 import { Settle } from "@/components/Settle";
 import { Docket } from "@/components/shop/Docket";
-import { SheetBench } from "@/components/shop/PrintedSheet";
+import { Cover, coverPicture } from "@/components/shop/Cover";
+import { samplesFor, packFor } from "@/components/shop/samples";
 import { fileFormat, formatPrice, useProduct, formatLabel, paragraphs } from "@/components/shop/catalogue";
+import { COPY } from "@/components/shop/copy";
+import { useBlock } from "@/lib/content";
+import { BOOKS_CREDIT, fileLine } from "@/lib/books";
 import "@/components/shop/buy.css";
+import "@/components/shop/catalogue.css";
 
 /* ============================================================================
-   One product, rebuilt 2026-10-06, carried to the hero's language 2026-10-27.
+   One product, rebuilt 2026-10-06, made a product sheet on 2026-10-28
+   (docs/SUBPAGE-PLANS-2026-10-28.md, "## shop", 4.3).
 
-   WHAT WAS HERE. Twenty-six lines that said "We couldn't find that" and
-   nothing else. The route existed, the shop linked to it, and the template
-   every product would render through had never been written.
+   WHAT IT IS. The page a parent decides on. The real cover is the opening
+   object, lying flat on a ledge at the left; beside it the title, the price,
+   what is in the folder as a ruled list, the acknowledgement and one
+   button. Under the decision, three real pages from the pack as the proof it
+   exists. Then the purchase terms once, as the docket, with the sentence
+   about free activities and the one about a download gone wrong.
 
-   WHAT IT IS NOW. The page a parent decides on: the artwork large and lit as
-   a printed sheet rather than floated as a thumbnail, the title, the price,
-   what is in the pack in the client's own words, and one button. Under the
-   button, before the purchase rather than after it, the terms that matter:
-   the link lives for 24 hours and five downloads, and there is no account to
-   come back to, so the file has to be saved. A buyer who reads that first
-   never meets it as a surprise on /download.
-
-   THE FOUND STATE KEEPS ITS OWN OPENING. It is a buy layout, picture left
-   and decision right, and that is the one shape on the site that a hero
-   frame would push below the fold. What changed on 2026-10-27 is inside it:
-   the acknowledgement is a field with a 2px edge and a 44px hit area, the
-   "no artwork" line is a credit under the picture, and the terms section
-   opens on the docket's own claim instead of a filing label.
+   WHAT CAME OFF. The drawn blank sheet with its staple and punch holes
+   (SheetBench): there is a real cover for every row. The claim heading over
+   the docket. The hero frame on the not-found and failed states, which now
+   open on a status, a plain h1 and the same two buttons.
 
    THE DATA SHAPE IS UNCHANGED. `products` carries title, slug, description,
    price_cents, currency, thumbnail, file_path and active, and that is what
-   this page renders. Page count and age suitability have no column, so they
-   are not invented here and not faked into the spec: they are listed in
-   CONTENT-NEEDED.md, and until the schema carries them the client's own
-   description is where they belong. Price comes from the row and is formatted
-   from integer cents; the checkout call still sends nothing but the slug,
-   because a browser must never be asked for a price.
+   this page renders. Price comes from the row and is formatted from integer
+   cents; the checkout call still sends nothing but the slug, because a
+   browser must never be asked for a price. The "In the folder" lines come
+   from src/lib/books.ts for a row that names its episode, which is the one
+   table /app also prints; a row that names none renders the lines of its
+   description's first paragraph, one per book, exactly as the admin wrote
+   them.
 
    NOT FOUND is a real state, not an error: a product can be taken off sale at
    any time from the admin panel, and the link is already out in the world on
    somebody's receipt. So it apologises, says what probably happened, and
-   gives the two routes that help. It and the load failure open in the hero's
-   frame, on the plain ink panel, because a page with no product has nothing
-   else to open on, and the drawn blank sheet that used to stand beside the
-   apology was a drawing of nothing.
+   gives the two routes that help.
 
-   THE FORMAT IS READ, NOT ASSUMED, since 2026-10-27. The first products are
-   episode packs: a zip folder with the episode's PDFs inside. The docket
-   used to state "Format: PDF" as a constant, which was true of the plan and
-   false of the packs, so the row and the heading over it now name what the
-   stored file actually is. The cover's alt text is the one the admin wrote
-   for it, with the old "The cover of ..." as the fallback.
+   THE FORMAT IS READ, NOT ASSUMED. The docket names what the stored file is,
+   a zip of PDFs or a single PDF, off its own extension.
    ========================================================================== */
 
 /* True of every file in this shop. Stated as a docket so the promise and the
@@ -63,16 +55,20 @@ import "@/components/shop/buy.css";
 function terms(format: null | "zip" | "pdf") {
   return [
     { k: "Format", v: formatLabel(format) },
+    { k: "Pay by card", v: "Stripe" },
     { k: "Delivery", v: "straight away" },
     { k: "Link valid for", v: "24 hours", strong: true },
     { k: "Downloads allowed", v: "5", strong: true },
     { k: "Account created", v: "none" },
     /* The consequence of "straight away", stated where the other terms are
-       rather than left to the policy page. Added 2026-10-13 with the
-       acknowledgement above the button. */
+       rather than left to the policy page, and again above the button as the
+       acknowledgement. */
     { k: "Right to cancel", v: "ends on download", strong: true },
   ];
 }
+
+const COVER_SIZES = "(min-width: 1024px) 52vw, 100vw";
+const PAGE_SIZES = "(min-width: 640px) 30vw, 78vw";
 
 export default function ShopProduct() {
   const { slug } = useParams();
@@ -83,11 +79,17 @@ export default function ShopProduct() {
   /* Article 16(m) of the Consumer Rights Directive. Digital content delivered
      immediately loses the right of withdrawal only where the buyer gave prior
      express consent and acknowledged losing it, and the seller is the one who
-     has to be able to show it was given. The terms already said the right ends
-     on download, which is the correct rule and not the required step: nobody
-     consents by reading a policy. The API refuses to open a session without
-     this flag, so the box is the gate rather than a formality beside one. */
+     has to be able to show it was given. The API refuses to open a session
+     without this flag, so the box is the gate rather than a formality. */
   const [ack, setAck] = useState(false);
+  const c = {
+    samplesHeading: useBlock("shop", "product.samples.heading", COPY["product.samples.heading"]),
+    samplesCredit: useBlock("shop", "product.samples.credit", COPY["product.samples.credit"]),
+    shelfLink: useBlock("shop", "product.shelf.link", COPY["product.shelf.link"]),
+    freeLine: useBlock("shop", "product.free.line", COPY["product.free.line"]),
+    docketFoot: useBlock("shop", "product.docket.foot", COPY["product.docket.foot"]),
+    wrongLine: useBlock("shop", "product.wrong.line", COPY["product.wrong.line"]),
+  };
 
   // Stripe's cancel_url sends a buyer back here with this flag. Saying so
   // plainly is the difference between a cancelled checkout and a site that
@@ -118,13 +120,11 @@ export default function ShopProduct() {
   }
 
   /* ── Loading ───────────────────────────────────────────────────────────
-     Deliberately quiet: one line, no skeleton, no spinner. The page below it
-     is one request away and a flashing grey wireframe is worse than a pause,
-     and so is a hero frame that appears for half a second and is replaced. */
+     Deliberately quiet: one line, no skeleton, no spinner. */
   if (q.state === "loading") {
     return (
       <>
-        <Seo title="Loading" description="Loading this printable." path={`/shop/${slug ?? ""}`} noIndex />
+        <Seo title="Loading" description="Loading this pack." path={`/shop/${slug ?? ""}`} noIndex />
         <Section>
           <Container width="wide">
             <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
@@ -147,38 +147,21 @@ export default function ShopProduct() {
           noIndex
         />
         {/* NOT "not on the shelf". A request that failed has established
-            nothing about whether this file exists, and telling somebody
-            their link is wrong when the database simply did not answer
-            sends them away from a product that is on sale. */}
-        <PageHero
-          id="product-h"
-          size="short"
-          tone="ink"
-          eyebrow={
-            <>
-              Shop<span>Could not load</span>
-            </>
-          }
-          aside={<>Something went wrong at our end, not yours.</>}
-          title={
-            <>
-              We could not <em>load this one</em>
-            </>
-          }
-          actions={
-            <>
+            nothing about whether this file exists. */}
+        <Section labelledBy="product-h" pad={["normal", "open"]}>
+          <Container width="wide">
+            <Kicker className="eyebrow-sm">Could not load</Kicker>
+            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">We could not load this one</h1>
+            <Lead className="mt-7 max-w-[46ch]">
+              Something went wrong at our end, not yours. Reload the page, and if it keeps
+              happening tell us and we will look at it.
+            </Lead>
+            <div className="mt-9 flex flex-wrap gap-4">
               <Button onClick={() => window.location.reload()}>Try again</Button>
               <Button to="/shop" variant="quiet">
                 Back to the shop
               </Button>
-            </>
-          }
-        />
-        <Section pad={["tight", "open"]}>
-          <Container width="wide">
-            <Lead className="max-w-[46ch]">
-              Reload the page, and if it keeps happening tell us and we will look at it.
-            </Lead>
+            </div>
           </Container>
         </Section>
       </>
@@ -189,29 +172,16 @@ export default function ShopProduct() {
   if (q.state === "empty") {
     return (
       <>
-        <Seo
-          title="Not found"
-          description="This printable could not be found."
-          path={`/shop/${slug ?? ""}`}
-          noIndex
-        />
-        <PageHero
-          id="product-h"
-          size="short"
-          tone="ink"
-          eyebrow={
-            <>
-              Shop<span>Not on sale</span>
-            </>
-          }
-          aside={<>Nothing was charged.</>}
-          title={
-            <>
-              That one is not <em>on the shelf</em>
-            </>
-          }
-          actions={
-            <>
+        <Seo title="Not found" description="This pack could not be found." path={`/shop/${slug ?? ""}`} noIndex />
+        <Section labelledBy="product-h" pad={["normal", "open"]}>
+          <Container width="wide">
+            <Kicker className="eyebrow-sm">Not on sale</Kicker>
+            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">That one is not on the shelf</h1>
+            <Lead className="mt-7 max-w-[46ch]">
+              Either the link is wrong, or the file has been taken off sale. Nothing was charged,
+              and if you already bought it your download link still works for its full 24 hours.
+            </Lead>
+            <div className="mt-9 flex flex-wrap gap-4">
               <Button to="/shop">
                 See what is on sale
                 <IconArrow size={16} />
@@ -219,15 +189,7 @@ export default function ShopProduct() {
               <Button to="/contact" variant="quiet">
                 Get in touch
               </Button>
-            </>
-          }
-        />
-        <Section pad={["tight", "open"]}>
-          <Container width="wide">
-            <Lead className="max-w-[46ch]">
-              Either the link is wrong, or the file has been taken off sale. Nothing was charged,
-              and if you already bought it your download link still works for its full 24 hours.
-            </Lead>
+            </div>
           </Container>
         </Section>
       </>
@@ -237,14 +199,32 @@ export default function ShopProduct() {
   const p = q.data;
   const body = paragraphs(p.description);
   const format = fileFormat(p.file_path);
+  const pack = packFor(p);
+  const cover = coverPicture(p);
+  const samples = pack ? samplesFor(pack) : null;
+
+  /* What is in the folder: the pack's own file table when the row names its
+     episode; otherwise the description's first paragraph when it is written
+     as one line per book. The description's remaining paragraphs run as
+     prose; when there are none and the pack is known, the folder sentence
+     the plan drafts for the admin stands in. */
+  const firstLines = (body[0] ?? "").split("\n").map((l) => l.trim()).filter(Boolean);
+  const firstIsList = firstLines.length >= 2;
+  const folder = pack ? pack.files.map(fileLine) : firstIsList ? firstLines : null;
+  const prose = firstIsList ? body.slice(1) : body;
+  const fallbackProse =
+    pack && prose.length === 0
+      ? `${pack.pdfs === 4 ? "Four" : "Three"} A4 PDFs in one folder, for Episode ${pack.episode}, ${pack.title}. Print as many copies as you need at home or in a classroom.`
+      : null;
 
   return (
     <>
       <Seo
         title={p.title}
         description={
-          body[0] ??
-          `${p.title}, a printable from The Pawsitive Pugs and Pals. Download it straight away, no account needed.`
+          prose[0] ??
+          fallbackProse ??
+          `${p.title}, a printable pack from The Pawsitive Pugs and Pals. Download it straight away, no account needed.`
         }
         path={`/shop/${p.slug}`}
       />
@@ -257,27 +237,21 @@ export default function ShopProduct() {
             <span className="text-ink">{p.title}</span>
           </p>
 
-          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-20 xl:gap-28">
-            {/* ─── The artwork, printed. A thumbnail floated on a page is a
-                file; the same image on a lit sheet is the thing arriving in
-                the post. Sticky on desktop so it stays beside the terms. ─── */}
+          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
+            {/* ─── The cover, the opening object. Flat on a ledge, sticky on
+                desktop so it stays beside the decision. One child, so Settle
+                moves it as one unit. ─── */}
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <SheetBench
-                annotate={false}
-                /* No artwork is a fact about the file, so it is written as a
-                   credit: small, mono, right aligned under the picture. */
-                caption={!p.thumbnail ? "No artwork has been uploaded for this file yet." : undefined}
-              >
-                {p.thumbnail ? (
-                  <img
-                    src={p.thumbnail}
-                    alt={p.thumbnail_alt?.trim() || `The cover of ${p.title}`}
-                    className="h-full w-full object-cover"
-                    loading="eager"
-                    decoding="async"
-                  />
-                ) : undefined}
-              </SheetBench>
+              <Settle>
+                <figure className="m-0">
+                  <div className="rounded-[2px] bg-paper-3 px-5 pt-5 pb-7 sm:px-8 sm:pt-8 sm:pb-10">
+                    <Cover product={p} sizes={COVER_SIZES} priority />
+                  </div>
+                  <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] text-body sm:text-right">
+                    {cover ? `Cover of the activity book. ${BOOKS_CREDIT}` : "No artwork has been uploaded for this file yet."}
+                  </figcaption>
+                </figure>
+              </Settle>
             </div>
 
             {/* ─── The decision. ─── */}
@@ -295,11 +269,22 @@ export default function ShopProduct() {
                 {formatPrice(p.price_cents, p.currency)}
               </p>
 
-              {body.length > 0 && (
-                <div className="mt-7 max-w-[54ch] space-y-5 t-prose text-body">
-                  {body.map((para) => (
-                    <p key={para.slice(0, 40)}>{para}</p>
-                  ))}
+              {folder && (
+                <div className="mt-8 max-w-[54ch]">
+                  <p className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">In the folder</p>
+                  <ul className="mt-3 border-t-[1.5px] border-rule">
+                    {folder.map((line) => (
+                      <li key={line} className="border-b-[1.5px] border-rule py-3 text-[17px] leading-[1.5] text-ink">
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {(prose.length > 0 || fallbackProse) && (
+                <div className="mt-6 max-w-[54ch] space-y-5 t-prose text-body">
+                  {prose.length > 0 ? prose.map((para) => <p key={para.slice(0, 40)}>{para}</p>) : <p>{fallbackProse}</p>}
                 </div>
               )}
 
@@ -323,7 +308,12 @@ export default function ShopProduct() {
                   </span>
                 </label>
 
-                <Button onClick={() => void buy()} disabled={busy || !ack} size="large" className="mt-6">
+                <Button
+                  onClick={() => void buy()}
+                  disabled={busy || !ack}
+                  size="large"
+                  className="mt-6 w-full justify-center sm:w-auto"
+                >
                   {busy ? "Opening Stripe…" : `Buy for ${formatPrice(p.price_cents, p.currency)}`}
                   <IconDownload size={17} />
                 </Button>
@@ -343,23 +333,58 @@ export default function ShopProduct() {
         </Container>
       </Section>
 
-      {/* The terms, on the wall as a receipt, the same room /shop puts them
-          in. The heading is the docket's first two rows in a sentence. */}
+      {/* ═══ THREE PAGES FROM THE PACK. The proof the thing is real: the first
+          activity page, the first colouring page and page two of the booklet,
+          at the files' own proportions, each captioned. A scroll-snap row on
+          a phone, which the reader moves; nothing advances on its own. ═══ */}
+      {samples && (
+        <Section labelledBy="samples-h" pad="normal">
+          <Container width="wide">
+            <h2 id="samples-h" className="t-h2 max-w-[24ch]">{c.samplesHeading}</h2>
+            <p className="mt-4 font-mono text-[13px] uppercase tracking-[0.12em] text-body sm:hidden">
+              3 pages, swipe
+            </p>
+            <Settle as="ul" className="cat-samples mt-8 sm:mt-10">
+              {samples.map((s, i) => (
+                <li key={s.caption} style={{ "--i": i } as CSSProperties}>
+                  <figure className="m-0">
+                    <span className="cat-page">
+                      <picture>
+                        <source type="image/webp" srcSet={`${s.webp} ${s.width}w, ${s.webp2x} ${s.width * 2}w`} sizes={PAGE_SIZES} />
+                        <img
+                          src={s.jpg}
+                          srcSet={`${s.jpg} ${s.width}w, ${s.jpg2x} ${s.width * 2}w`}
+                          sizes={PAGE_SIZES}
+                          width={s.width}
+                          height={s.height}
+                          alt={s.alt}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </picture>
+                    </span>
+                    <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] text-body">{s.caption}</figcaption>
+                  </figure>
+                </li>
+              ))}
+            </Settle>
+            <p className="mt-7 font-mono text-[13px] leading-[1.6] text-body">{c.samplesCredit}</p>
+          </Container>
+        </Section>
+      )}
+
+      {/* ═══ THE TERMS, ONCE. The docket is the receipt the buyer meets again
+          on /download, with the figures filled in. A plain block: the plan
+          names two entrances on this page, the cover and the sample pages,
+          and nothing else moves. ═══ */}
       <Section labelledBy="terms-h" pad="tight" className="wall">
         <Container>
-          <Settle className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
+          <div className="mx-auto grid max-w-[62ch] gap-10 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-20">
             <div>
-              <h2 id="terms-h" className="t-h2 max-w-[14ch]">
-                {format === "pdf" ? "A PDF" : "A zip of PDFs"}, delivered straight away.
-              </h2>
-              <p className="t-body mt-6 max-w-[44ch] text-body">
-                Printables are drawn from <em>The Pawsitive Pugs &amp; Pals&reg;</em>. Free
-                activities live on the show's own site, and the interactive ones are part of
-                PupsPlayer&trade;.
-              </p>
+              <p id="terms-h" className="t-body max-w-[44ch] text-body">{c.freeLine}</p>
               <p className="mt-5">
                 <TextLink to="/shop">
-                  Everything else on the shelf
+                  {c.shelfLink}
                   <IconArrow size={15} />
                 </TextLink>
               </p>
@@ -369,12 +394,15 @@ export default function ShopProduct() {
               rows={terms(format)}
               foot={
                 <>
-                  Save the file as soon as it downloads. There is no account here, so there is
-                  nowhere to come back to it, and the link stops working after a day.
+                  {c.docketFoot} {c.wrongLine}{" "}
+                  <TextLink to="/contact" className="text-[15px]">
+                    Get in touch
+                    <IconArrow size={14} />
+                  </TextLink>
                 </>
               }
             />
-          </Settle>
+          </div>
         </Container>
       </Section>
     </>
