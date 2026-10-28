@@ -6,7 +6,8 @@ import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
 import { ClosingLine } from "@/components/ClosingLine";
 import { Container, Section, TextLink } from "@/components/ui";
-import { DrawnRule } from "@/components/draw/kit";
+import { DrawnRule, DrawnBox } from "@/components/draw/kit";
+import "@/components/story/letter.css";
 import { Watermark } from "@/components/draw/Mark";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
@@ -72,7 +73,7 @@ const GRID = "grid";
 const OPEN_GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[30rem_minmax(0,1fr)]";
 /* Running text in columns. Margins, not space-y: a top margin would push the
    first paragraph of the second column down out of line with the first. */
-const PROSE = "t-lead text-body lg:columns-2 lg:gap-x-16 [&>p]:mb-6 [&>p:last-child]:mb-0";
+const PROSE = "relative t-lead text-body lg:columns-2 lg:gap-x-16 [&>p]:mb-6 [&>p:last-child]:mb-0";
 /* A plate inside the letter: the container's full width. */
 const PLATE = "";
 
@@ -80,6 +81,16 @@ const PLATE = "";
    muted (muted is the floor of AA on the lightest paper). Right-aligned from
    lg; on a phone a right-aligned caption hangs off the picture it belongs
    to, so it sits left. */
+/* The drawn rule between the two columns, as a newspaper rules its columns
+   apart. Absolute inside the column block; hidden where there is one column. */
+function ColumnRule() {
+  return (
+    <svg className="ink letter-colrule" viewBox="0 0 6 600" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path className="ink-line" vectorEffect="non-scaling-stroke" d="M3 2 C1.6 120, 4.2 240, 2.6 360 C1.8 450, 3.8 520, 2.4 598" fill="none" />
+    </svg>
+  );
+}
+
 function Caption({ children, className = "" }: { className?: string; children: ReactNode }) {
   return (
     <figcaption className={`mt-3 max-w-[60ch] font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:ml-auto lg:text-right ${className}`}>
@@ -183,15 +194,23 @@ export function Story() {
               sentence. The page's one entrance: portrait, dateline, headline
               and first paragraph settle in that order.
 
-              At xl the portrait is 480px square in column one and the name
-              block and headline sit beside it; the letter starts below, at
-              the portrait's left edge. At 390 the portrait is 152px and
-              shares a row with the dateline, so the headline is reached in
-              one screen: stacking a full-width portrait over three mono
-              lines over a six-line headline would push the first paragraph
-              past 1,100px. */}
-          <Settle className={`${OPEN_GRID} grid-cols-[152px_minmax(0,1fr)] gap-x-5 sm:grid-cols-[12rem_minmax(0,1fr)]`}>
-            <div className="self-start lg:row-span-3">
+              The dateline runs across the masthead strip above. At xl the
+              portrait is 480px square in column one with the headline beside
+              it; under lg the portrait is 160px and the headline follows it. */}
+          {/* THE MASTHEAD STRIP, 2026-10-28: the dateline's lines across one
+              row between drawn rules, the way a paper rules off its head. */}
+          <div className="letter-double" aria-hidden="true">
+            <DrawnRule v={0} />
+            <DrawnRule v={2} />
+          </div>
+          <p className="letter-mast">
+            {datelineLines.map((line, i) => (
+              <span key={i}>{line}</span>
+            ))}
+          </p>
+          <DrawnRule v={1} />
+          <Settle className={`${OPEN_GRID} mt-10 lg:mt-14`}>
+            <div className="w-40 self-start sm:w-48 lg:w-auto">
               <Figure
                 asset="person.conor"
                 override={heroImage ?? conor?.photo ?? null}
@@ -201,16 +220,9 @@ export function Story() {
                 priority
               />
             </div>
-            {/* The dateline. Plain mono lines, as a letter has: not a label
-                over the page, and not status rows. */}
-            <p className="self-center font-mono text-[14px] uppercase leading-[1.7] tracking-[0.02em] text-body lg:col-start-2 lg:self-start">
-              {datelineLines.map((line, i) => (
-                <span key={i} className="block">{line}</span>
-              ))}
-            </p>
             {/* Sentence one of the letter, verbatim. A fact, not a claim.
                 Plain text: never passed through an emphasis helper. */}
-            <h1 id="story-h" className="t-h1 col-span-2 mt-10 max-w-[24ch] lg:col-span-1 lg:col-start-2">
+            <h1 id="story-h" className="t-h1 mt-8 max-w-[24ch] lg:col-start-2 lg:mt-0 lg:self-end">
               {heroTitle}
             </h1>
           </Settle>
@@ -219,7 +231,8 @@ export function Story() {
               margin rule. The paragraph gap carries across the block edge so
               the letter never breaks its own rhythm. */}
           <Settle className={`${GRID} mt-14 lg:mt-20`}>
-            <div className={PROSE}>
+            <div className={`${PROSE} letter-dropcap`}>
+              <ColumnRule />
               <p>{letterOpen}</p>
               {letterSaw.map((p, i) => <p key={i}>{p}</p>)}
             </div>
@@ -231,12 +244,15 @@ export function Story() {
               keeps both pugs on the grass in frame. */}
           <Settle className={`${GRID} my-10 sm:my-12`}>
             <figure className={PLATE}>
-              <Figure
-                asset="story.garden"
-                rounded="rounded-[var(--radius-md)]"
-                position="center 45%"
-                sizes="(min-width: 1440px) 1376px, 100vw"
-              />
+              <div className="letter-print">
+                <DrawnBox v={0} />
+                <Figure
+                  asset="story.garden"
+                  rounded="rounded-none"
+                  position="center 45%"
+                  sizes="(min-width: 1440px) 1376px, 100vw"
+                />
+              </div>
               <Caption><Marks text={gardenCaption} /></Caption>
             </figure>
           </Settle>
@@ -246,6 +262,7 @@ export function Story() {
               its facts is in these paragraphs. */}
           <Settle className={GRID}>
             <div className={PROSE}>
+              <ColumnRule />
               {letterHere.map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </Settle>
@@ -256,13 +273,17 @@ export function Story() {
               floated so the text wraps round it. */}
           <Settle className="mt-6">
             <div className={PROSE}>
+              <ColumnRule />
               <p>{letterPeople}</p>
               {letterBuild.slice(0, 1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
               {/* Floated inside the column so the next paragraphs wrap round
                   it, as a picture sits in a newspaper column. No card: its
                   border would measure under 3:1 on paper. */}
               <figure className="mb-6 break-inside-avoid sm:float-right sm:mb-4 sm:ml-6 sm:w-[46%] sm:max-w-[20rem]">
-                <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="(min-width: 640px) 320px, 100vw" />
+                <div className="letter-print">
+                  <DrawnBox v={1} />
+                  <Figure asset="home.characters" rounded="rounded-none" sizes="(min-width: 640px) 320px, 100vw" />
+                </div>
                 <Caption>{charactersCaption}</Caption>
               </figure>
               {letterBuild.slice(1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
@@ -294,6 +315,7 @@ export function Story() {
               in his own words, followed by its link. */}
           <Settle className={GRID}>
             <div className={PROSE}>
+              <ColumnRule />
               {letterReach.map((p, i) => <p key={i}>{p}</p>)}
               <ul className="flex flex-wrap gap-x-10 gap-y-3 pt-1">
                 <li>
@@ -341,7 +363,10 @@ export function Story() {
           <Settle className={`${GRID} mt-16`}>
             <figure className={PLATE} aria-label="The mission film">
               <p className="font-mono text-[14px] leading-[1.7] tracking-[0.02em] text-body">{filmPs}</p>
-              <MissionVideo className="mt-4" />
+              <div className="letter-print mt-4">
+                <DrawnBox v={2} />
+                <MissionVideo />
+              </div>
               <Caption>{filmNote}</Caption>
             </figure>
           </Settle>

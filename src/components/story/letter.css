@@ -1,0 +1,67 @@
+/* ─── The letter, set as a newspaper ──────────────────────────────────────
+   2026-10-28: the client asked for /story to read a little like a real
+   newspaper, drawn in the site's own linework. Four devices, nothing more:
+   a masthead strip between two drawn rules, a drop cap, a drawn column rule
+   between the two columns, and pictures printed inside a drawn frame. */
+
+/* The masthead strip: the dateline's three lines across one row. */
+.letter-mast {
+  display: grid;
+  gap: 0.35rem;
+  padding-block: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-body);
+}
+@media (min-width: 900px) {
+  .letter-mast {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: baseline;
+  }
+  .letter-mast > :nth-child(2) { text-align: center; }
+  .letter-mast > :nth-child(3) { text-align: right; }
+}
+/* Two rules close together, the way a masthead is ruled off. */
+.letter-double { display: grid; gap: 4px; }
+
+/* The drop cap: the first letter of the letter, three lines deep. */
+.letter-dropcap > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 4.1em;
+  line-height: 0.82;
+  margin: 0.08em 0.1em 0 -0.02em;
+  color: var(--color-ink);
+}
+
+/* The column rule: drawn, sitting in the gap between the two columns. Only
+   where there are two columns. */
+.letter-cols { position: relative; }
+.letter-colrule { display: none; }
+@media (min-width: 1024px) {
+  .letter-colrule {
+    display: block;
+    position: absolute;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    left: 50%;
+    width: 6px;
+    height: auto;
+    transform: translateX(-50%);
+    overflow: visible;
+    pointer-events: none;
+  }
+  .letter-colrule .ink-line {
+    stroke-width: 2;
+    stroke: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+}
+
+/* A printed picture: square corners, a margin of paper, a drawn frame. */
+.letter-print {
+  position: relative;
+  padding: clamp(8px, 1vw, 14px);
+}
