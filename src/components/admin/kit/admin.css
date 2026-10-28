@@ -855,3 +855,35 @@ html:has(.adm) { background: var(--color-paper-2); }
 .adm .btn-primary:disabled:hover { background: var(--color-paper-3); color: var(--color-body); }
 /* A filter above a table or list keeps its distance from it. */
 .adm-field:has(.adm-seg) + .adm-table { margin-top: 14px; }
+
+/* ─── The console in CLÉ's own colours (2026-10-28) ───────────────────────
+   Cream to work on, the bench's umber for whatever is selected, the grove's
+   olive for whatever does something. Red is kept for delete and for errors
+   only, so it always means "careful". Both darks carry cream above 6.4:1. */
+.adm {
+  --adm-on: var(--color-bench);
+  --adm-act: var(--color-grove);
+  --adm-act-hover: #3b4636;
+}
+.adm *:focus-visible { outline-color: var(--adm-act); }
+.adm .btn-primary { background: var(--adm-act); color: #fdf8ed; }
+.adm .btn-primary:hover { background: var(--adm-act-hover); }
+.adm .btn-primary:disabled,
+.adm .btn-primary:disabled:hover { background: var(--color-paper-3); color: var(--color-body); }
+.adm-shell > .adm-nav a[aria-current="page"],
+.adm-seg button[aria-pressed="true"],
+.adm-wiz__rail [data-state="current"] .adm-wiz__num {
+  background: var(--adm-on);
+  border-color: var(--adm-on);
+  color: #fdf8ed;
+}
+.adm-wiz__rail [data-state="done"] .adm-wiz__num { border-color: var(--adm-act); background: var(--adm-act); color: #fdf8ed; }
+.adm-start i { background: var(--adm-act); }
+.adm-start a { border-color: var(--color-rule-soft); }
+.adm-start a:hover, .adm-tile:hover { border-color: var(--adm-act); background: var(--color-raised); }
+.adm-head__back, .adm-linkbtn, .adm-table a { color: var(--adm-act); }
+.adm-toast { background: var(--adm-on); }
+.adm-check input { accent-color: var(--adm-act); }
+.adm-progress > span { background: var(--adm-act); }
+.adm-nav__count { background: var(--adm-act); }
+.adm-seg { border-color: var(--color-rule-soft); }
