@@ -60,18 +60,21 @@ import { COPY } from "@/components/story/copy";
    63.85 s); nothing on the page says who narrates the film.
    ========================================================================== */
 
-/* The column template for the letter, from 2026-10-28. The letter runs from
-   the container's own left edge, the portrait's edge, at lead size in a wide
-   measure; the right column holds side notes (the characters frame) and
-   pictures span both. The client found the earlier narrow letter column,
-   set in from the left with pictures hanging off it, looked off centre. */
-const GRID = "grid lg:grid-cols-[minmax(0,46rem)_minmax(0,1fr)] lg:gap-x-16";
+/* The letter, from 2026-10-28: full width, set in two newspaper columns from
+   lg, one column under it. A single line across the whole container would run
+   to about 150 characters, which is why it is columns and not one wide
+   measure. Each movement is its own short column block, so a reader never
+   scrolls back up a long column; pictures break the letter at full width or
+   float inside a column with the text wrapping round them. The client found
+   the earlier narrow letter column off centre and too compressed. */
+const GRID = "grid";
 /* The opening only: the portrait, then the dateline and headline beside it. */
 const OPEN_GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[30rem_minmax(0,1fr)]";
-/* The letter: column one, running text at lead size. */
-const PROSE = "space-y-6 t-lead text-body";
-/* A plate inside the letter: both columns, the container's full width. */
-const PLATE = "lg:col-span-2";
+/* Running text in columns. Margins, not space-y: a top margin would push the
+   first paragraph of the second column down out of line with the first. */
+const PROSE = "t-lead text-body lg:columns-2 lg:gap-x-16 [&>p]:mb-6 [&>p:last-child]:mb-0";
+/* A plate inside the letter: the container's full width. */
+const PLATE = "";
 
 /* A provenance line under a picture. Mono, 13px, `text-body` rather than
    muted (muted is the floor of AA on the lightest paper). Right-aligned from
@@ -249,27 +252,19 @@ export function Story() {
 
           {/* MOVEMENT THREE: the people, and the characters. Paragraph nine
               names the people; the frame of the characters stands beside the
-              paragraph that names Finn and Fia, laid straight, not tilted: a
-              frame laid straight beside prose reads as an enclosure. From lg it
-              sits in the right column beside paragraphs 10 and 11 (rows 1
-              and 2); under lg it falls in flow between them. */}
-          <Settle className={`${GRID} mt-5`}>
+              paragraph that names Finn and Fia, laid straight, not tilted,
+              floated so the text wraps round it. */}
+          <Settle className="mt-6">
             <div className={PROSE}>
               <p>{letterPeople}</p>
-            </div>
-          </Settle>
-          <Settle className={`${GRID} mt-5`}>
-            <div className={PROSE}>
               {letterBuild.slice(0, 1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
-            </div>
-            {/* No card around it: the card's picture border measures under
-                3:1 on paper, and the garden above sits on the paper without
-                one, so this frame does the same. */}
-            <figure className="mt-8 max-w-[22rem] self-start lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mt-0">
-              <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="352px" />
-              <Caption>{charactersCaption}</Caption>
-            </figure>
-            <div className={`${PROSE} mt-8 lg:mt-6`}>
+              {/* Floated inside the column so the next paragraphs wrap round
+                  it, as a picture sits in a newspaper column. No card: its
+                  border would measure under 3:1 on paper. */}
+              <figure className="mb-6 break-inside-avoid sm:float-right sm:mb-4 sm:ml-6 sm:w-[46%] sm:max-w-[20rem]">
+                <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="(min-width: 640px) 320px, 100vw" />
+                <Caption>{charactersCaption}</Caption>
+              </figure>
               {letterBuild.slice(1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
               <p className="pt-1">
                 <TextLink to="/ethical-ai">{buildLink}<IconArrow size={15} /></TextLink>
