@@ -71,7 +71,9 @@ function PageList() {
               <Link to={`/admin/pages/${p.id}`} className="pg-list__row">
                 <span className="pg-list__name">{p.label}</span>
                 {n > 0 && <StatusPill tone="warn">{n} {n === 1 ? "change" : "changes"}</StatusPill>}
-                <span aria-hidden="true" className="pg-list__go">&rsaquo;</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="pg-list__go">
+                  <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </Link>
             </li>
           );

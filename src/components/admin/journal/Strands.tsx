@@ -232,7 +232,7 @@ export function StrandEditor() {
   return (
     <>
       <PageHeader back={back} title={row ? row.name : "New strand"} />
-      <div className="adm-stack pb-24">
+      <div className="adm-stack">
         <section className="adm-card">
           <TextInput label="Name" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} error={tried ? nameError : null} />
           <TextInput

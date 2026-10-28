@@ -53,7 +53,7 @@ export function DataTable<T>({
       <thead>
         <tr>
           {columns.map((c) => (
-            <th key={c.key} scope="col" style={c.numeric ? { textAlign: "right" } : undefined}>
+            <th key={c.key} scope="col" className={c.numeric ? "adm-num" : undefined}>
               {c.label}
             </th>
           ))}
@@ -81,7 +81,7 @@ export function DataTable<T>({
                 data-primary={c.primary ? "true" : undefined}
                 data-hide-phone={c.hideOnPhone ? "true" : undefined}
                 className={c.numeric ? "adm-num" : undefined}
-                style={c.numeric ? { textAlign: "right" } : undefined}
+
               >
                 {c.render(r)}
               </td>

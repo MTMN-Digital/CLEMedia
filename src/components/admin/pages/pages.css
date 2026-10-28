@@ -69,4 +69,4 @@
 }
 .pg-list__row:hover .pg-list__name { text-decoration: underline; text-underline-offset: 3px; }
 .pg-list__name { flex: 1; min-width: 0; }
-.pg-list__go { font-size: 22px; line-height: 1; color: var(--color-body); }
+.pg-list__go { flex: none; color: var(--color-body); }

@@ -149,25 +149,29 @@ function Home() {
     <>
       <header className="adm-head">
         <div>
-          <h1 className="adm-hello">{greeting()}</h1>
+          <h1>{greeting()}</h1>
           <p>Everything you save goes live on the site straight away, unless it is a draft or hidden.</p>
         </div>
       </header>
-      <h2 className="adm-h2">Start something</h2>
+      <h2 className="adm-sub">Start something</h2>
       <ul className="adm-start">
         {START.map((s) => (
           <li key={s.to}>
             <Link to={s.to}>
-              <strong>{s.title}</strong>
-              <span>{s.body}</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <i aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                  <path d="M9 3v12M3 9h12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              </i>
+              <span className="min-w-0">
+                <strong>{s.title}</strong>
+                <span>{s.body}</span>
+              </span>
             </Link>
           </li>
         ))}
       </ul>
-      <h2 className="adm-h2">Everything on the site</h2>
+      <h2 className="adm-sub">Everything on the site</h2>
       <ul className="adm-tiles">
         {PANELS.map((p) => {
           const c = counts[p.key];
@@ -203,12 +207,13 @@ function Nav() {
     <>
     <button type="button" className="adm-menu" aria-expanded={open} aria-controls="adm-sections" onClick={() => setOpen((o) => !o)}>
       <span>{here}</span>
-      {unread > 0 && <span className="adm-nav__count">{unread} new</span>}
+      {unread > 0 && <span className="adm-nav__count">{unread}</span>}
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
         <path d={open ? "M3 10l5-5 5 5" : "M3 6l5 5 5-5"} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </button>
     <nav id="adm-sections" className="adm-nav" data-open={open} aria-label="Sections">
+      <div className="adm-nav__in">
       <NavLink to="/admin" end>Home</NavLink>
       {PANELS.map((p) => (
         <Fragment key={p.key}>
@@ -219,6 +224,7 @@ function Nav() {
           </NavLink>
         </Fragment>
       ))}
+      </div>
     </nav>
     </>
   );

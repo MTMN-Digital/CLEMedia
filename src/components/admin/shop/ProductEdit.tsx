@@ -356,7 +356,7 @@ export function ProductEdit() {
     <>
       {header}
       <form
-        className="adm-stack pb-28"
+        className="adm-stack"
         onSubmit={(e) => {
           e.preventDefault();
           void onSave();

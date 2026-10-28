@@ -376,7 +376,7 @@ export function PostEditor() {
         actions={row && <StatusPill tone={STATE_TONE[postState(row)]}>{stateLabel(row)}</StatusPill>}
       />
 
-      <div className="adm-stack pb-24">
+      <div className="adm-stack">
         <section className="adm-card">
           <h2 className="adm-h2">The piece</h2>
           {piece}
