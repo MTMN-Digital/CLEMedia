@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteRow, getRow, countRows, insertRow, type MediaRow, updateRow, useLoad } from "@/lib/admin";
 import {
+  TextArea,
+  Select,
+  TextInput,
+  Notice,
+  SaveBar,
+  Wizard,
+  imageError,
   useConfirm,
   AdminButton,
-  imageError,
-  useToast,
-  Select,
-  useSaveState,
-  ImageUpload,
-  TextArea,
-  TextInput,
-  PageHeader,
-  SaveBar,
   type ImageValue,
-  Notice,
+  useToast,
+  PageHeader,
+  ImageUpload,
+  useSaveState,
 } from "@/components/admin/kit";
 import { urlOrNull, urlError } from "../links/urls";
 
@@ -146,30 +147,8 @@ export function MediaForm() {
     );
   }
 
-  return (
+  const what = (
     <>
-      <PageHeader
-        title={isNew ? "Add an entry" : saved.title || "Edit entry"}
-        intro={isNew ? "An article, podcast, interview or video the company appeared in." : undefined}
-        back={{ to: "/admin/media", label: "Back to media and podcast" }}
-        actions={
-          !isNew && (
-            <a href="/media" target="_blank" rel="noreferrer" className="btn btn-quiet btn-sm">
-              View the press page
-            </a>
-          )
-        }
-      />
-
-      {loaded.error !== null && <Notice tone="error">{loaded.error}</Notice>}
-      {loaded.loading && !isNew && <p className="adm-muted" role="status">Loading...</p>}
-
-      <div className="adm-stack">
-        <section className="adm-card" aria-labelledby="media-what-h">
-          <h2 id="media-what-h" className="adm-h2">
-            What it was
-          </h2>
-          <div className="adm-stack">
             <TextInput label="Title" value={draft.title} onChange={(v) => set("title", v)} error={tried ? titleErr : null} hint="As the article, episode or video is titled." disabled={loaded.loading} />
             {/* Each field in its own cell: the kit spaces adjacent fields
                 vertically, which a grid does not want. */}
@@ -183,14 +162,10 @@ export function MediaForm() {
             </div>
             <TextInput label="Date" optional type="date" value={draft.published_on} onChange={(v) => set("published_on", v)} hint="The press page shows the month and year." disabled={loaded.loading} />
             <TextArea label="Description" optional rows={4} value={draft.description} onChange={(v) => set("description", v)} hint="One or two sentences under the title on the press page." disabled={loaded.loading} />
-          </div>
-        </section>
-
-        <section className="adm-card" aria-labelledby="media-where-h">
-          <h2 id="media-where-h" className="adm-h2">
-            Where to find it
-          </h2>
-          <div className="adm-stack">
+    </>
+  );
+  const where = (
+    <>
             <TextInput
               label="Link to the original"
               type="url"
@@ -221,6 +196,81 @@ export function MediaForm() {
               disabled={loaded.loading}
             />
             <ImageUpload label="Picture" value={draft.image} onChange={(v) => set("image", v)} folder="media" hint="Optional. The outlet's logo or a frame from the piece. JPG, PNG, WebP or AVIF, up to 10 MB." />
+    </>
+  );
+
+  if (isNew) {
+    return (
+      <>
+        <PageHeader title="Add a press entry" intro="An article, podcast, interview or video the company appeared in. Three short steps." back={{ to: "/admin/media", label: "Back to media and podcast" }} />
+        <Wizard
+          status={save.status}
+          onShowErrors={setTried}
+          onFinish={onSave}
+          finishLabel="Add to the press page"
+          finishingLabel="Adding"
+          steps={[
+            { title: "What it was", answer: draft.title && [draft.title, draft.outlet].filter(Boolean).join(", "), error: titleErr, body: what },
+            { title: "Where to find it", answer: draft.link, error: linkErr ?? embedErr ?? imgErr, body: where },
+            {
+              title: "Check and add",
+              body: (
+                <dl className="adm-review">
+                  <dt>Title</dt>
+                  <dd>{draft.title}</dd>
+                  <dt>Type</dt>
+                  <dd>{KIND_LABEL[draft.kind]}</dd>
+                  <dt>Outlet</dt>
+                  <dd>{draft.outlet || "Not given"}</dd>
+                  <dt>Date</dt>
+                  <dd>{draft.published_on || "Not given"}</dd>
+                  <dt>Link</dt>
+                  <dd>{draft.link}</dd>
+                  <dt>Picture</dt>
+                  <dd>{draft.image ? "Added" : "None"}</dd>
+                </dl>
+              ),
+            },
+          ]}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <PageHeader
+        title={isNew ? "Add an entry" : saved.title || "Edit entry"}
+        intro={isNew ? "An article, podcast, interview or video the company appeared in." : undefined}
+        back={{ to: "/admin/media", label: "Back to media and podcast" }}
+        actions={
+          !isNew && (
+            <a href="/media" target="_blank" rel="noreferrer" className="btn btn-quiet btn-sm">
+              View the press page
+            </a>
+          )
+        }
+      />
+
+      {loaded.error !== null && <Notice tone="error">{loaded.error}</Notice>}
+      {loaded.loading && !isNew && <p className="adm-muted" role="status">Loading...</p>}
+
+      <div className="adm-stack">
+        <section className="adm-card" aria-labelledby="media-what-h">
+          <h2 id="media-what-h" className="adm-h2">
+            What it was
+          </h2>
+          <div className="adm-stack">
+            {what}
+          </div>
+        </section>
+
+        <section className="adm-card" aria-labelledby="media-where-h">
+          <h2 id="media-where-h" className="adm-h2">
+            Where to find it
+          </h2>
+          <div className="adm-stack">
+            {where}
           </div>
         </section>
       </div>

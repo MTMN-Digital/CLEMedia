@@ -1,6 +1,6 @@
-import { useState, Suspense, useEffect, type FormEvent } from "react";
+import { Fragment, useState, Suspense, useEffect, type FormEvent } from "react";
 import { Helmet } from "react-helmet-async";
-import { Route, Routes, Link, NavLink } from "react-router-dom";
+import { useLocation, Routes, NavLink, Route, Link } from "react-router-dom";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { PANELS, type PanelCount } from "@/components/admin/registry";
 import { ToastProvider, AdminButton, ConfirmProvider, Notice, StatusPill } from "@/components/admin/kit";
@@ -115,7 +115,21 @@ function NotAdmin({ email }: { email: string }) {
   );
 }
 
-function Home() {
+const GROUP: Record<string, string> = { pages: "The site", shop: "Selling", links: "Running it" };
+
+const START = [
+  { to: "/admin/journal/new", title: "Write a journal post", body: "Title, words, a picture, then publish or keep it as a draft" },
+  { to: "/admin/shop/new", title: "Add a product", body: "What it is, the price, the cover and the file" },
+  { to: "/admin/people/new", title: "Add a person", body: "Name, role, photo and bio for the team page" },
+  { to: "/admin/media/new", title: "Add a press entry", body: "An article, podcast, interview or video" },
+];
+
+function greeting(now = new Date()) {
+  const h = now.getHours();
+  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+}
+
+function useCounts() {
   const [counts, setCounts] = useState<Record<string, PanelCount | null>>({});
   useEffect(() => {
     let live = true;
@@ -126,15 +140,34 @@ function Home() {
       live = false;
     };
   }, []);
+  return counts;
+}
 
+function Home() {
+  const counts = useCounts();
   return (
     <>
       <header className="adm-head">
         <div>
-          <h1>Edit the site</h1>
-          <p>Choose what to change. Everything you save goes live on the site straight away, unless it is a draft.</p>
+          <h1 className="adm-hello">{greeting()}</h1>
+          <p>Everything you save goes live on the site straight away, unless it is a draft or hidden.</p>
         </div>
       </header>
+      <h2 className="adm-h2">Start something</h2>
+      <ul className="adm-start">
+        {START.map((s) => (
+          <li key={s.to}>
+            <Link to={s.to}>
+              <strong>{s.title}</strong>
+              <span>{s.body}</span>
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <h2 className="adm-h2">Everything on the site</h2>
       <ul className="adm-tiles">
         {PANELS.map((p) => {
           const c = counts[p.key];
@@ -158,6 +191,39 @@ function Home() {
   );
 }
 
+function Nav() {
+  const { enquiries } = useCounts();
+  const unread = enquiries?.tone === "alert" ? parseInt(enquiries.text, 10) : 0;
+  /* On a phone the sections sit behind one button; choosing one closes it. */
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  useEffect(() => setOpen(false), [pathname]);
+  const here = PANELS.find((p) => pathname.startsWith(p.path))?.label ?? "Home";
+  return (
+    <>
+    <button type="button" className="adm-menu" aria-expanded={open} aria-controls="adm-sections" onClick={() => setOpen((o) => !o)}>
+      <span>{here}</span>
+      {unread > 0 && <span className="adm-nav__count">{unread} new</span>}
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <path d={open ? "M3 10l5-5 5 5" : "M3 6l5 5 5-5"} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+    <nav id="adm-sections" className="adm-nav" data-open={open} aria-label="Sections">
+      <NavLink to="/admin" end>Home</NavLink>
+      {PANELS.map((p) => (
+        <Fragment key={p.key}>
+          {GROUP[p.key] && <span className="adm-nav__group">{GROUP[p.key]}</span>}
+          <NavLink to={p.path}>
+            {p.label}
+            {p.key === "enquiries" && unread > 0 && <span className="adm-nav__count" aria-label={`${unread} new`}>{unread}</span>}
+          </NavLink>
+        </Fragment>
+      ))}
+    </nav>
+    </>
+  );
+}
+
 function Console({ email }: { email: string }) {
   return (
     <ToastProvider>
@@ -176,13 +242,9 @@ function Console({ email }: { email: string }) {
               <AdminButton variant="quiet" size="sm" onClick={() => supabase?.auth.signOut()}>Sign out</AdminButton>
             </div>
           </div>
-          <nav className="adm-nav" aria-label="Sections">
-            <NavLink to="/admin" end>Home</NavLink>
-            {PANELS.map((p) => (
-              <NavLink key={p.key} to={p.path}>{p.label}</NavLink>
-            ))}
-          </nav>
         </div>
+        <div className="adm-shell">
+        <Nav />
         <main className="adm-main">
           <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
             <Routes>
@@ -197,6 +259,7 @@ function Console({ email }: { email: string }) {
             </Routes>
           </Suspense>
         </main>
+        </div>
       </ConfirmProvider>
     </ToastProvider>
   );

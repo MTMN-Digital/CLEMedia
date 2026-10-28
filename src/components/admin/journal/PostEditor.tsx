@@ -2,24 +2,25 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { type Result, useLoad, insertRow, listRows, updateRow, type PostRow, deleteRow, getRow, formatDateTime } from "@/lib/admin";
 import {
-  useToast,
-  TextInput,
-  AdminButton,
-  type ImageValue,
-  useSaveState,
-  useConfirm,
-  SaveBar,
-  PageHeader,
-  slugError,
-  Notice,
-  Segmented,
-  imageError,
-  SlugField,
-  DateTimeInput,
   TextArea,
-  ImageUpload,
-  Select,
+  DateTimeInput,
+  type ImageValue,
+  useConfirm,
   StatusPill,
+  ImageUpload,
+  Wizard,
+  useToast,
+  slugError,
+  imageError,
+  PageHeader,
+  Segmented,
+  Notice,
+  Select,
+  useSaveState,
+  TextInput,
+  SaveBar,
+  AdminButton,
+  SlugField,
 } from "@/components/admin/kit";
 import { PostBody } from "@/components/journal/PostBody";
 import { STATE_TONE, stateLabel, postState } from "./state";
@@ -106,6 +107,7 @@ export function PostEditor() {
   const [tried, setTried] = useState(false);
   const [slugTaken, setSlugTaken] = useState<string | null>(null);
   const [picture, setPicture] = useState<ImageValue | null>(null);
+  const [when, setWhen] = useState<"live" | "draft">("live");
 
   useEffect(() => {
     if (!loaded.data) return;
@@ -233,17 +235,8 @@ export function PostEditor() {
 
   const strandOptions = [{ value: "", label: "No strand" }, ...(strands.data ?? []).map((c) => ({ value: c.id, label: c.name }))];
 
-  return (
+  const piece = (
     <>
-      <PageHeader
-        back={back}
-        title={row ? row.title : "New post"}
-        actions={row && <StatusPill tone={STATE_TONE[postState(row)]}>{stateLabel(row)}</StatusPill>}
-      />
-
-      <div className="adm-stack pb-24">
-        <section className="adm-card">
-          <h2 className="adm-h2">The piece</h2>
           <TextInput label="Title" value={form.title} onChange={(v) => set("title", v)} error={tried ? titleError : null} />
           <SlugField
             value={form.slug}
@@ -270,10 +263,10 @@ export function PostEditor() {
           />
           <TextArea label="Standfirst" optional value={form.excerpt} onChange={(v) => set("excerpt", v)} rows={3} hint="One or two sentences under the title, and the line shown on the journal index." />
           <TextInput label="Written by" optional value={form.author} onChange={(v) => set("author", v)} hint="Left empty, no name is shown." autoComplete="off" />
-        </section>
-
-        <section className="adm-card">
-          <h2 className="adm-h2">Body</h2>
+    </>
+  );
+  const text = (
+    <>
           <Segmented<"preview" | "write">
             label="View"
             hideLabel
@@ -308,15 +301,15 @@ export function PostEditor() {
               )}
             </div>
           )}
-        </section>
-
-        <section className="adm-card">
-          <h2 className="adm-h2">Cover image</h2>
+    </>
+  );
+  const cover = (
+    <>
           <ImageUpload label="Cover image" value={form.image} onChange={(v) => set("image", v)} folder="posts" hint="Optional. Shown at the top of the piece. JPG, PNG, WebP or AVIF, up to 10 MB." />
-        </section>
-
-        <section className="adm-card">
-          <h2 className="adm-h2">Publishing</h2>
+    </>
+  );
+  const publishing = (
+    <>
           <DateTimeInput
             label="Publish date"
             optional
@@ -332,6 +325,76 @@ export function PostEditor() {
             </p>
           )}
           {row && postState(row) === "scheduled" && <p className="adm-muted">Goes live on {formatDateTime(row.published_at)}. Unpublish to hold it.</p>}
+    </>
+  );
+
+  if (!id) {
+    const now = form.published_at === null || new Date(form.published_at).getTime() <= Date.now();
+    const goLive = when === "live";
+    return (
+      <>
+        <PageHeader back={back} title="Write a journal post" intro="Four short steps. Nothing goes on the journal until the last one." />
+        <Wizard
+          status={save.status}
+          onShowErrors={setTried}
+          onFinish={() => void (goLive ? onPublish() : onSave())}
+          finishLabel={goLive ? (now ? "Publish now" : "Schedule it") : "Save as a draft"}
+          finishingLabel={goLive ? "Publishing" : "Saving"}
+          steps={[
+            { title: "The piece", answer: form.title, error: titleError ?? slugTaken ?? slugError(form.slug), body: piece },
+            { title: "Write it", answer: form.body.trim() ? `${form.body.trim().split(/\s+/).length} words` : "Not yet", body: text },
+            { title: "Cover picture", answer: form.image ? "Added" : "None", error: imageError(form.image), body: cover },
+            {
+              title: "Publish",
+              error: goLive && !form.body.trim() ? "Write the piece before publishing it, or save it as a draft." : null,
+              body: (
+                <>
+                  <Segmented<"live" | "draft">
+                    label="When it is finished"
+                    value={when}
+                    onChange={setWhen}
+                    options={[
+                      { value: "live", label: "Put it on the journal" },
+                      { value: "draft", label: "Keep it as a draft" },
+                    ]}
+                  />
+                  {goLive && publishing}
+                </>
+              ),
+            },
+          ]}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <PageHeader
+        back={back}
+        title={row ? row.title : "New post"}
+        actions={row && <StatusPill tone={STATE_TONE[postState(row)]}>{stateLabel(row)}</StatusPill>}
+      />
+
+      <div className="adm-stack pb-24">
+        <section className="adm-card">
+          <h2 className="adm-h2">The piece</h2>
+          {piece}
+        </section>
+
+        <section className="adm-card">
+          <h2 className="adm-h2">Body</h2>
+          {text}
+        </section>
+
+        <section className="adm-card">
+          <h2 className="adm-h2">Cover image</h2>
+          {cover}
+        </section>
+
+        <section className="adm-card">
+          <h2 className="adm-h2">Publishing</h2>
+          {publishing}
         </section>
       </div>
 

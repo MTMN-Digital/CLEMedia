@@ -13,23 +13,24 @@ import {
   deleteRow,
 } from "@/lib/admin";
 import {
-  AdminButton,
-  ImageUpload,
-  useToast,
-  Segmented,
-  type ImageValue,
-  useConfirm,
-  FileUpload,
-  SlugField,
   slugError,
-  useSaveState,
-  PriceField,
-  TextArea,
-  SaveBar,
-  PageHeader,
-  imageError,
   Notice,
+  type ImageValue,
+  AdminButton,
+  useToast,
+  TextArea,
+  FileUpload,
+  PriceField,
   TextInput,
+  imageError,
+  SlugField,
+  SaveBar,
+  useConfirm,
+  PageHeader,
+  Wizard,
+  ImageUpload,
+  useSaveState,
+  Segmented,
 } from "@/components/admin/kit";
 
 /* ============================================================================
@@ -205,7 +206,7 @@ export function ProductEdit() {
       title={isNew ? "Add a product" : stored?.title || "Edit product"}
       intro={
         isNew
-          ? "Fill this in, upload the cover and the file, then publish it or keep it hidden until it is ready."
+          ? "Four short steps. Nothing goes on the shop until the last one."
           : wasPublished
             ? "On the shop now. Changes show on the site as soon as they are saved."
             : "Hidden from the shop. Buyers cannot see it until it is published."
@@ -239,6 +240,118 @@ export function ProductEdit() {
     );
   }
 
+  const fields = {
+    what: (
+      <>
+        <TextInput
+          label="Title"
+          value={form.title}
+          onChange={(v) => set({ title: v })}
+          error={tried ? errs.title : null}
+          hint='For example "The Feather: episode pack".'
+          autoComplete="off"
+        />
+        <SlugField
+          value={form.slug}
+          onChange={(v) => set({ slug: v })}
+          source={form.title}
+          prefix="/shop/"
+          error={tried ? errs.slug : null}
+        />
+        <TextArea
+          label="What is in it"
+          value={form.description}
+          onChange={(v) => set({ description: v })}
+          rows={5}
+          optional
+          hint="List exactly what the buyer gets. Leave a blank line between paragraphs."
+        />
+      </>
+    ),
+    price: <PriceField cents={form.cents} onChange={(v) => set({ cents: v })} error={tried ? errs.price : null} />,
+    files: (
+      <>
+        <ImageUpload
+          label="Cover picture"
+          value={form.image}
+          onChange={(v) => set({ image: v })}
+          folder="products"
+          hint="The artwork shown on the shelf and on the product's page. JPG, PNG, WebP or AVIF, up to 10 MB."
+        />
+        <FileUpload
+          path={form.filePath}
+          stem={form.slug || "product"}
+          onChange={(v) => set({ filePath: v.path })}
+          error={tried ? errs.file : null}
+        />
+      </>
+    ),
+    shelf: (
+      <>
+        <Segmented<Shelf>
+          label="Shown to buyers"
+          value={form.shelf}
+          onChange={(v) => set({ shelf: v })}
+          options={[
+            { value: "published", label: "Published" },
+            { value: "hidden", label: "Hidden" },
+          ]}
+        />
+        <p className="adm-muted">
+          Published products appear on the shop with their price. A hidden product is kept here, and
+          anyone who already bought it can still use their download link.
+        </p>
+      </>
+    ),
+  };
+
+  if (isNew) {
+    const price = form.cents == null ? null : euro(form.cents);
+    return (
+      <>
+        {header}
+        <Wizard
+          status={save.status}
+          onShowErrors={setTried}
+          onFinish={() => void onSave()}
+          finishLabel={form.shelf === "published" ? "Publish product" : "Save, hidden"}
+          finishingLabel={form.shelf === "published" ? "Publishing" : "Saving"}
+          steps={[
+            { title: "What it is", answer: form.title, error: errs.title ?? errs.slug, body: fields.what },
+            { title: "Price", answer: price, error: errs.price, body: fields.price },
+            {
+              title: "Cover and file",
+              answer: [form.image && "Cover", form.filePath && "file"].filter(Boolean).join(" and ") || "Nothing yet",
+              error: errs.image,
+              body: fields.files,
+            },
+            {
+              title: "Check and publish",
+              error: errs.file,
+              body: (
+                <>
+                  <dl className="adm-review">
+                    <dt>Title</dt>
+                    <dd>{form.title}</dd>
+                    <dt>Web address</dt>
+                    <dd>/shop/{form.slug}</dd>
+                    <dt>Price</dt>
+                    <dd>{price}</dd>
+                    <dt>Cover</dt>
+                    <dd>{form.image ? form.image.alt || "Uploaded" : "None yet"}</dd>
+                    <dt>File</dt>
+                    <dd>{form.filePath ? form.filePath.split("/").pop() : "None yet, so it can only be saved hidden"}</dd>
+                  </dl>
+                  {fields.shelf}
+                </>
+              ),
+            },
+          ]}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       {header}
@@ -251,64 +364,18 @@ export function ProductEdit() {
       >
         <section className="adm-card adm-stack">
           <h2 className="adm-h2">The product</h2>
-          <TextInput
-            label="Title"
-            value={form.title}
-            onChange={(v) => set({ title: v })}
-            error={tried ? errs.title : null}
-            hint='For example "The Feather: episode pack".'
-            autoComplete="off"
-          />
-          <SlugField
-            value={form.slug}
-            onChange={(v) => set({ slug: v })}
-            source={form.title}
-            prefix="/shop/"
-            error={tried ? errs.slug : null}
-          />
-          <TextArea
-            label="What is in it"
-            value={form.description}
-            onChange={(v) => set({ description: v })}
-            rows={8}
-            optional
-            hint="List exactly what the buyer gets. Leave a blank line between paragraphs."
-          />
-          <PriceField cents={form.cents} onChange={(v) => set({ cents: v })} error={tried ? errs.price : null} />
+          {fields.what}
+          {fields.price}
         </section>
 
         <section className="adm-card adm-stack">
           <h2 className="adm-h2">Cover and file</h2>
-          <ImageUpload
-            label="Cover picture"
-            value={form.image}
-            onChange={(v) => set({ image: v })}
-            folder="products"
-            hint="The artwork shown on the shelf and on the product's page. JPG, PNG, WebP or AVIF, up to 10 MB."
-          />
-          <FileUpload
-            path={form.filePath}
-            stem={form.slug || "product"}
-            onChange={(v) => set({ filePath: v.path })}
-            error={tried ? errs.file : null}
-          />
+          {fields.files}
         </section>
 
         <section className="adm-card adm-stack">
           <h2 className="adm-h2">On the shop</h2>
-          <Segmented<Shelf>
-            label="Shown to buyers"
-            value={form.shelf}
-            onChange={(v) => set({ shelf: v })}
-            options={[
-              { value: "published", label: "Published" },
-              { value: "hidden", label: "Hidden" },
-            ]}
-          />
-          <p className="adm-muted">
-            Published products appear on the shop with their price. A hidden product is kept here, and
-            anyone who already bought it can still use their download link.
-          </p>
+          {fields.shelf}
         </section>
 
         <SaveBar
@@ -318,13 +385,13 @@ export function ProductEdit() {
           saveLabel={publishing ? "Publish" : "Save"}
           savingLabel={publishing ? "Publishing" : "Saving"}
         >
-          {!isNew && (
-            <AdminButton variant="danger" onClick={() => void onDelete()} busy={deleting} busyLabel="Checking">
-              Delete
-            </AdminButton>
-          )}
+          <AdminButton variant="danger" onClick={() => void onDelete()} busy={deleting} busyLabel="Checking">
+            Delete
+          </AdminButton>
         </SaveBar>
       </form>
     </>
   );
 }
+
+const euro = (cents: number) => `€${(cents / 100).toFixed(2)}`;

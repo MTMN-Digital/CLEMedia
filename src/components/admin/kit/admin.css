@@ -578,3 +578,232 @@ html:has(.adm) { background: var(--color-paper-2); }
   .adm-top { position: static; }
   .adm-nav a { min-height: 36px; padding: 4px 12px; font-size: 14px; }
 }
+
+/* ─── Wizard: making something new, one step at a time ─────────────────── */
+.adm-wiz {
+  display: grid;
+  gap: 18px;
+}
+@media (min-width: 900px) {
+  .adm-wiz { grid-template-columns: 15rem minmax(0, 1fr); gap: 28px; align-items: start; }
+  .adm-wiz__foot { grid-column: 1 / -1; }
+  .adm-wiz__rail { position: sticky; top: 24px; }
+}
+.adm-wiz__rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+@media (min-width: 900px) {
+  .adm-wiz__rail { flex-direction: column; gap: 0; overflow: visible; }
+  /* The thread between the numbers, drawn in the site's rule colour. */
+  .adm-wiz__rail li { position: relative; }
+  .adm-wiz__rail li + li::before {
+    content: "";
+    position: absolute;
+    left: 25px;
+    top: -10px;
+    height: 20px;
+    border-left: 2px solid var(--color-rule-soft);
+  }
+}
+.adm-wiz__rail button {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+@media (min-width: 900px) { .adm-wiz__rail button { white-space: normal; padding: 10px 10px 20px; } }
+.adm-wiz__rail button:not(:disabled) { cursor: pointer; }
+.adm-wiz__rail button:not(:disabled):hover { background: rgba(236, 223, 198, 0.6); }
+.adm-wiz__rail button:disabled { cursor: default; }
+.adm-wiz__rail strong { display: block; font-size: 15px; line-height: 1.35; padding-top: 4px; }
+.adm-wiz__rail span span { display: block; font-size: 13px; color: var(--color-body); overflow-wrap: anywhere; }
+@media (max-width: 899px) {
+  .adm-wiz__rail span span { display: none; }
+  .adm-wiz__rail li:not([data-state="current"]) strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+.adm-wiz__num {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  border: 2px solid var(--color-rule-soft);
+  background: var(--color-raised);
+  color: var(--color-body);
+}
+.adm-wiz__rail [data-state="current"] .adm-wiz__num { border-color: var(--color-ink); background: var(--color-ink); color: var(--color-raised); }
+.adm-wiz__rail [data-state="done"] .adm-wiz__num { border-color: var(--color-red-fill); background: var(--color-red-fill); color: #fdf8ed; }
+.adm-wiz__rail [data-state="todo"] strong { color: var(--color-body); font-weight: 500; }
+
+.adm-wiz__step {
+  background: var(--color-raised);
+  border: 2px solid var(--color-rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px 22px;
+}
+@media (min-width: 720px) { .adm-wiz__step { padding: 26px 28px 30px; } }
+.adm-wiz__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  line-height: 1.1;
+  margin: 2px 0 20px;
+}
+.adm .adm-wiz__title:focus { outline: none; }
+.adm-wiz__foot { margin-top: 0; }
+
+/* The check-it-over list on a wizard's last step. */
+.adm-review {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  gap: 10px 18px;
+  font-size: 15px;
+}
+.adm-review dt { color: var(--color-body); }
+.adm-review dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .adm-review { grid-template-columns: 1fr; gap: 2px; } .adm-review dd { margin-bottom: 10px; } }
+
+/* ─── Desk shell: the sections down the left, the work on the right ────── */
+@media (min-width: 1100px) {
+  .adm-shell { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); min-height: calc(100vh - 66px); }
+  .adm-shell > .adm-nav {
+    position: sticky;
+    top: 66px;
+    align-self: start;
+    height: calc(100vh - 66px);
+    max-width: none;
+    margin: 0;
+    padding: 20px 14px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 2px;
+    overflow-y: auto;
+    background: var(--color-raised);
+    border-right: 2px solid var(--color-edge);
+  }
+  .adm-shell > .adm-nav a {
+    border: 0;
+    border-radius: var(--radius-sm);
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .adm-shell > .adm-nav a:hover { background: rgba(236, 223, 198, 0.6); }
+  .adm-shell > .adm-nav a[aria-current="page"] { background: var(--color-ink); color: var(--color-raised); font-weight: 600; }
+  .adm-shell > .adm-main { width: 100%; padding: 32px 40px 120px; }
+  .adm-nav__group {
+    display: block;
+    margin: 18px 14px 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-body);
+  }
+  .adm-nav__group:first-child { margin-top: 4px; }
+  .adm-nav__count {
+    margin-left: auto;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    background: var(--color-red-fill);
+    color: #fdf8ed;
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+@media (max-width: 1099px) {
+  .adm-nav__group { display: none; }
+  .adm-nav__count { font-family: var(--font-mono); font-size: 13px; color: var(--color-red-deep); }
+  [aria-current="page"] .adm-nav__count { color: inherit; }
+}
+
+/* ─── Home: greeting, start something, then every section ──────────────── */
+.adm-hello { font-family: var(--font-display); font-size: clamp(1.875rem, 1.4rem + 1.6vw, 2.75rem); line-height: 1.05; margin: 0; }
+.adm-start {
+  list-style: none;
+  margin: 0 0 30px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.adm-start a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  min-height: 112px;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--color-navy);
+  color: #fdf8ed;
+  text-decoration: none;
+}
+.adm-start a:hover { background: #16264a; }
+.adm-start strong { font-family: var(--font-display); font-weight: 400; font-size: 20px; line-height: 1.15; }
+.adm-start span { font-size: 14px; color: rgba(253, 248, 237, 0.86); }
+.adm-start svg { margin-top: auto; color: var(--color-sage); }
+@media (min-width: 1100px) {
+  .adm-top__row { max-width: none; padding: 10px 24px; min-height: 46px; }
+}
+
+/* Phone and tablet: one button names the section you are in and opens the rest. */
+.adm-menu { display: none; }
+@media (max-width: 1099px) {
+  .adm-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: calc(100% - 32px);
+    margin: 12px 16px 0;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 2px solid var(--color-edge);
+    border-radius: var(--radius-sm);
+    background: var(--color-raised);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .adm-menu svg { margin-left: auto; flex: none; }
+  .adm-menu .adm-nav__count { margin-left: auto; }
+  .adm-menu .adm-nav__count + svg { margin-left: 0; }
+  .adm-shell > .adm-nav[data-open="false"] { display: none; }
+  .adm-shell > .adm-nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 2px;
+    margin: 8px 16px 0;
+    padding: 8px;
+    background: var(--color-raised);
+    border: 2px solid var(--color-rule-soft);
+    border-radius: var(--radius-sm);
+  }
+  .adm-shell > .adm-nav a { border: 0; border-radius: 10px; min-height: 44px; font-size: 16px; }
+  .adm-shell > .adm-nav a[aria-current="page"] { background: var(--color-ink); color: var(--color-raised); }
+}

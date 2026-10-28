@@ -15,18 +15,19 @@ import {
 import { ASSETS, type AssetKey } from "@/lib/brand";
 import {
   Segmented,
-  useConfirm,
-  Checkbox,
-  imageError,
-  ImageUpload,
-  type ImageValue,
-  useSaveState,
-  TextArea,
-  Notice,
-  SaveBar,
-  TextInput,
   PageHeader,
+  Checkbox,
   AdminButton,
+  TextArea,
+  imageError,
+  Wizard,
+  SaveBar,
+  Notice,
+  useSaveState,
+  type ImageValue,
+  ImageUpload,
+  TextInput,
+  useConfirm,
 } from "@/components/admin/kit";
 import { invalidateTeam } from "@/components/team/useTeam";
 import { TYPE_OPTIONS, type PersonType, PHASE_OPTIONS } from "./shared";
@@ -174,6 +175,98 @@ export function PersonForm() {
     navigate("/admin/people");
   }
 
+  const who = form && (
+    <>
+            <TextInput label="Name" value={form.name} onChange={(v) => set("name", v)} error={errors.name} autoComplete="off" />
+            <TextInput
+              label="Role"
+              value={form.role}
+              onChange={(v) => set("role", v)}
+              error={errors.role}
+              hint="As it should read under their name, for example Chief Education Advisor."
+              autoComplete="off"
+            />
+            <Segmented label="Listed as" value={form.type} onChange={(v) => set("type", v)} options={TYPE_OPTIONS} />
+    </>
+  );
+  const bio = form && (
+    <>
+            <TextArea
+              label="Biography"
+              optional
+              value={form.bio}
+              onChange={(v) => set("bio", v)}
+              rows={10}
+              hint="Leave a blank line between paragraphs. The first paragraph is what this person does at CLÉ Family Media and is always shown; the rest opens under a More button."
+            />
+    </>
+  );
+  const photo = form && (
+    <>
+            <ImageUpload
+              label="Portrait"
+              value={form.photo}
+              onChange={(v) => set("photo", v)}
+              folder="people"
+              hint="A square crop works best. JPG, PNG, WebP or AVIF, up to 10 MB."
+              defaultPreview={bundledPreview(row.data?.asset_key)}
+            />
+    </>
+  );
+  const phases = form && (
+    <>
+            <p className="adm-muted">
+              Tick the phases this person takes part in. Leave them all unticked for someone outside the script and episode reviews.
+            </p>
+            <div>
+              {PHASE_OPTIONS.map((p) => (
+                <Checkbox key={p.n} label={`${p.n}. ${p.label}`} checked={form.phases.includes(p.n)} onChange={(on) => togglePhase(p.n, on)} />
+              ))}
+            </div>
+    </>
+  );
+  const site = form && (
+    <>
+            <Checkbox
+              label="Shown on the Team page"
+              checked={form.visible}
+              onChange={(v) => set("visible", v)}
+              hint="Untick to take this person off the site without deleting them."
+            />
+    </>
+  );
+
+  if (!id && form) {
+    const nameErr = form.name.trim() ? null : "A name is required.";
+    const roleErr = form.role.trim() ? null : "A role is required, for example Founder and CEO.";
+    return (
+      <>
+        <PageHeader title="Add a person" intro="Four short steps. They appear on the Team page once you finish." back={{ to: "/admin/people", label: "Back to team and advisers" }} />
+        <Wizard
+          status={save.status}
+          onShowErrors={(show) => setErrors(show ? { name: nameErr ?? undefined, role: roleErr ?? undefined } : {})}
+          onFinish={onSave}
+          finishLabel={form.visible ? "Add to the Team page" : "Add, not shown yet"}
+          finishingLabel="Adding"
+          steps={[
+            { title: "Who they are", answer: form.name && `${form.name}, ${form.role}`, error: nameErr ?? roleErr, body: who },
+            { title: "Biography", answer: form.bio.trim() ? "Written" : "None yet", body: bio },
+            { title: "Photo", answer: form.photo ? "Added" : "None yet", error: imageError(form.photo), body: photo },
+            {
+              title: "Phases and check",
+              body: (
+                <>
+                  {phases}
+                  {site}
+                </>
+              ),
+            },
+          ]}
+        />
+      </>
+    );
+  }
+
   const title = id ? (form?.name.trim() || "Edit person") : "Add a person";
 
   return (
@@ -194,58 +287,23 @@ export function PersonForm() {
         >
           <div className="adm-card adm-stack">
             <h2 className="adm-h2">About</h2>
-            <TextInput label="Name" value={form.name} onChange={(v) => set("name", v)} error={errors.name} autoComplete="off" />
-            <TextInput
-              label="Role"
-              value={form.role}
-              onChange={(v) => set("role", v)}
-              error={errors.role}
-              hint="As it should read under their name, for example Chief Education Advisor."
-              autoComplete="off"
-            />
-            <Segmented label="Listed as" value={form.type} onChange={(v) => set("type", v)} options={TYPE_OPTIONS} />
-            <TextArea
-              label="Biography"
-              optional
-              value={form.bio}
-              onChange={(v) => set("bio", v)}
-              rows={10}
-              hint="Leave a blank line between paragraphs. The first paragraph is what this person does at CLÉ Family Media and is always shown; the rest opens under a More button."
-            />
+            {who}
+            {bio}
           </div>
 
           <div className="adm-card adm-stack">
             <h2 className="adm-h2">Photo</h2>
-            <ImageUpload
-              label="Portrait"
-              value={form.photo}
-              onChange={(v) => set("photo", v)}
-              folder="people"
-              hint="A square crop works best. JPG, PNG, WebP or AVIF, up to 10 MB."
-              defaultPreview={bundledPreview(row.data?.asset_key)}
-            />
+            {photo}
           </div>
 
           <div className="adm-card adm-stack">
             <h2 className="adm-h2">Production phases</h2>
-            <p className="adm-muted">
-              Tick the phases this person takes part in. Leave them all unticked for someone outside the script and episode reviews.
-            </p>
-            <div>
-              {PHASE_OPTIONS.map((p) => (
-                <Checkbox key={p.n} label={`${p.n}. ${p.label}`} checked={form.phases.includes(p.n)} onChange={(on) => togglePhase(p.n, on)} />
-              ))}
-            </div>
+            {phases}
           </div>
 
           <div className="adm-card adm-stack">
             <h2 className="adm-h2">On the site</h2>
-            <Checkbox
-              label="Shown on the Team page"
-              checked={form.visible}
-              onChange={(v) => set("visible", v)}
-              hint="Untick to take this person off the site without deleting them."
-            />
+            {site}
           </div>
 
           <SaveBar status={save.status} dirty={dirty} onSave={onSave} saveLabel={id ? "Save" : "Add person"} savingLabel={id ? "Saving" : "Adding"}>

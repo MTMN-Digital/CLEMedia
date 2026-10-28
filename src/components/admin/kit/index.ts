@@ -10,3 +10,5 @@ export { imageError, FileUpload, ImageUpload } from "./uploads";
 export type { ImageValue } from "./uploads";
 export { useToast, useConfirm, ConfirmDialog, ConfirmProvider, useSaveState, ToastProvider, SaveBar } from "./feedback";
 export type { ConfirmOptions, SaveStatus } from "./feedback";
+export { Wizard } from "./Wizard";
+export type { WizardStep } from "./Wizard";
