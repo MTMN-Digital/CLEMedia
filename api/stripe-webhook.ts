@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import Stripe from "stripe";
-import { requireEnv, adminClient, json } from "./_lib/admin";
+import { requireEnv, adminClient, json } from "./_lib/admin.js";
 
 /**
  * Stripe signs the exact bytes it sent, so the body must reach constructEvent

@@ -1,4 +1,4 @@
-import { adminClient, json } from "./_lib/admin";
+import { adminClient, json } from "./_lib/admin.js";
 
 /**
  * Receives one educator questionnaire from the cross-border case study.

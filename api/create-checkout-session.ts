@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { requireEnv, adminClient, json } from "./_lib/admin";
+import { requireEnv, adminClient, json } from "./_lib/admin.js";
 
 /**
  * Creates a Stripe Checkout session for one product.

@@ -1,4 +1,4 @@
-import { adminClient, json } from "./_lib/admin";
+import { adminClient, json } from "./_lib/admin.js";
 
 const ROUTES = ["general", "partnership", "educator", "press", "notify"] as const;
 type Route = (typeof ROUTES)[number];
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 
 /** Best effort. A failed notification must not lose the enquiry, which is
  *  already safely stored by the time this runs. */
-async function notify(e: { route: string; name: string; email: string; organisation: string; message: string }) {
+async function notify(e: { route: string; message: string; organisation: string; name: string; email: string }) {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.ENQUIRY_NOTIFY_TO;
   /* The sender was hardcoded to `notifications@example.com`, a domain nobody

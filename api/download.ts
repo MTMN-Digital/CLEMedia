@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { adminClient, json, requireEnv } from "./_lib/admin";
+import { requireEnv, adminClient, json } from "./_lib/admin.js";
 
 /* The link is handed over as soon as the page loads, and the allowance is
    spent at that moment, so this has to outlive a person who opens the page and
