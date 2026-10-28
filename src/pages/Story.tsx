@@ -61,19 +61,17 @@ import { COPY } from "@/components/story/copy";
    63.85 s); nothing on the page says who narrates the film.
    ========================================================================== */
 
-/* The letter, from 2026-10-28: full width, set in two newspaper columns from
-   lg, one column under it. A single line across the whole container would run
-   to about 150 characters, which is why it is columns and not one wide
-   measure. Each movement is its own short column block, so a reader never
-   scrolls back up a long column; pictures break the letter at full width or
-   float inside a column with the text wrapping round them. The client found
-   the earlier narrow letter column off centre and too compressed. */
-const GRID = "grid";
+/* The letter, 2026-10-28: one centred column at a reading width, set like a
+   magazine feature, with pictures floated left and right into it and the
+   words wrapping round them. Two newspaper columns were tried first and the
+   client found them hard to follow. */
+/* Every block after the opening sits on the letter's one centred column. */
+const GRID = "grid mx-auto w-full max-w-[52rem]";
 /* The opening only: the portrait, then the dateline and headline beside it. */
 const OPEN_GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[30rem_minmax(0,1fr)]";
-/* Running text in columns. Margins, not space-y: a top margin would push the
-   first paragraph of the second column down out of line with the first. */
-const PROSE = "relative t-lead text-body lg:columns-2 lg:gap-x-16 [&>p]:mb-6 [&>p:last-child]:mb-0";
+/* Running text: one column, centred. `flow-root` keeps a float inside its
+   own block so it never hangs into the next one. */
+const PROSE = "flow-root t-lead text-body [&>p]:mb-6 [&>p:last-child]:mb-0";
 /* A plate inside the letter: the container's full width. */
 const PLATE = "";
 
@@ -81,16 +79,6 @@ const PLATE = "";
    muted (muted is the floor of AA on the lightest paper). Right-aligned from
    lg; on a phone a right-aligned caption hangs off the picture it belongs
    to, so it sits left. */
-/* The drawn rule between the two columns, as a newspaper rules its columns
-   apart. Absolute inside the column block; hidden where there is one column. */
-function ColumnRule() {
-  return (
-    <svg className="ink letter-colrule" viewBox="0 0 6 600" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path className="ink-line" vectorEffect="non-scaling-stroke" d="M3 2 C1.6 120, 4.2 240, 2.6 360 C1.8 450, 3.8 520, 2.4 598" fill="none" />
-    </svg>
-  );
-}
-
 function Caption({ children, className = "" }: { className?: string; children: ReactNode }) {
   return (
     <figcaption className={`mt-3 max-w-[60ch] font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body lg:ml-auto lg:text-right ${className}`}>
@@ -232,37 +220,31 @@ export function Story() {
               the letter never breaks its own rhythm. */}
           <Settle className={`${GRID} mt-14 lg:mt-20`}>
             <div className={`${PROSE} letter-dropcap`}>
-              <ColumnRule />
               <p>{letterOpen}</p>
               {letterSaw.map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </Settle>
 
-          {/* THE GARDEN, inside the letter. The measure breaks for the first
-              time: the frame spans the full container. Content with a caption that
-              says what it is; it is never behind type. Centre 45 per cent
-              keeps both pugs on the grass in frame. */}
-          <Settle className={`${GRID} my-10 sm:my-12`}>
-            <figure className={PLATE}>
-              <div className="letter-print">
-                <DrawnBox v={0} />
-                <Figure
-                  asset="story.garden"
-                  rounded="rounded-none"
-                  position="center 45%"
-                  sizes="(min-width: 1440px) 1376px, 100vw"
-                />
-              </div>
-              <Caption><Marks text={gardenCaption} /></Caption>
-            </figure>
-          </Settle>
-
           {/* MOVEMENT TWO: how he got here. Four paragraphs, as written. The
               ledger that used to restate them as a CV is gone; every one of
               its facts is in these paragraphs. */}
-          <Settle className={GRID}>
+          <Settle className={`${GRID} mt-6`}>
             <div className={PROSE}>
-              <ColumnRule />
+              {/* THE GARDEN, floated left into the letter so the next
+                  paragraphs wrap round it. Centre 45 per cent keeps both pugs
+                  on the grass in frame. */}
+              <figure className="mb-6 sm:float-left sm:mb-4 sm:mr-8 sm:w-[54%]">
+                <div className="letter-print">
+                  <DrawnBox v={0} />
+                  <Figure
+                    asset="story.garden"
+                    rounded="rounded-none"
+                    position="center 45%"
+                    sizes="(min-width: 900px) 460px, 100vw"
+                  />
+                </div>
+                <Caption><Marks text={gardenCaption} /></Caption>
+              </figure>
               {letterHere.map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </Settle>
@@ -271,15 +253,14 @@ export function Story() {
               names the people; the frame of the characters stands beside the
               paragraph that names Finn and Fia, laid straight, not tilted,
               floated so the text wraps round it. */}
-          <Settle className="mt-6">
+          <Settle className={`${GRID} mt-6`}>
             <div className={PROSE}>
-              <ColumnRule />
               <p>{letterPeople}</p>
               {letterBuild.slice(0, 1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
               {/* Floated inside the column so the next paragraphs wrap round
                   it, as a picture sits in a newspaper column. No card: its
                   border would measure under 3:1 on paper. */}
-              <figure className="mb-6 break-inside-avoid sm:float-right sm:mb-4 sm:ml-6 sm:w-[46%] sm:max-w-[20rem]">
+              <figure className="mb-6 sm:float-right sm:mb-4 sm:ml-8 sm:w-[44%]">
                 <div className="letter-print">
                   <DrawnBox v={1} />
                   <Figure asset="home.characters" rounded="rounded-none" sizes="(min-width: 640px) 320px, 100vw" />
@@ -315,7 +296,6 @@ export function Story() {
               in his own words, followed by its link. */}
           <Settle className={GRID}>
             <div className={PROSE}>
-              <ColumnRule />
               {letterReach.map((p, i) => <p key={i}>{p}</p>)}
               <ul className="flex flex-wrap gap-x-10 gap-y-3 pt-1">
                 <li>
