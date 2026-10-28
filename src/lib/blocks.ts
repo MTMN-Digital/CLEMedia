@@ -173,9 +173,7 @@ export const BLOCKS: BlockDef[] = [
 
   /* Our team: faces, then the register. */
   line("team", "Top of the page", "hero.title", "Page title", `${TEAM}: h1`),
-  para("team", "Top of the page", "hero.lead", "Paragraph beside the page title", `${TEAM}: p.t-lead beside the h1`),
   line("team", "The people", "register.heading", "Heading over the biographies", `${TEAM}: register h2`),
-  para("team", "The people", "register.lead", "Note under the biographies heading", `${TEAM}: register provenance note`),
   para("team", "The people", "register.key", "Sentence after the five phase names, before the Responsible AI link", `${TEAM}: register key line`, { required: false }),
   line("team", "Adviser", "adviser.heading", "Heading over the adviser", `${TEAM}: adviser h2`),
   para("team", "Adviser", "adviser.lead", "Note under the adviser heading", `${TEAM}: adviser sentence`),

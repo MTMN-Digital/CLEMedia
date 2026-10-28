@@ -6,6 +6,8 @@ import { Settle } from "@/components/Settle";
 import { MissionVideo } from "@/components/MissionVideo";
 import { ClosingLine } from "@/components/ClosingLine";
 import { Container, Section, TextLink } from "@/components/ui";
+import { DrawnRule } from "@/components/draw/kit";
+import { Watermark } from "@/components/draw/Mark";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
 import { useTeam } from "@/components/team/useTeam";
@@ -58,19 +60,18 @@ import { COPY } from "@/components/story/copy";
    63.85 s); nothing on the page says who narrates the film.
    ========================================================================== */
 
-/* The column template, shared by every block so the letter's left edge is
-   one line down the page. The portrait's column is only drawn at lg and up;
-   under that the page is one column and the portrait shares a row with the
-   dateline instead (see the opening). */
-const GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[30rem_minmax(0,38rem)_minmax(0,1fr)]";
-/* The letter: column two, 38rem, running text. */
-const PROSE = "max-w-[38rem] space-y-5 t-prose text-body lg:col-start-2";
-/* A plate inside the letter: columns two and three at xl, so the letter
-   widens to show you something and then narrows again. Its left edge is the
-   letter's, never the container's. Start and end are set separately: a
-   `col-span` utility writes the grid-column shorthand and would throw the
-   start away, which put the plate in the margin. */
-const PLATE = "lg:col-start-2 xl:col-end-4";
+/* The column template for the letter, from 2026-10-28. The letter runs from
+   the container's own left edge, the portrait's edge, at lead size in a wide
+   measure; the right column holds side notes (the characters frame) and
+   pictures span both. The client found the earlier narrow letter column,
+   set in from the left with pictures hanging off it, looked off centre. */
+const GRID = "grid lg:grid-cols-[minmax(0,46rem)_minmax(0,1fr)] lg:gap-x-16";
+/* The opening only: the portrait, then the dateline and headline beside it. */
+const OPEN_GRID = "grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[30rem_minmax(0,1fr)]";
+/* The letter: column one, running text at lead size. */
+const PROSE = "space-y-6 t-lead text-body";
+/* A plate inside the letter: both columns, the container's full width. */
+const PLATE = "lg:col-span-2";
 
 /* A provenance line under a picture. Mono, 13px, `text-body` rather than
    muted (muted is the floor of AA on the lightest paper). Right-aligned from
@@ -170,20 +171,23 @@ export function Story() {
 
       {/* ═══ THE LETTER, from the opening to the characters. One section, one
           surface. ═══ */}
-      <Section labelledBy="story-h" pad={["normal", "tight"]}>
+      <Section labelledBy="story-h" pad={["normal", "tight"]} className="mk-host">
+        {/* A leaf at watermark strength behind the letter, from 2026-10-28:
+            the client asked for the drawings a little more often. */}
+        <Watermark shape="leaf" at="right" />
         <Container width="wide">
           {/* THE OPENING: the writer, where he is writing from, the first
               sentence. The page's one entrance: portrait, dateline, headline
               and first paragraph settle in that order.
 
               At xl the portrait is 480px square in column one and the name
-              block and headline span columns two and three; the letter
-              begins in column two only. At 390 the portrait is 152px and
+              block and headline sit beside it; the letter starts below, at
+              the portrait's left edge. At 390 the portrait is 152px and
               shares a row with the dateline, so the headline is reached in
               one screen: stacking a full-width portrait over three mono
               lines over a six-line headline would push the first paragraph
               past 1,100px. */}
-          <Settle className={`${GRID} grid-cols-[152px_minmax(0,1fr)] gap-x-5 sm:grid-cols-[12rem_minmax(0,1fr)]`}>
+          <Settle className={`${OPEN_GRID} grid-cols-[152px_minmax(0,1fr)] gap-x-5 sm:grid-cols-[12rem_minmax(0,1fr)]`}>
             <div className="self-start lg:row-span-3">
               <Figure
                 asset="person.conor"
@@ -196,33 +200,30 @@ export function Story() {
             </div>
             {/* The dateline. Plain mono lines, as a letter has: not a label
                 over the page, and not status rows. */}
-            <p className="self-center font-mono text-[14px] uppercase leading-[1.7] tracking-[0.02em] text-body lg:col-start-2 lg:self-start xl:col-end-4">
+            <p className="self-center font-mono text-[14px] uppercase leading-[1.7] tracking-[0.02em] text-body lg:col-start-2 lg:self-start">
               {datelineLines.map((line, i) => (
                 <span key={i} className="block">{line}</span>
               ))}
             </p>
             {/* Sentence one of the letter, verbatim. A fact, not a claim.
                 Plain text: never passed through an emphasis helper. */}
-            <h1 id="story-h" className="t-h1 col-span-2 mt-10 max-w-[24ch] lg:col-start-2 lg:col-end-3 xl:col-end-4">
+            <h1 id="story-h" className="t-h1 col-span-2 mt-10 max-w-[24ch] lg:col-span-1 lg:col-start-2">
               {heroTitle}
             </h1>
-            <p className="col-span-2 mt-12 max-w-[38rem] t-prose text-body lg:col-start-2 lg:col-end-3">
-              {letterOpen}
-            </p>
           </Settle>
 
           {/* MOVEMENT ONE: what he saw. Continuous prose, no headings, no
               margin rule. The paragraph gap carries across the block edge so
               the letter never breaks its own rhythm. */}
-          <Settle className={`${GRID} mt-5`}>
+          <Settle className={`${GRID} mt-14 lg:mt-20`}>
             <div className={PROSE}>
+              <p>{letterOpen}</p>
               {letterSaw.map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </Settle>
 
           {/* THE GARDEN, inside the letter. The measure breaks for the first
-              time: the frame spans the letter's column and the object column,
-              with the letter's own left edge. Content with a caption that
+              time: the frame spans the full container. Content with a caption that
               says what it is; it is never behind type. Centre 45 per cent
               keeps both pugs on the grass in frame. */}
           <Settle className={`${GRID} my-10 sm:my-12`}>
@@ -231,7 +232,7 @@ export function Story() {
                 asset="story.garden"
                 rounded="rounded-[var(--radius-md)]"
                 position="center 45%"
-                sizes="(min-width: 1280px) 896px, (min-width: 1024px) 760px, 100vw"
+                sizes="(min-width: 1440px) 1376px, 100vw"
               />
               <Caption><Marks text={gardenCaption} /></Caption>
             </figure>
@@ -249,15 +250,9 @@ export function Story() {
           {/* MOVEMENT THREE: the people, and the characters. Paragraph nine
               names the people; the frame of the characters stands beside the
               paragraph that names Finn and Fia, laid straight, not tilted: a
-              frame laid straight beside prose reads as an enclosure. At lg
-              there is no third column, so it falls under the prose at 22rem.
-
-              The block is split at render time so one <img> serves all three
-              widths: paragraph 10 first, then the frame, then the rest of
-              the movement. Under lg that is the flow order (p10, frame, p11,
-              link). At lg the frame takes `order-last` and lands under the
-              link. At xl it has a definite cell (column 3, rows 1 and 2), so
-              it is placed before the prose and sits beside paragraph 10. */}
+              frame laid straight beside prose reads as an enclosure. From lg it
+              sits in the right column beside paragraphs 10 and 11 (rows 1
+              and 2); under lg it falls in flow between them. */}
           <Settle className={`${GRID} mt-5`}>
             <div className={PROSE}>
               <p>{letterPeople}</p>
@@ -270,11 +265,11 @@ export function Story() {
             {/* No card around it: the card's picture border measures under
                 3:1 on paper, and the garden above sits on the paper without
                 one, so this frame does the same. */}
-            <figure className="mt-8 self-start lg:order-last lg:col-start-2 lg:max-w-[22rem] xl:order-none xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:mt-0 xl:max-w-none">
-              <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="(min-width: 1280px) 240px, 352px" />
+            <figure className="mt-8 max-w-[22rem] self-start lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mt-0">
+              <Figure asset="home.characters" rounded="rounded-[var(--radius-md)]" sizes="352px" />
               <Caption>{charactersCaption}</Caption>
             </figure>
-            <div className={`${PROSE} mt-8 lg:mt-5`}>
+            <div className={`${PROSE} mt-8 lg:mt-6`}>
               {letterBuild.slice(1).map((p, i) => <p key={i}><WithCite text={p} /></p>)}
               <p className="pt-1">
                 <TextLink to="/ethical-ai">{buildLink}<IconArrow size={15} /></TextLink>
@@ -328,12 +323,12 @@ export function Story() {
           {/* THE SIGNATURE. A short rule, a typeset name, a mono line. Not a
               script face and not a drawn signature: a typeset name is how a
               company letter is signed. The felted "Made in Ireland" badge
-              belongs in column three beside the name once the client
+              belongs in the right column beside the name once the client
               supplies it as a PNG; until then the column is empty, with no
               stand-in. */}
           <Settle className={`${GRID} mt-14`}>
-            <div className="lg:col-start-2">
-              <div className="hairline w-24" aria-hidden="true" />
+            <div>
+              <DrawnRule v={1} className="max-w-[10rem]" />
               {/* A <p>, not an h2 (a heading here would be out of order), so
                   the display face is set on the element: .t-h2 carries only
                   size, leading and tracking; Calistoga comes from the h1, h2
@@ -359,7 +354,7 @@ export function Story() {
           {/* THE CLOSING LINE. One sentence and one link, story to team, then
               the footer. */}
           <Settle className={`${GRID} mt-16`}>
-            <ClosingLine className="lg:col-start-2" link={{ to: "/team", label: closeLink }}>
+            <ClosingLine link={{ to: "/team", label: closeLink }}>
               {closeLine}
             </ClosingLine>
           </Settle>

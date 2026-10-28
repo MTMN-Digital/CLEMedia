@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Container, Section, TextLink } from "@/components/ui";
+import { Watermark } from "@/components/draw/Mark";
 import { IconArrow } from "@/components/icons";
 import { Contents, type ContentsRow } from "@/components/journal/Contents";
 import { formatDate, useJournal, resolveStrands } from "@/components/journal/data";
@@ -144,7 +145,8 @@ export default function Journal() {
           the lead and the one line that introduces the list on the right.
           One Settle over the three blocks; the leaders draw as their rows
           land (.leader in index.css, delayed by each row's --i). ═══ */}
-      <Section pad="none" as="div" className="pt-8 lg:pt-14">
+      <Section pad="none" as="div" className="mk-host pt-8 lg:pt-14">
+        <Watermark shape="sun" at="right" />
         <Container width="wide">
           <Settle className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-x-24 lg:gap-y-9">
             <div className="lg:col-start-1 lg:row-start-1">

@@ -9,15 +9,12 @@
    REBUILT AS A REGISTER, 2026-10-28 (docs/SUBPAGE-PLANS-2026-10-28.md, team).
    The corner labels, the aside, the board heading, the display claim over the
    biographies and the closing band's heading are gone with the blocks that
-   carried them. What is left is the label, the one paragraph beside it, the
-   register's head, the adviser note and the closing line. */
+   carried them. What is left is the label, the register's head, the adviser note and the
+   closing line. The paragraph beside the title and the one under the
+   register's head were cut on 2026-10-28 at the client's request. */
 export const COPY: Record<string, string> = {
   "hero.title": "Team and advisers",
-  "hero.lead":
-    "A small core team. Between them they decide what gets made, how it gets made and what it is supposed to do for the child watching. Alan writes and animates, and the rest of them read every draft and watch every episode before it is released.",
   "register.heading": "In their own words",
-  "register.lead":
-    "Each entry is the company's own account of the person, cut down and never added to. Where that account does not place someone in a phase, nothing is claimed for them there.",
   "register.key":
     "A script goes round three or four times; the cut goes round until everyone is happy.",
   "adviser.heading": "Adviser",

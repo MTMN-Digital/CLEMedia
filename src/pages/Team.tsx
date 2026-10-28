@@ -2,6 +2,7 @@ import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { ClosingLine } from "@/components/ClosingLine";
 import { Container, Section, TextLink } from "@/components/ui";
+import { Watermark } from "@/components/draw/Mark";
 import { PHASES } from "@/components/team/people";
 import { useTeam } from "@/components/team/useTeam";
 import { useBlock } from "@/lib/content";
@@ -43,9 +44,7 @@ export default function Team() {
   /* EDITABLE FROM THE ADMIN. Every string below is the page's own wording
      (components/teampage/copy.ts) until a content_blocks row replaces it. */
   const heroTitle = useBlock("team", "hero.title", COPY["hero.title"]);
-  const heroLead = useBlock("team", "hero.lead", COPY["hero.lead"]);
   const registerHeading = useBlock("team", "register.heading", COPY["register.heading"]);
-  const registerLead = useBlock("team", "register.lead", COPY["register.lead"]);
   const registerKey = useBlock("team", "register.key", COPY["register.key"]);
   const adviserHeading = useBlock("team", "adviser.heading", COPY["adviser.heading"]);
   const adviserLead = useBlock("team", "adviser.lead", COPY["adviser.lead"]);
@@ -69,22 +68,16 @@ export default function Team() {
       {/* `open` above, `normal` below: the plan asks for 96px under the
           second row's roles, and 88 is the nearest step the spacing contract
           has. */}
-      <Section className="bench grove" pad={["open", "normal"]} labelledBy="team-h">
+      <Section className="bench grove mk-host" pad={["open", "normal"]} labelledBy="team-h">
+        <Watermark shape="sun" at="right" />
         <Container width="wide">
-          {/* The masthead line: the label left, the paragraph right, aligned
-              to the baseline end. The label is the h1 in Calistoga; the
-              paragraph is the only sentence in the band. No eyebrow, no
-              sub-line, no pill pair. */}
-          {/* The right column is 34rem, which is 46ch of the lead at its own
-              21px; `46ch` on the grid would resolve at the section's 17px
-              and wrap the paragraph a line longer, pushing the second row of
-              faces under the fold at 1440 x 900. The paragraph itself keeps
-              its 46ch cap. */}
-          <Settle className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:items-end lg:gap-16">
+          {/* The masthead line: the label alone, the h1 in Calistoga. The
+              paragraph that sat beside it was cut on 2026-10-28 at the
+              client's request; the faces say it. */}
+          <Settle>
             <h1 id="team-h" className="t-h1">
               {heroTitle}
             </h1>
-            <p className="t-lead max-w-[46ch] text-raised">{heroLead}</p>
           </Settle>
 
           {/* The register's faces, in the register's order: TEAM then
@@ -104,7 +97,6 @@ export default function Team() {
             <h2 id="register-h" className="t-h3">
               {registerHeading}
             </h2>
-            <p className="t-body mt-4 max-w-[62ch]">{registerLead}</p>
             {/* The key, one line: the five phase names in mono, then the
                 sentence in the company's words, then where the full account
                 is. Middle dots between the names, never a dash. */}

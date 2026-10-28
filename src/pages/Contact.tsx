@@ -4,6 +4,7 @@ import { Seo } from "@/components/Seo";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { Button, Section, TextLink, Container } from "@/components/ui";
+import { Watermark } from "@/components/draw/Mark";
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type Draft, type RouteId, Receipt, subjectFor } from "@/components/contact/Receipt";
 import { SITE } from "@/lib/site";
@@ -228,7 +229,8 @@ export default function Contact() {
           and the readers column share the right column's edge. One Settle
           around both rows: the title lands first, the sheet and the readers
           60ms after. ═══ */}
-      <Section pad={["none", "normal"]} labelledBy="contact-h" className="pt-8 lg:pt-14">
+      <Section pad={["none", "normal"]} labelledBy="contact-h" className="mk-host pt-8 lg:pt-14">
+        <Watermark shape="leaf" at="right" />
         <Container width="wide">
           <Settle>
             <div className="grid gap-y-5 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)] lg:items-end lg:gap-x-16 xl:gap-x-24">
