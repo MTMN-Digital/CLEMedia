@@ -1,20 +1,17 @@
 import { useMemo, useState, useEffect } from "react";
-import { Route, useParams, useNavigate, Routes, Link } from "react-router-dom";
+import { useParams, Routes, Route, Link } from "react-router-dom";
 import {
-  AdminButton,
-  PageHeader,
-  useSaveState,
-  SaveBar,
-  DataTable,
-  StatusPill,
-  type Column,
-  EmptyState,
-  ImageUpload,
-  TextInput,
   TextArea,
-  type ImageValue,
+  useSaveState,
+  AdminButton,
+  SaveBar,
   Notice,
+  PageHeader,
   useConfirm,
+  StatusPill,
+  ImageUpload,
+  type ImageValue,
+  EmptyState,
 } from "@/components/admin/kit";
 import { saveBlock, resetBlock, useLoad, listRows, listBlocks, type Result, type ContentBlock, IMAGE_RULES } from "@/lib/admin";
 import { loadDefaults, type PageId, type PageDef, type BlockDef, PAGES, blocksFor, sectionsFor, blockValueError } from "@/lib/blocks";
@@ -43,7 +40,6 @@ export function PagesPanel() {
 /* ─── The list of pages ──────────────────────────────────────────────────── */
 
 function PageList() {
-  const navigate = useNavigate();
   const changes = useLoad(() => listRows("content_blocks", { columns: "id, page, section_key" }), []);
 
   const counts = useMemo(() => {
@@ -52,37 +48,10 @@ function PageList() {
     return out;
   }, [changes.data]);
 
-  const columns: Column<PageDef>[] = [
-    {
-      key: "page",
-      label: "Page",
-      primary: true,
-      render: (p) => (
-        <Link to={`/admin/pages/${p.id}`} className="adm-linkbtn">
-          {p.label}
-        </Link>
-      ),
-    },
-    {
-      key: "changes",
-      label: "Changes",
-      render: (p) => {
-        if (changes.loading) return <span className="pg-count">Checking</span>;
-        const n = counts[p.id] ?? 0;
-        return n ? <StatusPill tone="warn">{n} {n === 1 ? "change" : "changes"}</StatusPill> : <span className="pg-count">As written</span>;
-      },
-    },
-    {
-      key: "view",
-      label: "On the site",
-      render: (p) => (
-        <a href={p.path} target="_blank" rel="noreferrer" className="adm-linkbtn" onClick={(e) => e.stopPropagation()}>
-          View the page
-        </a>
-      ),
-    },
-  ];
-
+  /* A plain list, not a table, from 2026-10-28: on a phone the table became
+     one tall card per page saying "As written" and "View the page" every
+     time. Each row is the page's name and, only when it has some, a count of
+     changes; the page itself has the "View the page" button. */
   return (
     <>
       <PageHeader
@@ -94,14 +63,20 @@ function PageList() {
           <Notice tone="error">Could not check which pages have changes. {changes.error}</Notice>
         </div>
       )}
-      <DataTable
-        rows={PAGES}
-        columns={columns}
-        rowKey={(p) => p.id}
-        onRowClick={(p) => navigate(`/admin/pages/${p.id}`)}
-        caption="Every page on the site and how many of its blocks have been changed"
-        empty={{ title: "There are no pages to edit." }}
-      />
+      <ul className="pg-list adm-card">
+        {PAGES.map((p) => {
+          const n = counts[p.id] ?? 0;
+          return (
+            <li key={p.id}>
+              <Link to={`/admin/pages/${p.id}`} className="pg-list__row">
+                <span className="pg-list__name">{p.label}</span>
+                {n > 0 && <StatusPill tone="warn">{n} {n === 1 ? "change" : "changes"}</StatusPill>}
+                <span aria-hidden="true" className="pg-list__go">&rsaquo;</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </>
   );
 }
@@ -228,15 +203,6 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
     setBusyKey(null);
   }
 
-  async function saveOne(def: BlockDef) {
-    if (isRemoval(def)) return resetOne(def);
-    const err = fieldError(def);
-    if (err) return save.fail(`"${def.label}" cannot be saved yet. ${err}`);
-    setBusyKey(def.key);
-    await save.run(() => writeBlock(def));
-    setBusyKey(null);
-  }
-
   async function saveAll() {
     if (dirtyDefs.length === 0) return;
     const bad = dirtyDefs.find((def) => fieldError(def));
@@ -246,7 +212,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       const ok = await confirm({
         title: removals.length === 1 ? "Put one picture back to the original?" : `Put ${removals.length} pictures back to the original?`,
         body: "The pictures you removed will show the original again. Everything else you changed is saved as well.",
-        confirmLabel: "Save all changes",
+        confirmLabel: "Save changes",
       });
       if (!ok) return;
     }
@@ -275,8 +241,8 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
         title={pageDef.label}
         intro={
           changed
-            ? `${changed} of ${blocks.length} blocks ${changed === 1 ? "has" : "have"} been changed from the original. Save each block, or save everything at once at the bottom.`
-            : "Nothing on this page has been changed from the original yet. Save each block, or save everything at once at the bottom."
+            ? `${changed} of ${blocks.length} blocks ${changed === 1 ? "has" : "have"} been changed from the original. Change any words or pictures, then press Save changes at the bottom.`
+            : "Nothing on this page has been changed yet. Change any words or pictures, then press Save changes at the bottom."
         }
         actions={view}
       />
@@ -315,7 +281,6 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
                 busy={busyKey === def.key}
                 saving={save.saving}
                 onChange={(v) => setDraft(def.key, v)}
-                onSave={() => saveOne(def)}
                 onReset={() => resetOne(def)}
                 onUndo={() => setDraft(def.key, live(def))}
               />
@@ -324,7 +289,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
         ))}
 
       {loaded.data && (
-        <SaveBar status={save.status} dirty={dirtyDefs.length > 0} onSave={saveAll} saveLabel="Save all changes" disabled={dirtyDefs.length === 0} />
+        <SaveBar status={save.status} dirty={dirtyDefs.length > 0} onSave={saveAll} saveLabel="Save changes" disabled={dirtyDefs.length === 0} />
       )}
     </>
   );
@@ -344,7 +309,6 @@ function BlockCard({
   busy,
   saving,
   onChange,
-  onSave,
   onReset,
   onUndo,
 }: {
@@ -360,7 +324,6 @@ function BlockCard({
   busy: boolean;
   saving: boolean;
   onChange: (v: Draft) => void;
-  onSave: () => void;
   onReset: () => void;
   /** Puts the field back to what is saved, without touching the site. */
   onUndo: () => void;
@@ -397,7 +360,18 @@ function BlockCard({
   } else if (def.kind === "paragraph") {
     field = <TextArea label={def.label} value={text} onChange={onChange} rows={rows} hint={hint} error={error} />;
   } else {
-    field = <TextInput label={def.label} value={text} onChange={onChange} hint={hint} error={error} />;
+    /* A box that grows with the line, so a long headline is read whole
+       while it is edited. Still one line: a return becomes a space. */
+    field = (
+      <TextArea
+        label={def.label}
+        value={text}
+        onChange={(v) => onChange(v.replace(/\s*\n+\s*/g, " "))}
+        rows={Math.min(4, Math.max(1, Math.ceil(text.length / 60)))}
+        hint={hint}
+        error={error}
+      />
+    );
   }
 
   let state;
@@ -434,9 +408,6 @@ function BlockCard({
               {def.kind === "image" ? "Put the original picture back" : "Reset to the original wording"}
             </AdminButton>
           )}
-          <AdminButton size="sm" onClick={onSave} busy={busy} busyLabel="Saving" disabled={!dirty || Boolean(error) || saving}>
-            {removal ? "Put the original picture back" : "Save"}
-          </AdminButton>
         </div>
       </div>
     </div>

@@ -12,6 +12,9 @@
    the screen where a thumb is.
    ========================================================================== */
 
+/* The page behind the console is paper too, so a short panel never ends in
+   the site's dark overscroll colour. */
+html:has(.adm) { background: var(--color-paper-2); }
 .adm {
   min-height: 100vh;
   color: var(--color-ink);
@@ -564,4 +567,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .adm-progress > span { transition: none; }
+}
+
+/* On a phone the nine sections wrap onto rows rather than running off the
+   right edge with nothing to say there are more. */
+@media (max-width: 720px) {
+  .adm-nav { flex-wrap: wrap; overflow-x: visible; }
+  /* Four rows of sections pinned to the top would eat a third of the
+     screen on every panel, so on a phone the header scrolls away. */
+  .adm-top { position: static; }
+  .adm-nav a { min-height: 36px; padding: 4px 12px; font-size: 14px; }
 }
