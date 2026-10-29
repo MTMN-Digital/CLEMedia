@@ -2,7 +2,7 @@ import { type ReactNode, useState } from "react";
 import { Seo } from "@/components/Seo";
 import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
-import { ShelfLoading, ShelfComing, Shelf } from "@/components/shop/Shelf";
+import { Shelf, ShelfComing } from "@/components/shop/Shelf";
 import { fileFormat, formatLabel, formatPrice, useProducts } from "@/components/shop/catalogue";
 import { COPY } from "@/components/shop/copy";
 import { useSetting, useBlock } from "@/lib/content";
@@ -175,7 +175,7 @@ export default function Shop() {
       {shelved && (
         <Section className="bench" pad="normal" labelledBy="shop-h">
           <Container width="wide">
-            {products.state === "ready" ? <Shelf products={products.data} /> : products.state === "loading" ? <ShelfLoading /> : <ShelfComing />}
+            {products.state === "ready" ? <Shelf products={products.data} /> : products.state === "loading" ? <ShelfComing pending /> : <ShelfComing />}
           </Container>
         </Section>
       )}

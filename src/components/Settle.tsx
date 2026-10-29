@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useState, type ElementType, useLayoutEffect, type ReactNode, useEffect, useRef } from "react";
+import { alreadyPainted } from "@/lib/landing";
 
 /**
  * The only motion on this site.
@@ -26,8 +27,8 @@ export function Settle({
   className = "",
 }: {
   children: ReactNode;
-  as?: ElementType;
   className?: string;
+  as?: ElementType;
 }) {
   const ref = useRef<HTMLElement>(null);
   const [armed, setArmed] = useState(false);
@@ -38,7 +39,7 @@ export function Settle({
     const reduced =
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduced && typeof IntersectionObserver !== "undefined") setArmed(true);
+    if (!reduced && typeof IntersectionObserver !== "undefined" && !alreadyPainted(ref.current)) setArmed(true);
   }, []);
 
   useEffect(() => {

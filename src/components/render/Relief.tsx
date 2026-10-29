@@ -1,4 +1,4 @@
-import { useId, useRef, useEffect } from "react";
+import { useEffect, useId, useState, useRef } from "react";
 
 /* ============================================================================
    Relief: the felted mark, lit by a lamp that moves.
@@ -99,6 +99,27 @@ export function Relief({
      overhead at the midpoint, which is when the mark is centred. A row of
      marks shares one lamp by shifting the sweep with each mark's position. */
   const shift = -phase * travel;
+
+  /* The art and its height map are 127KB, and the only mark on the site is
+     the footer's. Requested in the head of every page they competed with the
+     first paint for bandwidth, so they are fetched once the mark comes within
+     1000px of the screen. An observer, not loading="lazy": Figure.tsx records
+     native lazy loading failing to fire under Lenis. */
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = host.current;
+    if (!el || typeof IntersectionObserver === "undefined") return setNear(true);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "1000px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   /* NO FRAMER-MOTION, since 2026-10-26. This component was the library's
      only consumer in the whole site, for `useScroll` and two `useTransform`
@@ -222,19 +243,23 @@ export function Relief({
         </filter>
       </svg>
 
-      <img className="rk-relief__art" src={art.colour} width={art.w} height={art.h} alt="" decoding="async" />
+      <img className="rk-relief__art" src={near ? art.colour : undefined} width={art.w} height={art.h} alt="" decoding="async" />
       <img
         className="rk-relief__lit"
-        src={art.height}
+        src={near ? art.height : undefined}
         width={art.w}
         height={art.h}
         alt=""
         decoding="async"
-        style={{
-          filter: `url(#relief-${uid})`,
-          maskImage: `url(${art.colour})`,
-          WebkitMaskImage: `url(${art.colour})`,
-        }}
+        style={
+          near
+            ? {
+                filter: `url(#relief-${uid})`,
+                maskImage: `url(${art.colour})`,
+                WebkitMaskImage: `url(${art.colour})`,
+              }
+            : undefined
+        }
       />
     </div>
   );

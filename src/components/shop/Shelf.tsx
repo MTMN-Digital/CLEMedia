@@ -24,7 +24,10 @@ import { PACKS } from "@/lib/books";
    the format instead.
    ========================================================================== */
 
-const SIZES = "(min-width: 1100px) 33vw, (min-width: 900px) 50vw, 100vw";
+/* Measured, not guessed: 432px at 1440, 448px at 1000, the column less 40px
+   below that. "100vw" on a phone tipped a 412px screen into the 1440px file,
+   and the first cover is the page's largest paint. */
+const SIZES = "(min-width: 900px) 450px, calc(100vw - 40px)";
 
 /** "3 books", or "zip of PDFs" when nothing on the row counts books. */
 export function bookCount(p: Product): string {
@@ -58,8 +61,13 @@ export function Shelf({ products }: { products: Product[] }) {
 /** The six episode packs as covers, unlinked and tagged "Coming soon", for a
  *  catalogue with nothing published (or one that did not answer). The books
  *  are finished and in hand, so the shelf shows them rather than an empty
- *  page; nothing here takes a price or a payment. */
-export function ShelfComing() {
+ *  page; nothing here takes a price or a payment.
+ *
+ *  `pending` is the loading state: the same covers and titles with the line
+ *  under them blank. The covers are bundled, so they are in the prerendered
+ *  HTML and paint with the page instead of after the database answers; the
+ *  first of them is this page's largest paint. */
+export function ShelfComing({ pending = false }: { pending?: boolean }) {
   return (
     <Settle as="ul" className="cat-shelf">
       {PACKS.map((pack, i) => {
@@ -78,33 +86,23 @@ export function ShelfComing() {
                       width={pic.width}
                       height={pic.height}
                       alt={pic.alt}
-                      loading={i < 3 ? "eager" : "lazy"}
+                      loading={i === 0 ? "eager" : "lazy"}
                       decoding="async"
+                      {...(i === 0 ? { fetchpriority: "high" } : {})}
                     />
                   </picture>
                 </span>
               </Stage>
               <span className="cat-tag">
                 <span className="cat-tag-title">{pack.title}</span>
-                <span className="cat-tag-meta">Coming soon · {pack.books} books</span>
+                {/* A non-breaking space while pending, so the tag keeps its
+                    height and nothing moves when the line arrives. */}
+                <span className="cat-tag-meta">{pending ? "\u00a0" : `Coming soon · ${pack.books} books`}</span>
               </span>
             </div>
           </li>
         );
       })}
     </Settle>
-  );
-}
-
-/** Six empty slots while the catalogue answers. */
-export function ShelfLoading() {
-  return (
-    <ul className="cat-shelf" aria-hidden="true">
-      {Array.from({ length: 6 }, (_, i) => (
-        <li key={i}>
-          <div className="cat-slot" />
-        </li>
-      ))}
-    </ul>
   );
 }

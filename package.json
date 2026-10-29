@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p api/tsconfig.json",
     "preview": "vite preview",
     "lint": "eslint ."

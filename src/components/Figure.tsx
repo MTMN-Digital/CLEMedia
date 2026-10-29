@@ -53,7 +53,7 @@ export function Figure({
         alt={override.alt}
         width={a.width}
         height={a.height}
-        loading="eager"
+        loading={priority ? "eager" : "lazy"}
         decoding={priority ? "sync" : "async"}
         {...{ fetchpriority: priority ? "high" : "low" }}
         style={{
@@ -101,23 +101,17 @@ export function Figure({
         alt={a.alt}
         width={a.width}
         height={a.height}
-        /* Eager, even for images far down the page, and the reason is not
-           laziness about performance.
+        /* Lazy below the fold, eager for the image a page leads with.
 
-           This site drives its scroll with Lenis, and under it the browser's
-           own "is this nearly on screen" heuristic does not reliably fire:
-           measured on the home page, wheel-scrolling the whole document left
-           images with an empty currentSrc that never resolved, while the same
-           page with prefers-reduced-motion, which switches Lenis off, loaded
-           every one. A reader on a laptop simply saw a gap where a photograph
-           should be. An IntersectionObserver that flipped the attribute was
-           tried first and did not catch every case either.
-
-           A broken image is a worse bug than a few hundred kilobytes, so the
-           attribute goes and the priority hint does the work instead: the one
-           image a page actually leads with is high, everything else is low,
-           and the browser queues them behind the things that matter. */
-        loading="eager"
+           This was eager everywhere until 2026-10-29, because native lazy
+           loading was measured failing under Lenis: wheel-scrolling home left
+           images with an empty currentSrc. That was while Lenis wrapped the
+           tree in <ReactLenis>, which remounted the whole page after first
+           paint (see SmoothScroll.tsx). Re-measured with Lenis started from an
+           effect: wheel-scrolling eight pages to the bottom at 1440 and 390
+           left no image unloaded. Eager everywhere had put 100-200KB of
+           below-the-fold images in front of each page's first paint. */
+        loading={priority ? "eager" : "lazy"}
         decoding={priority ? "sync" : "async"}
         {...{ fetchpriority: priority ? "high" : "low" }}
         style={position ? { objectPosition: position } : undefined}

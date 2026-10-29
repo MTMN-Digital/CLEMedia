@@ -8,6 +8,7 @@ import { IconMail, IconExternal } from "@/components/icons";
 import { TextLink, Container } from "@/components/ui";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { InkDefs } from "@/components/draw/InkDefs";
+import { landing } from "@/lib/landing";
 
 function ShowSiteLink({ className = "" }: { className?: string }) {
   return (
@@ -439,6 +440,7 @@ export function Layout() {
       first.current = false;
       return;
     }
+    landing.prerendered = false;
     main.current?.focus({ preventScroll: true });
   }, [pathname]);
 

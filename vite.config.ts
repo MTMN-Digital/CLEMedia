@@ -45,7 +45,8 @@ function routePreload(): Plugin {
             });
           };
           walk(entry);
-          return [...out];
+          // The entry's own files are already tags in this HTML.
+          return [...out].filter((f) => !html.includes(`/${f}"`));
         };
         const map: Record<string, string[]> = {};
         for (const [route, page] of Object.entries(ROUTE_PAGES)) {
@@ -59,14 +60,19 @@ function routePreload(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react(), tailwindcss(), routePreload()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  // CommonJS without usable named exports under Node ESM; bundle it into the
+  // server build instead.
+  ssr: { noExternal: ["react-helmet-async"] },
   build: {
+    // The server build is only the prerenderer's renderer; it needs no public/.
+    copyPublicDir: !isSsrBuild,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -85,4 +91,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

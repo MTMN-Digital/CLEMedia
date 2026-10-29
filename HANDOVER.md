@@ -563,6 +563,24 @@ email is impossible because the webhook stores no email; the legal pages carry
 a draft disclaimer and no registered company details; and the shop takes
 payment for digital content without the Article 16(m) consent step.
 
+**Prerendering, from 2026-10-29.** `npm run build` now also renders twelve
+fixed pages to HTML (`src/entry-server.tsx`, `scripts/prerender.mjs`), and
+`main.tsx` hydrates them in place. Mobile Lighthouse on those pages went from
+83-90 to 93-98. Things that will bite:
+
+- Home is NOT prerendered: the hero film picks its file from the screen size
+  while rendering. Its score is held by the splash the client asked for.
+- Anything that renders differently on the client's first pass breaks
+  hydration silently and React rebuilds the page. `SmoothScroll` did exactly
+  that (fragment, then `<ReactLenis>`), remounting every page on every load
+  since it was written; it now starts Lenis from an effect. Check a change with
+  a DOM-identity probe, not by looking: the page looks identical either way.
+- Settle and Wipe do not arm groups already painted from the HTML
+  (`src/lib/landing.ts`); below the fold and after a navigation they play.
+- New fixed route: add it to `ROUTES` in `scripts/prerender.mjs` and to
+  `ROUTE_PAGES` in `vite.config.ts`. The SPA shell is `dist/spa.html`, served
+  as `/spa` because of `cleanUrls`.
+
 ## 8. What is next on the design
 
 Read section 2 first. The failure mode is timid moves, not wrong ones.

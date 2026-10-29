@@ -90,14 +90,6 @@
   text-underline-offset: 0.18em;
 }
 
-/* While the catalogue answers: six empty slots, no text. */
-.cat-slot {
-  aspect-ratio: 1.414 / 1;
-  width: 100%;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--color-paper-3) 40%, transparent);
-}
-
 /* ─── Sample pages, /shop/:slug ─────────────────────────────────────── */
 .cat-samples {
   display: flex;

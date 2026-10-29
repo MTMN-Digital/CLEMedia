@@ -10,7 +10,7 @@ import "./styles/index.css";
 // Production on Vercel always uses BrowserRouter.
 const Router = import.meta.env.VITE_ROUTER === "hash" ? HashRouter : BrowserRouter;
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const app = (
   <React.StrictMode>
     <HelmetProvider>
       <Router>
@@ -19,3 +19,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
+// Most pages arrive as prerendered HTML (scripts/prerender.mjs), which React
+// takes over in place. Home, the admin and anything with a database slug come
+// as the empty shell and are built from nothing.
+const root = document.getElementById("root")!;
+if (root.firstElementChild) ReactDOM.hydrateRoot(root, app);
+else ReactDOM.createRoot(root).render(app);

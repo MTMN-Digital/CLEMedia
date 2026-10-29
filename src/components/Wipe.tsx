@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useState, type ElementType, useLayoutEffect, type ReactNode, useEffect, useRef } from "react";
+import { alreadyPainted } from "@/lib/landing";
 
 /**
  * The house reveal: a clip-path wipe, unmasking content from its bottom edge.
@@ -20,8 +21,8 @@ export function Wipe({
   className = "",
 }: {
   children: ReactNode;
-  as?: ElementType;
   className?: string;
+  as?: ElementType;
 }) {
   const wrap = useRef<HTMLElement>(null);
   const [armed, setArmed] = useState(false);
@@ -31,7 +32,7 @@ export function Wipe({
     const reduced =
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduced && typeof IntersectionObserver !== "undefined") setArmed(true);
+    if (!reduced && typeof IntersectionObserver !== "undefined" && !alreadyPainted(wrap.current)) setArmed(true);
   }, []);
 
   useEffect(() => {

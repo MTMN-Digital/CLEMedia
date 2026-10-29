@@ -161,7 +161,10 @@ export function MissionVideo({
       <video
         ref={video}
         className="block aspect-[1920/1068] w-full"
-        poster="/video/mission-poster.webp"
+        /* With the source, not in the markup: as an attribute in the
+           prerendered HTML the 128KB poster was fetched alongside the first
+           paint of a page whose film is several screens down. */
+        poster={source ? "/video/mission-poster.webp" : undefined}
         preload={eager ? "metadata" : "none"}
         playsInline
         muted
