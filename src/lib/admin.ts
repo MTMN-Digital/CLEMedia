@@ -178,6 +178,23 @@ export async function reorderRows(table: "products" | "categories" | "people" | 
 
 /* ─── Content blocks ─────────────────────────────────────────────────────── */
 
+/* The public pages are prerendered with the saved wording baked in, so a save
+   asks for a rebuild (api/rebuild.ts). Several saves in a row (Save changes
+   writes one block at a time) collapse into one build. Failure is silent on
+   purpose: the pages already fetch the new wording in the browser, the
+   rebuild only makes the first paint and search engines match it.
+   ponytail: a tab closed inside the 2s window skips the rebuild; the next save
+   catches it up. Move to a database trigger if that ever matters. */
+let rebuildTimer: ReturnType<typeof setTimeout> | undefined;
+function requestRebuild() {
+  clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(async () => {
+    const { data } = await sb().auth.getSession();
+    const token = data.session?.access_token;
+    if (token) fetch("/api/rebuild", { method: "POST", headers: { authorization: `Bearer ${token}` }, keepalive: true }).catch(() => {});
+  }, 2000);
+}
+
 /** Every stored block for one page (the overrides; absent keys use the page source). */
 export function listBlocks(page: string): Promise<Result<ContentBlock[]>> {
   return run(() => sb().from("content_blocks").select("*").eq("page", page));
@@ -202,6 +219,7 @@ export async function saveBlock(
   );
   if (r.error === null) {
     invalidateBlocks(page);
+    requestRebuild();
   }
   return r;
 }
@@ -211,6 +229,7 @@ export async function resetBlock(page: string, key: string): Promise<Result<null
   const r = await run<null>(() => sb().from("content_blocks").delete().eq("page", page).eq("section_key", key));
   if (r.error === null) {
     invalidateBlocks(page);
+    requestRebuild();
   }
   return r;
 }
@@ -229,6 +248,7 @@ export async function saveSetting<K extends keyof SettingsMap>(key: K, value: Se
   const r = await run<null>(() => sb().from("settings").upsert({ key, value } as never, { onConflict: "key" }));
   if (r.error === null) {
     invalidateSettings();
+    requestRebuild();
   }
   return r;
 }

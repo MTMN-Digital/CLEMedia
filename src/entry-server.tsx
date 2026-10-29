@@ -5,6 +5,8 @@ import { StaticRouter } from "react-router-dom/server";
 import { HelmetProvider, type HelmetServerState } from "react-helmet-async";
 import App from "./App";
 
+export { seedContent } from "./lib/content";
+
 /** Renders one route to HTML at build time (scripts/prerender.mjs). Waits for
  *  every lazy route chunk, so the page's own content is in the markup. */
 export function render(url: string): Promise<{ head: string; html: string }> {

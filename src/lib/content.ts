@@ -33,6 +33,26 @@ import type { BlockValue, SettingsMap } from "@/lib/types";
 type Blocks = Record<string, BlockValue>;
 
 const cache = new Map<string, Blocks>();
+
+/* What the build read from the database (scripts/prerender.mjs). The
+   prerendered HTML carries the saved wording, so the first render in the
+   browser must use the same values or hydration would throw it away; the
+   page script leaves them on window.__CMS__. The live fetch below still runs
+   and wins, so a page built before the latest save corrects itself. */
+export interface CmsSeed {
+  settings: Record<string, unknown>;
+  blocks: Record<string, Blocks>;
+}
+const seed: CmsSeed = (typeof window !== "undefined" && (window as { __CMS__?: CmsSeed }).__CMS__) || { blocks: {}, settings: {} };
+
+/** Build time only: the rows the prerender fetched, in the shape the hooks read. */
+export function seedContent(blockRows: { page: string; value: unknown; section_key: string }[], settingRows: { key: string; value: unknown }[]): CmsSeed {
+  seed.blocks = {};
+  for (const r of blockRows) (seed.blocks[r.page] ??= {})[r.section_key] = normalise(r.value);
+  seed.settings = Object.fromEntries(settingRows.map((r) => [r.key, r.value]));
+  return seed;
+}
+
 const inflight = new Map<string, Promise<Blocks>>();
 
 async function client() {
@@ -91,7 +111,7 @@ export function invalidateBlocks(page?: string) {
 }
 
 function usePageValues(page: string): Blocks {
-  const [blocks, setBlocks] = useState<Blocks>(() => cache.get(page) ?? {});
+  const [blocks, setBlocks] = useState<Blocks>(() => cache.get(page) ?? seed.blocks[page] ?? {});
 
   useEffect(() => {
     let live = true;
@@ -235,7 +255,7 @@ export function invalidateSettings() {
  *   const app = useSetting("app", { launched: APP_LAUNCHED });
  */
 export function useSetting<K extends keyof SettingsMap>(key: K, fallback: SettingsMap[K]): SettingsMap[K] {
-  const [row, setRow] = useState<unknown>(() => settingsCache?.[key]);
+  const [row, setRow] = useState<unknown>(() => settingsCache?.[key] ?? seed.settings[key]);
 
   useEffect(() => {
     let live = true;
