@@ -377,8 +377,11 @@ function Document({ doc }: { doc: DocId }) {
 
                   {/* Who the trader is, between its two rules, ruled the same
                       1.5px as the status rows so the cover is one weight of
-                      line end to end. */}
-                  <div className="order-5 mt-7 border-y-[1.5px] border-rule py-5 lg:mt-9">
+                      line end to end. The rules are `lg` only: stacked on a
+                      phone, the status rows above and the contents below
+                      already rule it, and its own pair printed every line
+                      twice. */}
+                  <div className="order-5 border-rule pt-6 lg:mt-9 lg:border-y-[1.5px] lg:py-5">
                     <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
                       Who you are dealing with
                     </p>
@@ -396,7 +399,7 @@ function Document({ doc }: { doc: DocId }) {
                   "Contents" label at `lg`; on a phone the same pull cancels
                   the grid gap under the contents disclosure, leaving the
                   clause's own padding as the space between the two. ─── */}
-              <div className="mt-8 border-t-[1.5px] border-rule pt-6 sm:mt-12 sm:pt-12">
+              <div className="mt-8 border-rule sm:mt-12 lg:border-t-[1.5px] lg:pt-12">
                 <div className="grid gap-9 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-20">
                   <DocContents
                     items={contents}

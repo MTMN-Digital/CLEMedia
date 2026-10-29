@@ -47,7 +47,9 @@ export interface PressFile {
   /** The film only. */
   duration?: string;
   /** What the thumbnail shows. `webp` is optional: the vector marks are their
-   *  own thumbnail. */
+   *  own thumbnail. The WebPs are 360px copies in /brand/thumbs, since a tile
+   *  is about 115px wide on a phone: the full files were 1.1MB for the grid.
+   *  Width and height stay the original's, for the aspect ratio. */
   thumb: { src: string; width: number; height: number; webp?: string };
   alt: string;
 }
@@ -75,7 +77,7 @@ const MARKS: PressFile[] = [
     width: 1182,
     height: 1183,
     bytes: 1724459,
-    thumb: { webp: "/brand/cle-mark.webp", src: "/brand/cle-mark.png", width: 591, height: 591 },
+    thumb: { webp: "/brand/thumbs/cle-mark.webp", src: "/brand/cle-mark.png", width: 591, height: 591 },
     alt: "The CLÉ Family Media logo, the letters formed from needle-felted animals",
   },
   {
@@ -111,7 +113,7 @@ const MARKS: PressFile[] = [
     width: 1600,
     height: 900,
     bytes: 259444,
-    thumb: { webp: "/brand/show-logo.webp", src: "/brand/show-logo.jpg", width: 1000, height: 563 },
+    thumb: { webp: "/brand/thumbs/show-logo.webp", src: "/brand/show-logo.jpg", width: 1000, height: 563 },
     alt: "The Pawsitive Pugs & Pals logo, needle-felted lettering with paw prints and bones",
   },
 ];
@@ -131,7 +133,7 @@ const SLATES: PressFile[] = EPISODES.map((e, i) => {
     width: 1280,
     height: 720,
     bytes: SLATE_BYTES[i],
-    thumb: { webp: `/brand/slate-ep${n}.webp`, src: `/brand/slate-ep${n}.jpg`, width: 640, height: 360 },
+    thumb: { webp: `/brand/thumbs/slate-ep${n}.webp`, src: `/brand/slate-ep${n}.jpg`, width: 640, height: 360 },
     alt: `Episode ${e.n}, ${e.title}, its felted title slate, with Finn and Fia looking over it`,
   };
 });
@@ -148,7 +150,7 @@ const FRAMES: PressFile[] = [
     width: 3200,
     height: 1600,
     bytes: 457659,
-    thumb: { webp: "/brand/show-meadow.webp", src: "/brand/show-meadow.jpg", width: 1600, height: 800 },
+    thumb: { webp: "/brand/thumbs/show-meadow.webp", src: "/brand/show-meadow.jpg", width: 1600, height: 800 },
     alt: "Finn and Fia looking over a leaf in a wildflower meadow at sunrise, with a ladybird on it, a scene from The Pawsitive Pugs and Pals",
   },
   {
@@ -160,7 +162,7 @@ const FRAMES: PressFile[] = [
     width: 3200,
     height: 1600,
     bytes: 517902,
-    thumb: { webp: "/brand/show-snail.webp", src: "/brand/show-snail.jpg", width: 1600, height: 800 },
+    thumb: { webp: "/brand/thumbs/show-snail.webp", src: "/brand/show-snail.jpg", width: 1600, height: 800 },
     alt: "A snail crossing a dewy garden path in low morning sun, a scene from The Pawsitive Pugs and Pals",
   },
   {
@@ -172,7 +174,7 @@ const FRAMES: PressFile[] = [
     width: 2400,
     height: 1600,
     bytes: 446512,
-    thumb: { webp: "/brand/story-garden.webp", src: "/brand/story-garden.jpg", width: 1200, height: 800 },
+    thumb: { webp: "/brand/thumbs/story-garden.webp", src: "/brand/story-garden.jpg", width: 1200, height: 800 },
     alt: "The garden in The Pawsitive Pugs and Pals, with a rope swing hanging from an old tree",
   },
 ];
@@ -190,7 +192,7 @@ const FILM: PressFile[] = [
     height: 1424,
     bytes: 42422615,
     duration: "1:04",
-    thumb: { webp: "/video/mission-poster.webp", src: "/video/mission-poster.jpg", width: 1920, height: 1068 },
+    thumb: { webp: "/brand/thumbs/mission-poster.webp", src: "/video/mission-poster.jpg", width: 1920, height: 1068 },
     alt: "The opening frame of the CLÉ Family Media mission film",
   },
 ];

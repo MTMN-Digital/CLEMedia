@@ -25,7 +25,10 @@ interface Props {
  * Renders a real brand image when one has been supplied, and a labelled
  * placeholder when it has not.
  *
- * Serving order is AVIF, then WebP, then the original. Width and height are
+ * Serving order is AVIF, then WebP, then the original. Width descriptors, not
+ * 1x/2x: with density descriptors the browser ignores `sizes` and every phone
+ * took the @2x file, which on a 340px slate is four times the pixels drawn.
+ * The @2x file is always twice the 1x, and the 1x is `width` wide. Width and height are
  * always set so nothing shifts as images load, and everything below the fold
  * is lazy.
  */
@@ -82,18 +85,18 @@ export function Figure({
       {!a.noAvif && (
         <source
           type="image/avif"
-          srcSet={`${a.base}.avif 1x, ${a.base}@2x.avif 2x`}
+          srcSet={`${a.base}.avif ${a.width}w, ${a.base}@2x.avif ${a.width * 2}w`}
           sizes={sizes}
         />
       )}
       <source
         type="image/webp"
-        srcSet={`${a.base}.webp 1x, ${a.base}@2x.webp 2x`}
+        srcSet={`${a.base}.webp ${a.width}w, ${a.base}@2x.webp ${a.width * 2}w`}
         sizes={sizes}
       />
       <img
         src={`${a.base}.${ext}`}
-        srcSet={`${a.base}.${ext} 1x, ${a.base}@2x.${ext} 2x`}
+        srcSet={`${a.base}.${ext} ${a.width}w, ${a.base}@2x.${ext} ${a.width * 2}w`}
         sizes={sizes}
         alt={a.alt}
         width={a.width}

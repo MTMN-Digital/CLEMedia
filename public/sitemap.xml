@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The fixed pages. Journal posts and shop products are not listed yet: they
+     live in the database, so they need a generated sitemap once the CMS is in use. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://clefamilymedia.com/</loc></url>
+  <url><loc>https://clefamilymedia.com/story</loc></url>
+  <url><loc>https://clefamilymedia.com/team</loc></url>
+  <url><loc>https://clefamilymedia.com/ethical-ai</loc></url>
+  <url><loc>https://clefamilymedia.com/case-study</loc></url>
+  <url><loc>https://clefamilymedia.com/journal</loc></url>
+  <url><loc>https://clefamilymedia.com/app</loc></url>
+  <url><loc>https://clefamilymedia.com/media</loc></url>
+  <url><loc>https://clefamilymedia.com/shop</loc></url>
+  <url><loc>https://clefamilymedia.com/contact</loc></url>
+  <url><loc>https://clefamilymedia.com/privacy</loc></url>
+  <url><loc>https://clefamilymedia.com/terms</loc></url>
+  <url><loc>https://clefamilymedia.com/cookies</loc></url>
+</urlset>

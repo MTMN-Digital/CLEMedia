@@ -44,7 +44,7 @@ export function DocSheet({
   const row = (
     <>
       {tabs.map((t) => {
-        const cls = `flex min-h-[44px] items-center rounded-t-[7px] border-2 border-b-0 px-4 font-mono text-[14.5px] uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
+        const cls = `flex min-h-[44px] items-center rounded-t-[7px] border-2 border-b-0 px-2.5 font-mono text-[14.5px] uppercase tracking-[0.06em] sm:px-4 sm:tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors ${
           t.current
             ? "border-raised bg-raised pb-0.5 text-ink"
             : "mt-1 border-sunken bg-sunken text-body hover:text-ink"
@@ -64,11 +64,11 @@ export function DocSheet({
   return (
     <div className={`relative ${box} ${className}`}>
       {linked ? (
-        <nav aria-label={navLabel} className="flex gap-1 pl-5 sm:pl-7">
+        <nav aria-label={navLabel} className="flex gap-1 pl-3 sm:pl-7">
           {row}
         </nav>
       ) : (
-        <div className="flex gap-1 pl-5 sm:pl-7">{row}</div>
+        <div className="flex gap-1 pl-3 sm:pl-7">{row}</div>
       )}
       <div className="card-stock px-5 py-9 sm:px-8 sm:py-11 lg:px-14 lg:py-16">{children}</div>
     </div>

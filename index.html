@@ -4,8 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- The home splash shows this before anything else; fetched with the HTML so it is there when the splash is. -->
-    <link rel="preload" as="image" href="/brand/mark-splash@2x.webp" fetchpriority="high" />
+    <!-- The CMS and the team read from here on every public page. -->
+    <link rel="preconnect" href="https://yuunvqwigzoqunwexsgt.supabase.co" crossorigin />
+    <!-- Body and display faces. Without these the browser only finds the fonts
+         after the stylesheet and the page's JavaScript have both run. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/hanken-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/calistoga-latin.woff2" crossorigin />
+    <!-- The home splash shows this before anything else, so it is fetched with
+         the HTML. Home only: as a static tag it was 184KB at high priority in
+         front of every other page's own first paint. -->
+    <script>
+      if (location.pathname === "/") {
+        var l = document.createElement("link");
+        l.rel = "preload"; l.as = "image"; l.href = "/brand/mark-splash@2x.webp"; l.fetchPriority = "high";
+        document.head.appendChild(l);
+      }
+    </script>
     <title>CLÉ Family Media</title>
   </head>
   <body>
