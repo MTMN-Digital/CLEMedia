@@ -31,7 +31,7 @@ export interface Person {
   role: string;
   bio: string | null;
   photo: string | null;
-  type: "advisor" | "team";
+  type: "expert" | "team" | "advisor";
   sort_order: number;
   visible: boolean;
   unconfirmed: boolean;
@@ -41,6 +41,8 @@ export interface Person {
   photo_alt?: string | null;
   /** 0008. A bundled portrait (an AssetKey in src/lib/brand.ts) used while `photo` is empty. */
   asset_key?: string | null;
+  /** 0009. An expert's own site, linked from /team. http(s) only (database check). */
+  website?: string | null;
 }
 
 export interface MediaItem {

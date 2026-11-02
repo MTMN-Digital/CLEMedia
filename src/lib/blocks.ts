@@ -177,6 +177,8 @@ export const BLOCKS: BlockDef[] = [
   para("team", "The people", "register.key", "Sentence after the five phase names, before the Responsible AI link", `${TEAM}: register key line`, { required: false }),
   line("team", "Adviser", "adviser.heading", "Heading over the adviser", `${TEAM}: adviser h2`),
   para("team", "Adviser", "adviser.lead", "Note under the adviser heading", `${TEAM}: adviser sentence`),
+  line("team", "Experts", "experts.heading", "Heading over the experts (shown once one is added)", `${TEAM}: experts h2`),
+  para("team", "Experts", "experts.lead", "Note under the experts heading", `${TEAM}: experts sentence`),
   para("team", "Closing", "close.lead", "Closing sentence at the foot of the page", `${TEAM}: ClosingLine`),
   line("team", "Closing", "close.link", "Text of the closing link to the Responsible AI page", `${TEAM}: ClosingLine link`),
 

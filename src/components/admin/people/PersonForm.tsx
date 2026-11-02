@@ -37,13 +37,14 @@ import { TYPE_OPTIONS, type PersonType, PHASE_OPTIONS } from "./shared";
    Save on an existing person and confirms first. */
 
 interface Form {
-  name: string;
   photo: ImageValue | null;
-  role: string;
-  bio: string;
   visible: boolean;
   phases: number[];
+  role: string;
   type: PersonType;
+  website: string;
+  name: string;
+  bio: string;
 }
 
 function fromRow(row: PersonRow): Form {
@@ -52,14 +53,23 @@ function fromRow(row: PersonRow): Form {
     role: row.role,
     bio: row.bio ?? "",
     type: row.type,
+    website: row.website ?? "",
     phases: row.phases ?? [],
     visible: row.visible,
     photo: row.photo ? { url: row.photo, alt: row.photo_alt ?? "" } : null,
   };
 }
 
+/** Same rule as the people_website_http check in 0009: http(s) only, since
+ *  the Team page renders it as a link. Only experts carry a website. */
+function websiteError(f: Form): string | null {
+  const w = f.website.trim();
+  if (f.type !== "expert" || !w) return null;
+  return /^https?:\/\/[^\s/$.?#][^\s]*$/i.test(w) ? null : "Paste the full address, starting with https://";
+}
+
 function blank(type: PersonType): Form {
-  return { name: "", role: "", bio: "", type, phases: [], visible: true, photo: null };
+  return { name: "", role: "", bio: "", type, website: "", phases: [], visible: true, photo: null };
 }
 
 /** The bundled portrait a row still shows while no photo has been uploaded. */
@@ -87,12 +97,12 @@ export function PersonForm() {
   const row = useLoad(async () => (id ? getRow("people", id) : { data: null, error: null }), [id]);
   const [initial, setInitial] = useState<Form | null>(null);
   const [form, setForm] = useState<Form | null>(null);
-  const [errors, setErrors] = useState<{ name?: string; role?: string }>({});
+  const [errors, setErrors] = useState<{ website?: string; role?: string; name?: string }>({});
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (row.loading || row.error) return;
-    const start = row.data ? fromRow(row.data) : blank(params.get("type") === "advisor" ? "advisor" : "team");
+    const start = row.data ? fromRow(row.data) : blank(((t) => (t === "advisor" || t === "expert" ? t : "team"))(params.get("type")));
     setInitial(start);
     setForm(start);
     setErrors({});
@@ -120,9 +130,12 @@ export function PersonForm() {
     const next: typeof errors = {};
     if (!form.name.trim()) next.name = "A name is required.";
     if (!form.role.trim()) next.role = "A role is required, for example Founder and CEO.";
+    const website = form.type === "expert" ? form.website.trim() : "";
+    const siteErr = websiteError(form);
+    if (siteErr) next.website = siteErr;
     setErrors(next);
     const photoProblem = imageError(form.photo);
-    const first = next.name ?? next.role ?? photoProblem;
+    const first = next.name ?? next.role ?? next.website ?? photoProblem;
     if (first) return save.fail(first);
 
     const values: Partial<PersonRow> = {
@@ -130,6 +143,7 @@ export function PersonForm() {
       role: form.role.trim(),
       bio: form.bio.trim() || null,
       type: form.type,
+      website: website || null,
       phases: form.phases,
       visible: form.visible,
       photo: form.photo?.url ?? null,
@@ -187,6 +201,17 @@ export function PersonForm() {
               autoComplete="off"
             />
             <Segmented label="Listed as" value={form.type} onChange={(v) => set("type", v)} options={TYPE_OPTIONS} />
+            {form.type === "expert" && (
+              <TextInput
+                label="Their website"
+                value={form.website}
+                onChange={(v) => set("website", v)}
+                error={errors.website}
+                hint="Their name on the Team page links here. Paste the full address, for example https://example.ie"
+                inputMode="url"
+                autoComplete="off"
+              />
+            )}
     </>
   );
   const bio = form && (
@@ -239,17 +264,18 @@ export function PersonForm() {
   if (!id && form) {
     const nameErr = form.name.trim() ? null : "A name is required.";
     const roleErr = form.role.trim() ? null : "A role is required, for example Founder and CEO.";
+    const siteErr = websiteError(form);
     return (
       <>
-        <PageHeader title="Add a person" intro="Four short steps. They appear on the Team page once you finish." back={{ to: "/admin/people", label: "Back to team and advisers" }} />
+        <PageHeader title="Add a person" intro="Four short steps. They appear on the Team page once you finish." back={{ to: "/admin/people", label: "Back to the team" }} />
         <Wizard
           status={save.status}
-          onShowErrors={(show) => setErrors(show ? { name: nameErr ?? undefined, role: roleErr ?? undefined } : {})}
+          onShowErrors={(show) => setErrors(show ? { name: nameErr ?? undefined, role: roleErr ?? undefined, website: siteErr ?? undefined } : {})}
           onFinish={onSave}
           finishLabel={form.visible ? "Add to the Team page" : "Add, not shown yet"}
           finishingLabel="Adding"
           steps={[
-            { title: "Who they are", answer: form.name && `${form.name}, ${form.role}`, error: nameErr ?? roleErr, body: who },
+            { title: "Who they are", answer: form.name && `${form.name}, ${form.role}`, error: nameErr ?? roleErr ?? siteErr, body: who },
             { title: "Biography", answer: form.bio.trim() ? "Written" : "None yet", body: bio },
             { title: "Photo", answer: form.photo ? "Added" : "None yet", error: imageError(form.photo), body: photo },
             {
@@ -271,7 +297,7 @@ export function PersonForm() {
 
   return (
     <>
-      <PageHeader title={title} back={{ to: "/admin/people", label: "Back to team and advisers" }} />
+      <PageHeader title={title} back={{ to: "/admin/people", label: "Back to the team" }} />
 
       {row.error && <Notice tone="error">{row.error}</Notice>}
       {missing && <Notice tone="error">That person could not be found. They may have been deleted.</Notice>}

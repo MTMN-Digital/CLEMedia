@@ -57,6 +57,8 @@ export interface Member {
    *  `asset`: pass it to Figure as `override={m.photo ?? null}`. Absent on
    *  the bundled list. */
   photo?: ImageOverride | null;
+  /** An expert's own site (people.website). */
+  website?: string | null;
 }
 
 export interface Phase {

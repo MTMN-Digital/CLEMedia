@@ -19,6 +19,8 @@ export const COPY: Record<string, string> = {
     "A script goes round three or four times; the cut goes round until everyone is happy.",
   "adviser.heading": "Adviser",
   "adviser.lead": "Advisers are not employees. Each is described only as they have approved it.",
+  "experts.heading": "Experts",
+  "experts.lead": "Specialists involved in the project. Each name links to their own site.",
   "close.lead":
     "How an episode is written, reviewed and made, and where AI is and is not used, is set out in full on the Responsible AI page.",
   "close.link": "Responsible AI",

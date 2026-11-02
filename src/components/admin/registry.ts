@@ -64,7 +64,7 @@ export const PANELS: PanelDef[] = [
   },
   {
     key: "people",
-    label: "Team and advisers",
+    label: "Team and experts",
     blurb: "Profiles, photos, bios and running order",
     path: "/admin/people",
     file: "src/components/admin/people/PeoplePanel.tsx",

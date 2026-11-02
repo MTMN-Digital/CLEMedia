@@ -24,15 +24,17 @@ import { ADVISORS, TEAM, type Member } from "./people";
    ========================================================================== */
 
 interface Lists {
+  experts: Member[];
   advisors: Member[];
   team: Member[];
 }
 
-const BUNDLED: Lists = { team: TEAM, advisors: ADVISORS };
+/* No bundled experts: the section stays off the page until Conor adds one. */
+const BUNDLED: Lists = { team: TEAM, advisors: ADVISORS, experts: [] };
 
 /** Named rather than `*`, so a column added for the admin never lands in the
  *  public bundle by accident. */
-const COLS = "name,role,bio,photo,photo_alt,type,sort_order,phases,asset_key";
+const COLS = "name,role,bio,photo,photo_alt,type,sort_order,phases,asset_key,website";
 /** The 0001 columns, for a database 0008 has not reached yet. A select that
  *  names a missing column fails outright, so the read retries with these and
  *  takes the three 0008 fields (phases, photo_alt, asset_key) from the bundled
@@ -51,15 +53,16 @@ function fill(r: Partial<Row> & Omit<Row, "photo_alt" | "phases" | "asset_key">)
 }
 
 interface Row {
-  sort_order: number;
-  name: string;
-  role: string;
   asset_key: string | null;
   phases: number[] | null;
-  photo: string | null;
+  website?: string | null;
+  role: string;
   photo_alt: string | null;
-  type: "advisor" | "team";
   bio: string | null;
+  name: string;
+  sort_order: number;
+  type: "expert" | "team" | "advisor";
+  photo: string | null;
 }
 
 function toMember(r: Row): Member {
@@ -73,6 +76,7 @@ function toMember(r: Row): Member {
     bio: splitParagraphs(r.bio ?? ""),
     phases: (r.phases ?? []).map(Number).filter((n) => n >= 1 && n <= 5),
     photo: r.photo ? { url: r.photo, alt: r.photo_alt ?? "" } : null,
+    website: r.website ?? null,
   };
 }
 
@@ -108,9 +112,15 @@ async function load(): Promise<Lists> {
       }
       if (error || !data || data.length === 0) return BUNDLED;
       const rows = data.map(fill);
+      const experts = rows.filter((r) => r.type === "expert").map(toMember);
+      /* Experts are added on their own, so a table holding only experts must
+         not empty the team: team and advisers stay bundled until imported. */
+      const own = rows.filter((r) => r.type !== "expert");
+      if (own.length === 0) return { ...BUNDLED, experts };
       return {
-        team: rows.filter((r) => r.type === "team").map(toMember),
-        advisors: rows.filter((r) => r.type === "advisor").map(toMember),
+        team: own.filter((r) => r.type === "team").map(toMember),
+        advisors: own.filter((r) => r.type === "advisor").map(toMember),
+        experts,
       };
     } catch {
       return BUNDLED;
@@ -134,7 +144,7 @@ export function invalidateTeam() {
 
 /** Every consumer calls `const { team, advisors } = useTeam();` inside its
  *  component. The signature is frozen by the admin contract. */
-export function useTeam(): { advisors: Member[]; team: Member[] } {
+export function useTeam(): Lists {
   const [lists, setLists] = useState<Lists>(() => cache ?? BUNDLED);
 
   useEffect(() => {

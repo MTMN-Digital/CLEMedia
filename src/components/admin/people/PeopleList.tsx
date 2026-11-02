@@ -32,6 +32,7 @@ export function PeopleList() {
   const rows = people.data ?? [];
   const team = rows.filter((p) => p.type === "team");
   const advisors = rows.filter((p) => p.type === "advisor");
+  const experts = rows.filter((p) => p.type === "expert");
 
   async function move(group: PersonRow[], id: string, dir: -1 | 1) {
     const ids = moveId(
@@ -115,21 +116,40 @@ export function PeopleList() {
 
   const addButton = (type: PersonType) => (
     <AdminLinkButton to={`/admin/people/new?type=${type}`} size="sm">
-      {type === "team" ? "Add a team member" : "Add an adviser"}
+      {type === "team" ? "Add a team member" : type === "expert" ? "Add an expert" : "Add an adviser"}
     </AdminLinkButton>
   );
 
-  const nobody = !people.loading && !people.error && rows.length === 0;
+  /* Experts are added on their own, so "nobody" means no team or advisers:
+     the site still shows the bundled team until it is imported. */
+  const nobody = !people.loading && !people.error && team.length + advisors.length === 0;
+
+  const expertsSection = (
+    <section>
+      <h2 className="adm-h2">Experts</h2>
+      <DataTable
+        rows={people.data ? experts : null}
+        columns={columns(experts)}
+        rowKey={(p) => p.id}
+        onRowClick={(p) => navigate(`/admin/people/${p.id}`)}
+        loading={people.loading}
+        error={people.error}
+        empty={{ title: "No experts yet", action: <div className="mt-3">{addButton("expert")}</div> }}
+        caption="Experts, in running order"
+      />
+    </section>
+  );
 
   return (
     <>
       <PageHeader
-        title="Team and advisers"
+        title="Team, advisers and experts"
         intro="Who appears on the Team page, and in what order. The first paragraph of each biography is always shown; the rest opens under a More button."
         actions={<AdminLinkButton to="/admin/people/new" variant="primary">Add a person</AdminLinkButton>}
       />
 
       {nobody ? (
+        <div className="adm-stack">
         <EmptyState
           title="No one is listed yet"
           body="The site is still showing the team written into it. Import that list to start editing it here, or add people one at a time."
@@ -142,6 +162,8 @@ export function PeopleList() {
             </div>
           }
         />
+          {expertsSection}
+        </div>
       ) : (
         <div className="adm-stack">
           <section>
@@ -170,6 +192,7 @@ export function PeopleList() {
               caption="Advisers, in running order"
             />
           </section>
+          {expertsSection}
         </div>
       )}
     </>

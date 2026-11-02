@@ -39,7 +39,7 @@ import { Register } from "@/components/teampage/Register";
    ========================================================================== */
 
 export default function Team() {
-  const { team, advisors } = useTeam();
+  const { team, advisors, experts } = useTeam();
 
   /* EDITABLE FROM THE ADMIN. Every string below is the page's own wording
      (components/teampage/copy.ts) until a content_blocks row replaces it. */
@@ -48,6 +48,8 @@ export default function Team() {
   const registerKey = useBlock("team", "register.key", COPY["register.key"]);
   const adviserHeading = useBlock("team", "adviser.heading", COPY["adviser.heading"]);
   const adviserLead = useBlock("team", "adviser.lead", COPY["adviser.lead"]);
+  const expertsHeading = useBlock("team", "experts.heading", COPY["experts.heading"]);
+  const expertsLead = useBlock("team", "experts.lead", COPY["experts.lead"]);
   const closeLead = useBlock("team", "close.lead", COPY["close.lead"]);
   const closeLink = useBlock("team", "close.link", COPY["close.link"]);
 
@@ -131,6 +133,38 @@ export default function Team() {
               <Register people={advisors} phases={PHASES} />
             </div>
           </div>
+
+          {/* Experts: specialists involved in the project, added in the admin
+              (people.type = 'expert'). Off the page until there is one; no
+              bundled list, so nothing here is ever invented. Each name links
+              out to their own site. */}
+          {experts.length > 0 && (
+            <div className="hairline mt-16 pt-10 lg:mt-20 lg:pt-14">
+              <h2 className="t-h3">{expertsHeading}</h2>
+              <p className="t-body mt-3 max-w-[62ch]">{expertsLead}</p>
+              <ul className="mt-10 grid gap-x-14 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+                {experts.map((m) => (
+                  <li key={m.name} className="hairline min-w-0 pt-6">
+                    {m.website ? (
+                      <a
+                        href={m.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-draw t-h3 font-display leading-tight text-red-deep"
+                      >
+                        {m.name}
+                        <span className="sr-only"> (opens their site in a new tab)</span>
+                      </a>
+                    ) : (
+                      <p className="t-h3 font-display leading-tight">{m.name}</p>
+                    )}
+                    <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
+                    {m.bio[0] && <p className="t-body mt-3">{m.bio[0]}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* ═══ 3. THE CLOSING: one line and one link, then the footer. The
               reading order is team to Responsible AI. ═══ */}

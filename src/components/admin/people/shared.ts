@@ -10,9 +10,10 @@ export type PersonType = PersonRow["type"];
 export const TYPE_OPTIONS: { value: PersonType; label: string }[] = [
   { value: "team", label: "Core team" },
   { value: "advisor", label: "Adviser" },
+  { value: "expert", label: "Expert" },
 ];
 
-export const TYPE_LABEL: Record<PersonType, string> = { team: "Core team", advisor: "Adviser" };
+export const TYPE_LABEL: Record<PersonType, string> = { team: "Core team", advisor: "Adviser", expert: "Expert" };
 
 /** The five production phases, numbered 1 to 5, named as the team page names them. */
 export const PHASE_OPTIONS = PHASES.map((p) => ({ n: Number(p.n), label: p.phase }));

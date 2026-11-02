@@ -154,6 +154,9 @@ Blocks stage 8. Target is mid-October 2026, launching with the site.
 Blocks stage 13. Also decides the canonical strategy that keeps this site from
 competing with `pawsitivepugs.com` in search.
 
+Partly answered 2026-11-02: Conor says he already has a domain. Still need
+which one, and the registrar or DNS host, to point it at Vercel.
+
 ### 16. Analytics: Plausible or GA4?
 Blocks stage 12. The answer determines whether a cookie consent banner is
 required: Plausible is cookieless and generally needs none, GA4 does. This is a

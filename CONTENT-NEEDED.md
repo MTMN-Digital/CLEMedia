@@ -898,3 +898,15 @@ their PDFs, artwork and prices, CLE's VAT position, a public email address, the
 safeguarding address, PupsPlayer screenshots, the first journal piece, and the
 December podcast's show, host, date and link.
 
+## Experts, requested by Conor 2026-11-02
+
+Conor asked for a section of experts involved in the project, each linking to
+their own site. Built: an Experts block on `/team` under the advisers, off the
+page until the first one is added in the admin (Team and experts, Listed as
+Expert). Nothing is bundled, so no name appears that he has not supplied.
+
+| Item | Status | Needed for | Notes |
+|---|---|---|---|
+| Each expert's name, field (one line) and website | ❌ | `/team` Experts | Optional one-sentence description each. Conor can add them himself in the admin, or send the list and MTMN adds them |
+| Each expert's OK to be listed | ❌ | `/team` Experts | Same rule as the advisers: described only as they have approved it |
+
