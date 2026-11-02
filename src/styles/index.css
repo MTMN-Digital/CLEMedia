@@ -226,13 +226,24 @@ html {
    quiet areas of a sparse page do not read as a flat fill. The blooms are the
    brand red and the sage at very low alpha, which reads as LIGHT on clay
    rather than as a coloured background. Static: nothing on this site drifts. */
+/* PERF 2026-11-02. The washes used to be `background-attachment: fixed` on
+   body, which repaints the whole viewport on every scroll frame. The same
+   gradients on a fixed layer of their own look identical (both are pinned to
+   the viewport) and the compositor moves the page over it instead. */
 body {
   min-height: 100%;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
   background-image:
     radial-gradient(58% 42% at 88% 6%, rgba(163, 46, 50, 0.055) 0%, transparent 70%),
     radial-gradient(48% 38% at 4% 90%, rgba(148, 183, 164, 0.10) 0%, transparent 72%),
     radial-gradient(120% 90% at 20% 0%, var(--color-paper-1) 0%, var(--color-paper-2) 55%, var(--color-paper-3) 100%);
-  background-attachment: fixed;
 }
 
 /* Paper grain over the whole ground. One inline SVG turbulence, no request.
@@ -251,8 +262,15 @@ body {
   z-index: 40;
   pointer-events: none;
   opacity: 0.22;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.42'/%3E%3C/svg%3E");
+  will-change: transform;
+  /* PERF 2026-11-02. This was a grey noise tile under `mix-blend-mode:
+     multiply`, which made the browser re-blend the whole viewport on every
+     scroll frame. Multiplying by grey L at alpha A darkens by A*(1-L), which
+     is exactly a BLACK tile at alpha A*(1-L) in a normal blend, so the tile
+     now carries that alpha (the arithmetic composite) and needs no blend.
+     The 1-L step reads L in sRGB, as the blend did. Same pixels, one
+     composited layer. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0' result='s'/%3E%3CfeColorMatrix in='s' color-interpolation-filters='sRGB' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0 0 1' result='inv'/%3E%3CfeColorMatrix in='s' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0' result='a'/%3E%3CfeComposite in='inv' in2='a' operator='arithmetic' k1='1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.42'/%3E%3C/svg%3E");
 }
 /* Everything the page renders sits above the grain. */
 body > * { position: relative; z-index: 1; }
