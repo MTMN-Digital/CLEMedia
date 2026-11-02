@@ -101,13 +101,13 @@ export async function POST(request: Request) {
     if (error && error.code !== "23505") throw error;
 
     /* Tell CLÉ a sale happened. Only the delivery that created the order
-       sends, so a Stripe retry never emails twice. ORDER_NOTIFY_TO when set,
-       otherwise the enquiries inbox. */
+       sends, so a Stripe retry never emails twice. Goes to the enquiries
+       inbox, and also to ORDER_NOTIFY_TO once that is set. */
     if (!error) {
       const { data: product } = await supabase.from("products").select("title").eq("id", productId).maybeSingle();
       const amount = session.amount_total == null ? "unknown" : `${(session.amount_total / 100).toFixed(2)} ${(session.currency ?? "").toUpperCase()}`;
       await sendNotice({
-        to: process.env.ORDER_NOTIFY_TO || process.env.ENQUIRY_NOTIFY_TO,
+        to: [process.env.ENQUIRY_NOTIFY_TO, process.env.ORDER_NOTIFY_TO],
         replyTo: payerEmail ?? undefined,
         subject: `New order: ${product?.title ?? "a product"} (${amount})`,
         text: [

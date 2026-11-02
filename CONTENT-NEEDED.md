@@ -910,3 +910,21 @@ Expert). Nothing is bundled, so no name appears that he has not supplied.
 | Each expert's name, field (one line) and website | ❌ | `/team` Experts | Optional one-sentence description each. Conor can add them himself in the admin, or send the list and MTMN adds them |
 | Each expert's OK to be listed | ❌ | `/team` Experts | Same rule as the advisers: described only as they have approved it |
 
+
+## Status check, 2026-11-02
+
+Corrections to the tables above, which had gone stale:
+
+- **The dog photographs are DONE.** All eight are on `/story` (`dog.finn-1` to `-4`, `dog.fia-1` to `-4` in `src/lib/brand.ts`). The "still owed" row above is out of date.
+- **The six episode packs are staged in production.** Admin > Shop has all six at EUR 4.99, with covers and zip files uploaded, set to hidden. Publish each one once live Stripe keys are in; until then the shop shows the six covers as "Coming soon".
+- **The legal pages are final** as published (David, 2026-11-02). Not a gap.
+- **The imagery is not a gap.** CLÉ supplied it; the brief rules out poor AI imagery, not AI imagery (David, 2026-11-02).
+
+Still owed, for go-live:
+
+| Item | Notes |
+|---|---|
+| The domain, and who runs its DNS | `clefamilymedia.com` currently serves a Squarespace "Coming Soon" page, not this site |
+| A sender address on that domain | Verify the domain in Resend, then set `ENQUIRY_NOTIFY_FROM` in Vercel. Until then enquiries and orders are stored but nobody is emailed |
+| A second inbox for orders, if wanted | Set `ORDER_NOTIFY_TO`. Order emails always go to `ENQUIRY_NOTIFY_TO` too |
+| Stripe | Does CLÉ have an account? Live keys and a live webhook endpoint at `/api/stripe-webhook` are needed before the packs are published |

@@ -86,7 +86,7 @@ export async function POST(request: Request) {
  *  already safely stored by the time this runs. */
 function notify(e: { route: string; message: string; organisation: string; name: string; email: string }) {
   return sendNotice({
-    to: process.env.ENQUIRY_NOTIFY_TO,
+    to: [process.env.ENQUIRY_NOTIFY_TO],
     replyTo: e.email,
     subject:
       e.route === "partnership"
