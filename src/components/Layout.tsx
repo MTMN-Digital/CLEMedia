@@ -40,23 +40,13 @@ function ShowSiteLink({ className = "" }: { className?: string }) {
    usually loses: on a flat bar the page you are on is underlined, and in a
    menu it disappears behind a word that never changes.
    ========================================================================== */
-/* A menu link with a #fragment (Experts, /team#experts) is lit only on that
-   fragment, and its bare sibling on the same path stands down while it is.
-   NavLink alone ignores the hash and would light both. */
-function lit(to: string, pathname: string, hash: string, siblings: readonly { to: string }[]) {
-  const [path, frag] = to.split("#");
-  if (pathname !== path && !pathname.startsWith(`${path}/`)) return false;
-  if (frag) return hash === `#${frag}`;
-  return !siblings.some((s) => s.to === `${path}${hash}`);
-}
-
 function NavGroup({ label, items }: { items: readonly { to: string; label: string }[]; label: string }) {
   const [open, setOpen] = useState(false);
-  const { pathname, hash } = useLocation();
+  const { pathname } = useLocation();
   const box = useRef<HTMLDivElement>(null);
-  const inside = items.some((i) => lit(i.to, pathname, hash, items));
+  const inside = items.some((i) => pathname === i.to || pathname.startsWith(`${i.to}/`));
 
-  useEffect(() => setOpen(false), [pathname, hash]);
+  useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
     const away = (e: MouseEvent) => {
@@ -101,15 +91,14 @@ function NavGroup({ label, items }: { items: readonly { to: string; label: strin
         >
           {items.map((i) => (
             <li key={i.to}>
-              <Link
+              <NavLink
                 to={i.to}
-                aria-current={lit(i.to, pathname, hash, items) ? "page" : undefined}
-                className={`block px-4 py-2.5 font-body text-[14.5px] ${
-                  lit(i.to, pathname, hash, items) ? "text-red-deep" : "text-body hover:text-ink"
-                }`}
+                className={({ isActive }) =>
+                  `block px-4 py-2.5 font-body text-[14.5px] ${isActive ? "text-red-deep" : "text-body hover:text-ink"}`
+                }
               >
                 {i.label}
-              </Link>
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -126,7 +115,7 @@ function NavGroup({ label, items }: { items: readonly { to: string; label: strin
  */
 function Header() {
   const [open, setOpen] = useState(false);
-  const { pathname, hash } = useLocation();
+  const { pathname } = useLocation();
   const bar = useRef<HTMLElement>(null);
   /* Two states, not one. `over` is the header floating on the hero film with
      cream type; `solid` is the cream bar with its hairline. They are not
@@ -134,7 +123,7 @@ function Header() {
      the "softer until you scroll" half of this. */
   const [over, setOver] = useState(false);
   const [solid, setSolid] = useState(false);
-  useEffect(() => setOpen(false), [pathname, hash]);
+  useEffect(() => setOpen(false), [pathname]);
 
   /* MEASURED FROM THE FILM, not from a scroll offset. A threshold in pixels
      would have to know the hero's height, which is `100svh` minus a gutter
@@ -269,15 +258,14 @@ function Header() {
                 "items" in item
                   ? item.items.map((i) => (
                       <li key={i.to} className="hairline">
-                        <Link
+                        <NavLink
                           to={i.to}
-                          aria-current={lit(i.to, pathname, hash, item.items) ? "page" : undefined}
-                          className={`block py-3.5 font-body text-[16px] font-medium ${
-                            lit(i.to, pathname, hash, item.items) ? "text-red-deep" : ""
-                          }`}
+                          className={({ isActive }) =>
+                            `block py-3.5 font-body text-[16px] font-medium ${isActive ? "text-red-deep" : ""}`
+                          }
                         >
                           {i.label}
-                        </Link>
+                        </NavLink>
                       </li>
                     ))
                   : [
@@ -430,33 +418,12 @@ function Footer() {
 }
 
 export function Layout() {
-  const { pathname, hash } = useLocation();
+  const { pathname } = useLocation();
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
 
-  /* /team#experts from the menu. The router does not scroll to a fragment,
-     and a lazy page may not have mounted yet, so look for the target each
-     frame for up to about two seconds. */
   useEffect(() => {
-    /* No fragment: top of the page, which also covers /team#experts back to
-       /team, where the path does not change and the effect below never runs. */
-    if (!hash) {
-      window.scrollTo(0, 0);
-      return;
-    }
-    let tries = 0;
-    let frame = 0;
-    const go = () => {
-      const el = document.getElementById(decodeURIComponent(hash.slice(1)));
-      if (el) el.scrollIntoView();
-      else if (tries++ < 120) frame = requestAnimationFrame(go);
-    };
-    go();
-    return () => cancelAnimationFrame(frame);
-  }, [pathname, hash]);
-
-  useEffect(() => {
-    if (!window.location.hash) window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
 
     /* Move focus to the new page.
      *
