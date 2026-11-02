@@ -233,7 +233,7 @@ export function PersonForm() {
               value={form.photo}
               onChange={(v) => set("photo", v)}
               folder="people"
-              hint="A square crop works best. JPG, PNG, WebP or AVIF, up to 10 MB."
+              hint={form.type === "expert" ? "Optional: their headshot or practice logo, shown small beside their name. A square crop works best." : "A square crop works best. JPG, PNG, WebP or AVIF, up to 10 MB."}
               defaultPreview={bundledPreview(row.data?.asset_key)}
             />
     </>
@@ -279,10 +279,10 @@ export function PersonForm() {
             { title: "Biography", answer: form.bio.trim() ? "Written" : "None yet", body: bio },
             { title: "Photo", answer: form.photo ? "Added" : "None yet", error: imageError(form.photo), body: photo },
             {
-              title: "Phases and check",
+              title: form.type === "expert" ? "Check" : "Phases and check",
               body: (
                 <>
-                  {phases}
+                  {form.type !== "expert" && phases}
                   {site}
                 </>
               ),
@@ -322,10 +322,12 @@ export function PersonForm() {
             {photo}
           </div>
 
-          <div className="adm-card adm-stack">
-            <h2 className="adm-h2">Production phases</h2>
-            {phases}
-          </div>
+          {form.type !== "expert" && (
+            <div className="adm-card adm-stack">
+              <h2 className="adm-h2">Production phases</h2>
+              {phases}
+            </div>
+          )}
 
           <div className="adm-card adm-stack">
             <h2 className="adm-h2">On the site</h2>

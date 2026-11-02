@@ -38,6 +38,15 @@ import { Register } from "@/components/teampage/Register";
    the admin's Team panel replace the bundled lists once they load.
    ========================================================================== */
 
+/** "https://www.example.ie/about" reads as "example.ie". */
+function siteName(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
 export default function Team() {
   const { team, advisors, experts } = useTeam();
 
@@ -139,27 +148,41 @@ export default function Team() {
               bundled list, so nothing here is ever invented. Each name links
               out to their own site. */}
           {experts.length > 0 && (
-            <div className="hairline mt-16 pt-10 lg:mt-20 lg:pt-14">
+            <div id="experts" className="hairline mt-16 scroll-mt-28 pt-10 lg:mt-20 lg:pt-14">
               <h2 className="t-h3">{expertsHeading}</h2>
               <p className="t-body mt-3 max-w-[62ch]">{expertsLead}</p>
               <ul className="mt-10 grid gap-x-14 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
                 {experts.map((m) => (
-                  <li key={m.name} className="hairline min-w-0 pt-6">
-                    {m.website ? (
-                      <a
-                        href={m.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="link-draw t-h3 font-display leading-tight text-red-deep"
-                      >
-                        {m.name}
-                        <span className="sr-only"> (opens their site in a new tab)</span>
-                      </a>
-                    ) : (
-                      <p className="t-h3 font-display leading-tight">{m.name}</p>
+                  <li key={m.name} className="hairline flex min-w-0 gap-4 pt-6">
+                    {m.photo && (
+                      <img
+                        src={m.photo.url}
+                        alt={m.photo.alt}
+                        width={64}
+                        height={64}
+                        loading="lazy"
+                        className="size-16 shrink-0 rounded-full bg-paper-1 object-cover"
+                      />
                     )}
-                    <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
-                    {m.bio[0] && <p className="t-body mt-3">{m.bio[0]}</p>}
+                    <div className="min-w-0">
+                      <p className="t-h3 font-display leading-tight">{m.name}</p>
+                      <p className="eyebrow eyebrow-sm mt-2">{m.role}</p>
+                      {m.bio[0] && <p className="t-body mt-3">{m.bio[0]}</p>}
+                      {/* The address itself is shown, not "Visit website": the
+                          credential is that they have a practice of their own. */}
+                      {m.website && (
+                        <a
+                          href={m.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-draw mt-3 inline-block max-w-full text-[15px] font-semibold break-words text-red-deep"
+                        >
+                          {siteName(m.website)}
+                          <span aria-hidden="true">{"\u00a0"}↗</span>
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
