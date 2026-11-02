@@ -1,4 +1,4 @@
-import { adminClient, json } from "./_lib/admin.js";
+import { sendNotice, json, adminClient } from "./_lib/admin.js";
 
 const ROUTES = ["general", "partnership", "educator", "press", "notify"] as const;
 type Route = (typeof ROUTES)[number];
@@ -84,50 +84,21 @@ export async function POST(request: Request) {
 
 /** Best effort. A failed notification must not lose the enquiry, which is
  *  already safely stored by the time this runs. */
-async function notify(e: { route: string; message: string; organisation: string; name: string; email: string }) {
-  const key = process.env.RESEND_API_KEY;
-  const to = process.env.ENQUIRY_NOTIFY_TO;
-  /* The sender was hardcoded to `notifications@example.com`, a domain nobody
-     controls and Resend will never have verified, so with credentials present
-     every send was rejected and the rejection was thrown away: the API said
-     `ok`, the enquiry sat in the table, and nobody was told it had arrived. */
-  const from = process.env.ENQUIRY_NOTIFY_FROM;
-  if (!key || !to || !from) {
-    if (key && to && !from) console.error("ENQUIRY_NOTIFY_FROM is not configured, no notification sent");
-    return;
-  }
-
-  const subject =
-    e.route === "partnership"
-      ? `Partnership enquiry from ${e.name || e.email}`
-      : `${e.route} enquiry from ${e.name || e.email}`;
-
-  try {
-    const r = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        reply_to: e.email,
-        subject,
-        text: [
-          `Type: ${e.route}`,
-          `Name: ${e.name || "Not given"}`,
-          `Email: ${e.email}`,
-          `Organisation: ${e.organisation || "Not given"}`,
-          "",
-          e.message || "(no message)",
-        ].join("\n"),
-      }),
-    });
-    /* A non-2xx is a silent failure unless it is read. The enquiry is already
-       stored, so this does not fail the request, but it must be visible in the
-       function logs rather than swallowed. */
-    if (!r.ok) {
-      console.error("Enquiry stored but Resend rejected the notification", r.status, await r.text().catch(() => ""));
-    }
-  } catch (err) {
-    console.error("Enquiry stored but notification failed", err);
-  }
+function notify(e: { route: string; message: string; organisation: string; name: string; email: string }) {
+  return sendNotice({
+    to: process.env.ENQUIRY_NOTIFY_TO,
+    replyTo: e.email,
+    subject:
+      e.route === "partnership"
+        ? `Partnership enquiry from ${e.name || e.email}`
+        : `${e.route} enquiry from ${e.name || e.email}`,
+    text: [
+      `Type: ${e.route}`,
+      `Name: ${e.name || "Not given"}`,
+      `Email: ${e.email}`,
+      `Organisation: ${e.organisation || "Not given"}`,
+      "",
+      e.message || "(no message)",
+    ].join("\n"),
+  });
 }

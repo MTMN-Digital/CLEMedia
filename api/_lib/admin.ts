@@ -24,3 +24,27 @@ export function json(body: unknown, status = 200): Response {
     headers: { "content-type": "application/json" },
   });
 }
+
+/**
+ * Best-effort email to CLÉ through Resend, from ENQUIRY_NOTIFY_FROM (an
+ * address on a domain verified in Resend). Never throws: whatever triggered
+ * it is already stored, so a failed send is logged and the caller carries on.
+ */
+export async function sendNotice(m: { subject: string; to: string | undefined; text: string; replyTo?: string }) {
+  const key = process.env.RESEND_API_KEY;
+  const from = process.env.ENQUIRY_NOTIFY_FROM;
+  if (!key || !m.to || !from) {
+    if (key && m.to && !from) console.error("ENQUIRY_NOTIFY_FROM is not configured, no notification sent");
+    return;
+  }
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to: [m.to], reply_to: m.replyTo, subject: m.subject, text: m.text }),
+    });
+    if (!r.ok) console.error("Resend rejected the notification", r.status, await r.text().catch(() => ""));
+  } catch (err) {
+    console.error("Notification failed", err);
+  }
+}

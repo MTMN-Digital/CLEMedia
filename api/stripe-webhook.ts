@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import Stripe from "stripe";
-import { requireEnv, adminClient, json } from "./_lib/admin.js";
+import { json, requireEnv, sendNotice, adminClient } from "./_lib/admin.js";
 
 /**
  * Stripe signs the exact bytes it sent, so the body must reach constructEvent
@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       return json({ received: true, ignored: "no product_id" });
     }
 
+    const payerEmail = session.customer_details?.email ?? session.customer_email ?? null;
     const { error } = await supabase.from("orders").insert({
       stripe_session_id: session.id,
       product_id: productId,
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
          collected it for its own receipt. `customer_details` is the address
          used at checkout; `customer_email` is only set when the session was
          pre-filled, which ours never is. */
-      payer_email: session.customer_details?.email ?? session.customer_email ?? null,
+      payer_email: payerEmail,
       /* Stamped by create-checkout-session, which refuses to open a session
          without the Article 16(m) acknowledgement. Kept on the order because
          the trader is the one who has to be able to show consent was given. */
@@ -98,6 +99,26 @@ export async function POST(request: Request) {
 
     // A unique violation means a concurrent delivery won the race. Still fine.
     if (error && error.code !== "23505") throw error;
+
+    /* Tell CLÉ a sale happened. Only the delivery that created the order
+       sends, so a Stripe retry never emails twice. ORDER_NOTIFY_TO when set,
+       otherwise the enquiries inbox. */
+    if (!error) {
+      const { data: product } = await supabase.from("products").select("title").eq("id", productId).maybeSingle();
+      const amount = session.amount_total == null ? "unknown" : `${(session.amount_total / 100).toFixed(2)} ${(session.currency ?? "").toUpperCase()}`;
+      await sendNotice({
+        to: process.env.ORDER_NOTIFY_TO || process.env.ENQUIRY_NOTIFY_TO,
+        replyTo: payerEmail ?? undefined,
+        subject: `New order: ${product?.title ?? "a product"} (${amount})`,
+        text: [
+          `Product: ${product?.title ?? productId}`,
+          `Amount: ${amount}`,
+          `Buyer email: ${payerEmail ?? "Not given"}`,
+          `Time: ${new Date((session.created ?? Date.now() / 1000) * 1000).toISOString()}`,
+          `Stripe session: ${session.id}`,
+        ].join("\n"),
+      });
+    }
 
     return json({ received: true });
   } catch (err) {
