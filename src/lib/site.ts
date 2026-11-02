@@ -59,6 +59,7 @@ export const NAV = [
     items: [
       { to: "/story", label: "Our story" },
       { to: "/team", label: "Our team" },
+      { to: "/team#experts", label: "Experts" },
       { to: "/ethical-ai", label: "Responsible AI" },
       /* Out of the menu until the study opens (subpage plan, 2026-10-28):
          an investor opening About first should not land on a page that is
