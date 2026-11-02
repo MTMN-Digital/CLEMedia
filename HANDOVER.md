@@ -581,6 +581,17 @@ fixed pages to HTML (`src/entry-server.tsx`, `scripts/prerender.mjs`), and
   `ROUTE_PAGES` in `vite.config.ts`. The SPA shell is `dist/spa.html`, served
   as `/spa` because of `cleanUrls`.
 
+**Saved wording is baked in, from 2026-11-02.** The prerender reads
+`content_blocks` and `settings` from Supabase and writes them into each page,
+so an admin edit is in the HTML, not only patched in after load. If the
+database can't be reached the build logs a warning and ships the source
+wording. A save in the admin calls `api/rebuild` (signed-in admins only,
+several saves collapse into one), which fires the Vercel deploy hook
+`cms-save` on `main` through the Production variable `VERCEL_DEPLOY_HOOK`.
+Without that variable saves still show, after a one-second flash of the old
+wording. The production admin is `hello@mtmn.ie`; the login sits in the
+git-excluded `.parallel/admin/prod.env`.
+
 ## 8. What is next on the design
 
 Read section 2 first. The failure mode is timid moves, not wrong ones.

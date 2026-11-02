@@ -33,7 +33,7 @@ export async function signIn(page, base = "http://127.0.0.1:5500") {
   await page.getByLabel("Email").fill(env.ADMIN_EMAIL);
   await page.getByLabel("Password").fill(env.ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await page.getByRole("heading", { name: "Edit the site" }).waitFor({ timeout: 15000 });
+  await page.getByRole("heading", { name: "Start something" }).waitFor({ timeout: 15000 });
   // supabase-js writes the session a moment after the console appears; wait
   // for it so a page.goto() straight after this stays signed in.
   await page.waitForFunction(() => Object.keys(localStorage).some((k) => k.endsWith("-auth-token")), null, { timeout: 10000 });
