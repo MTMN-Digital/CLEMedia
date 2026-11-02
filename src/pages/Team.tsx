@@ -59,6 +59,7 @@ export default function Team() {
   const adviserLead = useBlock("team", "adviser.lead", COPY["adviser.lead"]);
   const expertsHeading = useBlock("team", "experts.heading", COPY["experts.heading"]);
   const expertsLead = useBlock("team", "experts.lead", COPY["experts.lead"]);
+  const expertsEmpty = useBlock("team", "experts.empty", COPY["experts.empty"]);
   const closeLead = useBlock("team", "close.lead", COPY["close.lead"]);
   const closeLink = useBlock("team", "close.link", COPY["close.link"]);
 
@@ -147,10 +148,13 @@ export default function Team() {
               (people.type = 'expert'). Off the page until there is one; no
               bundled list, so nothing here is ever invented. Each name links
               out to their own site. */}
-          {experts.length > 0 && (
-            <div id="experts" className="hairline mt-16 scroll-mt-28 pt-10 lg:mt-20 lg:pt-14">
+          {/* Shown even while empty (David, 2026-11-02), with one plain line
+              in place of the list until Conor adds the first expert. */}
+          <div id="experts" className="hairline mt-16 scroll-mt-28 pt-10 lg:mt-20 lg:pt-14">
               <h2 className="t-h3">{expertsHeading}</h2>
               <p className="t-body mt-3 max-w-[62ch]">{expertsLead}</p>
+              {experts.length === 0 && <p className="t-body mt-10 max-w-[62ch] text-muted">{expertsEmpty}</p>}
+              {experts.length > 0 && (
               <ul className="mt-10 grid gap-x-14 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
                 {experts.map((m) => (
                   <li key={m.name} className="hairline flex min-w-0 gap-4 pt-6">
@@ -186,8 +190,8 @@ export default function Team() {
                   </li>
                 ))}
               </ul>
+              )}
             </div>
-          )}
 
           {/* ═══ 3. THE CLOSING: one line and one link, then the footer. The
               reading order is team to Responsible AI. ═══ */}
