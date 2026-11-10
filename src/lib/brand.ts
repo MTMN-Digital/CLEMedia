@@ -277,6 +277,7 @@ const assets = {
   "person.david": { base: "/brand/people/david", alt: "David Toth, strategic advisor", width: 440, height: 440, label: "David Toth, portrait" },
   "person.victoria": { base: "/brand/people/victoria", alt: "Victoria, graphic designer and illustrator", width: 440, height: 440, label: "Victoria, portrait" },
   "person.stitha": { base: "/brand/people/stitha", alt: "Stitha Raj, UI/UX designer", width: 440, height: 440, label: "Stitha Raj, portrait", noAvif: true },
+  "person.justin": { base: "/brand/people/justin", alt: "Justin, software developer", width: 440, height: 440, label: "Justin, portrait", noAvif: true },
   /* Mansi is the one person in the review sequence the handoff sent no photo
      or biography for. Listed, unillustrated, logged in CONTENT-NEEDED.md. */
   "person.mansi": { base: null, alt: "Mansi, production coordination", width: 440, height: 440, label: "Mansi, portrait" },

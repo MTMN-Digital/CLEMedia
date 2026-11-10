@@ -928,3 +928,14 @@ Still owed, for go-live:
 | A sender address on that domain | Verify the domain in Resend, then set `ENQUIRY_NOTIFY_FROM` in Vercel. Until then enquiries and orders are stored but nobody is emailed |
 | A second inbox for orders, if wanted | Set `ORDER_NOTIFY_TO`. Order emails always go to `ENQUIRY_NOTIFY_TO` too |
 | Stripe | Does CLÉ have an account? Live keys and a live webhook endpoint at `/api/stripe-webhook` are needed before the packs are published |
+
+## From Conor's email, 2026-11-10
+
+- **Justin added** to `/team` (and the press page's name list): "Software Developer, App Development", Conor's bio verbatim, his photograph. No surname given, so first name only, as with Mansi. Original photo in `Work/Clients/CLE Family Media/inbound/justin-2026-11-10.png`.
+- **Workbooks ON HOLD.** The colouring books and activity sheets have changed. CLÉ now runs a review system for educational materials and will share a link to a larger, updated set (colouring pages, activity sheets, other resources). Do not finalise the shop, the product sample pages or the /app books from the October files. The six staged packs stay hidden and must be replaced, not published, once the new files arrive.
+- **A partner organisation document** is coming, once that organisation confirms it may be named on the site.
+
+| Item | Status | Notes |
+|---|---|---|
+| Link to CLÉ's review system | ❌ | Updated covers, packs and sample pages come from it |
+| Partner organisation document and its approval | ❌ | Section to be decided when the document arrives |

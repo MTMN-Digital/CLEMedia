@@ -165,6 +165,18 @@ export const TEAM: Member[] = [
       "Stitha is a UI/UX designer with an engineering background. She uses Figma and AI tools to design clear, user-friendly digital experiences.",
     ],
   },
+  {
+    name: "Justin",
+    role: "Software Developer, App Development",
+    asset: "person.justin",
+    /* ADDED 2026-11-10, photograph, title and bio from Conor's email. Builds
+       the app; no surname given, so first name only, as with Mansi. Conor
+       wrote the title as "Software Developer | App Development". */
+    phases: [],
+    bio: [
+      "Justin is a software developer responsible for designing and building The Pawsitive Pugs & Pals® app. He brings the team's educational vision to life through a child-friendly digital experience, combining calming episodes, gentle interactive games and printable learning resources for families and educators.",
+    ],
+  },
 ];
 
 export const ADVISORS: Member[] = [
