@@ -939,3 +939,9 @@ Still owed, for go-live:
 |---|---|---|
 | Link to CLÉ's review system | ❌ | Updated covers, packs and sample pages come from it |
 | Partner organisation document and its approval | ❌ | Section to be decided when the document arrives |
+
+## Stripe, 2026-11-11
+
+Live keys are in Vercel production (`STRIPE_SECRET_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`); preview keeps the test keys. The live webhook endpoint is `https://cle-media.vercel.app/api/stripe-webhook` (checkout.session.completed, checkout.session.async_payment_succeeded), verified with a signed test event. The account is "Cle Family Media 25 Limited", IE, EUR.
+
+**The account cannot take payments yet: Stripe reports charges and payouts disabled.** Conor has to finish Stripe's activation (business details, bank account, identity) in the dashboard. Add a second endpoint when the custom domain goes live.
