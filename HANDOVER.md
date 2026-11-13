@@ -607,3 +607,13 @@ Read section 2 first. The failure mode is timid moves, not wrong ones.
 4. Whatever is next, capture the whole page at 1440 and at 390 and look at it.
    Judging a change from a crop of the component is how three of these sessions
    went wrong.
+
+## 9. Admin additions, 2026-11-13
+
+- **Episodes** (`/admin/episodes`, table `episodes`, migration 0010, applied to production). The home film strip, /app slates and the PupsPlayer walkthrough read it through `src/lib/useEpisodes.ts`; `src/lib/episodes.ts` is now only the fallback. A YouTube link makes an episode released; without one it shows Coming soon. The six existing episodes are seeded with their bundled slates (`asset_key`); a new one needs an uploaded thumbnail. The case study and the press kit's slate downloads still use the bundled list.
+- **Quotes** (`/admin/quotes`, settings key `quotes`). Replaces the two held-open panels on the home page once one is saved.
+- **Links and settings** now also hold the public email (`links.email`, shown in the footer and on /contact) and the company details (settings key `company`, read by Legal, Press kit and Contact; `COMPANY_DEFAULT` in `src/lib/site.ts` is the fallback). Social links now show in the footer. The registered office is still kept off the footer.
+- **Photo slots**: the home page's garden band and two show frames (with captions), the story letter's garden and characters pictures, and all eight dog photos. Admin > Pages and photos.
+- **Responsible AI**: "Adopted" and "Approved by" are page blocks now, hidden while empty.
+- Not built on purpose: a switch to open the case study, because opening it also needs migration 0007 and the `STUDY_OPEN` server variable.
+- Gotcha fixed on the way: two `Settle` elements swapped by a ternary at the same spot reuse one instance, and its reveal keeps watching the removed node, so the new content stays at opacity 0. Give each branch its own `key`.
