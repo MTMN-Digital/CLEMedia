@@ -123,11 +123,29 @@ export type SocialNetwork = "instagram" | "facebook" | "tiktok" | "linkedin" | "
 export interface LinksSetting {
   social: Partial<Record<SocialNetwork, string>>;
   show_site: string;
+  /** The public email address, shown in the footer and on /contact. */
+  email?: string | null;
+}
+
+/** `settings` row `quotes`: parent and educator quotations on the home page,
+ *  each with the wording and attribution the person agreed to. */
+export interface QuotesSetting {
+  items: { words: string; from: string }[];
+}
+
+/** `settings` row `company`. The registered details on /privacy, /terms,
+ *  /cookies, /media and /contact. Never in the footer (family home). */
+export interface CompanySetting {
+  office: string;
+  legal: string;
+  cro: string;
 }
 
 /** Every settings key the site reads, and the shape of its value. */
 export interface SettingsMap {
   links: LinksSetting;
+  quotes: QuotesSetting;
+  company: CompanySetting;
   app: AppSetting;
 }
 

@@ -4,7 +4,8 @@ import { Settle } from "@/components/Settle";
 import { Container, Section, TextLink } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { useTeam } from "@/components/team/useTeam";
-import { SITE, APP_LAUNCHED } from "@/lib/site";
+import { SITE, APP_LAUNCHED, COMPANY_DEFAULT } from "@/lib/site";
+import type { CompanySetting } from "@/lib/types";
 import { useSetting, useBlock } from "@/lib/content";
 import type { AppSetting, MediaItem } from "@/lib/types";
 import { PRESS_PORTRAITS, ART, sheetDate, UPDATED } from "@/components/media/press";
@@ -81,13 +82,13 @@ interface Fact {
    company details on /privacy, the founder on /story, the series and the
    episodes on the show's own site, the player on /app, the imagery on
    /ethical-ai. */
-function factsFor(launched: boolean): Fact[] {
+function factsFor(launched: boolean, co: CompanySetting): Fact[] {
   return [
     { label: "Company", value: "CLÉ Family Media, an Irish children's media company. Watch, Play, Learn." },
     {
       label: "Registered",
       value:
-        "CLE Family Media 25 Limited, registered in Ireland, company number 820427. Registered office: Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9.",
+        `${co.legal}, registered in Ireland, company number ${co.cro}. Registered office: ${co.office}.`,
       link: { label: "Privacy policy", to: "/privacy" },
     },
     { label: "Founder", value: "Conor Sexton, Founder and CEO.", link: { label: "Our story", to: "/story" } },
@@ -321,7 +322,8 @@ export default function Media() {
   const peopleNote = useBlock("media", "people.note", COPY["people.note"]);
   const pressLead = useBlock("media", "press.lead", COPY["press.lead"]);
 
-  const facts = factsFor(launched);
+  const company = useSetting("company", COMPANY_DEFAULT);
+  const facts = factsFor(launched, company);
   const factsText = facts.map((f) => `${f.label}: ${f.value}`).join("\n");
 
   /* Names and roles only, Conor first, from the same list /team and /contact

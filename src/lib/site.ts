@@ -23,6 +23,17 @@ export const SITE = {
   tagline: "Watch, Play, Learn.",
 } as const;
 
+/** The registered details as filed, from proposal CFM-02. Editable in the
+ *  admin (Links and settings), which stores the `company` setting. */
+export const COMPANY_DEFAULT = {
+  legal: "CLE Family Media 25 Limited",
+  cro: "820427",
+  office: "Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9",
+};
+
+/** No public email and no social accounts until they are entered in the admin. */
+export const LINKS_DEFAULT = { social: {}, show_site: SITE.showUrl, email: null };
+
 /** Flipped at launch. /app and /media both read this one flag, so every line
  *  that describes PupsPlayer's state changes together. */
 export const APP_LAUNCHED = false;

@@ -137,6 +137,8 @@ export function Story() {
   const dateline = useBlock("story", "hero.eyebrow_sub", COPY["hero.eyebrow_sub"]);
   const heroTitle = useBlock("story", "hero.title", COPY["hero.title"]);
   const heroImage = useImageBlock("story", "hero.image");
+  const gardenImage = useImageBlock("story", "garden.image");
+  const charactersImage = useImageBlock("story", "characters.image");
   const letterOpen = useBlock("story", "letter.open", COPY["letter.open"]);
   const letterSaw = splitParagraphs(useBlock("story", "letter.saw", COPY["letter.saw"]));
   const gardenCaption = useBlock("story", "garden.caption", COPY["garden.caption"]);
@@ -236,6 +238,7 @@ export function Story() {
                   <DrawnBox v={0} />
                   <Figure
                     asset="story.garden"
+                    override={gardenImage}
                     rounded="rounded-none"
                     position="center 45%"
                     sizes="(min-width: 900px) 460px, 100vw"
@@ -261,7 +264,7 @@ export function Story() {
               <figure className="mb-6 sm:float-right sm:mb-4 sm:ml-8 sm:w-[44%]">
                 <div className="letter-print">
                   <DrawnBox v={1} />
-                  <Figure asset="home.characters" rounded="rounded-none" sizes="(min-width: 640px) 320px, 100vw" />
+                  <Figure asset="home.characters" override={charactersImage} rounded="rounded-none" sizes="(min-width: 640px) 320px, 100vw" />
                 </div>
                 <Caption>{charactersCaption}</Caption>
               </figure>

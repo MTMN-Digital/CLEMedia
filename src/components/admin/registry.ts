@@ -19,7 +19,7 @@ export interface PanelCount {
 }
 
 export interface PanelDef {
-  key: "links" | "journal" | "episodes" | "enquiries" | "app" | "media" | "shop" | "people" | "pages";
+  key: "episodes" | "pages" | "app" | "shop" | "quotes" | "people" | "journal" | "enquiries" | "media" | "links";
   label: string;
   blurb: string;
   /** Route, always /admin/<key>. */
@@ -83,6 +83,15 @@ export const PANELS: PanelDef[] = [
       const c = await countRows("episodes", { visible: true });
       return c == null ? null : { text: `${n(c, "episode", "episodes")} shown`, tone: "off" };
     },
+  },
+  {
+    key: "quotes",
+    label: "Quotes",
+    blurb: "Parent and educator quotations on the home page",
+    path: "/admin/quotes",
+    file: "src/components/admin/quotes/QuotesPanel.tsx",
+    exportName: "QuotesPanel",
+    Component: lazy(() => import("@/components/admin/quotes/QuotesPanel").then((m) => ({ default: m.QuotesPanel }))),
   },
   {
     key: "media",

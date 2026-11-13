@@ -3,6 +3,7 @@ import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { DrawnRule, DrawnBox } from "@/components/draw/kit";
 import { ASSETS, type AssetKey } from "@/lib/brand";
+import { useImageBlock } from "@/lib/content";
 import "./dogs.css";
 
 /* ============================================================================
@@ -24,7 +25,13 @@ const ROWS: { shots: AssetKey[]; name: string }[] = [
   { name: "Fia, the black pug", shots: ["dog.fia-2", "dog.fia-1", "dog.fia-3", "dog.fia-4"] },
 ];
 
+const ALL_SHOTS = ROWS.flatMap((r) => r.shots);
+
 export function RealDogs({ headingId }: { headingId: string }) {
+  /* Each photo is an image slot keyed by its asset ("dog.finn-1"), so Conor
+     can swap any of the eight in the admin. ALL_SHOTS is a module constant,
+     so the hooks below run in the same order on every render. */
+  const swaps = Object.fromEntries(ALL_SHOTS.map((a) => [a, useImageBlock("story", a)]));
   return (
     <>
       <DrawnRule v={2} className="mb-10 lg:mb-14" />
@@ -44,7 +51,7 @@ export function RealDogs({ headingId }: { headingId: string }) {
                   <li key={a} className="dogs__shot" style={{ "--ratio": width / height } as CSSProperties}>
                     <div className="letter-print">
                       <DrawnBox v={r * 4 + i} />
-                      <Figure asset={a} rounded="rounded-none" sizes="(min-width: 760px) 25vw, 46vw" />
+                      <Figure asset={a} override={swaps[a]} rounded="rounded-none" sizes="(min-width: 760px) 25vw, 46vw" />
                     </div>
                   </li>
                 );

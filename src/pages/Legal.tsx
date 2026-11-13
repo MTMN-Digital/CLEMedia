@@ -1,7 +1,8 @@
 import { type ReactNode, useRef } from "react";
 import { Seo } from "@/components/Seo";
 import { Container, Section } from "@/components/ui";
-import { splitParagraphs, useBlock } from "@/lib/content";
+import { splitParagraphs, useSetting, useBlock } from "@/lib/content";
+import { COMPANY_DEFAULT } from "@/lib/site";
 import {
   DocStatus,
   DocFoot,
@@ -105,11 +106,7 @@ const DRAFTED = "2026-10-24";
    WHY NOT IN THE GLOBAL FOOTER. David's call, 2026-10-13: the registered
    office is a family home, it satisfies the Directive where the law actually
    looks, and it does not need to sit on all thirteen pages to do that. */
-const COMPANY = {
-  legal: "CLE Family Media 25 Limited",
-  cro: "820427",
-  office: "Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9",
-};
+/* Now the `company` setting, edited in the admin. See COMPANY_DEFAULT. */
 
 const ORDER: DocId[] = ["privacy", "terms", "cookies"];
 
@@ -295,6 +292,7 @@ export default function Legal({ doc }: { doc: DocId }) {
 }
 
 function Document({ doc }: { doc: DocId }) {
+  const COMPANY = useSetting("company", COMPANY_DEFAULT);
   const d = DOCS[doc];
   const body = useRef<HTMLDivElement>(null);
 

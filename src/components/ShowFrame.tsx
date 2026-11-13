@@ -1,3 +1,4 @@
+import type { ImageOverride } from "@/lib/content";
 import type { ReactNode } from "react";
 import { Figure } from "@/components/Figure";
 import { Section } from "@/components/ui";
@@ -71,12 +72,15 @@ export function ShowFrame({
   asset,
   caption,
   priority = false,
+  override,
 }: {
   asset: AssetKey;
   /** Always says it is a frame. See the note above. */
   caption: ReactNode;
   /** Set on the one frame a page leads with, and nowhere else. */
   priority?: boolean;
+  /** An admin's replacement picture (useImageBlock). */
+  override?: ImageOverride | null;
 }) {
   const a = ASSETS[asset];
 
@@ -97,6 +101,7 @@ export function ShowFrame({
           <div className="show-frame__pic">
             <Figure
               asset={asset}
+              override={override}
               ratio={`${a.width}/${a.height}`}
               priority={priority}
               rounded="rounded-none"

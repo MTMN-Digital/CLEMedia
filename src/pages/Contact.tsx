@@ -7,9 +7,9 @@ import { Button, Section, TextLink, Container } from "@/components/ui";
 import { Watermark } from "@/components/draw/Mark";
 import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type Draft, type RouteId, Receipt, subjectFor } from "@/components/contact/Receipt";
-import { SITE } from "@/lib/site";
+import { COMPANY_DEFAULT, SITE, LINKS_DEFAULT } from "@/lib/site";
 import { useTeam } from "@/components/team/useTeam";
-import { useBlock } from "@/lib/content";
+import { useSetting, useBlock } from "@/lib/content";
 import { COPY } from "@/components/contact/copy";
 import "@/components/contact/sheet.css";
 
@@ -154,6 +154,8 @@ const EMPTY: Draft = { name: "", email: "", organisation: "", message: "" };
 const BLANK = "__________";
 
 export default function Contact() {
+  const company = useSetting("company", COMPANY_DEFAULT);
+  const { email } = useSetting("links", LINKS_DEFAULT);
   const [params] = useSearchParams();
   const [route, setRoute] = useState<RouteId>(() => parseRoute(params.get("route")) ?? "partnership");
   const [draft, setDraft] = useState<Draft>(EMPTY);
@@ -372,11 +374,17 @@ export default function Contact() {
                       <div className="flex flex-wrap gap-x-2">
                         <dt className="font-semibold text-ink">Registered details:</dt>
                         <dd>
-                          CLE Family Media 25 Limited, registered in Ireland, company number
-                          820427. The registered office is at the head of the{" "}
+                          {company.legal}, registered in Ireland, company number{" "}
+                          {company.cro}. The registered office is at the head of the{" "}
                           <TextLink to="/privacy">privacy policy</TextLink>.
                         </dd>
                       </div>
+                      {email && (
+                        <div className="mt-2 flex flex-wrap gap-x-2">
+                          <dt className="font-semibold text-ink">Email:</dt>
+                          <dd><a href={`mailto:${email}`} className="underline underline-offset-2 hover:text-ink">{email}</a></dd>
+                        </div>
+                      )}
                     </dl>
                   </form>
                 )}

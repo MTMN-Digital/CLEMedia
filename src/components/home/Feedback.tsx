@@ -1,4 +1,5 @@
 import { Settle } from "@/components/Settle";
+import { useSetting } from "@/lib/content";
 
 /* ============================================================================
    Feedback from parents and educators.
@@ -43,6 +44,8 @@ export interface Quote {
 export const QUOTES: Quote[] = [];
 
 export function Feedback({ headingId }: { headingId: string }) {
+  /* Entered in the admin (Quotes), stored as the `quotes` setting. */
+  const quotes = useSetting("quotes", { items: QUOTES }).items.filter((q) => q.words?.trim());
   return (
     <>
       {/* THE OPENER IS ONE LINE, 2026-10-27. "Feedback from parents and
@@ -57,9 +60,9 @@ export function Feedback({ headingId }: { headingId: string }) {
         </h2>
       </Settle>
 
-      {QUOTES.length > 0 ? (
-        <Settle as="ul" className="mt-14 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:mt-18 lg:gap-x-16">
-          {QUOTES.map((q) => (
+      {quotes.length > 0 ? (
+        <Settle key="quotes" as="ul" className="mt-14 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:mt-18 lg:gap-x-16">
+          {quotes.map((q) => (
             <li key={q.words.slice(0, 48)} className="border-t-[1.5px] border-rule pt-7">
               <blockquote className="t-lead max-w-[42ch] text-ink">
                 <p>{q.words}</p>
@@ -73,7 +76,7 @@ export function Feedback({ headingId }: { headingId: string }) {
       ) : (
         /* The honest empty state, in the same voice the shop's empty shelf
            uses. A dashed edge says held open; a tinted panel says finished. */
-        <Settle className="mt-12 grid gap-6 border-t-[1.5px] border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
+        <Settle key="empty" className="mt-12 grid gap-6 border-t-[1.5px] border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
           <div className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
             <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
               Parents and educators

@@ -21,6 +21,8 @@
    RETIRED: hero.eyebrow, hero.eyebrow_sub, lines.heading, faq.heading (the
    headings they fed are gone; the clause headings replace them). */
 export const COPY: Record<string, string> = {
+  "doc.adopted": "",
+  "doc.approved_by": "",
   /* Title block */
   title: "Responsible AI",
   "hero.title": "AI is a production tool. People remain responsible for the work.",

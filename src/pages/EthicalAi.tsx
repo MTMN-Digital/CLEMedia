@@ -223,6 +223,8 @@ export default function EthicalAi() {
   const title = useBlock("ethical-ai", "title", COPY.title);
   const summary = useBlock("ethical-ai", "hero.title", COPY["hero.title"]);
   const applies = useBlock("ethical-ai", "applies.value", COPY["applies.value"]);
+  const adopted = useBlock("ethical-ai", "doc.adopted", ADOPTED ?? "");
+  const approvedBy = useBlock("ethical-ai", "doc.approved_by", APPROVED_BY ?? "");
   const toolsNamed = useBlock("ethical-ai", "hero.aside", COPY["hero.aside"]);
   const figureFirst = useBlock("ethical-ai", "line.heading", COPY["line.heading"]);
   const figureCaption = useBlock("ethical-ai", "figure.caption", COPY["figure.caption"]);
@@ -291,8 +293,8 @@ export default function EthicalAi() {
                       { label: REVISED_LABEL, value: revised },
                       { label: "Applies to", value: applies },
                       { label: "Tools named", value: toolsNamed },
-                      { label: "Adopted", value: ADOPTED },
-                      { label: "Approved by", value: APPROVED_BY },
+                      { label: "Adopted", value: adopted || null },
+                      { label: "Approved by", value: approvedBy || null },
                     ]}
                   />
                 </div>

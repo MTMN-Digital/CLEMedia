@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useLocation, NavLink } from "react-router-dom";
-import { SITE, NAV, FOOTER_GROUPS } from "@/lib/site";
+import { SITE, NAV, LINKS_DEFAULT, FOOTER_GROUPS } from "@/lib/site";
+import { useSetting } from "@/lib/content";
+import type { SocialNetwork } from "@/lib/types";
 import type { NavEntry } from "@/lib/site";
 import { Wordmark } from "@/components/Wordmark";
 import navMark from "@/assets/brand/cle-nav.webp";
@@ -319,7 +321,18 @@ function Header() {
  *
  * It is no longer generated from NAV. See FOOTER_GROUPS in lib/site.ts.
  */
+const SOCIAL_LABEL: Record<SocialNetwork, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  linkedin: "LinkedIn",
+};
+
 function Footer() {
+  /* Entered in the admin (Links and settings). Nothing shows until they are. */
+  const { email, social } = useSetting("links", LINKS_DEFAULT);
+  const accounts = (Object.keys(SOCIAL_LABEL) as SocialNetwork[]).filter((k) => social?.[k]);
   return (
     /* The ropes run off the top of the band rather than beginning in mid air,
        which is the difference between an object hung from the ceiling and an
@@ -388,6 +401,23 @@ function Footer() {
                     Distribution, investment and press.
                   </p>
                 </li>
+                {email && (
+                  <li>
+                    <a href={`mailto:${email}`} className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
+                      {email}
+                    </a>
+                  </li>
+                )}
+                {accounts.length > 0 && (
+                  <li className="flex flex-wrap gap-x-4 gap-y-3">
+                    {accounts.map((k) => (
+                      <a key={k} href={social[k]} target="_blank" rel="noopener noreferrer" className="link-draw font-body text-[14.5px] opacity-90 hover:opacity-100">
+                        {SOCIAL_LABEL[k]}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    ))}
+                  </li>
+                )}
               </ul>
             </div>
           </div>

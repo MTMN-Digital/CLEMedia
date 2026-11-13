@@ -10,6 +10,8 @@
    words the page wraps in an Underline (see emphasis() in src/lib/content.ts).
    The "Watch. Play. Learn." headline is the brand line and is not here. */
 export const COPY: Record<string, string> = {
+  "meadow.caption": "Finn and Fia. A frame from the series.",
+  "snail.caption": "A frame from the series.",
   "hero.cta_primary": "How we make it",
   "hero.cta_secondary": "Visit the show",
   "thesis.heading": "We are not going to tell anyone their child watches too much television.",

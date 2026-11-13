@@ -20,7 +20,7 @@ import {
   Lead, Section, Container, Button,
 } from "@/components/ui";
 import { IconMail, IconArrow } from "@/components/icons";
-import { useBlock, emphasis } from "@/lib/content";
+import { emphasis, useImageBlock, useBlock } from "@/lib/content";
 import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
@@ -88,6 +88,11 @@ export default function Home() {
      so with nothing saved the page renders exactly as it did before. Two
      headlines keep their drawn underline through emphasis(): the admin writes
      the underlined words between *stars*. */
+  const photoGarden = useImageBlock("home", "photo.garden");
+  const photoMeadow = useImageBlock("home", "photo.meadow");
+  const photoSnail = useImageBlock("home", "photo.snail");
+  const meadowCaption = useBlock("home", "meadow.caption", COPY["meadow.caption"]);
+  const snailCaption = useBlock("home", "snail.caption", COPY["snail.caption"]);
   const thesisHeading = useBlock("home", "thesis.heading", COPY["thesis.heading"]);
   const thesisPull = useBlock("home", "thesis.pull", COPY["thesis.pull"]);
   const thesisLead1 = useBlock("home", "thesis.lead_1", COPY["thesis.lead_1"]);
@@ -260,7 +265,7 @@ export default function Home() {
         className="bench relative overflow-hidden !bg-none !bg-transparent"
       >
         <div aria-hidden="true" className="absolute inset-0">
-          <Figure asset="home.hero" fill rounded="rounded-none" position="center 44%" sizes="100vw" />
+          <Figure asset="home.hero" override={photoGarden} fill rounded="rounded-none" position="center 44%" sizes="100vw" />
           <div className="absolute inset-0" style={{ background: "rgba(44, 53, 38, 0.74)" }} />
         </div>
         <Container width="wide" className="relative">
@@ -299,7 +304,8 @@ export default function Home() {
           photograph. */}
       <ShowFrame
         asset="show.meadow"
-        caption="Finn and Fia. A frame from the series."
+        override={photoMeadow}
+        caption={meadowCaption}
       />
 
       {/* ═══ 3. THE SERIES. A filmstrip, because perforated stock IS the
@@ -396,7 +402,7 @@ export default function Home() {
           the company's pace without a word: a garden path at a snail's speed,
           directly above the band about how the work is actually produced. The
           old band cropped off its antennae. */}
-      <ShowFrame asset="show.snail" caption="A frame from the series." />
+      <ShowFrame asset="show.snail" override={photoSnail} caption={snailCaption} />
 
       {/* ═══ 5. THE AI POSITION. The site's single most important trust
           claim, and it used to be the quietest block on the page: an h2 over
