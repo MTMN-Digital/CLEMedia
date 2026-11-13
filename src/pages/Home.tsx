@@ -5,7 +5,7 @@ import { Figure } from "@/components/Figure";
 import { Settle } from "@/components/Settle";
 import { HeroFilm } from "@/components/home/HeroFilm";
 import { Wipe } from "@/components/Wipe";
-import { EPISODES } from "@/lib/episodes";
+import { useEpisodes } from "@/lib/useEpisodes";
 import { FilmStrip } from "@/components/home/FilmStrip";
 import { Stage } from "@/components/render/Stage";
 import { CallSheet } from "@/components/home/CallSheet";
@@ -82,6 +82,7 @@ import { COPY } from "@/components/home/copy";
 
 
 export default function Home() {
+  const episodes = useEpisodes();
   /* EDITABLE FROM THE ADMIN, 2026-10-27. Every string below is the page's own
      wording (components/home/copy.ts) until a content_blocks row replaces it,
      so with nothing saved the page renders exactly as it did before. Two
@@ -358,7 +359,7 @@ export default function Home() {
             objects; it is not mounted here, because the same four plates
             cannot stand twice on one page. */}
         <div className="mt-14">
-          <FilmStrip episodes={EPISODES} />
+          <FilmStrip episodes={episodes} />
         </div>
       </Section>
 

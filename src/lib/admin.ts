@@ -40,18 +40,33 @@ export type ProductRow = Product & { created_at: string; thumbnail_alt: string |
 export type PostRow = Post & { created_at: string; updated_at: string };
 export type PersonRow = Person & { asset_key: string | null; photo_alt: string | null; phases: number[] };
 export type MediaRow = MediaItem & { kind: NonNullable<MediaItem["kind"]>; thumbnail_alt: string | null };
+/** 0010. An episode on the home page, /app and the PupsPlayer walkthrough. */
+export interface EpisodeRow {
+  youtube_url: string | null;
+  synopsis: string | null;
+  number: number;
+  title: string;
+  asset_key: string | null;
+  thumbnail: string | null;
+  sort_order: number;
+  visible: boolean;
+  thumbnail_alt: string | null;
+  id: string;
+  runtime: string | null;
+}
 export type { Order, LinksSetting, Category, EnquiryRoute, AppSetting, Enquiry, ContentBlock };
 
 /** Table name to row type. Only tables the console writes or reads. */
 export interface Tables {
-  enquiries: Enquiry;
-  categories: Category;
-  content_blocks: ContentBlock;
-  orders: Order;
-  products: ProductRow;
-  people: PersonRow;
-  posts: PostRow;
   media_items: MediaRow;
+  content_blocks: ContentBlock;
+  products: ProductRow;
+  posts: PostRow;
+  orders: Order;
+  episodes: EpisodeRow;
+  categories: Category;
+  people: PersonRow;
+  enquiries: Enquiry;
 }
 export type TableName = keyof Tables;
 
@@ -168,7 +183,7 @@ export async function countRows<K extends TableName>(
  * Writes sort_order = 1..n in the order of `ids`. Used by the up and down
  * buttons on products, people and media items.
  */
-export async function reorderRows(table: "products" | "categories" | "people" | "media_items", ids: string[]): Promise<Result<null>> {
+export async function reorderRows(table: "episodes" | "categories" | "people" | "products" | "media_items", ids: string[]): Promise<Result<null>> {
   for (let i = 0; i < ids.length; i++) {
     const r = await run(() => sb().from(table).update({ sort_order: i + 1 } as never).eq("id", ids[i]));
     if (r.error !== null) return { data: null, error: r.error };

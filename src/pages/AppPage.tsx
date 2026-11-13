@@ -7,7 +7,7 @@ import { EpisodeSlates } from "@/components/app/EpisodeSlates";
 import { LearnMaterial } from "@/components/app/LearnMaterial";
 import { citeShow } from "@/components/app/cite";
 import { type Stage, STAGES, PupsPlayerWalkthrough } from "@/components/app/PupsPlayerWalkthrough";
-import { EPISODES } from "@/lib/episodes";
+import { useEpisodes } from "@/lib/useEpisodes";
 import { AWAY_LABEL } from "@/lib/books";
 import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconBell, IconArrow } from "@/components/icons";
@@ -181,6 +181,7 @@ const ROW = "grid grid-cols-1 gap-10 border-t-[1.5px] border-rule py-12 lg:grid-
 const LABEL = "font-mono text-[14px] uppercase leading-[1.7] tracking-[0.16em] text-body";
 
 export default function AppPage() {
+  const episodes = useEpisodes();
   const app = useSetting("app", APP_DEFAULT);
   const launched = app.launched;
   const liveLinks = storeLinks(app).filter((l): l is { href: string; label: string } => Boolean(l.href));
@@ -223,7 +224,7 @@ export default function AppPage() {
       <div className="pt-10 sm:pt-14">
         <Container width="wide">
           <PupsPlayerWalkthrough
-            episodes={EPISODES}
+            episodes={episodes}
             capture={capture}
             lead={
               <div>
@@ -300,7 +301,7 @@ export default function AppPage() {
             <div className={ROW}>
               <StageLabel stage={watch} />
               <div>
-                <EpisodeSlates episodes={EPISODES} id="released" />
+                <EpisodeSlates episodes={episodes} id="released" />
                 <p className="t-sm mt-7 text-body">{watchFootnote}</p>
               </div>
             </div>

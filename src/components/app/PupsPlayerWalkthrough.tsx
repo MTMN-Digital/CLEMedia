@@ -154,7 +154,7 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
         <ul className="grid grid-cols-2 gap-[0.85em]">
           {episodes.map((ep) => (
             <li key={ep.n} className="overflow-hidden rounded-[0.9em] border-[1.5px] border-rule bg-raised">
-              <Figure asset={ep.asset} rounded="rounded-none" sizes="(min-width: 1024px) 20vw, 42vw" />
+              <Figure asset={ep.asset} override={ep.photo} rounded="rounded-none" sizes="(min-width: 1024px) 20vw, 42vw" />
               {/* Below a 384px container the caption stacks and drops the
                   episode number, so the title keeps the width it needs at
                   its 13px floor. The number is still in the list on the page. */}
@@ -165,8 +165,8 @@ function WatchScreen({ episodes }: { episodes: AppEpisode[] }) {
                 <span className={`${T.tile} truncate font-semibold text-ink`}>{ep.title}</span>
                 {/* The runtime, or the mark if there is no runtime because
                     there is no episode yet. Same slot, same question. */}
-                {ep.runtime ? (
-                  <span className={`${T.mono} tnum shrink-0 font-mono text-muted @sm:ml-auto`}>{ep.runtime}</span>
+                {ep.released ? (
+                  ep.runtime && <span className={`${T.mono} tnum shrink-0 font-mono text-muted @sm:ml-auto`}>{ep.runtime}</span>
                 ) : (
                   <span
                     className={`${T.mono} shrink-0 rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-[0.5em] py-[0.1em] font-mono tracking-[0.1em] whitespace-nowrap text-white uppercase @sm:ml-auto`}
@@ -201,7 +201,7 @@ function PlayScreen({ episode }: { episode: AppEpisode }) {
           />
           <div className="mt-[1.2em] flex items-center gap-[0.8em] rounded-[0.9em] border-[1.5px] border-rule bg-raised p-[0.6em]">
             <div className="w-[max(56px,5.2em)] shrink-0 overflow-hidden rounded-[0.5em]">
-              <Figure asset={episode.asset} rounded="rounded-none" sizes="120px" />
+              <Figure asset={episode.asset} override={episode.photo} rounded="rounded-none" sizes="120px" />
             </div>
             <div className="min-w-0">
               <p className={`${T.tile} truncate font-semibold text-ink`}>{episode.title}</p>

@@ -56,6 +56,7 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
         <div className="relative overflow-hidden rounded-[var(--radius-md)]">
           <Figure
             asset={ep.asset}
+            override={ep.photo}
             rounded="rounded-none"
             sizes="(min-width: 768px) 46vw, 92vw"
             className="transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.025]"
@@ -73,7 +74,7 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
             {/* A runtime if there is one, and the mark if there is not. They
                 occupy the same slot because they answer the same question:
                 what is this, and can I watch it. */}
-            {ep.runtime ? (
+            {ep.released ? (
               <span className="tnum ml-auto font-mono text-[14px] tracking-[0.12em] text-white/90">
                 {ep.runtime}
               </span>

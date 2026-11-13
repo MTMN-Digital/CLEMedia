@@ -16,8 +16,8 @@ function Caption({ ep }: { ep: Episode }) {
     <span className="mt-3 flex flex-col gap-1 border-t-[1.5px] border-rule pt-3 sm:flex-row sm:items-baseline sm:gap-3.5">
       <span className="tnum font-mono text-[14.5px] tracking-[0.14em] text-red-deep">{ep.n}</span>
       <span className="t-sm font-semibold text-ink group-hover:text-red-deep">{ep.title}</span>
-      {ep.runtime ? (
-        <span className="tnum font-mono text-[14.5px] text-muted sm:ml-auto">{ep.runtime}</span>
+      {ep.released ? (
+        ep.runtime && <span className="tnum font-mono text-[14.5px] text-muted sm:ml-auto">{ep.runtime}</span>
       ) : (
         <span className="w-fit rounded-[var(--radius-pill)] bg-[var(--color-red-deep)] px-2.5 py-0.5 font-mono text-[13px] uppercase tracking-[0.1em] text-white sm:ml-auto">
           {COMING_SOON}
@@ -35,6 +35,7 @@ export function EpisodeSlates({ episodes, id }: { episodes: Episode[]; id?: stri
           <>
             <Figure
               asset={ep.asset}
+              override={ep.photo}
               rounded="rounded-[var(--radius-sm)]"
               sizes="(min-width: 1024px) 30vw, 45vw"
             />

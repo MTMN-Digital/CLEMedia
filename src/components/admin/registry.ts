@@ -19,7 +19,7 @@ export interface PanelCount {
 }
 
 export interface PanelDef {
-  key: "links" | "enquiries" | "app" | "pages" | "journal" | "shop" | "media" | "people";
+  key: "links" | "journal" | "episodes" | "enquiries" | "app" | "media" | "shop" | "people" | "pages";
   label: string;
   blurb: string;
   /** Route, always /admin/<key>. */
@@ -70,6 +70,19 @@ export const PANELS: PanelDef[] = [
     file: "src/components/admin/people/PeoplePanel.tsx",
     exportName: "PeoplePanel",
     Component: lazy(() => import("@/components/admin/people/PeoplePanel").then((m) => ({ default: m.PeoplePanel }))),
+  },
+  {
+    key: "episodes",
+    label: "Episodes",
+    blurb: "Titles, thumbnails and YouTube links",
+    path: "/admin/episodes",
+    file: "src/components/admin/episodes/EpisodesPanel.tsx",
+    exportName: "EpisodesPanel",
+    Component: lazy(() => import("@/components/admin/episodes/EpisodesPanel").then((m) => ({ default: m.EpisodesPanel }))),
+    count: async () => {
+      const c = await countRows("episodes", { visible: true });
+      return c == null ? null : { text: `${n(c, "episode", "episodes")} shown`, tone: "off" };
+    },
   },
   {
     key: "media",

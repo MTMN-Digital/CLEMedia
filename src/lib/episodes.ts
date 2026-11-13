@@ -1,4 +1,5 @@
 import type { AssetKey } from "@/lib/brand";
+import type { ImageOverride } from "@/lib/content";
 
 /**
  * Series one, as the show actually has it.
@@ -44,6 +45,9 @@ export interface Episode {
   line?: string;
   guidance?: string;
   reviewer?: string;
+  /** A thumbnail uploaded in the admin (episodes.thumbnail). Replaces the
+   *  slate: pass it to Figure as `override`. Absent on the bundled list. */
+  photo?: ImageOverride | null;
 }
 
 export const EPISODES: Episode[] = [
