@@ -123,7 +123,7 @@ export const TEAM: Member[] = [
        contribution and then says to agree the exact displayed title, so the
        description below is hers and the title stays at the plain word the
        document itself uses. QUESTIONS.md. */
-    role: "Adviser",
+    role: "Advisor",
     asset: "person.kirstie",
     phases: [1, 2, 4, 5],
     bio: [
@@ -184,7 +184,7 @@ export const ADVISORS: Member[] = [
     name: "David Toth",
     /* As with Kirstie: the document describes the contribution and asks for
        the displayed title to be agreed. */
-    role: "Adviser",
+    role: "Advisor",
     asset: "person.david",
     phases: [1, 2],
     bio: [

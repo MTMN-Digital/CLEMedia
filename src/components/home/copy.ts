@@ -17,7 +17,7 @@ export const COPY: Record<string, string> = {
   "thesis.heading": "We are not going to tell anyone their child watches too much television.",
   "thesis.pull": "We would rather an episode started something a child *carries on with*.",
   "thesis.lead_1":
-    "The gap we saw is narrower than that. Not enough content made at a child's pace, with genuine educational intent, and with a clear account of who made it and who checked it.",
+    "We are parents, educators and early childhood experts working together to create meaningful content for children. Children's best interests are at the heart of everything we do.",
   "thesis.lead_2":
     "Much of what fills the market is fast and loud, built around how long a child keeps watching rather than what they take away from it. Attention is what gets measured, so attention is what gets designed for.",
   "model.heading":
@@ -28,7 +28,7 @@ export const COPY: Record<string, string> = {
     "The Pawsitive Pugs & Pals. Finn, the fawn pug, and Fia, the black pug, in a garden that rewards slowing down. Four episodes released so far, nine to eleven minutes each.",
   "ai.heading": "AI is a production tool. *People remain responsible* for the work.",
   "ai.pull":
-    "Calling this work handmade would be untrue. Calling it AI-generated would erase the people who actually make the decisions.",
+    "AI is a tool to assist in our animation production, but it is never the author and never the decision maker. Our educators and early childhood experts make those decisions.",
   "ai.cta": "Read the full position",
   "updates.heading": "Occasional updates",
   "updates.body": "Production notes and company news, for adults. Infrequent, and easy to leave.",

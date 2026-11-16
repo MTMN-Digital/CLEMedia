@@ -45,7 +45,7 @@ export const COPY: Record<string, string> = {
   "device.lead":
     "The app for The Pawsitive Pugs & Pals: the episodes, the songs, puzzles and games built from each one, and the printable and offline activities underneath.",
   "status.holds": "Series one of The Pawsitive Pugs & Pals. Four episodes released, two in production.",
-  "status.for": "Children aged three to five, with an adult beside them.",
+  "status.for": "Children aged two to six, with an adult beside them.",
   "contents.heading": "What is in it",
   "watch.footnote": "Four episodes, on the show's YouTube channel now. Nine to eleven minutes each.",
   "play.subhead": "Planned for the first release",
@@ -140,7 +140,7 @@ const GAMES = [
    nothing is added to them. "Large targets, simple navigation and no dark
    patterns" stays in the Watch row: it is a design choice, not a refusal. */
 const WALLS: { label: string; line: string }[] = [
-  { label: "Autoplay", line: "Nothing autoplays after an episode. The next one is chosen, by the child or the adult beside them." },
+  { label: "Autoplay", line: "You are in control. When an episode ends, the next one does not autoplay. The choice to continue belongs to the child and their grown-up." },
   { label: "Purchases", line: "No purchases inside a game." },
   { label: "Advertising", line: "No advertising to children anywhere in it, and nothing recommending the next thing to watch." },
   { label: "Grown-ups", line: "Clear settings for parents, behind the Grown-ups button in the player." },

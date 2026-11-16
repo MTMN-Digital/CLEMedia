@@ -27,7 +27,7 @@ export const COPY: Record<string, string> = {
     "Ireland follows Aistear and England follows the EYFS. The episode and the questionnaire are the same on both routes; only the supporting notes differ, so choose the one you work to.",
   "ask.heading": "Educators working with young children in Ireland or England.",
   "ask.body":
-    "The age range and the kinds of setting we are looking for are being confirmed with the education adviser, and will be stated here before the study opens, along with how long it takes.",
+    "The age range and the kinds of setting we are looking for are being confirmed with the education advisor, and will be stated here before the study opens, along with how long it takes.",
   "steps.watch": "Watch it through with the children before you use any of the materials below.",
   "out.heading": "Kept apart from the study",
   "q.body":

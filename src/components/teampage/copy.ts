@@ -13,12 +13,12 @@
    closing line. The paragraph beside the title and the one under the
    register's head were cut on 2026-10-28 at the client's request. */
 export const COPY: Record<string, string> = {
-  "hero.title": "Team and advisers",
+  "hero.title": "Team and advisors",
   "register.heading": "In their own words",
   "register.key":
     "A script goes round three or four times; the cut goes round until everyone is happy.",
-  "adviser.heading": "Adviser",
-  "adviser.lead": "Advisers are not employees. Each is described only as they have approved it.",
+  "adviser.heading": "Advisor",
+  "adviser.lead": "Advisors are not employees. Each is described only as they have approved it.",
   "experts.heading": "Experts",
   "experts.lead": "Specialists involved in the project, with a link to each one's own site.",
   "experts.empty": "The experts working with us will be listed here shortly.",

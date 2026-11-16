@@ -369,7 +369,7 @@ export function HeroFilm() {
             children's media asks. */}
         <p className="film-eyebrow">
           Children&rsquo;s edutainment
-          <span>Ages 3 to 5</span>
+          <span>Ages 2 to 6</span>
         </p>
 
         <div className="film-aside">

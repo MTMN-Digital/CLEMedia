@@ -94,7 +94,7 @@ function factsFor(launched: boolean, co: CompanySetting): Fact[] {
     { label: "Founder", value: "Conor Sexton, Founder and CEO.", link: { label: "Our story", to: "/story" } },
     {
       label: "Series",
-      value: "The Pawsitive Pugs & Pals®, an animated series for children aged three to five.",
+      value: "The Pawsitive Pugs & Pals®, an animated series for children aged two to six.",
       link: { label: "The show's own site", href: SITE.showUrl },
     },
     { label: "Characters", value: "Finn, the fawn pug. Fia, the black pug." },

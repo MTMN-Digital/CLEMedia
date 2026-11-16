@@ -144,7 +144,7 @@ export function Questionnaire({ route }: { route: RouteId }) {
         </div>
 
         <p id="draft-note" className="t-sm max-w-[60ch] text-body">
-          Draft questions, awaiting approval by the education adviser. The final wording may
+          Draft questions, awaiting approval by the education advisor. The final wording may
           change before the study opens. Route selected: {route === "ireland" ? "Ireland (Aistear)" : "England (EYFS)"}.
         </p>
 
