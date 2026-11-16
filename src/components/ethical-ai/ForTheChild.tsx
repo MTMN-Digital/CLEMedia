@@ -28,7 +28,7 @@
 const FOR = [
   {
     who: "For the child",
-    line: "A pace a young child can follow, and an episode that ends rather than rolls into the next one.",
+    line: "We pace every story in a developmentally appropriate way for young children: one idea at a time, giving them room to notice and time to breathe. When an episode ends, the next episode does not autoplay.",
   },
   {
     who: "For the parent",

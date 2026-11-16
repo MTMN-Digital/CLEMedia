@@ -140,7 +140,7 @@ const GAMES = [
    nothing is added to them. "Large targets, simple navigation and no dark
    patterns" stays in the Watch row: it is a design choice, not a refusal. */
 const WALLS: { label: string; line: string }[] = [
-  { label: "Autoplay", line: "You are in control. When an episode ends, the next one does not autoplay. The choice to continue belongs to the child and their grown-up." },
+  { label: "Autoplay", line: "You are in control. When an episode ends, the next episode does not autoplay. The choice to continue belongs to the child and their grown-up." },
   { label: "Purchases", line: "No purchases inside a game." },
   { label: "Advertising", line: "No advertising to children anywhere in it, and nothing recommending the next thing to watch." },
   { label: "Grown-ups", line: "Clear settings for parents, behind the Grown-ups button in the player." },

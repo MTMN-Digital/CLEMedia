@@ -92,7 +92,7 @@ const LINES = [
   },
   {
     title: "Education requires human judgement",
-    body: "Educational content deserves more than an automated check. Decisions about learning objectives, activities, language and child development stay with qualified people.",
+    body: "Educators and early years experts set the learning goal and educational intention behind every episode, every storyline and every activity, and are involved every step of the way.",
   },
   {
     title: "Transparency matters",
