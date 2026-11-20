@@ -617,3 +617,10 @@ Read section 2 first. The failure mode is timid moves, not wrong ones.
 - **Responsible AI**: "Adopted" and "Approved by" are page blocks now, hidden while empty.
 - Not built on purpose: a switch to open the case study, because opening it also needs migration 0007 and the `STUDY_OPEN` server variable.
 - Gotcha fixed on the way: two `Settle` elements swapped by a ternary at the same spot reuse one instance, and its reveal keeps watching the removed node, so the new content stays at opacity 0. Give each branch its own `key`.
+
+## 10. Conor's handover document and the admin portal, 2026-11-20
+
+- Conor's handover (`Work/Clients/CLE Family Media/inbound/CLE_Family_Media_Website_Handover_Stripe_Approved.docx`) is applied in 5d2d4d9: full names, titles and bios (Dr Paula Walshe is Chief Education Officer, Lydia Harding not Sexton, Mansi Kale, Justin Miranda, "Adviser" spelling), "PupsPlayer" removed (the app is "The Pawsitive Pugs & Pals® app"), a top-level Case Study link plus a hero button, public email clefamilymedia@gmail.com (the `LINKS_DEFAULT` fallback; the admin overrides it), and his review-process wording in the Responsible AI FAQ. No phone, postal address or reply time.
+- Stripe: live keys are in, checkout stays OFF until Conor confirms payments are enabled. Packs stay hidden until the new workbook files arrive.
+- Domain: plan in `Work/Clients/CLE Family Media/domain-golive-plan.md`, on hold until David says go. Squarespace runs the DNS; the root SPF `-all` must change before the site can send mail as the domain.
+- Admin portal (8630400, a95371a): Iacchus Glance style in CLÉ navy. Rail of areas (Home, Inbox, Website, Shop, Settings) in `src/pages/admin/Admin.tsx`; theme block at the end of `kit/admin.css` redefines the site tokens under `.adm`; Glance primitives in `kit/glance.tsx`; `src/lib/inbox.ts` merges enquiries, sign-ups and orders. New panels: Inbox (`/admin/inbox`), People (`/admin/contacts`), Dashboard (admin home). Built as a parallel run, contract in `.parallel/portal/CONTRACT.md`. The old Enquiries panel still routes at `/admin/enquiries` but is in no area.
