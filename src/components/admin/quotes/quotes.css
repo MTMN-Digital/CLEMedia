@@ -1,0 +1,23 @@
+.qt-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; max-width: 520px; }
+.qt-fig { display: flex; flex-direction: column; gap: 6px; min-height: 104px; padding: 16px 18px; border-radius: var(--radius-md); background: var(--grey-tint); color: var(--grey-tint-ink); }
+.qt-fig[data-tone="blue"] { background: var(--blue-tint); color: var(--ink); }
+.qt-fig[data-tone="amber"] { background: var(--amber-tint); color: var(--ink); }
+.qt-fig__label { font-size: 13px; font-weight: 600; }
+.qt-fig__num { margin-top: auto; font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+
+.qt-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.qt-card { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 24px; min-width: 0; }
+.qt-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.qt-card__title { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+
+.qt-preview { margin: 0; padding: 20px 22px; border-radius: var(--radius-md); background: var(--sunk); border-top: 1.5px solid var(--line-2); overflow-wrap: anywhere; }
+.qt-preview blockquote { margin: 0; max-width: 42ch; }
+.qt-preview p { margin: 0; font-family: var(--font-display); font-size: clamp(18px, 2.2vw, 24px); line-height: 1.35; letter-spacing: -0.01em; color: var(--ink); }
+.qt-preview figcaption { margin-top: 14px; font-family: var(--font-mono, var(--font-sans)); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--dim); }
+.qt-preview .qt-preview__ph { color: var(--mid); }
+
+.qt-empty-card { border: 1.5px dashed var(--line-2); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; }
+.qt-empty { color: var(--dim); font-size: 14px; margin: 0; }
+
+@media (min-width: 1100px) { .qt-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .qt-card { padding: 18px; } }

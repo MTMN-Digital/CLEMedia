@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useNavigate, Routes, Link, Route } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import { useLoad, type MediaRow, reorderRows, formatDate, listRows } from "@/lib/admin";
-import { useToast, PageHeader, DataTable, moveId, type Column, AdminLinkButton, MoveButtons } from "@/components/admin/kit";
+import { EmptyState, useToast, Notice, moveId, MoveButtons, PageHeader, AdminLinkButton } from "@/components/admin/kit";
 import { MediaForm, KIND_LABEL } from "./MediaForm";
+import "../journal/journal.css";
 
 /* Media and podcast: the `media_items` table, which /media lists newest
    first. The list here follows the running order, which decides the order
@@ -18,8 +19,16 @@ export function MediaPanel() {
   );
 }
 
+const KINDS = Object.keys(KIND_LABEL) as MediaRow["kind"][];
+const initials = (m: MediaRow) =>
+  (m.outlet || m.title)
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+
 function MediaList() {
-  const navigate = useNavigate();
   const toast = useToast();
   const [moving, setMoving] = useState(false);
   const list = useLoad(
@@ -44,54 +53,74 @@ function MediaList() {
   }
 
   const rows = list.data;
-  const columns: Column<MediaRow>[] = [
-    {
-      key: "title",
-      label: "Title",
-      primary: true,
-      render: (m) => (
-        <Link to={`/admin/media/${m.id}`} className="font-semibold text-ink underline-offset-2 hover:underline">
-          {m.title}
-        </Link>
-      ),
-    },
-    { key: "outlet", label: "Outlet", render: (m) => m.outlet || <span className="adm-muted">Not given</span> },
-    { key: "kind", label: "Type", render: (m) => KIND_LABEL[m.kind] ?? m.kind },
-    { key: "when", label: "Date", numeric: true, render: (m) => (m.published_on ? formatDate(m.published_on) : "Undated") },
-    {
-      key: "order",
-      label: "Running order",
-      render: (m) => {
-        const i = rows ? rows.findIndex((x) => x.id === m.id) : 0;
-        return <MoveButtons label={m.title} first={i === 0} last={!rows || i === rows.length - 1} disabled={moving} onUp={() => move(m.id, -1)} onDown={() => move(m.id, 1)} />;
-      },
-    },
-  ];
+  const add = <AdminLinkButton to="/admin/media/new" variant="primary">Add an entry</AdminLinkButton>;
 
   return (
-    <>
-      <PageHeader
-        title="Media and podcast"
-        intro="Every press article, podcast, interview and video the company has appeared in. The press page lists them newest first."
-        actions={<AdminLinkButton to="/admin/media/new" variant="primary">Add an entry</AdminLinkButton>}
-      />
-      <DataTable
-        rows={rows}
-        columns={columns}
-        rowKey={(m) => m.id}
-        onRowClick={(m) => navigate(`/admin/media/${m.id}`)}
-        loading={list.loading}
-        error={list.error}
-        caption="Press and podcast entries"
-        empty={{
-          title: "Nothing listed yet",
-          body: "The press page shows its standing entries until the first one is added here.",
-          action: <AdminLinkButton to="/admin/media/new" variant="primary">Add an entry</AdminLinkButton>,
-        }}
-      />
-      {rows && rows.length > 1 && (
-        <p className="adm-muted mt-4">The site sorts by date first, so moving an entry up or down only changes the order of entries that share a date.</p>
+    <div className="jr-page">
+      <PageHeader title="Media and podcast" actions={add} />
+      {list.error && <Notice tone="error">{list.error}</Notice>}
+      {list.loading && (
+        <ul className="jr-grid" aria-busy="true" aria-label="Loading entries">
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="jr-sk" />
+          ))}
+        </ul>
       )}
-    </>
+      {rows && rows.length === 0 && (
+        <div className="jr-empty">
+          <EmptyState title="Nothing listed yet" body="The press page shows its standing entries until the first one is added here." action={add} />
+        </div>
+      )}
+      {rows && rows.length > 0 && (
+        <>
+          <div className="jr-tiles">
+            {KINDS.map((k) => (
+              <div key={k} className="jr-tile" data-tone={k === "press" ? "blue" : k === "podcast" ? "green" : undefined}>
+                <span className="jr-tile__label">{KIND_LABEL[k]}s</span>
+                <span className="jr-tile__fig">{rows.filter((m) => m.kind === k).length}</span>
+              </div>
+            ))}
+            <div className="jr-tile">
+              <span className="jr-tile__label">Total</span>
+              <span className="jr-tile__fig">{rows.length}</span>
+            </div>
+          </div>
+          <ul className="jr-grid" aria-label="Press and podcast entries">
+            {rows.map((m, i) => (
+              <li key={m.id} className="jr-card">
+                <div className="jr-cover">
+                  {m.thumbnail ? (
+                    <img src={m.thumbnail} alt={m.thumbnail_alt || ""} loading="lazy" />
+                  ) : (
+                    <span className="jr-cover__mark" aria-hidden="true">{initials(m)}</span>
+                  )}
+                </div>
+                <div className="jr-body">
+                  <Link to={`/admin/media/${m.id}`} className="jr-title">
+                    {m.title}
+                  </Link>
+                  <div className="jr-meta">
+                    <span className="adm-pill adm-pill--off">{KIND_LABEL[m.kind] ?? m.kind}</span>
+                    <span>{m.outlet || "No outlet"}</span>
+                    <span>{m.published_on ? formatDate(m.published_on) : "Undated"}</span>
+                  </div>
+                </div>
+                <div className="md-foot">
+                  {m.link ? (
+                    <a className="md-link" href={m.link} target="_blank" rel="noreferrer">
+                      Open link<span className="sr-only"> for {m.title}</span>
+                    </a>
+                  ) : (
+                    <span />
+                  )}
+                  <MoveButtons label={m.title} first={i === 0} last={i === rows.length - 1} disabled={moving} onUp={() => move(m.id, -1)} onDown={() => move(m.id, 1)} />
+                </div>
+              </li>
+            ))}
+          </ul>
+          {rows.length > 1 && <p className="adm-muted">The site sorts by date first, so Up and Down only reorder entries that share a date.</p>}
+        </>
+      )}
+    </div>
   );
 }

@@ -9,15 +9,18 @@ import {
   formatDateTime,
 } from "@/lib/admin";
 import {
-  useConfirm,
-  PageHeader,
-  useToast,
-  AdminLinkButton,
-  StatusPill,
-  AdminButton,
   TextInput,
+  useToast,
+  StatusPill,
+  Avatar,
+  AdminButton,
+  AdminLinkButton,
+  useConfirm,
   DataTable,
+  PageHeader,
 } from "@/components/admin/kit";
+import { Tiles } from "./Tiles";
+import "./shop.css";
 
 /* ============================================================================
    Orders, as Stripe's webhook wrote them. Newest first, read only.
@@ -87,14 +90,30 @@ export function Orders() {
 
   const expired = (o: Order) => new Date(o.expires_at).getTime() < Date.now();
 
+  const list = orders.data ?? [];
+  const paid = list.reduce((n, o) => n + (o.amount_cents ?? 0), 0);
+  const lapsed = list.filter(expired).length;
+  const buyers = new Set(list.map((o) => o.payer_email).filter(Boolean)).size;
+
   return (
-    <>
+    <div className="shop">
       <PageHeader
         back={{ to: "/admin/shop", label: "Back to the shop" }}
         title="Orders"
-        intro="Every purchase Stripe has told us about, newest first. Nothing here can be edited, but a buyer who lost their link can be given a fresh one."
         actions={<AdminLinkButton to="/admin/shop">Products</AdminLinkButton>}
       />
+
+      {orders.data && (
+        <Tiles
+          label="Order figures"
+          items={[
+            { label: "Orders", value: list.length, meta: query ? "matching" : "newest 200", tone: "blue" },
+            { label: "Paid", value: formatEuro(paid) || "\u20ac0.00", tone: "green" },
+            { label: "Buyers", value: buyers },
+            { label: "Links expired", value: lapsed, meta: lapsed ? "can be renewed" : "all live", tone: lapsed ? "amber" : "plain" },
+          ]}
+        />
+      )}
 
       <form
         role="search"
@@ -156,10 +175,13 @@ export function Orders() {
             label: "Product",
             primary: true,
             render: (o) => (
-              <>
-                <span className="block font-semibold">{titleOf(o)}</span>
-                <span className="adm-muted block">{formatDateTime(o.created_at)}</span>
-              </>
+              <span className="shop-buyer">
+                <Avatar name={null} email={o.payer_email} size={36} />
+                <span className="shop-buyer__t">
+                  <b>{titleOf(o)}</b>
+                  <span>{formatDateTime(o.created_at)}</span>
+                </span>
+              </span>
             ),
           },
           { key: "amount", label: "Paid", numeric: true, render: (o) => formatEuro(o.amount_cents) || "Not recorded" },
@@ -174,7 +196,14 @@ export function Orders() {
             key: "downloads",
             label: "Downloads used",
             numeric: true,
-            render: (o) => `${o.download_count} of ${o.max_downloads}`,
+            render: (o) => (
+              <span className="shop-dl">
+                {o.download_count} of {o.max_downloads}
+                <span className="shop-dl__bar" aria-hidden="true">
+                  <i style={{ width: `${Math.min(100, (o.download_count / Math.max(1, o.max_downloads)) * 100)}%` }} />
+                </span>
+              </span>
+            ),
           },
           {
             key: "expires",
@@ -229,6 +258,6 @@ export function Orders() {
           },
         ]}
       />
-    </>
+    </div>
   );
 }

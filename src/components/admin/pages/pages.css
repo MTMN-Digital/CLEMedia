@@ -54,19 +54,42 @@
 /* The "Changed" column on the page list reads as a pill or a quiet word. */
 .pg-count { font-size: 15px; color: var(--color-body); }
 
-/* The list of pages: one tappable row each, name left, changes and a chevron right. */
-.pg-list { list-style: none; margin: 0; padding: 0; }
-.pg-list li + li { border-top: 1.5px solid var(--color-rule-soft); }
-.pg-list__row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 10px 4px;
-  color: var(--color-ink);
-  text-decoration: none;
-  font-weight: 600;
+/* The list of pages: figures, then a card per page. Laid out against the page's own width. */
+.pg-root { container-type: inline-size; }
+.pg-figs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+.pg-fig { display: flex; flex-direction: column; gap: 6px; min-height: 96px; padding: 16px 18px; border-radius: 14px; color: var(--ink); }
+.pg-fig[data-tone="blue"] { background: var(--blue-tint); }
+.pg-fig[data-tone="green"] { background: var(--green-tint); }
+.pg-fig[data-tone="grey"] { background: var(--grey-tint); }
+.pg-fig__label { font-size: 13px; font-weight: 600; }
+.pg-fig__num { margin-top: auto; font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.pg-fig__num small { font-family: var(--font-sans); font-size: 14px; font-weight: 500; color: var(--body); letter-spacing: 0; }
+.pg-fig__num--date { font-size: 24px; }
+
+.pg-group { margin-top: 28px; }
+.pg-group__title { margin: 0 0 12px; font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.pg-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.pg-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+.pg-card__pic { display: block; aspect-ratio: 16 / 9; background: var(--sunk); overflow: hidden; }
+.pg-card__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pg-card__ph { display: grid; place-items: center; width: 100%; height: 100%; font-family: var(--font-display); font-size: 40px; font-weight: 600; color: var(--dim); }
+.pg-card__body { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 16px 18px 18px; }
+.pg-card__name { margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.pg-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-card__when { font-size: 13px; color: var(--dim); }
+.pg-card__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 4px; }
+.pg-card__btn { flex: 1; min-height: 44px; justify-content: center; text-align: center; text-decoration: none; }
+
+@container (min-width: 520px) {
+  .pg-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-.pg-list__row:hover .pg-list__name { text-decoration: underline; text-underline-offset: 3px; }
-.pg-list__name { flex: 1; min-width: 0; }
-.pg-list__go { flex: none; color: var(--color-body); }
+@container (min-width: 860px) {
+  .pg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container (min-width: 1180px) {
+  .pg-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.pg-card__pic:has(.pg-card__ph) { aspect-ratio: 16 / 5; }
+.pg-card__ph { font-size: 32px; }

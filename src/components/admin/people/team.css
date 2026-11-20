@@ -1,0 +1,47 @@
+/* The team page in the admin. Laid out against its own width (container queries). */
+.team { container-type: inline-size; }
+.team-stack { display: grid; gap: 20px; }
+
+.team-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 10px; background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+.team-tile { display: flex; flex-direction: column; gap: 6px; min-height: 96px; padding: 14px 16px; border-radius: 14px; color: var(--ink); background: var(--sunk); }
+.team-tile[data-tone="green"] { background: var(--green-tint); }
+.team-tile[data-tone="blue"] { background: var(--blue-tint); }
+.team-tile__label { font-size: 13px; font-weight: 600; }
+.team-tile__fig { font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; margin-top: auto; font-variant-numeric: tabular-nums; }
+
+.team-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px 20px; border-radius: var(--radius-lg); background: var(--accent-soft); color: var(--nav-on-ink); }
+.team-banner p { flex: 1 1 240px; margin: 0; font-size: 14px; font-weight: 500; }
+.team-banner__act { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.team-card { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 24px; min-width: 0; }
+.team-ch { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 16px; }
+.team-ch h2 { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.team-ch__n { font-size: 12.5px; color: var(--dim); }
+.team-ch__act { margin-left: auto; }
+
+.team-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.team-face { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 14px; background: var(--bg); overflow: hidden; }
+.team-face[data-hidden] .team-face__pic, .team-face[data-muted] .team-face__pic { opacity: 0.55; }
+.team-face__pic { position: relative; aspect-ratio: 4 / 5; background: var(--sunk); display: grid; place-items: center; overflow: hidden; }
+.team-face__pic img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.team-face__tag { position: absolute; top: 8px; left: 8px; }
+.team-face__body { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 8px; min-width: 0; }
+.team-face__name { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.team-face__name::after { content: ""; position: absolute; inset: 0 0 56px 0; }
+.team-face__name:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 14px; }
+.team-face__role { font-size: 13px; color: var(--dim); overflow-wrap: anywhere; }
+.team-face__foot { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0 10px 8px 14px; }
+.team-face__web { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.team-face__web:hover { text-decoration: underline; }
+.team-sk { display: block; aspect-ratio: 4 / 5; border-radius: 14px; background: var(--sunk); }
+.team-empty { color: var(--dim); font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+
+@container (min-width: 520px) { .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 760px) { .team-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container (min-width: 1000px) { .team-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@container (min-width: 1240px) { .team-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@container (max-width: 420px) {
+  .team-card { padding: 16px; }
+  .team-tile__fig { font-size: 26px; }
+  .team-tile { padding: 12px; }
+}

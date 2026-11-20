@@ -13,7 +13,7 @@ import {
   type ImageValue,
   EmptyState,
 } from "@/components/admin/kit";
-import { saveBlock, resetBlock, useLoad, listRows, listBlocks, type Result, type ContentBlock, IMAGE_RULES } from "@/lib/admin";
+import { formatDate, type ContentBlock, listBlocks, listRows, resetBlock, type Result, saveBlock, IMAGE_RULES, useLoad } from "@/lib/admin";
 import { loadDefaults, type PageId, type PageDef, type BlockDef, PAGES, blocksFor, sectionsFor, blockValueError } from "@/lib/blocks";
 import { ASSETS } from "@/lib/brand";
 import "./pages.css";
@@ -39,47 +39,109 @@ export function PagesPanel() {
 
 /* ─── The list of pages ──────────────────────────────────────────────────── */
 
-function PageList() {
-  const changes = useLoad(() => listRows("content_blocks", { columns: "id, page, section_key" }), []);
+const MAIN: PageId[] = ["home", "story", "team", "ethical-ai", "case-study", "journal", "app", "media", "shop", "contact"];
+const LEGAL: PageId[] = ["privacy", "terms", "cookies", "404"];
 
-  const counts = useMemo(() => {
-    const out: Record<string, number> = {};
-    for (const row of changes.data ?? []) out[row.page] = (out[row.page] ?? 0) + 1;
+type PageStat = { photos: number; last: string | null; words: number; thumb: { src: string; alt: string } | null; photoSlots: number };
+
+function PageList() {
+  const changes = useLoad(() => listRows("content_blocks", { columns: "id, page, section_key, type, value, updated_at" }), []);
+
+  const stats = useMemo(() => {
+    const out: Record<string, PageStat> = {};
+    for (const p of PAGES) {
+      const defs = blocksFor(p.id);
+      const slots = defs.filter((d) => d.kind === "image");
+      const rows = (changes.data ?? []).filter((r) => r.page === p.id);
+      let thumb: PageStat["thumb"] = null;
+      for (const d of slots) {
+        const row = rows.find((r) => r.section_key === d.key);
+        if (row?.value?.url) { thumb = { src: row.value.url, alt: row.value.alt ?? "" }; break; }
+      }
+      if (!thumb) {
+        for (const d of slots) {
+          const o = originalImage(d);
+          if (o?.src) { thumb = { src: o.src, alt: o.alt }; break; }
+        }
+      }
+      const photos = rows.filter((r) => slots.some((d) => d.key === r.section_key)).length;
+      const last = rows.reduce<string | null>((m, r) => (!m || r.updated_at > m ? r.updated_at : m), null);
+      out[p.id] = { words: rows.length - photos, photos, photoSlots: slots.length, last, thumb };
+    }
     return out;
   }, [changes.data]);
 
-  /* A plain list, not a table, from 2026-10-28: on a phone the table became
-     one tall card per page saying "As written" and "View the page" every
-     time. Each row is the page's name and, only when it has some, a count of
-     changes; the page itself has the "View the page" button. */
+  const all = Object.values(stats);
+  const edited = all.filter((s) => s.words + s.photos > 0).length;
+  const total = all.reduce((n, s) => n + s.words + s.photos, 0);
+  const lastAll = all.reduce<string | null>((m, s) => (s.last && (!m || s.last > m) ? s.last : m), null);
+  const group = (ids: PageId[]) => ids.map((id) => PAGES.find((p) => p.id === id)).filter((p): p is PageDef => Boolean(p));
+
   return (
-    <>
-      <PageHeader
-        title="Pages and photos"
-        intro="Choose a page to change its words or pictures. What you save shows on the site straight away."
-      />
+    <div className="pg-root">
+      <PageHeader title="Pages and photos" />
       {changes.error && (
         <div className="mb-4">
           <Notice tone="error">Could not check which pages have changes. {changes.error}</Notice>
+          <div className="mt-2">
+            <AdminButton variant="quiet" onClick={changes.reload}>Try again</AdminButton>
+          </div>
         </div>
       )}
-      <ul className="pg-list adm-card">
-        {PAGES.map((p) => {
-          const n = counts[p.id] ?? 0;
-          return (
-            <li key={p.id}>
-              <Link to={`/admin/pages/${p.id}`} className="pg-list__row">
-                <span className="pg-list__name">{p.label}</span>
-                {n > 0 && <StatusPill tone="warn">{n} {n === 1 ? "change" : "changes"}</StatusPill>}
-                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="pg-list__go">
-                  <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </>
+      {changes.loading && !changes.data && <p className="adm-muted" role="status">Loading...</p>}
+
+      <div className="pg-figs">
+        <div className="pg-fig" data-tone="blue">
+          <span className="pg-fig__label">Pages edited</span>
+          <b className="pg-fig__num">{edited}<small> of {PAGES.length}</small></b>
+        </div>
+        <div className="pg-fig" data-tone="green">
+          <span className="pg-fig__label">Changes</span>
+          <b className="pg-fig__num">{total}</b>
+        </div>
+        <div className="pg-fig" data-tone="grey">
+          <span className="pg-fig__label">Last edit</span>
+          <b className="pg-fig__num pg-fig__num--date">{lastAll ? formatDate(lastAll) : "None yet"}</b>
+        </div>
+      </div>
+
+      {[
+        ["Main pages", group(MAIN)],
+        ["Legal", group(LEGAL)],
+      ].map(([title, list]) => (
+        <section key={title as string} className="pg-group" aria-labelledby={`pg-g-${title}`.replace(/\s/g, "-")}>
+          <h2 className="pg-group__title" id={`pg-g-${title}`.replace(/\s/g, "-")}>{title as string}</h2>
+          <ul className="pg-grid">
+            {(list as PageDef[]).map((p) => {
+              const st = stats[p.id];
+              return (
+                <li key={p.id} className="pg-card">
+                  {st.thumb && (
+                    <Link to={`/admin/pages/${p.id}`} className="pg-card__pic" aria-label={`Edit ${p.label}`} tabIndex={-1}>
+                      <img src={st.thumb.src} alt="" loading="lazy" />
+                    </Link>
+                  )}
+                  <div className="pg-card__body">
+                    <h3 className="pg-card__name">{p.label}</h3>
+                    <div className="pg-card__tags">
+                      {st.words > 0 && <StatusPill tone="warn">{st.words} {st.words === 1 ? "word change" : "word changes"}</StatusPill>}
+                      {st.photoSlots > 0 && (
+                        <StatusPill tone={st.photos ? "warn" : "off"}>{st.photos} of {st.photoSlots} {st.photoSlots === 1 ? "photo" : "photos"}</StatusPill>
+                      )}
+                    </div>
+                    <span className="pg-card__when">{st.last ? `Edited ${formatDate(st.last)}` : "Not edited yet"}</span>
+                    <div className="pg-card__acts">
+                      <Link to={`/admin/pages/${p.id}`} className="btn btn-primary pg-card__btn">Edit</Link>
+                      <a href={p.path} target="_blank" rel="noreferrer" className="btn btn-quiet pg-card__btn">View page</a>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
   );
 }
 

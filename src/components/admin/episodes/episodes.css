@@ -1,0 +1,47 @@
+/* Episodes list. Laid out against its own width (container queries). */
+.ep { container-type: inline-size; }
+
+.ep-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 10px; background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); margin-bottom: 20px; }
+.ep-tile { display: flex; flex-direction: column; gap: 6px; min-height: 96px; padding: 14px 16px; border-radius: 14px; background: var(--sunk); color: var(--ink); }
+.ep-tile[data-tone="green"] { background: var(--green-tint); }
+.ep-tile[data-tone="amber"] { background: var(--amber-tint); }
+.ep-tile__label { font-size: 13px; font-weight: 600; }
+.ep-tile__fig { font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; margin-top: auto; font-variant-numeric: tabular-nums; }
+.ep-tile[data-tone="green"] .ep-tile__fig { color: var(--green-tint-ink); }
+.ep-tile[data-tone="amber"] .ep-tile__fig { color: var(--amber-tint-ink); }
+
+.ep-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.ep-card { display: flex; flex-direction: column; background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); overflow: hidden; min-width: 0; height: 100%; }
+.ep-card[data-hidden] .ep-pic, .ep-card[data-hidden] .ep-card__title { opacity: 0.5; }
+.ep-pic { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--sunk); overflow: hidden; }
+.ep-pic img, .ep-pic picture { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+.ep-pic__blank { display: grid; place-items: center; width: 100%; height: 100%; color: var(--dim); font-family: var(--font-display); font-size: 28px; font-weight: 600; }
+.ep-badge { position: absolute; left: 10px; top: 10px; display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--card); color: var(--ink); font-family: var(--font-display); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; box-shadow: var(--shadow-card); }
+.ep-body { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px 18px; flex: 1; }
+.ep-card__title { font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.ep-card__title:hover { text-decoration: underline; }
+.ep-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ep-acts { display: flex; align-items: center; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+.ep-acts .ep-move { margin-left: auto; }
+.ep-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 12px; background: var(--sunk); color: var(--ink); font-size: 14px; font-weight: 600; text-decoration: none; }
+.ep-btn:hover { box-shadow: 0 0 0 1px var(--line-2); }
+.ep-btn--go { background: var(--accent-soft); color: var(--nav-on-ink); }
+.ep-btn:focus-visible, .ep-card__title:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ep-sk { display: block; aspect-ratio: 4 / 3; border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--sunk) 0, var(--card) 50%, var(--sunk) 100%); background-size: 200% 100%; animation: ep-shim 1.4s linear infinite; }
+@keyframes ep-shim { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@container (min-width: 600px) {
+  .ep-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container (min-width: 960px) {
+  .ep-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container (min-width: 1360px) {
+  .ep-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@container (max-width: 420px) {
+  .ep-tile { padding: 12px; }
+  .ep-tile__fig { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .ep-sk { animation: none; } }

@@ -163,3 +163,131 @@ lint and a careful read of your own code; the gate and integration take the scre
 
 ## Commit policy
 No stage commits except integration's single final commit.
+
+---
+
+# Run 2: `cle-portal-pages-2026-11-20` (extends run 1, which is done and integrated)
+
+The shell is now a CLÉ-navy icon rail plus a pill bar of section tabs (`src/pages/admin/Admin.tsx`,
+frozen). The theme block at the end of `src/components/admin/kit/admin.css` is frozen and defines
+Iacchus tokens on `.adm`: `--bg --card --sunk --track --line --line-2 --ink --body --dim --mid
+--accent --accent-soft --nav-on-ink --frame --frame-bar`, status `--green-solid/-tint/-tint-ink/-bar`,
+`--amber-*`, `--red-*`, `--blue-*`, `--grey-tint/-tint-ink`, ramp `--ramp-1..4`, `--shadow-card`,
+`--ease`, radii `--radius-sm 10 / -md 14 / -lg 16`. Fonts: `--font-display` (Onest) for headings and
+figures, `--font-sans` (Hanken Grotesk) for text. Reference for the look: the admin home,
+`src/components/admin/dashboard/Dashboard.tsx` + `dashboard.css` (tinted tiles, figure sizes,
+`.dash-card` cards with `--shadow-card`, container queries). Mirror it.
+
+## Goal
+Several admin pages are thin: bare lists or near-empty screens with little utility. Each shard upgrades
+its pages in the Glance direction: a figures row or lead object at the top (big tabular numbers,
+1 to 4 word labels, tinted tiles where status matters), real pictures where the data has them, and the
+actions people actually use, one click away. Keep EVERY existing behaviour working (create, edit,
+delete, reorder, publish/hide, import, filters, saves, toasts, confirms, routes and URLs). This is a
+presentation and utility upgrade, not a rewrite of the data layer.
+
+## Shards (each owns only its folder, may edit any file inside it, may add files and ONE css file)
+
+| Shard | Owns | Model |
+|---|---|---|
+| shop | `src/components/admin/shop/**` | claude-sonnet-5-5 |
+| episodes | `src/components/admin/episodes/**` | claude-sonnet-5-5 |
+| pages | `src/components/admin/pages/**` | claude-sonnet-5-5 |
+| journal | `src/components/admin/journal/**` and `src/components/admin/media/**` | claude-sonnet-5-5 |
+| team | `src/components/admin/people/**` | claude-sonnet-5-5 |
+| quotes | `src/components/admin/quotes/**` | claude-sonnet-5-5 |
+
+Exports and routes do not change: `ShopPanel`, `EpisodesPanel`, `PagesPanel`, `JournalPanel`,
+`MediaPanel`, `PeoplePanel`, `QuotesPanel` stay named exports in their current files, with the same
+nested routes. Integration needs nothing from you except that.
+
+Must not touch: anything outside your folder(s). In particular `src/pages/admin/**`,
+`src/components/admin/kit/**`, `src/components/admin/registry.ts`, `src/lib/**`, `src/components/team/**`,
+`src/components/Figure.tsx`, `src/styles/**`, `api/**`, `supabase/**`. CSS selectors in your css file
+are prefixed with your shard name (`.shop-`, `.ep-`, `.pg-`, `.jr-`/`.md-`, `.team-`, `.qt-`).
+
+## Data you may read (read-only imports)
+- `@/lib/admin`: `listRows`, `getRow`, `insertRow`, `updateRow`, `deleteRow`, `reorderRows`, `countRows`,
+  `useLoad`, `formatDate`, `formatDateTime`, `formatEuro`, row types (`ProductRow`, `PostRow`,
+  `PersonRow`, `MediaRow`, `EpisodeRow`, `Order`, `ContentBlock`), `getSetting`/`saveSetting`.
+- `@/lib/blocks`: `PAGES`, `BLOCKS`, `blocksFor(page)`, `sectionsFor(page)` (which text and photo slots
+  each page has; `kind: "image"` are photo slots).
+- `@/lib/brand`: `ASSETS` (bundled images: `ASSETS[key].base` + `.webp` / `.jpg`, width, height, alt).
+  `@/components/Figure` renders a bundled asset with an optional `override={{url, alt}}`.
+- `@/components/team/people`: `TEAM`, `ADVISORS` (the bundled team, for the team page before import).
+- `@/lib/inbox`: `money(cents)`.
+- Orders: `listRows("orders")` gives `product_id`, `amount_cents`, `created_at`, `download_count`.
+
+## Page acceptance
+
+### shop (ShopPanel: products list, product page, orders)
+- Top figures: revenue this month and all time (from orders), orders this month, products on sale
+  vs hidden.
+- Products as a responsive grid of cards: cover image (`thumbnail`, or a tinted placeholder block
+  with the title if none), title, price, a status pill (On sale / Hidden), sales count and revenue for
+  that product, Edit, and Up/Down order controls (keep `reorderRows`). Hidden products look dimmed.
+- Orders screen keeps search and "Give a fresh link"; add a figures row and make rows scannable.
+
+### episodes (EpisodesPanel)
+- Top figures: released, coming soon, hidden.
+- Episodes as cards in a grid: the thumbnail (uploaded `thumbnail`, else the bundled slate
+  `ASSETS[asset_key]` via `Figure`), `EP 00N` and title, Watch on YouTube (link out, new tab) or a
+  Coming soon tag, Edit, Up/Down order. Hidden ones dimmed with a Hidden tag.
+
+### pages (PagesPanel list view only; the per-page editor stays as it is)
+- Each page as a card: page name, how many of its words and photos have been changed from the
+  original (count `content_blocks` rows for that page, split text vs image), last edited date
+  (max `updated_at`), how many photo slots it has (`blocksFor(page)` kind image), Edit and View page
+  (`PAGES[].path`, new tab). Group: Main pages (home, story, team, ethical-ai, case-study, journal, app,
+  media, shop, contact) and Legal (privacy, terms, cookies, 404).
+- Top figures: pages edited, total changes, last edit.
+
+### journal (JournalPanel list) and media (MediaPanel list)
+- Journal top figures: published, scheduled, drafts, days since the last published post, next scheduled
+  date. Posts as cards with the cover (`hero_image`) or a tinted block, title, status pill, strand,
+  date. Keep the All / Drafts / Scheduled / Published filter, New post and Strands buttons.
+- Media: count by type as figures, entries as cards with picture or outlet initials, title, outlet,
+  date, type tag, link out. Keep Add an entry and the reorder controls.
+
+### team (PeopleList)
+- When the table has people: a face grid per group (Team, Advisers, Experts): photo (`photo`, else the
+  bundled portrait via `ASSETS[asset_key]`, else initials), name, role, Shown/Hidden, expert website
+  link; click opens the existing edit form; keep reorder.
+- When the table is empty (today on production): show the bundled `TEAM` and `ADVISORS` as the same
+  face grid, slightly muted, with one clear primary "Import the current team" (keep the existing
+  import action and its confirm) and a line saying they show on the site from the built-in list until
+  imported. Experts section and Add an expert stay.
+- Top figures: people shown, hidden, experts.
+
+### quotes (QuotesPanel)
+- Each quote edited in a card whose top shows a live preview styled like the home page quote
+  (quotation in large text, attribution under it), updating as you type. Keep add, remove, reorder,
+  validation and the single Save bar.
+- Top line figures: quotes shown on the site.
+
+## DONE-WHEN checklist (the gate may fail a shard ONLY on these or a lint FAIL)
+1. Exports, file paths and nested routes are unchanged; every existing action still works (create,
+   edit, delete, reorder, publish/hide, import, filters, save bars, toasts, confirms).
+2. Only files inside the shard's own folder(s) were created or changed.
+3. `npx tsc --noEmit -p tsconfig.app.json` passes.
+4. `bash -O globstar .parallel/portal/shard-lint.sh <Export> <file> '<folder>/**'` exits 0 for each
+   folder owned.
+5. Loading, error (`Notice tone="error"`) and empty states handled; never a blank screen.
+6. No new tables, columns, migrations or npm dependencies; data only through `@/lib/admin` helpers.
+7. Tokens only (no hard-coded hex where a token exists; no Tailwind palette colour classes).
+8. Fluid: works at 390px (no horizontal page scroll, 44px tap targets) and fills the width at 1440px;
+   grids reflow (prefer container queries on the page root).
+9. Accessible: real buttons and links with names, alt text on images, labels on drawn figures,
+   visible focus, works without hover.
+10. No em or en dashes anywhere. Short plain labels, no explainer paragraphs under every element.
+11. `prefers-reduced-motion` respected for any motion added.
+12. The page acceptance above is met.
+
+## Local test environment
+Dev server `http://127.0.0.1:5504` (running; do not start another). Signed-in screenshots:
+`import { launch, adminPage } from "/home/david/Documents/GitHub/clients/cle-media/.parallel/admin/pw.mjs"`,
+`const b = await launch(); const p = await adminPage(b, { width: 1440, base: "http://127.0.0.1:5504" });`
+then `p.goto("http://127.0.0.1:5504/admin/<section>")`. Your page IS routed this time, so look at it at
+1440 and 390 before finishing. Screenshots to `/tmp/cle-qa/run2/`. Local data: 6 products with orders,
+6 episodes, 1 journal post, empty people and media tables, no quotes. Do not change local data except
+through the UI you are testing, and undo any test change you make.

@@ -1,27 +1,131 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { reorderRows, deleteRow, insertRow, type PersonRow, listRows, useLoad } from "@/lib/admin";
 import {
-  PageHeader,
-  AdminButton,
-  MoveButtons,
   useToast,
-  EmptyState,
-  StatusPill,
-  type Column,
-  DataTable,
   AdminLinkButton,
+  PageHeader,
+  MoveButtons,
+  Tag,
+  Avatar,
   moveId,
+  Notice,
+  AdminButton,
 } from "@/components/admin/kit";
+import { Figure } from "@/components/Figure";
+import { ASSETS, type AssetKey } from "@/lib/brand";
+import { TEAM, ADVISORS } from "@/components/team/people";
+import "./team.css";
 import { invalidateTeam } from "@/components/team/useTeam";
 import { bundledRows, type PersonType } from "./shared";
 
 /* The people, in the order the site shows them: the core team first, then
-   the advisers, each group in its own running order. Up and down buttons
-   reorder within a group; opening a row edits the person. */
+   the advisers, then the experts, each group in its own running order. Each
+   person is a face card; opening one edits the person, and up and down
+   buttons reorder within a group. */
+
+interface Face {
+  visible: boolean;
+  website: string | null;
+  name: string;
+  id: string | null;
+  photo: string | null;
+  asset: AssetKey | null;
+  alt: string;
+  role: string;
+}
+
+function fromRow(p: PersonRow): Face {
+  return {
+    id: p.id,
+    name: p.name,
+    role: p.role,
+    photo: p.photo,
+    alt: p.photo_alt || p.name,
+    asset: p.asset_key && p.asset_key in ASSETS ? (p.asset_key as AssetKey) : null,
+    visible: p.visible,
+    website: p.website ?? null,
+  };
+}
+
+const fromBundled = (m: (typeof TEAM)[number]): Face => ({
+  id: null,
+  name: m.name,
+  role: m.role,
+  photo: null,
+  alt: m.name,
+  asset: m.asset ?? null,
+  visible: true,
+  website: null,
+});
+
+function Picture({ f }: { f: Face }) {
+  if (f.photo) return <img src={f.photo} alt={f.alt} loading="lazy" />;
+  if (f.asset) return <Figure asset={f.asset} fill rounded="rounded-none" sizes="240px" position="center top" />;
+  return <Avatar name={f.name} email={null} size={72} />;
+}
+
+function Faces({
+  faces,
+  label,
+  busy,
+  onMove,
+}: {
+  onMove?: (id: string, dir: -1 | 1) => void;
+  busy?: boolean;
+  label: string;
+  faces: Face[];
+}) {
+  return (
+    <ul className="team-grid" aria-label={label}>
+      {faces.map((f, i) => (
+        <li key={f.id ?? f.name} className="team-face" data-hidden={f.id && !f.visible ? "" : undefined} data-muted={f.id ? undefined : ""}>
+          <div className="team-face__pic">
+            <Picture f={f} />
+            {f.id && (
+              <span className="team-face__tag">
+                <Tag tone={f.visible ? "ok" : "off"}>{f.visible ? "Shown" : "Hidden"}</Tag>
+              </span>
+            )}
+          </div>
+          <div className="team-face__body">
+            {f.id ? (
+              <Link to={`/admin/people/${f.id}`} className="team-face__name">
+                {f.name}
+              </Link>
+            ) : (
+              <span className="team-face__name">{f.name}</span>
+            )}
+            <span className="team-face__role">{f.role}</span>
+          </div>
+          {f.id && (
+            <div className="team-face__foot">
+              {f.website ? (
+                <a href={f.website} target="_blank" rel="noopener noreferrer" className="team-face__web">
+                  Website
+                </a>
+              ) : (
+                <span />
+              )}
+              {onMove && (
+                <MoveButtons
+                  label={f.name}
+                  first={i === 0}
+                  last={i === faces.length - 1}
+                  disabled={busy}
+                  onUp={() => onMove(f.id as string, -1)}
+                  onDown={() => onMove(f.id as string, 1)}
+                />
+              )}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function PeopleList() {
-  const navigate = useNavigate();
   const toast = useToast();
   const people = useLoad(
     () => listRows("people", { order: [{ column: "type", ascending: false }, { column: "sort_order" }, { column: "name" }] }),
@@ -72,48 +176,6 @@ export function PeopleList() {
     toast(`Imported ${added} ${added === 1 ? "person" : "people"}`);
   }
 
-  const columns = (group: PersonRow[]): Column<PersonRow>[] => [
-    {
-      key: "name",
-      label: "Name",
-      primary: true,
-      render: (p) => (
-        <Link to={`/admin/people/${p.id}`} className="adm-linkbtn">
-          {p.name}
-        </Link>
-      ),
-    },
-    { key: "role", label: "Role", render: (p) => p.role },
-    {
-      key: "photo",
-      label: "Photo",
-      hideOnPhone: true,
-      render: (p) => (p.photo ? "Uploaded" : p.asset_key ? "From the site" : "None"),
-    },
-    {
-      key: "visible",
-      label: "On the site",
-      render: (p) => (p.visible ? <StatusPill tone="ok">Shown</StatusPill> : <StatusPill tone="off">Hidden</StatusPill>),
-    },
-    {
-      key: "order",
-      label: "Order",
-      render: (p) => {
-        const i = group.findIndex((g) => g.id === p.id);
-        return (
-          <MoveButtons
-            label={p.name}
-            first={i === 0}
-            last={i === group.length - 1}
-            disabled={busy}
-            onUp={() => move(group, p.id, -1)}
-            onDown={() => move(group, p.id, 1)}
-          />
-        );
-      },
-    },
-  ];
-
   const addButton = (type: PersonType) => (
     <AdminLinkButton to={`/admin/people/new?type=${type}`} size="sm">
       {type === "team" ? "Add a team member" : type === "expert" ? "Add an expert" : "Add an adviser"}
@@ -124,77 +186,89 @@ export function PeopleList() {
      the site still shows the bundled team until it is imported. */
   const nobody = !people.loading && !people.error && team.length + advisors.length === 0;
 
-  const expertsSection = (
-    <section>
-      <h2 className="adm-h2">Experts</h2>
-      <DataTable
-        rows={people.data ? experts : null}
-        columns={columns(experts)}
-        rowKey={(p) => p.id}
-        onRowClick={(p) => navigate(`/admin/people/${p.id}`)}
-        loading={people.loading}
-        error={people.error}
-        empty={{ title: "No experts yet", action: <div className="mt-3">{addButton("expert")}</div> }}
-        caption="Experts, in running order"
-      />
+  const shown = rows.filter((p) => p.visible).length;
+  const hidden = rows.length - shown;
+
+  const group = (title: string, label: string, list: PersonRow[], type: PersonType) => (
+    <section className="team-card">
+      <div className="team-ch">
+        <h2>{title}</h2>
+        <span className="team-ch__n">{list.length}</span>
+        <span className="team-ch__act">{addButton(type)}</span>
+      </div>
+      {list.length > 0 ? (
+        <Faces faces={list.map(fromRow)} label={label} busy={busy} onMove={(id, dir) => move(list, id, dir)} />
+      ) : (
+        <p className="team-empty">{`No ${title.toLowerCase()} yet`}</p>
+      )}
+    </section>
+  );
+
+  const preview = (title: string, list: typeof TEAM) => (
+    <section className="team-card">
+      <div className="team-ch">
+        <h2>{title}</h2>
+        <span className="team-ch__n">{list.length}</span>
+      </div>
+      <Faces faces={list.map(fromBundled)} label={`${title}, built-in list`} />
     </section>
   );
 
   return (
-    <>
+    <div className="team">
       <PageHeader
-        title="Team, advisers and experts"
-        intro="Who appears on the Team page, and in what order. The first paragraph of each biography is always shown; the rest opens under a More button."
+        title="Team"
         actions={<AdminLinkButton to="/admin/people/new" variant="primary">Add a person</AdminLinkButton>}
       />
 
-      {nobody ? (
-        <div className="adm-stack">
-        <EmptyState
-          title="No one is listed yet"
-          body="The site is still showing the team written into it. Import that list to start editing it here, or add people one at a time."
-          action={
-            <div className="mt-4 flex flex-wrap justify-center gap-3">
-              <AdminButton onClick={importTeam} busy={busy} busyLabel="Importing">
-                Import the current team
-              </AdminButton>
-              <AdminLinkButton to="/admin/people/new">Add a person</AdminLinkButton>
+      <div className="team-stack">
+        <div className="team-tiles">
+          <div className="team-tile" data-tone="green">
+            <span className="team-tile__label">Shown</span>
+            <span className="team-tile__fig">{people.data ? shown : "-"}</span>
+          </div>
+          <div className="team-tile">
+            <span className="team-tile__label">Hidden</span>
+            <span className="team-tile__fig">{people.data ? hidden : "-"}</span>
+          </div>
+          <div className="team-tile" data-tone="blue">
+            <span className="team-tile__label">Experts</span>
+            <span className="team-tile__fig">{people.data ? experts.length : "-"}</span>
+          </div>
+        </div>
+
+        {people.error ? (
+          <Notice tone="error">{people.error}</Notice>
+        ) : people.loading ? (
+          <div className="team-card" role="status" aria-label="Loading the team">
+            <ul className="team-grid">
+              {[0, 1, 2, 3].map((n) => (
+                <li key={n} className="team-sk" />
+              ))}
+            </ul>
+          </div>
+        ) : nobody ? (
+          <>
+            <div className="team-banner">
+              <p>The site shows the built-in team below until you import it. Then you can edit it here.</p>
+              <div className="team-banner__act">
+                <AdminButton onClick={importTeam} busy={busy} busyLabel="Importing">
+                  Import the current team
+                </AdminButton>
+              </div>
             </div>
-          }
-        />
-          {expertsSection}
-        </div>
-      ) : (
-        <div className="adm-stack">
-          <section>
-            <h2 className="adm-h2">Core team</h2>
-            <DataTable
-              rows={people.data ? team : null}
-              columns={columns(team)}
-              rowKey={(p) => p.id}
-              onRowClick={(p) => navigate(`/admin/people/${p.id}`)}
-              loading={people.loading}
-              error={people.error}
-              empty={{ title: "No core team members yet", action: <div className="mt-3">{addButton("team")}</div> }}
-              caption="Core team, in running order"
-            />
-          </section>
-          <section>
-            <h2 className="adm-h2">Advisers</h2>
-            <DataTable
-              rows={people.data ? advisors : null}
-              columns={columns(advisors)}
-              rowKey={(p) => p.id}
-              onRowClick={(p) => navigate(`/admin/people/${p.id}`)}
-              loading={people.loading}
-              error={people.error}
-              empty={{ title: "No advisers yet", action: <div className="mt-3">{addButton("advisor")}</div> }}
-              caption="Advisers, in running order"
-            />
-          </section>
-          {expertsSection}
-        </div>
-      )}
-    </>
+            {preview("Team", TEAM)}
+            {preview("Advisers", ADVISORS)}
+            {group("Experts", "Experts, in running order", experts, "expert")}
+          </>
+        ) : (
+          <>
+            {group("Team", "Team, in running order", team, "team")}
+            {group("Advisers", "Advisers, in running order", advisors, "advisor")}
+            {group("Experts", "Experts, in running order", experts, "expert")}
+          </>
+        )}
+      </div>
+    </div>
   );
 }
