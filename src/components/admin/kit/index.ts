@@ -12,3 +12,5 @@ export { useToast, useConfirm, ConfirmDialog, ConfirmProvider, useSaveState, Toa
 export type { ConfirmOptions, SaveStatus } from "./feedback";
 export { Wizard } from "./Wizard";
 export type { WizardStep } from "./Wizard";
+export { Tag, DotStrip, Ring, Bars, Stat, GlanceCard, Avatar } from "./glance";
+export type { GlanceTone } from "./glance";

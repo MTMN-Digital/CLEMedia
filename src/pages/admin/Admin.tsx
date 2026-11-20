@@ -1,4 +1,4 @@
-import { Fragment, useState, Suspense, useEffect, type FormEvent } from "react";
+import { useState, Suspense, useEffect, type FormEvent } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation, Routes, NavLink, Route, Link } from "react-router-dom";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -64,7 +64,7 @@ function Login() {
   return (
     <main className="adm-main adm-narrow" style={{ paddingTop: "12vh" }}>
       <p className="adm-label">CL&Eacute; Family Media</p>
-      <h1 className="mt-1 font-display text-[32px] leading-[1.1] text-ink">Sign in to edit the site</h1>
+      <h1 className="mt-1 font-display text-[32px] leading-[1.1] text-ink">Sign in</h1>
 
       {!isSupabaseConfigured && (
         <div className="mt-6">
@@ -115,7 +115,37 @@ function NotAdmin({ email }: { email: string }) {
   );
 }
 
-const GROUP: Record<string, string> = { pages: "The site", shop: "Selling", links: "Running it" };
+/* ─── Areas: the rail. Each area lists its panels in the sidebar. ─────────
+   Keys that are not registered yet are skipped, so a panel can be added to an
+   area before its code lands. `enquiries` is reachable by URL but lives in
+   the Inbox now, so it is in no area. */
+type AreaKey = "site" | "home" | "shop" | "settings" | "inbox";
+const AREAS: { panels: string[]; label: string; key: AreaKey; icon: string }[] = [
+  { key: "home", label: "Home", panels: [], icon: "M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z" },
+  { key: "inbox", label: "Inbox", panels: ["inbox", "contacts"], icon: "M3 11.5 5.2 5a1 1 0 0 1 .95-.7h7.7a1 1 0 0 1 .95.7L17 11.5V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 11.5h4l1 2h4l1-2h4" },
+  { key: "site", label: "Website", panels: ["pages", "journal", "people", "episodes", "quotes", "media", "app"], icon: "M3 5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 8h14M6 6h.01M8 6h.01" },
+  { key: "shop", label: "Shop", panels: ["shop"], icon: "M4 7h12l-1 9H5zM7 7V6a3 3 0 0 1 6 0v1" },
+  { key: "settings", label: "Settings", panels: ["links"], icon: "M10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4" },
+];
+
+function panelsOf(area: (typeof AREAS)[number]) {
+  return area.panels.map((k) => PANELS.find((p) => p.key === k)).filter((p): p is (typeof PANELS)[number] => !!p);
+}
+function areaPath(area: (typeof AREAS)[number]) {
+  return area.key === "home" ? "/admin" : (panelsOf(area)[0]?.path ?? "/admin");
+}
+function areaOf(pathname: string) {
+  const panel = PANELS.find((p) => pathname === p.path || pathname.startsWith(`${p.path}/`));
+  return AREAS.find((a) => panel && a.panels.includes(panel.key)) ?? AREAS[0];
+}
+
+function Icon({ d, size = 20 }: { size?: number; d: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true">
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 const START = [
   { to: "/admin/journal/new", title: "Write a journal post", body: "Title, words, a picture, then publish or keep it as a draft" },
@@ -195,76 +225,87 @@ function Home() {
   );
 }
 
-function Nav() {
-  const { enquiries } = useCounts();
-  const unread = enquiries?.tone === "alert" ? parseInt(enquiries.text, 10) : 0;
-  /* On a phone the sections sit behind one button; choosing one closes it. */
-  const [open, setOpen] = useState(false);
+function Rail({ email, unread }: { unread: number; email: string }) {
   const { pathname } = useLocation();
-  useEffect(() => setOpen(false), [pathname]);
-  const here = PANELS.find((p) => pathname.startsWith(p.path))?.label ?? "Home";
+  const here = areaOf(pathname);
   return (
-    <>
-    <button type="button" className="adm-menu" aria-expanded={open} aria-controls="adm-sections" onClick={() => setOpen((o) => !o)}>
-      <span>{here}</span>
-      {unread > 0 && <span className="adm-nav__count">{unread}</span>}
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-        <path d={open ? "M3 10l5-5 5 5" : "M3 6l5 5 5-5"} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-    <nav id="adm-sections" className="adm-nav" data-open={open} aria-label="Sections">
-      <div className="adm-nav__in">
-      <NavLink to="/admin" end>Home</NavLink>
-      {PANELS.map((p) => (
-        <Fragment key={p.key}>
-          {GROUP[p.key] && <span className="adm-nav__group">{GROUP[p.key]}</span>}
-          <NavLink to={p.path}>
-            {p.label}
-            {p.key === "enquiries" && unread > 0 && <span className="adm-nav__count" aria-label={`${unread} new`}>{unread}</span>}
-          </NavLink>
-        </Fragment>
-      ))}
+    <nav className="cp-rail" aria-label="Areas">
+      <Link to="/admin" className="cp-rail__mark" aria-label="CLÉ Family Media, home">
+        CL&Eacute;
+      </Link>
+      <ul className="cp-rail__list">
+        {AREAS.map((a) => (
+          <li key={a.key}>
+            <Link to={areaPath(a)} className="cp-rail__item" aria-current={a.key === here.key ? "page" : undefined}>
+              <Icon d={a.icon} />
+              <span>{a.label}</span>
+              {a.key === "inbox" && unread > 0 && <b className="cp-count" aria-label={`${unread} new`}>{unread}</b>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div className="cp-rail__foot">
+        <a href="/" target="_blank" rel="noreferrer" className="cp-rail__item" title="View the website">
+          <Icon d="M11 4h5v5M16 4l-7 7M14 11v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+          <span>Site</span>
+        </a>
+        <button type="button" className="cp-rail__item" onClick={() => supabase?.auth.signOut()} title={`Signed in as ${email}. Sign out`}>
+          <Icon d="M8 4H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M12 13l3-3-3-3M15 10H8" />
+          <span>Sign out</span>
+        </button>
       </div>
     </nav>
-    </>
+  );
+}
+
+function Sidebar({ counts }: { counts: Record<string, PanelCount | null> }) {
+  const { pathname } = useLocation();
+  const area = areaOf(pathname);
+  const panels = panelsOf(area);
+  if (area.key === "home" || panels.length < 2) return null;
+  return (
+    <nav className="cp-side" aria-label={area.label}>
+      <p className="cp-side__title">{area.label}</p>
+      <ul>
+        {panels.map((p) => {
+          const c = counts[p.key];
+          return (
+            <li key={p.key}>
+              <NavLink to={p.path} className="cp-side__item">
+                <span>{p.label}</span>
+                {c && c.tone === "alert" && <b className="cp-count">{parseInt(c.text, 10) || ""}</b>}
+              </NavLink>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }
 
 function Console({ email }: { email: string }) {
+  const counts = useCounts();
+  const unread = counts.enquiries?.tone === "alert" ? parseInt(counts.enquiries.text, 10) || 0 : 0;
   return (
     <ToastProvider>
       <ConfirmProvider>
-        <div className="adm-top">
-          <div className="adm-top__row">
-            <Link to="/admin" className="adm-brand">
-              <small>Site editor</small>
-              CL&Eacute; Family Media
-            </Link>
-            <div className="adm-who">
-              <a href="/" target="_blank" rel="noreferrer" className="adm-linkbtn" style={{ fontSize: 14 }}>
-                View site
-              </a>
-              <span className="adm-who__email" title={email}>{email}</span>
-              <AdminButton variant="quiet" size="sm" onClick={() => supabase?.auth.signOut()}>Sign out</AdminButton>
-            </div>
-          </div>
-        </div>
-        <div className="adm-shell">
-        <Nav />
-        <main className="adm-main">
-          <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
-            <Routes>
-              <Route index element={<Home />} />
-              {PANELS.map((p) => (
-                <Route key={p.key} path={`${p.key}/*`} element={<p.Component />} />
-              ))}
-              <Route
-                path="*"
-                element={<Notice>That part of the editor does not exist. <Link to="/admin" className="adm-linkbtn">Back to the start</Link></Notice>}
-              />
-            </Routes>
-          </Suspense>
-        </main>
+        <div className="cp">
+          <Rail email={email} unread={unread} />
+          <Sidebar counts={counts} />
+          <main className="adm-main cp-main">
+            <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
+              <Routes>
+                <Route index element={<Home />} />
+                {PANELS.map((p) => (
+                  <Route key={p.key} path={`${p.key}/*`} element={<p.Component />} />
+                ))}
+                <Route
+                  path="*"
+                  element={<Notice>That part of the admin does not exist. <Link to="/admin" className="adm-linkbtn">Back to the start</Link></Notice>}
+                />
+              </Routes>
+            </Suspense>
+          </main>
         </div>
       </ConfirmProvider>
     </ToastProvider>
@@ -358,7 +399,7 @@ export default function Admin() {
   return (
     <div className="adm">
       <Helmet>
-        <title>Site editor · CLÉ Family Media</title>
+        <title>Admin · CLÉ Family Media</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       {auth.kind === "loading" && <p className="adm-main adm-muted" role="status">Loading...</p>}
