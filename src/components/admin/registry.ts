@@ -19,7 +19,7 @@ export interface PanelCount {
 }
 
 export interface PanelDef {
-  key: "episodes" | "pages" | "app" | "shop" | "quotes" | "people" | "journal" | "enquiries" | "media" | "links";
+  key: "app" | "journal" | "inbox" | "media" | "quotes" | "enquiries" | "shop" | "pages" | "contacts" | "people" | "episodes" | "links";
   label: string;
   blurb: string;
   /** Route, always /admin/<key>. */
@@ -35,6 +35,28 @@ export interface PanelDef {
 const n = (k: number, one: string, many: string) => `${k} ${k === 1 ? one : many}`;
 
 export const PANELS: PanelDef[] = [
+  {
+    key: "inbox",
+    label: "Inbox",
+    blurb: "Enquiries, sign-ups and orders, everything that arrives by email",
+    path: "/admin/inbox",
+    file: "src/components/admin/inbox/InboxPanel.tsx",
+    exportName: "InboxPanel",
+    Component: lazy(() => import("@/components/admin/inbox/InboxPanel").then((m) => ({ default: m.InboxPanel }))),
+    count: async () => {
+      const c = await countRows("enquiries", { handled: false });
+      return c == null ? null : c ? { text: `${c} new`, tone: "alert" } : { text: "Nothing new", tone: "off" };
+    },
+  },
+  {
+    key: "contacts",
+    label: "People",
+    blurb: "Everyone who has enquired, signed up or bought",
+    path: "/admin/contacts",
+    file: "src/components/admin/contacts/ContactsPanel.tsx",
+    exportName: "ContactsPanel",
+    Component: lazy(() => import("@/components/admin/contacts/ContactsPanel").then((m) => ({ default: m.ContactsPanel }))),
+  },
   {
     key: "pages",
     label: "Pages and photos",

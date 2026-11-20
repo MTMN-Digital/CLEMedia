@@ -3,8 +3,9 @@ import { Helmet } from "react-helmet-async";
 import { useLocation, Routes, NavLink, Route, Link } from "react-router-dom";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { PANELS, type PanelCount } from "@/components/admin/registry";
-import { ToastProvider, AdminButton, ConfirmProvider, Notice, StatusPill } from "@/components/admin/kit";
+import { AdminButton, ToastProvider, Notice, ConfirmProvider } from "@/components/admin/kit";
 import "@/components/admin/kit/admin.css";
+import { Dashboard } from "@/components/admin/dashboard/Dashboard";
 
 /* ============================================================================
    The admin console frame: sign in, check the account is on the admins
@@ -147,18 +148,6 @@ function Icon({ d, size = 20 }: { size?: number; d: string }) {
   );
 }
 
-const START = [
-  { to: "/admin/journal/new", title: "Write a journal post", body: "Title, words, a picture, then publish or keep it as a draft" },
-  { to: "/admin/shop/new", title: "Add a product", body: "What it is, the price, the cover and the file" },
-  { to: "/admin/people/new", title: "Add a person", body: "Name, role, photo and bio for the team page" },
-  { to: "/admin/media/new", title: "Add a press entry", body: "An article, podcast, interview or video" },
-];
-
-function greeting(now = new Date()) {
-  const h = now.getHours();
-  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
-}
-
 function useCounts() {
   const [counts, setCounts] = useState<Record<string, PanelCount | null>>({});
   useEffect(() => {
@@ -171,58 +160,6 @@ function useCounts() {
     };
   }, []);
   return counts;
-}
-
-function Home() {
-  const counts = useCounts();
-  return (
-    <>
-      <header className="adm-head">
-        <div>
-          <h1>{greeting()}</h1>
-          <p>Everything you save goes live on the site straight away, unless it is a draft or hidden.</p>
-        </div>
-      </header>
-      <h2 className="adm-sub">Start something</h2>
-      <ul className="adm-start">
-        {START.map((s) => (
-          <li key={s.to}>
-            <Link to={s.to}>
-              <i aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 18 18">
-                  <path d="M9 3v12M3 9h12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-                </svg>
-              </i>
-              <span className="min-w-0">
-                <strong>{s.title}</strong>
-                <span>{s.body}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <h2 className="adm-sub">Everything on the site</h2>
-      <ul className="adm-tiles">
-        {PANELS.map((p) => {
-          const c = counts[p.key];
-          return (
-            <li key={p.key}>
-              <Link to={p.path} className="adm-tile">
-                <span className="min-w-0">
-                  <strong>{p.label}</strong>
-                  <span>{p.blurb}</span>
-                  {c && <StatusPill tone={c.tone}>{c.text}</StatusPill>}
-                </span>
-                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  );
 }
 
 function Rail({ email, unread }: { unread: number; email: string }) {
@@ -285,7 +222,7 @@ function Sidebar({ counts }: { counts: Record<string, PanelCount | null> }) {
 
 function Console({ email }: { email: string }) {
   const counts = useCounts();
-  const unread = counts.enquiries?.tone === "alert" ? parseInt(counts.enquiries.text, 10) || 0 : 0;
+  const unread = counts.inbox?.tone === "alert" ? parseInt(counts.inbox.text, 10) || 0 : 0;
   return (
     <ToastProvider>
       <ConfirmProvider>
@@ -295,7 +232,7 @@ function Console({ email }: { email: string }) {
           <main className="adm-main cp-main">
             <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
               <Routes>
-                <Route index element={<Home />} />
+                <Route index element={<Dashboard />} />
                 {PANELS.map((p) => (
                   <Route key={p.key} path={`${p.key}/*`} element={<p.Component />} />
                 ))}
