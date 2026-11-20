@@ -58,8 +58,8 @@ function AppEditor() {
       const ok = await confirm({
         title: "Launch the app?",
         body: hasStore
-          ? "The app page and the press page will say PupsPlayer™ is available now, and the store links will show on the app page."
-          : "The app page and the press page will say PupsPlayer™ is available now. No store link has been entered, so the page will say the stores are not yet listed.",
+          ? "The app page and the press page will say the app is available now, and the store links will show on the app page."
+          : "The app page and the press page will say the app is available now. No store link has been entered, so the page will say the stores are not yet listed.",
         confirmLabel: "Launch the app",
         destructive: false,
       });
@@ -82,7 +82,7 @@ function AppEditor() {
     <>
       <PageHeader
         title="App"
-        intro="The launch switch and the store links for PupsPlayer™."
+        intro="The launch switch and the store links for The Pawsitive Pugs &amp; Pals® app."
         actions={<StatusPill tone={saved.launched ? "ok" : "off"}>{saved.launched ? "Launched" : "In development"}</StatusPill>}
       />
 
