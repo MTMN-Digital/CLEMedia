@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useParams, Routes, Route, Link } from "react-router-dom";
 import { useLoad, formatDate, formatDateTime } from "@/lib/admin";
 import { ROUTE_LABEL, replyHref, money, KIND_LABEL, setHandled, listInbox, type InboxItem } from "@/lib/inbox";
-import { type GlanceTone, Ring, EmptyState, Stat, Avatar, useToast, GlanceCard, DotStrip, AdminLinkButton, Segmented, AdminButton, Tag, Notice, PageHeader } from "@/components/admin/kit";
+import { AdminButton, type GlanceTone, Segmented, EmptyState, Stat, useToast, Notice, AdminLinkButton, Tag, Avatar, GlanceCard, PageHeader, Ring } from "@/components/admin/kit";
 import "./inbox.css";
 
 /* Inbox: every enquiry, sign-up and order in one list. Desk shows the list
@@ -39,6 +39,18 @@ function shortDate(iso: string): string {
   return formatDate(iso);
 }
 
+function useWide() {
+  const q = "(min-width: 1100px)";
+  const [wide, setWide] = useState(() => typeof window !== "undefined" && window.matchMedia(q).matches);
+  useEffect(() => {
+    const m = window.matchMedia(q);
+    const on = () => setWide(m.matches);
+    m.addEventListener("change", on);
+    return () => m.removeEventListener("change", on);
+  }, []);
+  return wide;
+}
+
 function InboxView() {
   const { key: rawKey } = useParams();
   const selectedKey = rawKey ?? null;
@@ -53,13 +65,11 @@ function InboxView() {
   const base = useMemo(() => (view === "new" ? open : (items ?? [])), [view, open, items]);
   const count = (k: Kind) => (k === "all" ? base.length : base.filter((i) => i.kind === k).length);
   const shown = kind === "all" ? base : base.filter((i) => i.kind === kind);
-  const selected = selectedKey && items ? (items.find((i) => i.key === selectedKey) ?? null) : null;
-
-  const dots = (items ?? []).slice(0, 40).map((i) => ({
-    key: i.key,
-    tone: (i.kind === "order" ? "ok" : i.handled ? "brand" : "alert") as GlanceTone,
-    title: `${whoOf(i)}, ${KIND_LABEL[i.kind]}`,
-  }));
+  /* Two panes on a wide screen: with nothing picked, the newest item in view
+     is open on the right rather than a blank pane. */
+  const wide = useWide();
+  const chosen = selectedKey && items ? (items.find((i) => i.key === selectedKey) ?? null) : null;
+  const selected = chosen ?? (!selectedKey && wide ? (shown[0] ?? null) : null);
 
   if (list.error) {
     return (
@@ -88,19 +98,7 @@ function InboxView() {
 
   return (
     <>
-      <PageHeader title="Inbox" />
-
-      <div className="inbox-top">
-        <GlanceCard>
-          <div className="inbox-top__open">
-            <Stat label="Open" value={open.length} tone={open.length > 0 ? "alert" : "ok"} />
-            <div className="inbox-top__dots">
-              <span className="inbox-top__cap">Latest {dots.length}</span>
-              <DotStrip dots={dots} label={`Latest ${dots.length} items, ${open.length} open`} />
-            </div>
-          </div>
-        </GlanceCard>
-      </div>
+      <PageHeader title={open.length ? `${open.length} waiting on you` : "All answered"} />
 
       <div className="inbox-filters">
         <Segmented<Kind>
@@ -135,7 +133,7 @@ function InboxView() {
             <ul className="inbox-list" aria-label="Inbox items">
               {shown.map((i) => (
                 <li key={i.key}>
-                  <Row item={i} current={i.key === selectedKey} />
+                  <Row item={i} current={i.key === (selected?.key ?? selectedKey)} />
                 </li>
               ))}
             </ul>

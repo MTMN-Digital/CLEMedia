@@ -116,10 +116,12 @@ function NotAdmin({ email }: { email: string }) {
   );
 }
 
-/* ─── Areas: the rail. Each area lists its panels in the sidebar. ─────────
-   Keys that are not registered yet are skipped, so a panel can be added to an
-   area before its code lands. `enquiries` is reachable by URL but lives in
-   the Inbox now, so it is in no area. */
+/* ─── The shell: Iacchus layout in CLÉ colours ─────────────────────────────
+   A dark CLÉ-navy frame on the left holds a floating white rail of areas and
+   the full list of sections, grouped. The rail jumps to an area's first
+   section; the list shows every section so nothing is two clicks deep. Under
+   1100px the frame becomes a drawer behind a menu button, and on a phone the
+   areas also sit in a bottom bar. Keys that are not registered are skipped. */
 type AreaKey = "site" | "home" | "shop" | "settings" | "inbox";
 const AREAS: { panels: string[]; label: string; key: AreaKey; icon: string }[] = [
   { key: "home", label: "Home", panels: [], icon: "M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z" },
@@ -129,21 +131,41 @@ const AREAS: { panels: string[]; label: string; key: AreaKey; icon: string }[] =
   { key: "settings", label: "Settings", panels: ["links"], icon: "M10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4" },
 ];
 
-function panelsOf(area: (typeof AREAS)[number]) {
-  return area.panels.map((k) => PANELS.find((p) => p.key === k)).filter((p): p is (typeof PANELS)[number] => !!p);
-}
+/** One glyph per section, drawn on a 20px grid. */
+const GLYPH: Record<string, string> = {
+  inbox: AREAS[1].icon,
+  contacts: "M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2.5 16c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5M13 4.3a2.5 2.5 0 0 1 0 4.4M14.5 11.7c1.8.5 3 2 3 4.3",
+  pages: "M5 3h7l3 3v11H5zM12 3v3h3M8 10h4M8 13h4",
+  journal: "M4 4h9a3 3 0 0 1 3 3v9H7a3 3 0 0 1-3-3zM7 8h6M7 11h4",
+  people: "M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM4 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5",
+  episodes: "M3 5h14v10H3zM8.5 8v4l3.5-2z",
+  quotes: "M5 12c0-3 1.5-5 4-6M5 12h3v3H5zM12 12c0-3 1.5-5 4-6M12 12h3v3h-3z",
+  media: "M10 3a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 5 0v-4A2.5 2.5 0 0 0 10 3zM5 9.5a5 5 0 0 0 10 0M10 14.5V17",
+  app: "M6.5 2.5h7a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM9 15h2",
+  shop: AREAS[3].icon,
+  links: "M8.5 11.5a3 3 0 0 0 4.2 0l2.6-2.6a3 3 0 0 0-4.2-4.2l-.8.8M11.5 8.5a3 3 0 0 0-4.2 0l-2.6 2.6a3 3 0 0 0 4.2 4.2l.8-.8",
+};
+
+const GROUPS: { label: string; keys: string[] }[] = [
+  { label: "Today", keys: ["inbox", "contacts"] },
+  { label: "Website", keys: AREAS[2].panels },
+  { label: "Selling", keys: ["shop"] },
+  { label: "Settings", keys: ["links"] },
+];
+
+const panel = (k: string) => PANELS.find((p) => p.key === k);
 function areaPath(area: (typeof AREAS)[number]) {
-  return area.key === "home" ? "/admin" : (panelsOf(area)[0]?.path ?? "/admin");
+  return area.key === "home" ? "/admin" : (area.panels.map(panel).find(Boolean)?.path ?? "/admin");
 }
 function areaOf(pathname: string) {
-  const panel = PANELS.find((p) => pathname === p.path || pathname.startsWith(`${p.path}/`));
-  return AREAS.find((a) => panel && a.panels.includes(panel.key)) ?? AREAS[0];
+  const p = PANELS.find((x) => pathname === x.path || pathname.startsWith(`${x.path}/`));
+  return AREAS.find((a) => p && a.panels.includes(p.key)) ?? AREAS[0];
 }
 
 function Icon({ d, size = 20 }: { size?: number; d: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true">
-      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -162,87 +184,153 @@ function useCounts() {
   return counts;
 }
 
-function Rail({ email, unread }: { unread: number; email: string }) {
+const countOf = (c: PanelCount | null | undefined) => (c && c.tone === "alert" ? parseInt(c.text, 10) || 0 : 0);
+const initials = (email: string) => email.split("@")[0].split(/[._-]+/).filter(Boolean).slice(0, 2).map((s) => s[0]).join("").toUpperCase() || "?";
+
+function Rail({ unread }: { unread: number }) {
   const { pathname } = useLocation();
   const here = areaOf(pathname);
   return (
     <nav className="cp-rail" aria-label="Areas">
-      <Link to="/admin" className="cp-rail__mark" aria-label="CLÉ Family Media, home">
-        CL&Eacute;
+      <Link to="/admin" className="cp-rail__mark" aria-label="CLÉ Family Media admin, home">
+        <img src="/brand/cle-mark.webp" alt="" width="40" height="40" />
       </Link>
-      <ul className="cp-rail__list">
-        {AREAS.map((a) => (
-          <li key={a.key}>
-            <Link to={areaPath(a)} className="cp-rail__item" aria-current={a.key === here.key ? "page" : undefined}>
-              <Icon d={a.icon} />
-              <span>{a.label}</span>
-              {a.key === "inbox" && unread > 0 && <b className="cp-count" aria-label={`${unread} new`}>{unread}</b>}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className="cp-rail__foot">
-        <a href="/" target="_blank" rel="noreferrer" className="cp-rail__item" title="View the website">
-          <Icon d="M11 4h5v5M16 4l-7 7M14 11v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
-          <span>Site</span>
-        </a>
-        <button type="button" className="cp-rail__item" onClick={() => supabase?.auth.signOut()} title={`Signed in as ${email}. Sign out`}>
-          <Icon d="M8 4H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M12 13l3-3-3-3M15 10H8" />
-          <span>Sign out</span>
-        </button>
-      </div>
+      {AREAS.map((a) => (
+        <Link key={a.key} to={areaPath(a)} className="cp-area" aria-current={a.key === here.key ? "page" : undefined}>
+          <Icon d={a.icon} size={21} />
+          <span>{a.label}</span>
+          {a.key === "inbox" && unread > 0 && <i aria-label={`${unread} new`}>{unread}</i>}
+        </Link>
+      ))}
     </nav>
   );
 }
 
-function Sidebar({ counts }: { counts: Record<string, PanelCount | null> }) {
-  const { pathname } = useLocation();
-  const area = areaOf(pathname);
-  const panels = panelsOf(area);
-  if (area.key === "home" || panels.length < 2) return null;
+function SideNav({ counts }: { counts: Record<string, PanelCount | null> }) {
   return (
-    <nav className="cp-side" aria-label={area.label}>
-      <p className="cp-side__title">{area.label}</p>
-      <ul>
-        {panels.map((p) => {
-          const c = counts[p.key];
-          return (
-            <li key={p.key}>
-              <NavLink to={p.path} className="cp-side__item">
-                <span>{p.label}</span>
-                {c && c.tone === "alert" && <b className="cp-count">{parseInt(c.text, 10) || ""}</b>}
-              </NavLink>
-            </li>
-          );
-        })}
-      </ul>
+    <div className="cp-side">
+      <div className="cp-ws">
+        <span className="cp-ws__mark" aria-hidden="true">C</span>
+        <span className="min-w-0">
+          <b>CL&Eacute; Family Media</b>
+          <small>Liscarroll, Co. Cork</small>
+        </span>
+      </div>
+      <NavLink to="/admin" end className="cp-link">
+        <Icon d={AREAS[0].icon} />
+        <span className="cp-link__label">Home</span>
+      </NavLink>
+      {GROUPS.map((g) => {
+        const items = g.keys.map(panel).filter((p): p is (typeof PANELS)[number] => !!p);
+        if (!items.length) return null;
+        return (
+          <div key={g.label} className="cp-group">
+            <p className="cp-group__label">{g.label}</p>
+            {items.map((p) => {
+              const n = countOf(counts[p.key]);
+              return (
+                <NavLink key={p.key} to={p.path} className="cp-link">
+                  <Icon d={GLYPH[p.key] ?? AREAS[2].icon} />
+                  <span className="cp-link__label">{p.label}</span>
+                  {n > 0 && <span className="cp-link__count">{n}</span>}
+                </NavLink>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function TopBar({ email, unread, onMenu }: { unread: number; onMenu: () => void; email: string }) {
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  useEffect(() => setOpen(false), [pathname]);
+  return (
+    <header className="cp-top">
+      <button type="button" className="cp-iconbtn cp-top__menu" onClick={onMenu} aria-label="Open the menu">
+        <Icon d="M3 6h14M3 10h14M3 14h14" />
+      </button>
+      <span className="cp-top__title">{areaOf(pathname).label}</span>
+      <span className="cp-top__sp" />
+      <a href="/" target="_blank" rel="noreferrer" className="cp-iconbtn" title="View the website" aria-label="View the website (opens in a new tab)">
+        <Icon d="M11 4h5v5M16 4l-7 7M14 11v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+      </a>
+      <Link to="/admin/inbox" className="cp-iconbtn" aria-label={unread ? `Inbox, ${unread} new` : "Inbox"}>
+        <Icon d="M10 3.5a4.5 4.5 0 0 0-4.5 4.5c0 4.5-2 5.5-2 5.5h13s-2-1-2-5.5A4.5 4.5 0 0 0 10 3.5zM8.3 16.5a2 2 0 0 0 3.4 0" />
+        {unread > 0 && <i>{unread}</i>}
+      </Link>
+      <div className="cp-me">
+        <button type="button" className="cp-me__btn" aria-expanded={open} onClick={() => setOpen((o) => !o)} aria-label={`Account, ${email}`}>
+          {initials(email)}
+        </button>
+        {open && (
+          <div className="cp-me__menu">
+            <p className="cp-me__email" title={email}>{email}</p>
+            <button type="button" className="cp-me__item" onClick={() => supabase?.auth.signOut()}>Sign out</button>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function BottomBar({ unread }: { unread: number }) {
+  const { pathname } = useLocation();
+  const here = areaOf(pathname);
+  return (
+    <nav className="cp-bottom" aria-label="Areas">
+      {AREAS.map((a) => (
+        <Link key={a.key} to={areaPath(a)} className="cp-area" aria-current={a.key === here.key ? "page" : undefined}>
+          <Icon d={a.icon} size={21} />
+          <span>{a.label}</span>
+          {a.key === "inbox" && unread > 0 && <i>{unread}</i>}
+        </Link>
+      ))}
     </nav>
   );
 }
 
 function Console({ email }: { email: string }) {
   const counts = useCounts();
-  const unread = counts.inbox?.tone === "alert" ? parseInt(counts.inbox.text, 10) || 0 : 0;
+  const unread = countOf(counts.inbox);
+  const [drawer, setDrawer] = useState(false);
+  const { pathname } = useLocation();
+  useEffect(() => setDrawer(false), [pathname]);
+  useEffect(() => {
+    if (!drawer) return;
+    const key = (e: KeyboardEvent) => e.key === "Escape" && setDrawer(false);
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [drawer]);
   return (
     <ToastProvider>
       <ConfirmProvider>
-        <div className="cp">
-          <Rail email={email} unread={unread} />
-          <Sidebar counts={counts} />
-          <main className="adm-main cp-main">
-            <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
-              <Routes>
-                <Route index element={<Dashboard />} />
-                {PANELS.map((p) => (
-                  <Route key={p.key} path={`${p.key}/*`} element={<p.Component />} />
-                ))}
-                <Route
-                  path="*"
-                  element={<Notice>That part of the admin does not exist. <Link to="/admin" className="adm-linkbtn">Back to the start</Link></Notice>}
-                />
-              </Routes>
-            </Suspense>
-          </main>
+        <div className="cp" data-drawer={drawer || undefined}>
+          <aside className="cp-frame" aria-label="Admin navigation">
+            <Rail unread={unread} />
+            <SideNav counts={counts} />
+          </aside>
+          {drawer && <button type="button" className="cp-scrim" aria-label="Close the menu" onClick={() => setDrawer(false)} />}
+          <div className="cp-mainwrap">
+            <TopBar email={email} unread={unread} onMenu={() => setDrawer(true)} />
+            <main className="adm-main cp-main">
+              <Suspense fallback={<p className="adm-muted" role="status">Loading...</p>}>
+                <Routes>
+                  <Route index element={<Dashboard />} />
+                  {PANELS.map((p) => (
+                    <Route key={p.key} path={`${p.key}/*`} element={<p.Component />} />
+                  ))}
+                  <Route
+                    path="*"
+                    element={<Notice>That part of the admin does not exist. <Link to="/admin" className="adm-linkbtn">Back to the start</Link></Notice>}
+                  />
+                </Routes>
+              </Suspense>
+            </main>
+          </div>
+          <BottomBar unread={unread} />
         </div>
       </ConfirmProvider>
     </ToastProvider>
