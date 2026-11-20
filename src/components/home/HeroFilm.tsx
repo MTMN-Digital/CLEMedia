@@ -431,6 +431,10 @@ export function HeroFilm() {
               {ctaSecondary}
               <IconExternal size={15} />
             </Button>
+            <Button to="/case-study" variant="quiet">
+              Case Study
+              <IconArrow size={16} />
+            </Button>
           </div>
         </div>
       </div>

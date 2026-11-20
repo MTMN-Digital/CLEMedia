@@ -87,7 +87,7 @@ function TopBar() {
   return (
     <div className="flex items-center gap-[0.7em]">
       <PupsMark className="h-[max(16px,1.9em)] w-[max(16px,1.9em)] text-navy" />
-      <span className={`${T.name} font-bold leading-none text-ink`}>PupsPlayer</span>
+      <span className={`${T.name} font-bold leading-none text-ink`}>Pawsitive Pugs &amp; Pals</span>
       <span
         /* A soft rectangle, not a pill: on a fully rounded border the lines
            sweep samples the apex of the curve and reads the ground, so the

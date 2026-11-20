@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useLoad, saveSetting, getSetting } from "@/lib/admin";
 import type { LinksSetting, CompanySetting, SocialNetwork } from "@/lib/types";
-import { COMPANY_DEFAULT, SITE } from "@/lib/site";
+import { COMPANY_DEFAULT, SITE, LINKS_DEFAULT } from "@/lib/site";
 import { TextInput, useSaveState, PageHeader, SaveBar, Notice } from "@/components/admin/kit";
 import { urlOrNull, urlError } from "./urls";
 
@@ -25,7 +25,7 @@ type Draft = Social & { email: string } & CompanySetting;
 const EMPTY: Draft = { instagram: "", facebook: "", tiktok: "", youtube: "", linkedin: "", email: "", ...COMPANY_DEFAULT };
 
 function fromRows(links: Partial<LinksSetting> | null, company: Partial<CompanySetting> | null): Draft {
-  const out = { ...EMPTY, ...COMPANY_DEFAULT, ...(company ?? {}), email: links?.email ?? "" };
+  const out = { ...EMPTY, ...COMPANY_DEFAULT, ...(company ?? {}), email: links?.email ?? LINKS_DEFAULT.email };
   for (const n of NETWORKS) out[n.key] = links?.social?.[n.key] ?? "";
   return out;
 }

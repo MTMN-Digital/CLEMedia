@@ -67,7 +67,7 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
           </p>
           <p className="mt-7">
             <TextLink to="/app">
-              Inside PupsPlayer<IconArrow size={15} />
+              Inside the app<IconArrow size={15} />
             </TextLink>
           </p>
         </Settle>

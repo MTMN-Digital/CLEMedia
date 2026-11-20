@@ -66,8 +66,8 @@ export default function Team() {
   return (
     <>
       <Seo
-        title="Team and advisors"
-        description="The people behind CLÉ Family Media: the core team and advisors, what each of them does on an episode, and the five phases every episode passes through, in the company's own words."
+        title="Team and advisers"
+        description="The people behind CLÉ Family Media: the core team and advisers, what each of them does on an episode, and the five phases every episode passes through, in the company's own words."
         path="/team"
       />
 

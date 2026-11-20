@@ -18,7 +18,7 @@
    heading over the film and labels the player "The mission film" until the
    client answers; the key is kept so a saved row is not lost. */
 export const COPY: Record<string, string> = {
-  "hero.eyebrow_sub": "Conor Sexton\nFounder and CEO\nCo. Cork",
+  "hero.eyebrow_sub": "Conor Sexton\nFounder & CEO\nCo. Cork",
   "hero.title": "The idea for CLÉ Family Media began while I was minding a friend's four-year-old son.",
   "letter.open":
     "He was watching YouTube when something came up that was not appropriate for his age. My fiancée, Lydia, was pregnant with our little girl at the time.",
@@ -48,11 +48,11 @@ export const COPY: Record<string, string> = {
     "In practice, families find us free on YouTube, which is simply where discovery happens for a series like ours. The show's own site is where the episodes and the family activities properly live, and we are building a product experience to support ad-free viewing and the offline activities together. That is in development rather than available, and we will say so plainly until the day it is not.",
   ].join("\n\n"),
   "reach.show_link": "The show's own site",
-  "reach.app_link": "PupsPlayer™, in development",
+  "reach.app_link": "The Pawsitive Pugs & Pals® app, in development",
   "next.lead": "I would rather answer your questions directly than have you guess at them from a website.",
   "next.link": "Get in touch",
   "sign.name": "Conor Sexton",
-  "sign.role": "Founder and CEO, CLÉ Family Media",
+  "sign.role": "Founder & CEO, CLÉ Family Media",
   "film.ps": "P.S. The mission film, a little over a minute.",
   "film.heading": "The mission, in his own words",
   "film.note":

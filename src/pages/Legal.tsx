@@ -185,7 +185,7 @@ const DOCS: Record<DocId, Doc> = {
         "That said, if a file is faulty, wrong, or will not open, contact us and we will fix it or refund you.",
       ]},
       { h: "Intellectual property", p: [
-        "The Pawsitive Pugs & Pals®, PupsPlayer™, the characters, artwork and all content on this site belong to CLÉ Family Media unless stated otherwise.",
+        "The Pawsitive Pugs & Pals®, the characters, artwork and all content on this site belong to CLÉ Family Media unless stated otherwise.",
       ]},
       { h: "Liability", p: [
         "We take care over this site and its products, but we provide them as they are. Nothing in these terms limits liability for death, personal injury or fraud, or affects your statutory rights as a consumer.",

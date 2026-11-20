@@ -94,7 +94,7 @@ const MARKS: PressFile[] = [
   },
   {
     id: "pupsplayer",
-    title: "The PupsPlayer mark",
+    title: "The app mark",
     file: "/brand/pupsplayer.svg",
     download: "pupsplayer-mark.svg",
     format: "SVG",
@@ -102,7 +102,7 @@ const MARKS: PressFile[] = [
     height: 2681,
     bytes: 3981,
     thumb: { src: "/brand/pupsplayer.svg", width: 2713, height: 2681 },
-    alt: "The PupsPlayer paw and play mark",
+    alt: "The Pawsitive Pugs & Pals app paw and play mark",
   },
   {
     id: "show-logo",

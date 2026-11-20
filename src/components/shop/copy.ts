@@ -34,7 +34,7 @@ export const COPY: Record<string, string> = {
 
   /* The closing line and its two links. */
   "close.line":
-    "The episodes are free to watch, and the show's own site carries free colouring pages. The interactive activities are in PupsPlayer™.",
+    "The episodes are free to watch, and the show's own site carries free colouring pages. The interactive activities are in The Pawsitive Pugs & Pals® app.",
   "close.show": "Free activities on the show's site",
 
   /* /shop/:slug */
@@ -42,7 +42,7 @@ export const COPY: Record<string, string> = {
   "product.samples.credit": "Activity and colouring pages designed and illustrated by Victoria Buchkova.",
   "product.shelf.link": "Everything else on the shelf",
   "product.free.line":
-    "Free activities live on the show's own site, and the interactive ones are part of PupsPlayer™.",
+    "Free activities live on the show's own site, and the interactive ones are part of The Pawsitive Pugs & Pals® app.",
   "product.docket.foot":
     "Save the file as soon as it downloads. There is no account here, so there is nowhere to come back to it, and the link stops working after a day.",
   "product.wrong.line": "Something wrong with a download: send us the receipt Stripe emailed you and we will put it right.",

@@ -129,7 +129,7 @@ const ELSEWHERE: { line: string; title: string; who: string; href?: string; to?:
   },
   {
     who: "Broadcasters and distributors",
-    title: "The team and the advisors",
+    title: "The team and the advisers",
     line: "Who makes each episode, and what each of them does.",
     to: "/team",
   },

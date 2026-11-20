@@ -64,9 +64,9 @@ const FOR_STUDY = [
   { label: "EYFS supporting notes", value: "With Paula for final approval; the same" },
   { label: "Selected games", value: "Not supplied yet; instructions on how to play them with a group" },
   { label: "Colouring materials", value: "Not supplied yet; printable pages from the episode, with a note on how to use them" },
-  { label: "Paula's offline activity", value: "Not supplied yet; designed by Paula Walshe PhD to follow the episode away from a screen, with step by step instructions" },
+  { label: "Paula's offline activity", value: "Not supplied yet; designed by Dr Paula Walshe to follow the episode away from a screen, with step by step instructions" },
   { label: "Participant information", value: "Being agreed; published here before the study opens" },
-  { label: "The questionnaire", value: "A draft is with the education advisor; published here when the study opens" },
+  { label: "The questionnaire", value: "A draft is with Dr Paula Walshe; published here when the study opens" },
   { label: "Reviewed study findings", value: "None yet; added once the study has run and the responses have been reviewed" },
 ];
 
@@ -171,7 +171,7 @@ export default function CaseStudy() {
                       { label: "Opens", value: "Date to be confirmed" },
                       { label: "Routes", value: "Ireland (Aistear) and England (EYFS)" },
                       { label: "Episode", value: `${EPISODE.n}, ${EPISODE.title}, ${EPISODE.runtime}` },
-                      { label: "Materials", value: "Notes with the advisor; games and colouring not yet supplied" },
+                      { label: "Materials", value: "Notes with Dr Paula Walshe; games and colouring not yet supplied" },
                       { label: "Questionnaire", value: "Draft, awaiting approval" },
                       { label: "Results", value: "None yet" },
                     ]}
@@ -280,7 +280,7 @@ export default function CaseStudy() {
             <SheetRow id="q-h" label={qLabel}>
               <Settle>
                 <p className="t-body max-w-[60ch] text-ink">{qBody}</p>
-                <FactRows className="mt-6 max-w-[56rem]" rows={[{ label: "Status", value: "Draft, awaiting the education advisor" }]} />
+                <FactRows className="mt-6 max-w-[56rem]" rows={[{ label: "Status", value: "Draft, awaiting Dr Paula Walshe" }]} />
               </Settle>
               {/* MOUNTED ONLY WHEN STUDY_OPEN. questions.ts is a draft nobody
                   has approved (its first line says so), and an unapproved

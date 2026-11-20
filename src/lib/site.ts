@@ -1,4 +1,3 @@
-import { STUDY_OPEN } from "@/components/casestudy/config";
 
 /** Single source of truth for cross-site links and company details. */
 /**
@@ -15,7 +14,7 @@ function envUrl(value: string | undefined, fallback: string): string {
 export const SITE = {
   name: "CLÉ Family Media",
   showName: "The Pawsitive Pugs & Pals",
-  playerName: "PupsPlayer",
+  playerName: "The Pawsitive Pugs & Pals® app",
   url: envUrl(import.meta.env.VITE_SITE_URL, "https://clefamilymedia.com"),
   /** Fixed destination. Not env-driven: the show site is not going to move,
    *  and an unset variable must never silently break the cross-link. */
@@ -31,8 +30,10 @@ export const COMPANY_DEFAULT = {
   office: "Curraghs, Liscarroll, Mallow, Co. Cork, P51 K2T9",
 };
 
-/** No public email and no social accounts until they are entered in the admin. */
-export const LINKS_DEFAULT = { social: {}, show_site: SITE.showUrl, email: null };
+/** The public email from Conor's handover (2026-11-20): the Gmail address
+ *  until hello@clefamilymedia.com has a tested mailbox. Changing it in the
+ *  admin (Links and settings) overrides this. */
+export const LINKS_DEFAULT = { social: {}, show_site: SITE.showUrl, email: "clefamilymedia@gmail.com" };
 
 /** Flipped at launch. /app and /media both read this one flag, so every line
  *  that describes PupsPlayer's state changes together. */
@@ -71,13 +72,11 @@ export const NAV = [
       { to: "/story", label: "Our story" },
       { to: "/team", label: "Our team" },
       { to: "/ethical-ai", label: "Responsible AI" },
-      /* Out of the menu until the study opens (subpage plan, 2026-10-28):
-         an investor opening About first should not land on a page that is
-         mostly "not yet". The footer keeps the link. Flip STUDY_OPEN in
-         components/casestudy/config.ts and it comes back here. */
-      ...(STUDY_OPEN ? [{ to: "/case-study", label: "Case study" }] : []),
     ],
   },
+  /* Top level since 2026-11-20, at Conor's request in the handover document:
+     a clear Case Study link on desktop and in the phone menu. */
+  { to: "/case-study", label: "Case Study" },
   { to: "/journal", label: "Journal" },
   { to: "/app", label: "App" },
   { to: "/shop", label: "Shop" },

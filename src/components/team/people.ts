@@ -75,13 +75,11 @@ export interface Phase {
 export const TEAM: Member[] = [
   {
     name: "Conor Sexton",
-    role: "Founder and CEO",
+    role: "Founder & CEO",
     asset: "person.conor",
     phases: [1, 2, 4, 5],
     bio: [
-      "Conor created The Pawsitive Pugs & Pals® and leads the company's strategy, commercial development, partnerships and audience research. He reads every draft script and watches every episode before release.",
-      "He came to it from thirteen years in food retail, progressing from apprentice to head butcher. After a life-changing accident in 2020 he returned to education as a mature student, took a QQI Level 6 in Marketing with distinction, and is studying for a Bachelor of Business in Marketing at Munster Technological University, where he also went through the Student Inc. programme.",
-      "The company began while he was minding a friend's four-year-old son, and it is built around what parents, educators and children actually need rather than around what the technology makes possible.",
+      "Conor founded CLE Family Media and created The Pawsitive Pugs & Pals®. He leads the company's strategy, partnerships and audience research, bringing together creative and educational specialists to develop responsible, low-stimulation children's media through a Watch • Play • Learn approach.",
     ],
   },
   {
@@ -90,31 +88,25 @@ export const TEAM: Member[] = [
     asset: "person.alan",
     phases: [1, 2, 3, 4, 5],
     bio: [
-      "Alan leads the scripts, the animation and the creative judgement throughout production. He writes each draft, revises it from the team's feedback, and animates the episode once the script is locked.",
-      "He is an award-winning photographer and filmmaker with more than two decades across visual storytelling, design and creative direction, and over fifteen years in commercial film and television. He has worked with international NGOs and commercial clients across Africa, Europe, Asia, the Middle East and North America, on healthcare, humanitarian response and international development.",
-      "His photography has been honoured several times at the Prix de la Photographie Paris, including Portrait Photographer of the Year, and his communications work with Nobody Left Outside won a SABRE Award. He has exhibited in London, Paris and Bangkok, most recently at the Royal Albert Hall as part of Nitin Sawhney's Journeys Festival.",
+      "Alan is an award-winning photographer, filmmaker and creative strategist with more than 20 years of experience. He leads the creative development, storytelling, character design and AI-assisted animation production behind CLE Family Media's original content.",
     ],
   },
   {
-    name: "Paula Walshe PhD",
-    role: "Chief Education Advisor",
+    name: "Dr Paula Walshe",
+    role: "Chief Education Officer",
     asset: "person.paula",
     phases: [1, 2, 4, 5],
     bio: [
-      "Paula has been involved from the outset. She brings the educational expertise to the project and gives feedback on every draft script.",
-      "She lectures in early childhood education at South East Technological University in Carlow. Her doctoral research was on STEM and STEAM in early childhood education, and her book Full STEAM Ahead is a practical guide to playful STEAM learning with young children.",
-      "She co-chairs Ireland's Early Childhood STEAM Network, is a forum member of the Women in Digital European initiative, and sits on the EECERA College of Reviewers.",
+      "Paula is an early childhood education lecturer, researcher and author, specialising in STEM and STEAM learning. Involved from the earliest development stages, she guides educational design, developmental suitability and learning objectives across our content and resources.",
     ],
   },
   {
-    name: "Lydia Sexton",
-    role: "Company Secretary",
+    name: "Lydia Harding",
+    role: "Parent Perspective & Content Review",
     asset: "person.lydia",
     phases: [1, 2, 4, 5],
     bio: [
-      "Lydia is the company secretary, and she reads the scripts and watches the episodes alongside the rest of the team.",
-      "She has worked with children with intellectual disabilities, including through horse riding, where she saw how far confidence, communication and independence can go when a child is given the right support.",
-      "Her brief here is inclusion: that every child has their own strengths, pace and way of understanding the world, and that an episode should help children recognise and respect difference rather than smooth it away.",
+      "Lydia brings a parent's perspective to the development and review of our content. Her experience supporting children with intellectual disabilities informs her focus on inclusion, accessibility and experiences that respect each child's individual needs and strengths.",
     ],
   },
   {
@@ -123,58 +115,57 @@ export const TEAM: Member[] = [
        contribution and then says to agree the exact displayed title, so the
        description below is hers and the title stays at the plain word the
        document itself uses. QUESTIONS.md. */
-    role: "Advisor",
+    role: "Child Development Adviser",
     asset: "person.kirstie",
     phases: [1, 2, 4, 5],
     bio: [
-      "Kirstie advises on early years practice, drawing on her work in the sector and as an SNA, and contributes to the script and episode reviews.",
-      "She has over thirty years of hands-on experience in childcare and early education, is qualified in Early Childhood Development and Education and is a fully qualified SNA. She has worked in Montessori and Steiner-based playgroups, outdoor preschools and community crèches.",
-      "She is a mother of four grown children.",
+      "Kirstie is a qualified Special Needs Assistant and former early childhood educator with more than 30 years of experience, including work in crèches and early-years settings. She contributes practical childcare and inclusion expertise to reviews of the stories and educational materials.",
     ],
   },
   {
-    name: "Mansi",
-    role: "Production Assistant",
+    name: "Mansi Kale",
+    role: "Production Assistant & Lullaby Development",
     /* No photograph and no biography. The 22 October document gives the public
        description below and nothing more, so nothing more is printed.
        CONTENT-NEEDED.md. */
     phases: [],
-    bio: ["Mansi is a production assistant, and is developing the nursery rhymes."],
+    bio: [
+      "Mansi supports content production and the development of gentle lullabies and songs linked to our episodes. She also contributes to Hindi-language production and localisation work.",
+    ],
   },
   {
     name: "Victoria Buchkova",
-    role: "Graphic Designer and Illustrator",
+    role: "Graphic Designer & Illustrator",
     asset: "person.victoria",
     /* SURNAME SUPPLIED 2026-10-24, after three weeks as "Victoria" alone. The
        22 October document also confirms the contribution below, which the
        introductory email had left vaguer. */
     phases: [],
     bio: [
-      "Victoria designs and illustrates the games and the puzzles.",
-      "She is a graphic designer and illustrator specialising in children's activity books and educational materials.",
+      "Victoria creates illustrations, children's activity books, colouring sheets and visual designs for our educational games. Her work helps turn each episode's learning themes into engaging, hands-on activities.",
     ],
   },
   {
     name: "Stitha Raj",
-    role: "UI/UX Designer",
+    role: "UI/UX & Front-End Designer",
     asset: "person.stitha",
     /* ADDED 2026-10-27, photograph and bio from Stitha via Conor. Part of the
        app team designing PupsPlayer's screens; the bio is her own words. */
     phases: [],
     bio: [
-      "Stitha is a UI/UX designer with an engineering background. She uses Figma and AI tools to design clear, user-friendly digital experiences.",
+      "Stitha is a UI/UX designer with an engineering background. She uses Figma and AI tools to design accessible, clear digital interfaces and supports the front-end experience for families and educators using the app.",
     ],
   },
   {
-    name: "Justin",
-    role: "Software Developer, App Development",
+    name: "Justin Miranda",
+    role: "Software Developer | App Development",
     asset: "person.justin",
     /* ADDED 2026-11-10, photograph, title and bio from Conor's email. Builds
        the app; no surname given, so first name only, as with Mansi. Conor
        wrote the title as "Software Developer | App Development". */
     phases: [],
     bio: [
-      "Justin is a software developer responsible for designing and building The Pawsitive Pugs & Pals® app. He brings the team's educational vision to life through a child-friendly digital experience, combining calming episodes, gentle interactive games and printable learning resources for families and educators.",
+      "Justin is the software developer designing and building The Pawsitive Pugs & Pals® app. His work brings together calm episodes, gentle interactive games and printable educational resources in a child-friendly experience for families and educators.",
     ],
   },
 ];
@@ -184,13 +175,11 @@ export const ADVISORS: Member[] = [
     name: "David Toth",
     /* As with Kirstie: the document describes the contribution and asks for
        the displayed title to be agreed. */
-    role: "Advisor",
+    role: "Strategic Adviser",
     asset: "person.david",
     phases: [1, 2],
     bio: [
-      "David contributes to script development and gives industry advice drawn from his experience in children's shows. He reads every draft alongside the rest of the group.",
-      "He is a children's media professional specialising in educational rubrics, content strategy and creator coaching, with over two decades advising youth brands including Nickelodeon, LEGO and BBC Kids on content quality and platform safety.",
-      "He has also managed global operations for animation properties at Warner Bros. Studios, including Cartoon Network and DC Entertainment.",
+      "David is a children's media specialist with more than two decades of experience in content strategy and educational media. He advises on platform and audience strategy and actively contributes to script and episode reviews, with a focus on content quality, suitability and safe experiences for children.",
     ],
   },
 ];
@@ -246,4 +235,4 @@ export const PHASES: Phase[] = [
 /* The five who read every draft, in the order the company's document lists
    them. Used wherever a page shows the reading group as faces rather than as
    a sentence, so the group can never drift between pages. */
-export const READERS = ["Paula Walshe PhD", "Lydia Sexton", "Kirstie Harding", "Conor Sexton", "David Toth"] as const;
+export const READERS = ["Dr Paula Walshe", "Lydia Harding", "Kirstie Harding", "Conor Sexton", "David Toth"] as const;

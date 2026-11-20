@@ -91,7 +91,7 @@ function factsFor(launched: boolean, co: CompanySetting): Fact[] {
         `${co.legal}, registered in Ireland, company number ${co.cro}. Registered office: ${co.office}.`,
       link: { label: "Privacy policy", to: "/privacy" },
     },
-    { label: "Founder", value: "Conor Sexton, Founder and CEO.", link: { label: "Our story", to: "/story" } },
+    { label: "Founder", value: "Conor Sexton, Founder & CEO.", link: { label: "Our story", to: "/story" } },
     {
       label: "Series",
       value: "The Pawsitive Pugs & Pals®, an animated series for children aged two to six.",
@@ -107,7 +107,7 @@ function factsFor(launched: boolean, co: CompanySetting): Fact[] {
     { label: "Where to watch", value: "The show's own site, pawsitivepugs.com." },
     {
       label: "Player",
-      value: `${SITE.playerName}™, ${launched ? "released." : "in development, not released."}`,
+      value: `${SITE.playerName}, ${launched ? "released." : "in development, not released."}`,
       link: { label: "App", to: "/app" },
     },
     /* The honest form of the row pulled on 2026-10-08: no claim either way,
@@ -138,8 +138,7 @@ const SPELLINGS: Spelling[] = [
     value: "CLÉ Family Media, with the É, is the trading name. The registered company is CLE Family Media 25 Limited, without it.",
   },
   { label: "The series", value: "The Pawsitive Pugs & Pals®, with the ampersand and the registered mark on first use." },
-  { label: "The player", value: "PupsPlayer™, one word, capital P twice, with the trade mark on first use." },
-  { label: "The founder", value: "Conor Sexton. Founder and CEO." },
+  { label: "The founder", value: "Conor Sexton. Founder & CEO." },
   { label: "The dogs", value: "Finn and Fia. Finn is the fawn pug, Fia the black pug." },
   /* episodes.ts carries "The Cuckoo" on the client's instruction; the video
      it links to is titled "The Cuckoo's Incredible Journey". Which one the
@@ -171,10 +170,10 @@ function standingFor(launched: boolean): Standing[] {
     },
     {
       when: "To be confirmed",
-      what: `More around the ${SITE.playerName}™ launch`,
+      what: `More around the app launch`,
       detail: launched
-        ? `Further appearances are expected as ${SITE.playerName}™ reaches more families.`
-        : `Further appearances are expected as ${SITE.playerName}™ launches.`,
+        ? `Further appearances are expected as the app reaches more families.`
+        : `Further appearances are expected as the app launches.`,
       pending: true,
     },
   ];

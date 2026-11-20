@@ -111,7 +111,7 @@ const QUESTIONS = [
   },
   {
     q: "How are educational decisions made?",
-    a: "Paula Walshe PhD reviews the learning intent of each episode and the activities that follow it. Lydia and Kirstie bring parent and early years perspectives to script and production review. Those judgements are made by people, and we do not automate them.",
+    a: "Scripts and episodes are developed under Alan's creative direction with educational input from Dr Paula Walshe. Conor, Paula, David Toth, Lydia Harding and Kirstie Harding contribute to the human review process. Those judgements are made by people, and we do not automate them.",
   },
   {
     q: "What happens when a review identifies a problem?",

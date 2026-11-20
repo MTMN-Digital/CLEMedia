@@ -425,8 +425,8 @@ function Footer() {
 
         <div className="hairline mt-12 flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-body text-[14px] opacity-90">
-            © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® and
-            PupsPlayer™ are trade marks of CLÉ Family Media.
+            © {new Date().getFullYear()} CLÉ Family Media. The Pawsitive Pugs &amp; Pals® is a trade mark of
+            CLÉ Family Media.
           </p>
           <ul className="flex flex-wrap gap-x-6 gap-y-3">
             {[

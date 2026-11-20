@@ -41,7 +41,7 @@ import "@/components/app/sheet.css";
    the page renders it unless a saved block replaces it, so an empty table
    shows exactly this. */
 export const COPY: Record<string, string> = {
-  "device.name": "PupsPlayer",
+  "device.name": "Pawsitive Pugs & Pals",
   "device.lead":
     "The app for The Pawsitive Pugs & Pals: the episodes, the songs, puzzles and games built from each one, and the printable and offline activities underneath.",
   "status.holds": "Series one of The Pawsitive Pugs & Pals. Four episodes released, two in production.",
@@ -209,8 +209,8 @@ export default function AppPage() {
   return (
     <>
       <Seo
-        title={launched ? "PupsPlayer app" : "PupsPlayer app, in development"}
-        description="PupsPlayer™ from CLÉ Family Media holds the Watch, Play, Learn model in one place: ad-free episodes of The Pawsitive Pugs & Pals, the songs, puzzles and games built from each one, and the printable and offline activities underneath. In development."
+        title={launched ? "The Pawsitive Pugs & Pals app" : "The Pawsitive Pugs & Pals app, coming soon"}
+        description="The Pawsitive Pugs & Pals® app from CLÉ Family Media holds the Watch, Play, Learn model in one place: ad-free episodes of The Pawsitive Pugs & Pals, the songs, puzzles and games built from each one, and the printable and offline activities underneath. In development."
         path="/app"
       />
 

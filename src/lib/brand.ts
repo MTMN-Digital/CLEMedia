@@ -89,14 +89,14 @@ const assets = {
   },
   "home.app": {
     base: null,
-    alt: "The PupsPlayer app shown on a tablet",
+    alt: "The Pawsitive Pugs & Pals app shown on a tablet",
     width: 1000, height: 750,
-    label: "PupsPlayer app preview",
+    label: "App preview",
     fallback: "png",
   },
   "story.lead": {
     base: null,
-    alt: "Conor Sexton and Lydia Sexton, founders of CLÉ Family Media",
+    alt: "Conor Sexton and Lydia Harding, founders of CLÉ Family Media",
     width: 1680, height: 720,
     label: "Conor and Lydia. Real photography only: the kit has none.",
   },
@@ -202,9 +202,9 @@ const assets = {
   },
   "app.hero": {
     base: null,
-    alt: "The PupsPlayer app on a phone",
+    alt: "The Pawsitive Pugs & Pals app on a phone",
     width: 900, height: 1125,
-    label: "PupsPlayer app preview, device mockup or key screen",
+    label: "App preview, device mockup or key screen",
     fallback: "png",
   },
   "brand.cle": {
@@ -271,16 +271,16 @@ const assets = {
      glowing out of it. */
   "person.conor": { base: "/brand/people/conor", alt: "Conor Sexton, founder of CLÉ Family Media", width: 440, height: 440, label: "Conor Sexton, portrait" },
   "person.alan": { base: "/brand/people/alan", alt: "Alan Compton, creative director", width: 440, height: 440, label: "Alan Compton, portrait" },
-  "person.paula": { base: "/brand/people/paula", alt: "Paula Walshe PhD, education director", width: 440, height: 440, label: "Paula Walshe PhD, portrait" },
-  "person.lydia": { base: "/brand/people/lydia", alt: "Lydia Sexton", width: 440, height: 440, label: "Lydia Sexton, portrait" },
+  "person.paula": { base: "/brand/people/paula", alt: "Dr Paula Walshe, Chief Education Officer", width: 440, height: 440, label: "Dr Paula Walshe, portrait" },
+  "person.lydia": { base: "/brand/people/lydia", alt: "Lydia Harding", width: 440, height: 440, label: "Lydia Harding, portrait" },
   "person.kirstie": { base: "/brand/people/kirstie", alt: "Kirstie Harding, child development consultant", width: 440, height: 440, label: "Kirstie Harding, portrait" },
-  "person.david": { base: "/brand/people/david", alt: "David Toth, strategic advisor", width: 440, height: 440, label: "David Toth, portrait" },
+  "person.david": { base: "/brand/people/david", alt: "David Toth, strategic adviser", width: 440, height: 440, label: "David Toth, portrait" },
   "person.victoria": { base: "/brand/people/victoria", alt: "Victoria, graphic designer and illustrator", width: 440, height: 440, label: "Victoria, portrait" },
   "person.stitha": { base: "/brand/people/stitha", alt: "Stitha Raj, UI/UX designer", width: 440, height: 440, label: "Stitha Raj, portrait", noAvif: true },
-  "person.justin": { base: "/brand/people/justin", alt: "Justin, software developer", width: 440, height: 440, label: "Justin, portrait", noAvif: true },
+  "person.justin": { base: "/brand/people/justin", alt: "Justin Miranda, software developer", width: 440, height: 440, label: "Justin Miranda, portrait", noAvif: true },
   /* Mansi is the one person in the review sequence the handoff sent no photo
      or biography for. Listed, unillustrated, logged in CONTENT-NEEDED.md. */
-  "person.mansi": { base: null, alt: "Mansi, production coordination", width: 440, height: 440, label: "Mansi, portrait" },
+  "person.mansi": { base: null, alt: "Mansi Kale, production assistant", width: 440, height: 440, label: "Mansi Kale, portrait" },
 
   "team.group": { base: null, alt: "The CLÉ Family Media team", width: 1680, height: 945, label: "The team together, on location or in the workspace" },
 
@@ -341,9 +341,9 @@ const assets = {
   "slate.ep5": { base: "/brand/slate-ep5", alt: "Episode five, Colour Quest, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
   "slate.ep6": { base: "/brand/slate-ep6", alt: "Episode six, Fluffy Clouds, its felted title slate, with Finn and Fia looking over it", width: 640, height: 360, label: "Episode still" },
 
-  "app.screen1": { base: null, alt: "PupsPlayer episode library", width: 540, height: 960, label: "App screenshot 1", fallback: "png" },
-  "app.screen2": { base: null, alt: "PupsPlayer play activity", width: 540, height: 960, label: "App screenshot 2", fallback: "png" },
-  "app.screen3": { base: null, alt: "PupsPlayer parent controls", width: 540, height: 960, label: "App screenshot 3", fallback: "png" },
+  "app.screen1": { base: null, alt: "The app's episode library", width: 540, height: 960, label: "App screenshot 1", fallback: "png" },
+  "app.screen2": { base: null, alt: "A play activity in the app", width: 540, height: 960, label: "App screenshot 2", fallback: "png" },
+  "app.screen3": { base: null, alt: "The app's parent controls", width: 540, height: 960, label: "App screenshot 3", fallback: "png" },
 } satisfies Record<string, BrandAsset>;
 
 export type AssetKey = keyof typeof assets;
