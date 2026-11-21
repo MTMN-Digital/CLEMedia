@@ -125,16 +125,16 @@ function NotAdmin({ email }: { email: string }) {
    areas also sit in a bottom bar. Keys that are not registered are skipped. */
 type AreaKey = "site" | "home" | "shop" | "settings" | "inbox";
 const AREAS: { panels: string[]; label: string; key: AreaKey; icon: string }[] = [
-  { key: "home", label: "Home", panels: [], icon: "M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z" },
-  { key: "inbox", label: "Inbox", panels: ["inbox", "contacts"], icon: "M3 11.5 5.2 5a1 1 0 0 1 .95-.7h7.7a1 1 0 0 1 .95.7L17 11.5V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 11.5h4l1 2h4l1-2h4" },
-  { key: "site", label: "Website", panels: ["pages", "journal", "people", "episodes", "quotes", "media", "app"], icon: "M3 5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 8h14M6 6h.01M8 6h.01" },
-  { key: "shop", label: "Shop", panels: ["shop"], icon: "M4 7h12l-1 9H5zM7 7V6a3 3 0 0 1 6 0v1" },
-  { key: "settings", label: "Settings", panels: ["links"], icon: "M10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4" },
+  { key: "home", label: "Home", panels: [], icon: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" },
+  { key: "inbox", label: "Inbox", panels: ["inbox", "contacts"], icon: "M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" },
+  { key: "site", label: "Website", panels: ["pages", "journal", "people", "episodes", "quotes", "media", "app"], icon: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20" },
+  { key: "shop", label: "Shop", panels: ["shop"], icon: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" },
+  { key: "settings", label: "Settings", panels: ["links"], icon: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" },
 ];
 
 /** One glyph per section, drawn on a 20px grid. */
 const GLYPH: Record<string, string> = {
-  inbox: AREAS[1].icon,
+  inbox: "M3 11.5 5.2 5a1 1 0 0 1 .95-.7h7.7a1 1 0 0 1 .95.7L17 11.5V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 11.5h4l1 2h4l1-2h4",
   contacts: "M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2.5 16c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5M13 4.3a2.5 2.5 0 0 1 0 4.4M14.5 11.7c1.8.5 3 2 3 4.3",
   pages: "M5 3h7l3 3v11H5zM12 3v3h3M8 10h4M8 13h4",
   journal: "M4 4h9a3 3 0 0 1 3 3v9H7a3 3 0 0 1-3-3zM7 8h6M7 11h4",
@@ -143,7 +143,7 @@ const GLYPH: Record<string, string> = {
   quotes: "M5 12c0-3 1.5-5 4-6M5 12h3v3H5zM12 12c0-3 1.5-5 4-6M12 12h3v3h-3z",
   media: "M10 3a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 5 0v-4A2.5 2.5 0 0 0 10 3zM5 9.5a5 5 0 0 0 10 0M10 14.5V17",
   app: "M6.5 2.5h7a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM9 15h2",
-  shop: AREAS[3].icon,
+  shop: "M4 7h12l-1 9H5zM7 7V6a3 3 0 0 1 6 0v1",
   links: "M8.5 11.5a3 3 0 0 0 4.2 0l2.6-2.6a3 3 0 0 0-4.2-4.2l-.8.8M11.5 8.5a3 3 0 0 0-4.2 0l-2.6 2.6a3 3 0 0 0 4.2 4.2l.8-.8",
 };
 
@@ -158,10 +158,10 @@ function areaOf(pathname: string) {
   return AREAS.find((a) => p && a.panels.includes(p.key)) ?? AREAS[0];
 }
 
-function Icon({ d, size = 20 }: { size?: number; d: string }) {
+function Icon({ d, size = 20, vb = 20 }: { size?: number; vb?: number; d: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true">
-      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox={`0 0 ${vb} ${vb}`} aria-hidden="true">
+      <path d={d} fill="none" stroke="currentColor" strokeWidth={vb === 24 ? 1.8 : 1.7} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -196,7 +196,7 @@ function Rail({ unread, email }: { unread: number; email: string }) {
       <div className="cp-rail__areas">
         {AREAS.map((a) => (
           <Link key={a.key} to={areaPath(a)} className="cp-area" aria-current={a.key === here.key ? "page" : undefined}>
-            <Icon d={a.icon} size={21} />
+            <Icon d={a.icon} size={22} vb={24} />
             <span>{a.label}</span>
             {a.key === "inbox" && unread > 0 && <i aria-label={`${unread} new`}>{unread}</i>}
           </Link>
@@ -204,7 +204,7 @@ function Rail({ unread, email }: { unread: number; email: string }) {
       </div>
       <div className="cp-rail__foot">
         <a href="/" target="_blank" rel="noreferrer" className="cp-area" aria-label="View the website (opens in a new tab)">
-          <Icon d="M11 4h5v5M16 4l-7 7M14 11v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" size={20} />
+          <Icon d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" size={21} vb={24} />
           <span>Site</span>
         </a>
         <div className="cp-me">
@@ -235,7 +235,7 @@ function Tabs({ counts }: { counts: Record<string, PanelCount | null> }) {
         const n = countOf(counts[p.key]);
         return (
           <NavLink key={p.key} to={p.path} className="cp-tab">
-            <Icon d={GLYPH[p.key] ?? AREAS[2].icon} size={17} />
+            <Icon d={GLYPH[p.key] ?? GLYPH.pages} size={17} />
             {p.label}
             {n > 0 && <b>{n}</b>}
           </NavLink>

@@ -13,6 +13,7 @@ import {
   type ImageValue,
   EmptyState,
 } from "@/components/admin/kit";
+import { PagePreview, type PreviewTarget } from "./PagePreview";
 import { formatDate, type ContentBlock, listBlocks, listRows, resetBlock, type Result, saveBlock, IMAGE_RULES, useLoad } from "@/lib/admin";
 import { loadDefaults, type PageId, type PageDef, type BlockDef, PAGES, blocksFor, sectionsFor, blockValueError } from "@/lib/blocks";
 import { ASSETS } from "@/lib/brand";
@@ -226,6 +227,34 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
   };
 
   const dirtyDefs = blocks.filter(isDirty);
+
+  /* The visual side: what each block looks like on the page right now. */
+  const [selected, setSelected] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const targets = useMemo<PreviewTarget[]>(
+    () =>
+      blocks.map((def) => {
+        const v = liveValue(def, rows[def.key], defaults);
+        if (def.kind === "image") {
+          const a = def.asset ? ASSETS[def.asset] : null;
+          return { key: def.key, kind: "image", texts: [], srcs: [a?.base ?? "", (v as ImageValue | null)?.url ?? ""].filter(Boolean) };
+        }
+        const text = String(v ?? "");
+        const paras = text.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+        return { key: def.key, kind: "text", texts: [text, ...paras], srcs: [] };
+      }),
+    [blocks, rows, defaults],
+  );
+  const pick = (key: string) => {
+    setSelected(key);
+    const card = document.getElementById(`blk-${key}`);
+    if (!card) return;
+    card.scrollIntoView({ block: "center", behavior: "smooth" });
+    card.querySelector<HTMLElement>("textarea, input")?.focus({ preventScroll: true });
+    card.classList.remove("pg-block--flash");
+    void card.offsetWidth;
+    card.classList.add("pg-block--flash");
+  };
   const setDraft = (key: string, v: Draft) => setDrafts((d) => ({ ...d, [key]: v }));
 
   async function writeBlock(def: BlockDef): Promise<string | { error: string }> {
@@ -281,6 +310,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       if (!ok) return;
     }
     await save.run(async () => {
+      setTimeout(() => setReloadKey((k) => k + 1), 600);
       let n = 0;
       for (const def of dirtyDefs) {
         const r = isRemoval(def) ? await removeBlock(def) : await writeBlock(def);
@@ -305,8 +335,8 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
         title={pageDef.label}
         intro={
           changed
-            ? `${changed} of ${blocks.length} blocks ${changed === 1 ? "has" : "have"} been changed from the original. Change any words or pictures, then press Save changes at the bottom.`
-            : "Nothing on this page has been changed yet. Change any words or pictures, then press Save changes at the bottom."
+            ? `Click anything outlined on the page to change it. ${changed} of ${blocks.length} ${changed === 1 ? "item has" : "items have"} been changed from the original.`
+            : "Click anything outlined on the page to change it, then press Save changes."
         }
         actions={view}
       />
@@ -325,13 +355,19 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
         </div>
       )}
 
-      {loaded.data &&
-        sections.map((s) => (
+      {loaded.data && (
+        <div className="pg-split">
+          <div className="pg-split__page">
+            <PagePreview path={pageDef.path} targets={targets} selected={selected} onPick={pick} reloadKey={reloadKey} />
+          </div>
+          <div className="pg-split__fields">
+      {sections.map((s) => (
           <section key={s.section} className="pg-section" aria-labelledby={`pg-${s.section.replace(/\W+/g, "-")}`}>
             <h2 className="adm-h2" id={`pg-${s.section.replace(/\W+/g, "-")}`}>
               {s.section}
             </h2>
             {s.blocks.map((def) => (
+              <div key={def.key} id={`blk-${def.key}`} className="pg-block-wrap" data-on={selected === def.key || undefined} onFocusCapture={() => setSelected(def.key)}>
               <BlockCard
                 key={def.key}
                 page={page}
@@ -348,9 +384,13 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
                 onReset={() => resetOne(def)}
                 onUndo={() => setDraft(def.key, live(def))}
               />
+              </div>
             ))}
           </section>
         ))}
+          </div>
+        </div>
+      )}
 
       {loaded.data && (
         <SaveBar status={save.status} dirty={dirtyDefs.length > 0} onSave={saveAll} saveLabel="Save changes" disabled={dirtyDefs.length === 0} />
