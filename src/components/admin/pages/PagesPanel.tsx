@@ -13,8 +13,11 @@ import {
   type ImageValue,
   EmptyState,
 } from "@/components/admin/kit";
-import { PagePreview, type PreviewTarget } from "./PagePreview";
-import { formatDate, type ContentBlock, listBlocks, listRows, resetBlock, type Result, saveBlock, IMAGE_RULES, useLoad } from "@/lib/admin";
+import { type PreviewTarget, PagePreview, type PreviewSource } from "./PagePreview";
+import { getSetting, useLoad, type ContentBlock, listBlocks, type Result, listRows, resetBlock, IMAGE_RULES, saveBlock } from "@/lib/admin";
+import { TEAM, ADVISORS } from "@/components/team/people";
+import { EPISODES } from "@/lib/episodes";
+import { LINKS_DEFAULT, COMPANY_DEFAULT } from "@/lib/site";
 import { loadDefaults, type PageId, type PageDef, type BlockDef, PAGES, blocksFor, sectionsFor, blockValueError } from "@/lib/blocks";
 import { ASSETS } from "@/lib/brand";
 import "./pages.css";
@@ -32,118 +35,78 @@ import "./pages.css";
 export function PagesPanel() {
   return (
     <Routes>
-      <Route index element={<PageList />} />
+      <Route index element={<PageEditor />} />
       <Route path=":page" element={<PageEditor />} />
     </Routes>
   );
 }
 
-/* ─── The list of pages ──────────────────────────────────────────────────── */
+/* ─── The site's own menu, copied down the right of the editor ──────────── */
 
-const MAIN: PageId[] = ["home", "story", "team", "ethical-ai", "case-study", "journal", "app", "media", "shop", "contact"];
-const LEGAL: PageId[] = ["privacy", "terms", "cookies", "404"];
+const MENU: { label?: string; ids: PageId[] }[] = [
+  { ids: ["home"] },
+  { label: "About", ids: ["story", "team", "ethical-ai"] },
+  { ids: ["case-study", "journal", "app", "shop", "contact"] },
+  { label: "Also on the site", ids: ["media", "privacy", "terms", "cookies", "404"] },
+];
 
-type PageStat = { photos: number; last: string | null; words: number; thumb: { src: string; alt: string } | null; photoSlots: number };
-
-function PageList() {
-  const changes = useLoad(() => listRows("content_blocks", { columns: "id, page, section_key, type, value, updated_at" }), []);
-
-  const stats = useMemo(() => {
-    const out: Record<string, PageStat> = {};
-    for (const p of PAGES) {
-      const defs = blocksFor(p.id);
-      const slots = defs.filter((d) => d.kind === "image");
-      const rows = (changes.data ?? []).filter((r) => r.page === p.id);
-      let thumb: PageStat["thumb"] = null;
-      for (const d of slots) {
-        const row = rows.find((r) => r.section_key === d.key);
-        if (row?.value?.url) { thumb = { src: row.value.url, alt: row.value.alt ?? "" }; break; }
-      }
-      if (!thumb) {
-        for (const d of slots) {
-          const o = originalImage(d);
-          if (o?.src) { thumb = { src: o.src, alt: o.alt }; break; }
-        }
-      }
-      const photos = rows.filter((r) => slots.some((d) => d.key === r.section_key)).length;
-      const last = rows.reduce<string | null>((m, r) => (!m || r.updated_at > m ? r.updated_at : m), null);
-      out[p.id] = { words: rows.length - photos, photos, photoSlots: slots.length, last, thumb };
-    }
-    return out;
-  }, [changes.data]);
-
-  const all = Object.values(stats);
-  const edited = all.filter((s) => s.words + s.photos > 0).length;
-  const total = all.reduce((n, s) => n + s.words + s.photos, 0);
-  const lastAll = all.reduce<string | null>((m, s) => (s.last && (!m || s.last > m) ? s.last : m), null);
-  const group = (ids: PageId[]) => ids.map((id) => PAGES.find((p) => p.id === id)).filter((p): p is PageDef => Boolean(p));
-
+function SiteMenu({ current, changed }: { current: PageId; changed: Record<string, number> }) {
   return (
-    <div className="pg-root">
-      <PageHeader title="Pages and photos" />
-      {changes.error && (
-        <div className="mb-4">
-          <Notice tone="error">Could not check which pages have changes. {changes.error}</Notice>
-          <div className="mt-2">
-            <AdminButton variant="quiet" onClick={changes.reload}>Try again</AdminButton>
-          </div>
+    <nav className="pg-menu" aria-label="Pages of the website">
+      {MENU.map((g, n) => (
+        <div key={n} className="pg-menu__group">
+          {g.label && <p className="pg-menu__label">{g.label}</p>}
+          {g.ids.map((id) => {
+            const p = PAGES.find((x) => x.id === id);
+            if (!p) return null;
+            return (
+              <Link key={id} to={`/admin/pages/${id}`} className="pg-menu__link" aria-current={id === current ? "page" : undefined}>
+                <span>{p.label.replace(" (front page)", "")}</span>
+                {changed[id] ? <b title={`${changed[id]} changed`}>{changed[id]}</b> : null}
+              </Link>
+            );
+          })}
         </div>
-      )}
-      {changes.loading && !changes.data && <p className="adm-muted" role="status">Loading...</p>}
-
-      <div className="pg-figs">
-        <div className="pg-fig" data-tone="blue">
-          <span className="pg-fig__label">Pages edited</span>
-          <b className="pg-fig__num">{edited}<small> of {PAGES.length}</small></b>
-        </div>
-        <div className="pg-fig" data-tone="green">
-          <span className="pg-fig__label">Changes</span>
-          <b className="pg-fig__num">{total}</b>
-        </div>
-        <div className="pg-fig" data-tone="grey">
-          <span className="pg-fig__label">Last edit</span>
-          <b className="pg-fig__num pg-fig__num--date">{lastAll ? formatDate(lastAll) : "None yet"}</b>
-        </div>
-      </div>
-
-      {[
-        ["Main pages", group(MAIN)],
-        ["Legal", group(LEGAL)],
-      ].map(([title, list]) => (
-        <section key={title as string} className="pg-group" aria-labelledby={`pg-g-${title}`.replace(/\s/g, "-")}>
-          <h2 className="pg-group__title" id={`pg-g-${title}`.replace(/\s/g, "-")}>{title as string}</h2>
-          <ul className="pg-grid">
-            {(list as PageDef[]).map((p) => {
-              const st = stats[p.id];
-              return (
-                <li key={p.id} className="pg-card">
-                  {st.thumb && (
-                    <Link to={`/admin/pages/${p.id}`} className="pg-card__pic" aria-label={`Edit ${p.label}`} tabIndex={-1}>
-                      <img src={st.thumb.src} alt="" loading="lazy" />
-                    </Link>
-                  )}
-                  <div className="pg-card__body">
-                    <h3 className="pg-card__name">{p.label}</h3>
-                    <div className="pg-card__tags">
-                      {st.words > 0 && <StatusPill tone="warn">{st.words} {st.words === 1 ? "word change" : "word changes"}</StatusPill>}
-                      {st.photoSlots > 0 && (
-                        <StatusPill tone={st.photos ? "warn" : "off"}>{st.photos} of {st.photoSlots} {st.photoSlots === 1 ? "photo" : "photos"}</StatusPill>
-                      )}
-                    </div>
-                    <span className="pg-card__when">{st.last ? `Edited ${formatDate(st.last)}` : "Not edited yet"}</span>
-                    <div className="pg-card__acts">
-                      <Link to={`/admin/pages/${p.id}`} className="btn btn-primary pg-card__btn">Edit</Link>
-                      <a href={p.path} target="_blank" rel="noreferrer" className="btn btn-quiet pg-card__btn">View page</a>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
       ))}
-    </div>
+    </nav>
   );
+}
+
+/* ─── Things on a page that are edited in another section ────────────────── */
+
+const SOURCES: Record<string, { label: string; path: string; what: string }> = {
+  people: { label: "Team and experts", path: "/admin/people", what: "Names, titles, photos and bios of the team, advisers and experts." },
+  episodes: { label: "Episodes", path: "/admin/episodes", what: "Episode titles, thumbnails, running times and YouTube links." },
+  products: { label: "Shop", path: "/admin/shop", what: "Products, prices, covers and whether they are on sale." },
+  posts: { label: "Journal", path: "/admin/journal", what: "Journal posts and their strands." },
+  media: { label: "Media and podcast", path: "/admin/media", what: "Press articles, podcasts, interviews and videos." },
+  quotes: { label: "Quotes", path: "/admin/quotes", what: "Quotations from parents, educators and schools." },
+  links: { label: "Links and settings", path: "/admin/links", what: "The public email address, social accounts and company details." },
+};
+
+function useSources() {
+  return useLoad(async (): Promise<Result<PreviewSource[]>> => {
+    const [people, eps, prods, posts, media, quotes, links] = await Promise.all([
+      listRows("people", { columns: "name, role" }),
+      listRows("episodes", { columns: "title" }),
+      listRows("products", { columns: "title" }),
+      listRows("posts", { columns: "title" }),
+      listRows("media_items", { columns: "title" }),
+      getSetting("quotes"),
+      getSetting("links"),
+    ]);
+    const names = people.data?.length ? people.data : [...TEAM, ...ADVISORS];
+    const out: PreviewSource[] = [
+      { id: "people", texts: names.flatMap((m) => [m.name, m.role]) },
+      { id: "episodes", texts: (eps.data?.length ? eps.data : EPISODES).map((e) => e.title) },
+      { id: "products", texts: (prods.data ?? []).map((p) => p.title) },
+      { id: "posts", texts: (posts.data ?? []).map((p) => p.title) },
+      { id: "media", texts: (media.data ?? []).map((m) => m.title) },
+      { id: "quotes", texts: (quotes.data?.items ?? []).flatMap((q) => [q.words, q.from]) },
+      { id: "links", texts: [links.data?.email ?? LINKS_DEFAULT.email ?? "", COMPANY_DEFAULT.legal] },
+    ];
+    return { data: out.map((x) => ({ ...x, texts: x.texts.filter((t): t is string => Boolean(t && t.trim())) })), error: null };
+  }, []);
 }
 
 /* ─── One page ───────────────────────────────────────────────────────────── */
@@ -171,7 +134,7 @@ function originalImage(def: BlockDef): { src: string; label: string; alt: string
 
 function PageEditor() {
   const { page: pageParam } = useParams();
-  const pageDef = PAGES.find((p) => p.id === pageParam);
+  const pageDef = PAGES.find((p) => p.id === (pageParam ?? "home"));
 
   if (!pageDef) {
     return (
@@ -181,7 +144,7 @@ function PageEditor() {
       </>
     );
   }
-  return <PageForm pageDef={pageDef} />;
+  return <PageForm key={pageDef.id} pageDef={pageDef} />;
 }
 
 function PageForm({ pageDef }: { pageDef: PageDef }) {
@@ -245,16 +208,22 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       }),
     [blocks, rows, defaults],
   );
+  const [source, setSource] = useState<string | null>(null);
   const pick = (key: string) => {
+    setSource(null);
     setSelected(key);
-    const card = document.getElementById(`blk-${key}`);
-    if (!card) return;
-    card.scrollIntoView({ block: "center", behavior: "smooth" });
-    card.querySelector<HTMLElement>("textarea, input")?.focus({ preventScroll: true });
-    card.classList.remove("pg-block--flash");
-    void card.offsetWidth;
-    card.classList.add("pg-block--flash");
   };
+  const pickSource = (id: string) => {
+    setSelected(null);
+    setSource(id);
+  };
+  const sources = useSources();
+  const allChanges = useLoad(() => listRows("content_blocks", { columns: "page, section_key" }), [reloadKey]);
+  const changedBy = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const r of allChanges.data ?? []) m[r.page] = (m[r.page] ?? 0) + 1;
+    return m;
+  }, [allChanges.data]);
   const setDraft = (key: string, v: Draft) => setDrafts((d) => ({ ...d, [key]: v }));
 
   async function writeBlock(def: BlockDef): Promise<string | { error: string }> {
@@ -322,81 +291,107 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
   }
 
   const changed = Object.keys(rows).filter((k) => blocks.some((b) => b.key === k)).length;
-  const view = (
-    <a href={pageDef.path} target="_blank" rel="noreferrer" className="btn btn-quiet">
-      View the page
-    </a>
+  const sel = selected ? blocks.find((b) => b.key === selected) ?? null : null;
+  const src = source ? SOURCES[source] : null;
+
+  const card = (def: BlockDef) => (
+    <div key={def.key} id={`blk-${def.key}`} className="pg-block-wrap">
+      <BlockCard
+        page={page}
+        def={def}
+        draft={draftOf(def)}
+        original={defaults[def.key]}
+        changed={Boolean(rows[def.key])}
+        dirty={isDirty(def)}
+        removal={isRemoval(def)}
+        error={fieldError(def)}
+        busy={busyKey === def.key}
+        saving={save.saving}
+        onChange={(v) => setDraft(def.key, v)}
+        onReset={() => resetOne(def)}
+        onUndo={() => setDraft(def.key, live(def))}
+      />
+    </div>
   );
 
   return (
-    <>
-      <PageHeader
-        back={{ to: "/admin/pages", label: "All pages" }}
-        title={pageDef.label}
-        intro={
-          changed
-            ? `Click anything outlined on the page to change it. ${changed} of ${blocks.length} ${changed === 1 ? "item has" : "items have"} been changed from the original.`
-            : "Click anything outlined on the page to change it, then press Save changes."
-        }
-        actions={view}
-      />
-
-      {loaded.loading && !loaded.data && (
-        <p className="adm-muted" role="status">
-          Loading...
-        </p>
-      )}
-      {loaded.error && (
-        <div className="adm-stack">
-          <Notice tone="error">Could not load this page's words. {loaded.error}</Notice>
-          <AdminButton variant="quiet" onClick={loaded.reload}>
-            Try again
-          </AdminButton>
+    <div className="pg-editor">
+      <div className="pg-editor__page">
+        <div className="pg-editor__head">
+          <h1>{pageDef.label}</h1>
+          <span className="pg-editor__meta">{changed ? `${changed} changed from the original` : "As originally written"}</span>
+          <a href={pageDef.path} target="_blank" rel="noreferrer" className="btn btn-sm pg-editor__open">
+            Open the page
+          </a>
         </div>
-      )}
-
-      {loaded.data && (
-        <div className="pg-split">
-          <div className="pg-split__page">
-            <PagePreview path={pageDef.path} targets={targets} selected={selected} onPick={pick} reloadKey={reloadKey} />
+        {loaded.error && (
+          <div className="adm-stack mb-3">
+            <Notice tone="error">Could not load this page's words. {loaded.error}</Notice>
+            <AdminButton variant="quiet" onClick={loaded.reload}>Try again</AdminButton>
           </div>
-          <div className="pg-split__fields">
-      {sections.map((s) => (
-          <section key={s.section} className="pg-section" aria-labelledby={`pg-${s.section.replace(/\W+/g, "-")}`}>
-            <h2 className="adm-h2" id={`pg-${s.section.replace(/\W+/g, "-")}`}>
-              {s.section}
-            </h2>
-            {s.blocks.map((def) => (
-              <div key={def.key} id={`blk-${def.key}`} className="pg-block-wrap" data-on={selected === def.key || undefined} onFocusCapture={() => setSelected(def.key)}>
-              <BlockCard
-                key={def.key}
-                page={page}
-                def={def}
-                draft={draftOf(def)}
-                original={defaults[def.key]}
-                changed={Boolean(rows[def.key])}
-                dirty={isDirty(def)}
-                removal={isRemoval(def)}
-                error={fieldError(def)}
-                busy={busyKey === def.key}
-                saving={save.saving}
-                onChange={(v) => setDraft(def.key, v)}
-                onReset={() => resetOne(def)}
-                onUndo={() => setDraft(def.key, live(def))}
-              />
+        )}
+        <PagePreview path={pageDef.path} targets={targets} sources={sources.data ?? []} selected={selected} onPick={pick} onPickSource={pickSource} reloadKey={reloadKey} />
+      </div>
+
+      <aside className="pg-editor__side" aria-label="Editing">
+        <SiteMenu current={page} changed={changedBy} />
+
+        <section className="pg-editor__panel" aria-live="polite">
+          {loaded.loading && !loaded.data && <p className="adm-muted" role="status">Loading...</p>}
+          {loaded.data && sel && (
+            <>
+              <div className="pg-editor__panelhead">
+                <span>{sectionOf(sections, sel.key)}</span>
+                <button type="button" className="pg-x" onClick={() => setSelected(null)} aria-label="Close">
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                </button>
               </div>
-            ))}
-          </section>
-        ))}
-          </div>
-        </div>
-      )}
+              {card(sel)}
+            </>
+          )}
+          {src && (
+            <div className="pg-src">
+              <p className="pg-src__tag">Edited elsewhere</p>
+              <h2>{src.label}</h2>
+              <p>{src.what} Change it there and this page follows.</p>
+              <Link to={src.path} className="btn btn-primary">Go to {src.label}</Link>
+              <button type="button" className="adm-linkbtn" onClick={() => setSource(null)}>Back</button>
+            </div>
+          )}
+          {loaded.data && !sel && !src && (
+            <div className="pg-hint">
+              <b>Click anything outlined on the page</b>
+              <span>Solid outline: change it here. Dotted: it comes from another section, and clicking it shows where.</span>
+            </div>
+          )}
+        </section>
+
+        {loaded.data && (
+          <details className="pg-all">
+            <summary>Everything on this page <b>{blocks.length}</b></summary>
+            <ul>
+              {blocks.map((def) => (
+                <li key={def.key}>
+                  <button type="button" className="pg-all__item" aria-current={def.key === selected || undefined} onClick={() => pick(def.key)}>
+                    <span>{def.label}</span>
+                    {isDirty(def) ? <i data-s="dirty">Not saved</i> : rows[def.key] ? <i data-s="changed">Changed</i> : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </aside>
 
       {loaded.data && (
-        <SaveBar status={save.status} dirty={dirtyDefs.length > 0} onSave={saveAll} saveLabel="Save changes" disabled={dirtyDefs.length === 0} />
+        <SaveBar status={save.status} dirty={dirtyDefs.length > 0} onSave={saveAll} saveLabel={dirtyDefs.length > 1 ? `Save ${dirtyDefs.length} changes` : "Save changes"} disabled={dirtyDefs.length === 0} />
       )}
-    </>
+    </div>
   );
+}
+
+function sectionOf(sections: { blocks: BlockDef[]; section: string }[], key: string) {
+  return sections.find((s) => s.blocks.some((b) => b.key === key))?.section ?? "";
 }
 
 /* ─── One block ──────────────────────────────────────────────────────────── */
