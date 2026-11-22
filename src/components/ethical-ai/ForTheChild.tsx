@@ -25,26 +25,15 @@
    the page file sets.
    ========================================================================== */
 
-const FOR = [
-  {
-    who: "For the child",
-    line: "We pace every story in a developmentally appropriate way for young children: one idea at a time, giving them room to notice and time to breathe. When an episode ends, the next episode does not autoplay.",
-  },
-  {
-    who: "For the parent",
-    line: "No in-game purchases and no algorithmic recommendations, so nothing in it is designed to keep a child watching.",
-  },
-  {
-    who: "For the educator",
-    line: "Learning intent set before production and checked by an early years specialist, with printable activities that take it off the screen.",
-  },
-];
+import { useList } from "@/lib/content";
+import { FOR_ITEMS } from "./lists";
 
 export function ForTheChild() {
+  const items = useList("ethical-ai", "for.items", FOR_ITEMS);
   return (
     <dl className="border-b-[1.5px] border-rule">
-      {FOR.map((f) => (
-        <div key={f.who} className="hairline py-4">
+      {items.map((f, i) => (
+        <div key={i} className="hairline py-4">
           <dt className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">{f.who}</dt>
           <dd className="t-body mt-1.5 max-w-[58ch] text-ink">{f.line}</dd>
         </div>

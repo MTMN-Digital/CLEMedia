@@ -1,5 +1,7 @@
 import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import { Settle } from "@/components/Settle";
+import { useList } from "@/lib/content";
+import { STAGES as STAGE_DEFAULTS } from "@/components/home/lists";
 import "@/components/draw/draw.css";
 import "./rings.css";
 
@@ -357,28 +359,11 @@ function Drawing({ plan, className, label }: { plan: Plan; className: string; la
   );
 }
 
-const STAGES = [
-  {
-    key: "watch",
-    word: "Watch",
-    line: "An episode, together. Calm stories paced for how young children actually take things in, with nothing autoplaying into something nobody chose.",
-  },
-  {
-    key: "play",
-    word: "Play",
-    line: "A pause for a movement or breathing prompt, so the episode becomes something a child does rather than only sees.",
-  },
-  {
-    key: "learn",
-    word: "Learn",
-    line: "A printable or an educator-designed activity afterwards, moving the learning off the screen entirely.",
-  },
-];
-
 const LABEL =
   "Three small scenes, top to bottom. A screen on a stand showing a garden and its sun, with the backs of two heads in front of it, a grown-up's and a child's. The same screen paused, two bars across the garden, and the child up in the air beside it, arms out, feet off the floor. Then no screen: a sheet of paper on the table with the sun from the episode drawn on it in red crayon, and the crayon lying across its corner.";
 
 export function EpisodeTrail() {
+  const STAGES = useList("home", "model.stages", STAGE_DEFAULTS);
   const ref = useRef<HTMLDivElement>(null);
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);
@@ -418,7 +403,7 @@ export function EpisodeTrail() {
 
       <Settle as="ol" className="trail__words">
         {STAGES.map((st, i) => (
-          <li key={st.key} className="trail__word" style={beat(beats[i])}>
+          <li key={i} className="trail__word" style={beat(beats[i % beats.length])}>
             <h3 className="ink-name">{st.word}</h3>
             <p className="ink-note">{st.line}</p>
           </li>

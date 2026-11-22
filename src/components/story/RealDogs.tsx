@@ -3,7 +3,8 @@ import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { DrawnRule, DrawnBox } from "@/components/draw/kit";
 import { ASSETS, type AssetKey } from "@/lib/brand";
-import { useImageBlock } from "@/lib/content";
+import { useImageBlock, useList, useBlock } from "@/lib/content";
+import { COPY, DOG_ROWS } from "./copy";
 import "./dogs.css";
 
 /* ============================================================================
@@ -32,12 +33,15 @@ export function RealDogs({ headingId }: { headingId: string }) {
      can swap any of the eight in the admin. ALL_SHOTS is a module constant,
      so the hooks below run in the same order on every render. */
   const swaps = Object.fromEntries(ALL_SHOTS.map((a) => [a, useImageBlock("story", a)]));
+  const heading = useBlock("story", "dogs.heading", COPY["dogs.heading"]);
+  const note = useBlock("story", "dogs.note", COPY["dogs.note"]);
+  const names = useList("story", "dogs.rows", DOG_ROWS);
   return (
     <>
       <DrawnRule v={2} className="mb-10 lg:mb-14" />
       <Settle>
         <h2 id={headingId} className="t-h2">
-          The real Finn and Fia
+          {heading}
         </h2>
       </Settle>
 
@@ -58,7 +62,7 @@ export function RealDogs({ headingId }: { headingId: string }) {
               })}
             </ul>
             <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
-              {row.name}
+              {names[r]?.name ?? row.name}
             </figcaption>
           </figure>
         ))}
@@ -66,8 +70,7 @@ export function RealDogs({ headingId }: { headingId: string }) {
       {/* `text-body`, not muted: this line sits at the foot of the band where
           the paper is lightest and muted is the floor of AA there. */}
       <p className="ml-auto mt-6 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
-        Finn and Fia in the series are drawn. These are the fawn pug and the black pug they are
-        named after.
+        {note}
       </p>
     </>
   );

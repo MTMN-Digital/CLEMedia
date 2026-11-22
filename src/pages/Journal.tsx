@@ -43,6 +43,13 @@ export const COPY: Record<string, string> = {
   "rules.4.line":
     "If something would be useful to you and it is not on the list, send it to us and it goes on the list.",
   "rules.4.link": "Tell us what to write about",
+  "status.first.label": "First piece",
+  "status.first.value": "In preparation",
+  "status.cadence.label": "Cadence",
+  "status.cost.label": "Cost",
+  "status.cost.value": "Free to read",
+  "status.published.label": "Pieces published",
+  "published.heading": "Newest first",
 };
 
 /* ============================================================================
@@ -97,6 +104,15 @@ export default function Journal() {
   const rulesTitle = useBlock("journal", "rules.title", COPY["rules.title"]);
   const rulesWhy = useBlock("journal", "rules.why", COPY["rules.why"]);
   const rulesHeading = useBlock("journal", "rules.heading", COPY["rules.heading"]);
+  const statusText = {
+    firstLabel: useBlock("journal", "status.first.label", COPY["status.first.label"]),
+    firstValue: useBlock("journal", "status.first.value", COPY["status.first.value"]),
+    cadenceLabel: useBlock("journal", "status.cadence.label", COPY["status.cadence.label"]),
+    costLabel: useBlock("journal", "status.cost.label", COPY["status.cost.label"]),
+    costValue: useBlock("journal", "status.cost.value", COPY["status.cost.value"]),
+    publishedLabel: useBlock("journal", "status.published.label", COPY["status.published.label"]),
+  };
+  const newestHeading = useBlock("journal", "published.heading", COPY["published.heading"]);
   const rules = [
     {
       title: useBlock("journal", "rules.1.title", COPY["rules.1.title"]),
@@ -127,10 +143,10 @@ export default function Journal() {
 
   /* The status rows. "First piece" drops once a piece is on the page. */
   const status: { label: string; value: ReactNode; live?: boolean }[] = [
-    ...(posts.length === 0 ? [{ label: "First piece", value: "In preparation" }] : []),
-    { label: "Cadence", value: cadence },
-    { label: "Cost", value: "Free to read" },
-    { label: "Pieces published", value: published, live: true },
+    ...(posts.length === 0 ? [{ label: statusText.firstLabel, value: statusText.firstValue }] : []),
+    { label: statusText.cadenceLabel, value: cadence },
+    { label: statusText.costLabel, value: statusText.costValue },
+    { label: statusText.publishedLabel, value: published, live: true },
   ];
 
   return (
@@ -158,7 +174,7 @@ export default function Journal() {
 
             <dl className="jr-status lg:col-start-1 lg:row-start-2 lg:mt-1">
               {status.map((row, i) => (
-                <div key={row.label} className="jr-status-row" style={{ "--i": i } as CSSProperties}>
+                <div key={i} className="jr-status-row" style={{ "--i": i } as CSSProperties}>
                   <dt className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
                     {row.label}
                   </dt>
@@ -186,7 +202,7 @@ export default function Journal() {
         <Section pad={["none", "none"]} className="mt-12 lg:mt-18" labelledBy="published-h">
           <Container width="wide">
             <h2 id="published-h" className="eyebrow eyebrow-sm">
-              Newest first
+              {newestHeading}
             </h2>
             <Settle as="ol" className="mt-6 border-t-[1.5px] border-rule">
               {posts.map((p) => (
@@ -247,9 +263,9 @@ export default function Journal() {
             </div>
 
             <dl>
-              {rules.map((r) => (
+              {rules.map((r, i) => (
                 <div
-                  key={r.title}
+                  key={i}
                   className="grid gap-x-10 gap-y-2 border-b-[1.5px] border-rule py-5 first:border-t-[1.5px] lg:first:border-t-0 lg:grid-cols-[14rem_minmax(0,1fr)]"
                 >
                   <dt className="t-body max-w-[16ch] font-semibold text-ink">{r.title}</dt>

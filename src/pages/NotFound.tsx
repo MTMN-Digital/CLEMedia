@@ -6,7 +6,8 @@ import { Settle } from "@/components/Settle";
 import { Section } from "@/components/ui";
 import { IconExternal, IconArrow } from "@/components/icons";
 import { SITE } from "@/lib/site";
-import { useBlock } from "@/lib/content";
+import { useList, useBlock } from "@/lib/content";
+import { ROUTE_ITEMS } from "@/components/notfound/lists";
 import "@/components/legal/notfound.css";
 
 /* The 404 page's editable copy, keyed by block key (src/lib/blocks.ts). The
@@ -21,6 +22,7 @@ export const COPY: Record<string, string> = {
   "hero.aside": "Everything below is still where it should be.",
   "hero.title": "That page has wandered off",
   "routes.heading": "The link may be old, or we may have moved something.",
+  "frame.label": "Frame missing",
 };
 
 /* ============================================================================
@@ -60,15 +62,11 @@ export const COPY: Record<string, string> = {
    notice, the reel and the routes, and nothing after them.
    ========================================================================== */
 
-const ROUTES_BACK: { href?: string; line: string; to?: string; title: string }[] = [
-  { title: "The home page", line: "What the company is, and what it makes.", to: "/" },
-  { title: "Our story", line: "Conor Sexton on why he started the company.", to: "/story" },
-  { title: "Contact", line: "Partnership, press, educators, or anything else.", to: "/contact" },
-  {
-    title: "The show's own site",
-    line: "Episodes, characters and the family activities from The Pawsitive Pugs & Pals®.",
-    href: SITE.showUrl,
-  },
+const TARGETS: { href?: string; to?: string }[] = [
+  { to: "/" },
+  { to: "/story" },
+  { to: "/contact" },
+  { href: SITE.showUrl },
 ];
 
 /* The trail across the empty frame. Opacity falls to the right: the animal is
@@ -111,7 +109,7 @@ function Paw({ x, y, r, o, i }: { y: number; o: number; r: number; i: number; x:
  * box at 16 by 9 is the house's own placeholder tell, and this has to read as
  * a deliberate hole in the reel.
  */
-function MissingFrame() {
+function MissingFrame({ label }: { label: string }) {
   return (
     <div className="relative aspect-[16/9] w-full rounded-[6px] border-[1.5px] border-dashed border-[rgba(246,240,226,0.34)]">
       <svg
@@ -134,7 +132,7 @@ function MissingFrame() {
           the stock and 0.6 measures 6.4:1. And 13px, the floor for real text,
           because it is real text. */}
       <p className="absolute bottom-3 left-3 font-mono text-[13px] uppercase tracking-[0.18em] text-[rgba(246,240,226,0.6)]">
-        Frame missing
+        {label}
       </p>
     </div>
   );
@@ -148,6 +146,9 @@ export default function NotFound() {
   const heroAside = useBlock("404", "hero.aside", COPY["hero.aside"]);
   const heroTitle = useBlock("404", "hero.title", COPY["hero.title"]);
   const routesHeading = useBlock("404", "routes.heading", COPY["routes.heading"]);
+
+  const frameLabel = useBlock("404", "frame.label", COPY["frame.label"]);
+  const routesBack = useList("404", "routes.items", ROUTE_ITEMS);
 
   const frame = "w-[70vw] shrink-0 sm:w-auto sm:min-w-0 sm:max-w-[22rem] sm:flex-1";
 
@@ -207,7 +208,7 @@ export default function NotFound() {
                   {/* First on a phone, where only one frame is on screen and
                       the one that carries the page's point has to be it. */}
                   <li className={`order-first sm:order-none ${frame}`}>
-                    <MissingFrame />
+                    <MissingFrame label={frameLabel} />
                   </li>
                   <li className={frame}>
                     <Figure asset="slate.ep2" rounded="rounded-[6px]" sizes="340px" />
@@ -226,7 +227,8 @@ export default function NotFound() {
               Four real routes, one line each, in a ruled list labelled by
               the h1: the lead is the sentence that introduces them. ═══ */}
           <Settle as="ul" className="doc404-routes border-t-[1.5px] border-rule">
-            {ROUTES_BACK.map((r) => {
+            {routesBack.map((item, i) => {
+              const r = { ...item, ...TARGETS[i % TARGETS.length] };
               const inner = (
                 <>
                   <span className="min-w-0">
@@ -240,7 +242,7 @@ export default function NotFound() {
               );
               const cls = "group flex min-h-[44px] items-start justify-between gap-6 py-5";
               return (
-                <li key={r.title} className="border-b-[1.5px] border-rule">
+                <li key={i} className="border-b-[1.5px] border-rule">
                   {r.to ? (
                     <Link to={r.to} className={cls}>
                       {inner}

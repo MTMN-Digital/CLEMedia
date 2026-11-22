@@ -12,8 +12,9 @@ import { type RouteId, RouteChips, RoutePanel } from "@/components/casestudy/Rou
 import { TwoRoutes } from "@/components/casestudy/TwoRoutes";
 import { SheetRow } from "@/components/casestudy/SheetRow";
 import { Questionnaire } from "@/components/casestudy/Questionnaire";
-import { useBlock } from "@/lib/content";
+import { useList, useBlock } from "@/lib/content";
 import { COPY } from "@/components/casestudy/copy";
+import { STEP_BODIES, FOR_STUDY, ANSWERS, APART } from "@/components/casestudy/lists";
 
 /* ============================================================================
    The cross-border case study: a protocol sheet.
@@ -46,44 +47,6 @@ import { COPY } from "@/components/casestudy/copy";
    ========================================================================== */
 
 const EPISODE = EPISODES.find((e) => e.n === "003")!;
-
-/* What an educator is asked to do, in order. Said once, here. No time
-   estimate: none has been given, and it is listed as owed. The titles are
-   editable (step.N.title in copy.ts); the bodies stay here. */
-const STEP_BODIES: string[] = [
-  "Ireland or England, so the notes you use cite the framework you work to.",
-  "Chicken Vision, from the series, free to watch.",
-  "A game, colouring pages and Paula's offline activity, with instructions for each.",
-  "A short set of questions about what you saw and how the materials worked.",
-];
-
-/* What will be published here, for the study. Every value is the page's own
-   wording for that item, trimmed to one row. Each is owed, and says so. */
-const FOR_STUDY = [
-  { label: "Aistear supporting notes", value: "With Paula for final approval; a download and a short note on how to use them alongside the episode" },
-  { label: "EYFS supporting notes", value: "With Paula for final approval; the same" },
-  { label: "Selected games", value: "Not supplied yet; instructions on how to play them with a group" },
-  { label: "Colouring materials", value: "Not supplied yet; printable pages from the episode, with a note on how to use them" },
-  { label: "Paula's offline activity", value: "Not supplied yet; designed by Dr Paula Walshe to follow the episode away from a screen, with step by step instructions" },
-  { label: "Participant information", value: "Being agreed; published here before the study opens" },
-  { label: "The questionnaire", value: "A draft is with Dr Paula Walshe; published here when the study opens" },
-  { label: "Reviewed study findings", value: "None yet; added once the study has run and the responses have been reviewed" },
-];
-
-/* Kept apart from the study. The workshop is done and is not part of it. */
-const APART = [
-  { label: "Banteer workshop feedback", value: "The workshop in Banteer is complete and is not part of this study; its feedback will be added here once the feedback letter is supplied" },
-];
-
-/* What happens to the answers. Only what is true of the form is stated as
-   fact; the rest is stated as owed. Privacy wording, reproduced as it was. */
-const ANSWERS = [
-  { k: "What the form asks", v: "Your role and setting, the age and number of the children, how you rated the episode and the activity, and two open questions. The email address is optional." },
-  { k: "What it does not ask", v: "The name of any child, or anything that identifies one. The form does not ask for it and tells you not to include it." },
-  { k: "Who reads the answers", v: "To be confirmed in the participant information." },
-  { k: "How long they are kept", v: "To be confirmed in the participant information." },
-  { k: "Having yours removed", v: "To be confirmed in the participant information." },
-];
 
 export default function CaseStudy() {
   /* The route lives here so the drawing, the chips, the framework panel and
@@ -121,6 +84,28 @@ export default function CaseStudy() {
   const closeLine = useBlock("case-study", "close.line", COPY["close.line"]);
   const closeLink = useBlock("case-study", "close.link", COPY["close.link"]);
 
+  const eyebrow = useBlock("case-study", "head.eyebrow", COPY["head.eyebrow"]);
+  const slateCaption = useBlock("case-study", "step2.caption", COPY["step2.caption"]);
+  const watchLink = useBlock("case-study", "step2.link", COPY["step2.link"]);
+  const qStatus = useBlock("case-study", "q.status", COPY["q.status"]);
+  const privacyLink = useBlock("case-study", "data.privacy", COPY["data.privacy"]);
+  const fl_status = useBlock("case-study", "facts.status.label", COPY["facts.status.label"]);
+  const fl_opens = useBlock("case-study", "facts.opens.label", COPY["facts.opens.label"]);
+  const fl_routes = useBlock("case-study", "facts.routes.label", COPY["facts.routes.label"]);
+  const fl_episode = useBlock("case-study", "facts.episode.label", COPY["facts.episode.label"]);
+  const fl_materials = useBlock("case-study", "facts.materials.label", COPY["facts.materials.label"]);
+  const fl_questionnaire = useBlock("case-study", "facts.questionnaire.label", COPY["facts.questionnaire.label"]);
+  const fl_results = useBlock("case-study", "facts.results.label", COPY["facts.results.label"]);
+  const fv_opens = useBlock("case-study", "facts.opens", COPY["facts.opens"]);
+  const fv_routes = useBlock("case-study", "facts.routes", COPY["facts.routes"]);
+  const fv_materials = useBlock("case-study", "facts.materials", COPY["facts.materials"]);
+  const fv_questionnaire = useBlock("case-study", "facts.questionnaire", COPY["facts.questionnaire"]);
+  const fv_results = useBlock("case-study", "facts.results", COPY["facts.results"]);
+  const stepBodies = useList("case-study", "steps.bodies", STEP_BODIES);
+  const forStudy = useList("case-study", "pub.items", FOR_STUDY);
+  const apart = useList("case-study", "out.items", APART);
+  const answers = useList("case-study", "data.items", ANSWERS);
+
   const status = STUDY_OPEN ? "Open" : "Not yet open";
 
   return (
@@ -140,7 +125,7 @@ export default function CaseStudy() {
                 plain ruled list, the way a figure has a key. ═══ */}
             <Settle className="proto-head">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-                <p className="font-mono text-[14px] uppercase leading-[1.7] tracking-[0.16em] text-body">Study protocol</p>
+                <p className="font-mono text-[14px] uppercase leading-[1.7] tracking-[0.16em] text-body">{eyebrow}</p>
                 {/* The only Kicker on the page, and it is a status. */}
                 <Kicker>{status}</Kicker>
               </div>
@@ -167,13 +152,13 @@ export default function CaseStudy() {
                 <div style={{ "--i": "27" } as React.CSSProperties}>
                   <FactRows
                     rows={[
-                      { label: "Status", value: <strong className="font-semibold">{status}</strong> },
-                      { label: "Opens", value: "Date to be confirmed" },
-                      { label: "Routes", value: "Ireland (Aistear) and England (EYFS)" },
-                      { label: "Episode", value: `${EPISODE.n}, ${EPISODE.title}, ${EPISODE.runtime}` },
-                      { label: "Materials", value: "Notes with Dr Paula Walshe; games and colouring not yet supplied" },
-                      { label: "Questionnaire", value: "Draft, awaiting approval" },
-                      { label: "Results", value: "None yet" },
+                      { label: fl_status, value: <strong className="font-semibold">{status}</strong> },
+                      { label: fl_opens, value: fv_opens },
+                      { label: fl_routes, value: fv_routes },
+                      { label: fl_episode, value: `${EPISODE.n}, ${EPISODE.title}, ${EPISODE.runtime}` },
+                      { label: fl_materials, value: fv_materials },
+                      { label: fl_questionnaire, value: fv_questionnaire },
+                      { label: fl_results, value: fv_results },
                     ]}
                   />
                 </div>
@@ -211,7 +196,7 @@ export default function CaseStudy() {
                 filmstrip's slate carries. ═══ */}
             <SheetRow id="steps-h" label={stepsLabel}>
               <Settle as="ol" className="border-t-[1.5px] border-rule">
-                {STEP_BODIES.map((body, i) => (
+                {stepBodies.map((step, i) => (
                   <li
                     key={i}
                     className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-baseline gap-x-5 gap-y-2 border-b-[1.5px] border-rule py-6 sm:gap-x-8 lg:grid-cols-[6rem_minmax(0,20rem)_minmax(0,1fr)] lg:gap-x-12 lg:py-7"
@@ -219,9 +204,9 @@ export default function CaseStudy() {
                     <span aria-hidden="true" className="t-h2 tnum font-display leading-none text-ink">
                       {i + 1}
                     </span>
-                    <h3 className="t-h3">{stepTitles[i]}</h3>
+                    <h3 className="t-h3">{stepTitles[i % stepTitles.length]}</h3>
                     <div className="col-start-2 lg:col-start-3">
-                      <p className="t-body max-w-[50ch] text-body">{body}</p>
+                      <p className="t-body max-w-[50ch] text-body">{step.body}</p>
                       {i === 1 && (
                         <>
                           {EPISODE.line && <p className="t-body mt-3 max-w-[54ch] text-body">{EPISODE.line}</p>}
@@ -237,7 +222,7 @@ export default function CaseStudy() {
                             />
                             <figcaption className="self-end">
                               <p className="font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
-                                Episode 003 title slate. A frame from the series.
+                                {slateCaption}
                               </p>
                               <p className="tnum mt-2 font-mono text-[13px] uppercase leading-[1.6] tracking-[0.16em] text-body">
                                 Episode {EPISODE.n}, {EPISODE.runtime}
@@ -245,7 +230,7 @@ export default function CaseStudy() {
                               {EPISODE.href && (
                                 <p className="mt-3">
                                   <TextLink href={EPISODE.href}>
-                                    Watch on YouTube<IconExternal size={14} />
+                                    {watchLink}<IconExternal size={14} />
                                   </TextLink>
                                 </p>
                               )}
@@ -266,11 +251,11 @@ export default function CaseStudy() {
               <Settle>
                 <div>
                   <p className="field-label">{pubStudy}</p>
-                  <FactRows rows={FOR_STUDY} labelWidth="12rem" />
+                  <FactRows rows={forStudy} labelWidth="12rem" />
                 </div>
                 <div className="mt-10">
                   <p className="field-label">{outHeading}</p>
-                  <FactRows rows={APART} labelWidth="12rem" />
+                  <FactRows rows={apart} labelWidth="12rem" />
                 </div>
               </Settle>
             </SheetRow>
@@ -280,7 +265,7 @@ export default function CaseStudy() {
             <SheetRow id="q-h" label={qLabel}>
               <Settle>
                 <p className="t-body max-w-[60ch] text-ink">{qBody}</p>
-                <FactRows className="mt-6 max-w-[56rem]" rows={[{ label: "Status", value: "Draft, awaiting Dr Paula Walshe" }]} />
+                <FactRows className="mt-6 max-w-[56rem]" rows={[{ label: fl_status, value: qStatus }]} />
               </Settle>
               {/* MOUNTED ONLY WHEN STUDY_OPEN. questions.ts is a draft nobody
                   has approved (its first line says so), and an unapproved
@@ -304,8 +289,8 @@ export default function CaseStudy() {
               <Settle>
                 <p className="t-body max-w-[60ch] text-ink">{dataLead}</p>
                 <dl className="mt-8 max-w-[56rem] border-t-[1.5px] border-rule">
-                  {ANSWERS.map((r) => (
-                    <div key={r.k} className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-rule py-5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+                  {answers.map((r, i) => (
+                    <div key={i} className="grid grid-cols-1 gap-x-8 gap-y-1 border-b-[1.5px] border-rule py-5 sm:grid-cols-[12rem_minmax(0,1fr)]">
                       <dt className="text-[17px] font-semibold text-ink">{r.k}</dt>
                       <dd className="t-body max-w-[48ch] text-body">{r.v}</dd>
                     </div>
@@ -313,7 +298,7 @@ export default function CaseStudy() {
                 </dl>
                 <p className="mt-6">
                   <TextLink to="/privacy">
-                    Privacy policy<IconArrow size={15} />
+                    {privacyLink}<IconArrow size={15} />
                   </TextLink>
                 </p>
               </Settle>

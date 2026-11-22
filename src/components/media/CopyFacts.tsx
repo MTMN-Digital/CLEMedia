@@ -11,7 +11,7 @@ import { IconCheck } from "@/components/icons";
    politely. Where the clipboard is unavailable the control is not rendered:
    the sheet is still on the page to select by hand.
    ========================================================================== */
-export function CopyFacts({ text }: { text: string }) {
+export function CopyFacts({ text, label = "Copy the facts", copied = "Copied" }: { text: string; label?: string; copied?: string }) {
   const [can, setCan] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -45,11 +45,11 @@ export function CopyFacts({ text }: { text: string }) {
     >
       {done ? (
         <>
-          Copied
+          {copied}
           <IconCheck size={15} />
         </>
       ) : (
-        "Copy the facts"
+        label
       )}
     </button>
   );

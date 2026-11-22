@@ -32,4 +32,26 @@ export const COPY: Record<string, string> = {
   "ai.cta": "Read the full position",
   "updates.heading": "Occasional updates",
   "updates.body": "Production notes and company news, for adults. Infrequent, and easy to leave.",
+  "hero.eyebrow": "Children’s edutainment",
+  "hero.ages": "Ages 2 to 6",
+  "hero.note": "Built on research. Made by people.",
+  "hero.cta_case": "Case Study",
+  "evidence.note":
+    "Three published results, with the paper each one comes from, because a company that says it builds on research should let you read the research.",
+  "evidence.caption":
+    "Behind this, a frame from The Pawsitive Pugs & Pals®. The garden the show’s world is built from, animated, not photographed.",
+  "feedback.heading": "In their own words, with their permission.",
+  "feedback.note":
+    "We do not turn what one family said into a percentage, and we do not print anything nobody has agreed to.",
+  "beyond.heading": "An online and offline balance.",
+  "beyond.lead":
+    "The real value is not in watching. It is in the play, talk and learning that happen afterwards, and every episode comes with materials to support it.",
+  "callsheet.heading": "Five people read every draft",
+  "callsheet.link": "Who each of them is, and the advisory board",
+  "ai.tab": "POSITION",
+  "touch.heading": "If you are assessing the company, we would rather answer your questions directly.",
+  "slates.watch": "Watch on YouTube",
+  "slates.guidance": "Guidance",
+  "slates.passed_by": "Passed by",
+  "filmstrip.hint": "Drag or scroll sideways",
 };

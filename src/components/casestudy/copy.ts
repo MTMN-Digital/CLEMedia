@@ -6,9 +6,15 @@
    an empty content_blocks table shows the page exactly as written here. No
    stars, no accent clause: the protocol sheet has no claim set as a heading.
    The status rows (Not yet open, Opens, Routes, Episode, Materials,
-   Questionnaire, Results) follow STUDY_OPEN and the episode table and are not
-   editable, because each one states what is and is not supplied. */
+   Questionnaire, Results) have editable labels; the Status and Episode
+   values are computed from STUDY_OPEN and the episode table and stay in
+   code. */
 export const COPY: Record<string, string> = {
+  "head.eyebrow": "Study protocol",
+  "step2.caption": "Episode 003 title slate. A frame from the series.",
+  "step2.link": "Watch on YouTube",
+  "q.status": "Draft, awaiting Dr Paula Walshe",
+  "data.privacy": "Privacy policy",
   "hero.title": "Cross-border case study",
   "route.label": "The route",
   "who.label": "Who it is for",
@@ -36,4 +42,22 @@ export const COPY: Record<string, string> = {
   "data.lead": "The study will not open until the participant information is agreed and published on this page.",
   "close.line": "How the company uses AI in making the episodes is written down on its own page.",
   "close.link": "Responsible AI",
+  "facts.status.label": "Status",
+  "facts.opens.label": "Opens",
+  "facts.opens": "Date to be confirmed",
+  "facts.routes.label": "Routes",
+  "facts.routes": "Ireland (Aistear) and England (EYFS)",
+  "facts.episode.label": "Episode",
+  "facts.materials.label": "Materials",
+  "facts.materials": "Notes with Dr Paula Walshe; games and colouring not yet supplied",
+  "facts.questionnaire.label": "Questionnaire",
+  "facts.questionnaire": "Draft, awaiting approval",
+  "facts.results.label": "Results",
+  "facts.results": "None yet",
+  "route.ireland.summary":
+    "Aistear is the early childhood curriculum framework for children from birth to six in Ireland. It is organised around four themes, and the Ireland route reads the episode and its activities against them.",
+  "route.ireland.themes.label": "The four Aistear themes",
+  "route.england.summary":
+    "The Early Years Foundation Stage is the statutory framework for children from birth to the end of the reception year in England. The England route reads the episode and its activities against its areas of learning.",
+  "route.england.themes.label": "The EYFS areas of learning",
 };

@@ -2,6 +2,8 @@ import { Settle } from "@/components/Settle";
 import { TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { PhaseStrip } from "./PhaseStrip";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    How an episode is actually made.
@@ -24,11 +26,13 @@ import { PhaseStrip } from "./PhaseStrip";
    ========================================================================== */
 
 export function CallSheet({ headingId }: { headingId: string }) {
+  const heading = useBlock("home", "callsheet.heading", COPY["callsheet.heading"]);
+  const linkText = useBlock("home", "callsheet.link", COPY["callsheet.link"]);
   return (
     <div>
       <Settle>
         <h2 id={headingId} className="t-h2">
-          Five people read every draft
+          {heading}
         </h2>
       </Settle>
 
@@ -36,7 +40,7 @@ export function CallSheet({ headingId }: { headingId: string }) {
 
       <Settle className="mt-10">
         <TextLink to="/team">
-          Who each of them is, and the advisory board
+          {linkText}
           <IconArrow size={15} />
         </TextLink>
       </Settle>

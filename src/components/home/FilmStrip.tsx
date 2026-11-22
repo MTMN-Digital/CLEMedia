@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { type Episode, EpisodeSlate } from "@/components/home/EpisodeSlate";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    The filmstrip.
@@ -24,6 +26,7 @@ import { type Episode, EpisodeSlate } from "@/components/home/EpisodeSlate";
    ========================================================================== */
 
 export function FilmStrip({ episodes }: { episodes: Episode[] }) {
+  const hint = useBlock("home", "filmstrip.hint", COPY["filmstrip.hint"]);
   const rail = useRef<HTMLUListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -204,7 +207,7 @@ export function FilmStrip({ episodes }: { episodes: Episode[] }) {
 
         <div className="filmstrip-head flex items-center gap-5 pb-2 pt-1" aria-hidden="true">
           <span className="frame-ticks h-3 flex-1" />
-          <span className="edge-print whitespace-nowrap font-mono uppercase">Drag or scroll sideways</span>
+          <span className="edge-print whitespace-nowrap font-mono uppercase">{hint}</span>
         </div>
         <span className="sprockets sprockets-bottom" aria-hidden="true" />
       </div>

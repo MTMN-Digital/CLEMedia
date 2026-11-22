@@ -102,7 +102,24 @@ function usePagesArrive() {
   return { ref, cls: `sheet-pages ${armed ? "is-armed" : ""} ${shown ? "is-in" : ""}` };
 }
 
-export function LearnMaterial({ awayCaption, note }: { awayCaption: string; note: string }) {
+export const COVERS_CAPTION = "The three books for episode one.";
+export const PAGE_CAPTIONS = [
+  { caption: "I Spy, activity book p.4" },
+  { caption: "Maze challenge, activity book p.6" },
+  { caption: "Feather breathing, activity book p.19" },
+];
+
+export function LearnMaterial({
+  awayCaption,
+  note,
+  coversCaption = COVERS_CAPTION,
+  captions = PAGE_CAPTIONS,
+}: {
+  note: string;
+  captions?: { caption: string }[];
+  awayCaption: string;
+  coversCaption?: string;
+}) {
   const pages = usePagesArrive();
   return (
     <div className="min-w-0">
@@ -117,17 +134,17 @@ export function LearnMaterial({ awayCaption, note }: { awayCaption: string; note
         ))}
       </ul>
       <p className="t-sm mt-5 max-w-[78ch] text-body">
-        The three books for episode one. {BOOKS_STATEMENT} {BOOKS_CREDIT}
+        {coversCaption} {BOOKS_STATEMENT} {BOOKS_CREDIT}
       </p>
 
       {/* Four pages at reading size: three landscape pages, then the portrait
           page beside its caption. Stacked at full width on a phone, each with
           its caption under it: a page is read, not browsed. */}
       <ul ref={pages.ref} className={`${pages.cls} mt-10 grid gap-x-8 gap-y-8 sm:grid-cols-2`}>
-        {PAGES.map((p) => (
+        {PAGES.map((p, i) => (
           <li key={p.file}>
             <Picture pic={p} sizes="(min-width: 1024px) 490px, (min-width: 640px) 45vw, 100vw" />
-            <p className="mt-2.5 font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">{p.caption}</p>
+            <p className="mt-2.5 font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">{captions[i]?.caption ?? p.caption}</p>
           </li>
         ))}
         <li className="flex flex-col gap-5 sm:flex-row sm:items-start">

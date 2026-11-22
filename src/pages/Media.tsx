@@ -6,11 +6,12 @@ import { IconExternal, IconArrow } from "@/components/icons";
 import { useTeam } from "@/components/team/useTeam";
 import { SITE, APP_LAUNCHED, COMPANY_DEFAULT } from "@/lib/site";
 import type { CompanySetting } from "@/lib/types";
-import { useSetting, useBlock } from "@/lib/content";
+import { useBlock, useSetting, useList } from "@/lib/content";
 import type { AppSetting, MediaItem } from "@/lib/types";
 import { PRESS_PORTRAITS, ART, sheetDate, UPDATED } from "@/components/media/press";
 import { ContactRow } from "@/components/media/ContactSheet";
 import { CopyFacts } from "@/components/media/CopyFacts";
+import { SPELLINGS, ART_LABELS, FACTS } from "@/components/media/items";
 import "@/components/media/kit.css";
 
 /* ============================================================================
@@ -61,6 +62,36 @@ export const COPY: Record<string, string> = {
     "Interview requests, artwork and anything you need checked before you file go through the press route on the contact page. It reaches the team directly.",
   "index.heading": "Appearances, as they are booked.",
   "notes.heading": "Spellings, names and facts, checked before you file.",
+  "kit.eyebrow": "Press kit",
+  "kit.updated": "Sheet updated",
+  "kit.link_press": "Press enquiries",
+  "kit.link_show": "The show's own site",
+  "facts.heading": "Facts",
+  "facts.copy": "Copy the facts",
+  "facts.copied": "Copied",
+  "spellings.heading": "Spellings and marks",
+  "art.heading": "Art for download",
+  "people.label": "People",
+  "appearances.heading": "Appearances",
+  "appearances.failed":
+    "The index could not be loaded just now, so the standing entries above are what is known. Please try again shortly, or ask through the press route.",
+  "appearances.empty":
+    "No coverage has run yet, so there is none on this page. The first piece to run takes the next place on the shelf, with its outlet, its date and a link to the original.",
+  "route.heading": "Press route",
+  "route.label_enquiries": "Enquiries",
+  "route.label_readers": "Who reads it",
+  "ends.line": "Ends",
+  "facts.label_registered": "Registered",
+  "facts.label_player": "Player",
+  "facts.link_privacy": "Privacy policy",
+  "facts.link_app": "App",
+  "appearances.status_empty": "Nothing published yet",
+  "appearances.status_failed": "The index could not be loaded",
+  "appearances.status_loading": "Loading the index",
+  "appearances.tag_booked": "Booked",
+  "appearances.tag_expected": "Expected",
+  "appearances.tag_published": "Published",
+  "appearances.open": "Open",
 };
 
 /* The player's state. APP_LAUNCHED in src/lib/site.ts is the value the page
@@ -82,70 +113,34 @@ interface Fact {
    company details on /privacy, the founder on /story, the series and the
    episodes on the show's own site, the player on /app, the imagery on
    /ethical-ai. */
-function factsFor(launched: boolean, co: CompanySetting): Fact[] {
-  return [
-    { label: "Company", value: "CLÉ Family Media, an Irish children's media company. Watch, Play, Learn." },
-    {
-      label: "Registered",
-      value:
-        `${co.legal}, registered in Ireland, company number ${co.cro}. Registered office: ${co.office}.`,
-      link: { label: "Privacy policy", to: "/privacy" },
-    },
-    { label: "Founder", value: "Conor Sexton, Founder & CEO.", link: { label: "Our story", to: "/story" } },
-    {
-      label: "Series",
-      value: "The Pawsitive Pugs & Pals®, an animated series for children aged two to six.",
-      link: { label: "The show's own site", href: SITE.showUrl },
-    },
-    { label: "Characters", value: "Finn, the fawn pug. Fia, the black pug." },
-    {
-      label: "Episodes",
-      value:
-        "Series one. Four released and free to watch: The Feather (9:16), The Strawberry (11:10), Chicken Vision (10:41), The Cuckoo (9:58). Two further titles, Colour Quest and Fluffy Clouds, not yet released.",
-      link: { label: "The show's own site", href: SITE.showUrl },
-    },
-    { label: "Where to watch", value: "The show's own site, pawsitivepugs.com." },
-    {
-      label: "Player",
-      value: `${SITE.playerName}, ${launched ? "released." : "in development, not released."}`,
-      link: { label: "App", to: "/app" },
-    },
-    /* The honest form of the row pulled on 2026-10-08: no claim either way,
-       and it points at the page that names the tools. The client's own
-       provenance wording replaces it when it arrives (CONTENT-NEEDED). */
-    {
-      label: "Imagery",
-      value:
-        "The series is animated. How imagery and voice are produced, and which tools are used where, is set out on the Responsible AI page.",
-      link: { label: "Responsible AI", to: "/ethical-ai" },
-    },
-  ];
-}
+/* Where each editable row's link goes, matched by position to FACTS. The
+   Registered and Player rows are built from the company settings and the app
+   launch flag, so they stay here and are placed between the editable rows. */
+const FACT_TARGETS: (FactLink["to"] | { href: string } | null)[] = [null, "/story", { href: SITE.showUrl }, null, { href: SITE.showUrl }, null, "/ethical-ai"];
 
-interface Spelling {
-  label: string;
-  value: string;
-  /** A mono line under the value, for the one row that waits on the client. */
-  pending?: string;
+function factsFor(launched: boolean, co: CompanySetting, rows: typeof FACTS, w: Record<string, string>): Fact[] {
+  const out: Fact[] = rows.map((r, i) => {
+    const t = FACT_TARGETS[i];
+    const link: FactLink | undefined =
+      r.link && t ? (typeof t === "string" ? { label: r.link, to: t } : { label: r.link, href: t.href }) : undefined;
+    return { label: r.label, value: r.value, link };
+  });
+  const registered: Fact = {
+    label: w.registered,
+    value: `${co.legal}, registered in Ireland, company number ${co.cro}. Registered office: ${co.office}.`,
+    link: { label: w.privacy, to: "/privacy" },
+  };
+  const player: Fact = {
+    label: w.player,
+    value: `${SITE.playerName}, ${launched ? "released." : "in development, not released."}`,
+    link: { label: w.app, to: "/app" },
+  };
+  /* The honest form of the Imagery row pulled on 2026-10-08: no claim either
+     way, and it points at the page that names the tools. */
+  out.splice(1, 0, registered);
+  out.splice(7, 0, player);
+  return out;
 }
-
-/* The mistakes the company does not want in print. The glyphs are real
-   characters and are described in words beside them, so a reader on a system
-   that drops a mark still gets it right. */
-const SPELLINGS: Spelling[] = [
-  {
-    label: "The company",
-    value: "CLÉ Family Media, with the É, is the trading name. The registered company is CLE Family Media 25 Limited, without it.",
-  },
-  { label: "The series", value: "The Pawsitive Pugs & Pals®, with the ampersand and the registered mark on first use." },
-  { label: "The founder", value: "Conor Sexton. Founder & CEO." },
-  { label: "The dogs", value: "Finn and Fia. Finn is the fawn pug, Fia the black pug." },
-  /* episodes.ts carries "The Cuckoo" on the client's instruction; the video
-     it links to is titled "The Cuckoo's Incredible Journey". Which one the
-     press should print is the client's to say, so the row carries the
-     short title and the mark until then. */
-  { label: "Episode four", value: "The Cuckoo.", pending: "Title for print: to be confirmed" },
-];
 
 interface Standing {
   when: string;
@@ -320,9 +315,41 @@ export default function Media() {
   const artIntro = useBlock("media", "art.intro", COPY["art.intro"]);
   const peopleNote = useBlock("media", "people.note", COPY["people.note"]);
   const pressLead = useBlock("media", "press.lead", COPY["press.lead"]);
+  const useCopy = (k: string) => useBlock("media", k, COPY[k]);
+  const eyebrow = useCopy("kit.eyebrow");
+  const updated = useCopy("kit.updated");
+  const linkPress = useCopy("kit.link_press");
+  const linkShow = useCopy("kit.link_show");
+  const factsHeading = useCopy("facts.heading");
+  const copyLabel = useCopy("facts.copy");
+  const copiedLabel = useCopy("facts.copied");
+  const spellingsHeading = useCopy("spellings.heading");
+  const artHeading = useCopy("art.heading");
+  const peopleLabel = useCopy("people.label");
+  const appearancesHeading = useCopy("appearances.heading");
+  const failedNote = useCopy("appearances.failed");
+  const emptyNote = useCopy("appearances.empty");
+  const routeHeading = useCopy("route.heading");
+  const labelEnquiries = useCopy("route.label_enquiries");
+  const labelReaders = useCopy("route.label_readers");
+  const endsLine = useCopy("ends.line");
 
   const company = useSetting("company", COMPANY_DEFAULT);
-  const facts = factsFor(launched, company);
+  const factRows = useList("media", "facts.items", FACTS);
+  const spellings = useList("media", "spellings.items", SPELLINGS);
+  const artLabels = useList("media", "art.labels", ART_LABELS);
+  const labelRegistered = useCopy("facts.label_registered");
+  const labelPlayer = useCopy("facts.label_player");
+  const linkPrivacy = useCopy("facts.link_privacy");
+  const linkApp = useCopy("facts.link_app");
+  const statusEmpty = useCopy("appearances.status_empty");
+  const statusFailed = useCopy("appearances.status_failed");
+  const statusLoading = useCopy("appearances.status_loading");
+  const tagBooked = useCopy("appearances.tag_booked");
+  const tagExpected = useCopy("appearances.tag_expected");
+  const tagPublished = useCopy("appearances.tag_published");
+  const openWord = useCopy("appearances.open");
+  const facts = factsFor(launched, company, factRows, { registered: labelRegistered, privacy: linkPrivacy, player: labelPlayer, app: linkApp });
   const factsText = facts.map((f) => `${f.label}: ${f.value}`).join("\n");
 
   /* Names and roles only, Conor first, from the same list /team and /contact
@@ -339,14 +366,14 @@ export default function Media() {
         when: monthYear(m.published_on),
         title: m.outlet ? `${m.outlet}: ${m.title}` : m.title,
         body: m.description ?? "",
-        status: "Published",
+        status: tagPublished,
       }))
     : standingFor(launched).map((s) => ({
         key: s.what,
         when: s.when,
         title: s.what,
         body: s.detail,
-        status: s.pending ? "Expected" : "Booked",
+        status: s.pending ? tagExpected : tagBooked,
         missing: s.missing,
       }));
 
@@ -354,10 +381,10 @@ export default function Media() {
     load === "ready" && items
       ? `${items.length} ${items.length === 1 ? "entry" : "entries"}`
       : load === "empty"
-        ? "Nothing published yet"
+        ? statusEmpty
         : load === "failed"
-          ? "The index could not be loaded"
-          : "Loading the index";
+          ? statusFailed
+          : statusLoading;
 
   return (
     <>
@@ -375,17 +402,17 @@ export default function Media() {
             {/* ═══ THE TITLE BLOCK. The company's name is the title. Not a
                 sentence, not a claim. Links, not buttons. ═══ */}
             <Settle className="lg:sticky lg:top-28 lg:self-start">
-              <p className="eyebrow eyebrow-sm">Press kit</p>
+              <p className="eyebrow eyebrow-sm">{eyebrow}</p>
               <h1 className="t-h1 mt-3 max-w-[12ch] sm:mt-4">{title}</h1>
-              <p className={`${MONO_NOTE} mt-4 tnum sm:mt-5`}>Sheet updated {sheetDate(UPDATED)}</p>
+              <p className={`${MONO_NOTE} mt-4 tnum sm:mt-5`}><span>{updated}</span> {sheetDate(UPDATED)}</p>
               <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-body sm:mt-6">{intro}</p>
               <div className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-3 sm:mt-7">
                 <TextLink to="/contact?route=press">
-                  Press enquiries
+                  {linkPress}
                   <IconArrow size={15} />
                 </TextLink>
                 <TextLink href={SITE.showUrl}>
-                  The show's own site
+                  {linkShow}
                   <IconExternal size={14} />
                 </TextLink>
               </div>
@@ -396,27 +423,27 @@ export default function Media() {
             <Settle>
               {/* FACTS: the lines a journalist copies. Each one with a page
                   behind it carries the link to that page. */}
-              <Group id="kit-facts" label="Facts">
+              <Group id="kit-facts" label={factsHeading}>
                 <dl>
-                  {facts.map((f) => (
-                    <Row key={f.label} label={f.label}>
-                      {f.value}
+                  {facts.map((f, i) => (
+                    <Row key={i} label={f.label}>
+                      <span>{f.value}</span>
                       {f.link && <FactLinkOut link={f.link} />}
                     </Row>
                   ))}
                 </dl>
                 <div className="mt-5">
-                  <CopyFacts text={factsText} />
+                  <CopyFacts text={factsText} label={copyLabel} copied={copiedLabel} />
                 </div>
               </Group>
 
               {/* SPELLINGS AND MARKS: the mistakes the company does not want
                   in print. */}
-              <Group id="kit-spellings" label="Spellings and marks">
+              <Group id="kit-spellings" label={spellingsHeading}>
                 <dl>
-                  {SPELLINGS.map((s) => (
-                    <Row key={s.label} label={s.label}>
-                      {s.value}
+                  {spellings.map((s, i) => (
+                    <Row key={i} label={s.label}>
+                      <span>{s.value}</span>
                       {s.pending && <span className={`${MONO_NOTE} mt-1 block`}>{s.pending}</span>}
                     </Row>
                   ))}
@@ -426,18 +453,18 @@ export default function Media() {
               {/* ART FOR DOWNLOAD: the contact sheet, and the only place on
                   this page a show frame appears, small, with a caption that
                   says what it is. */}
-              <Group id="kit-art" label="Art for download">
+              <Group id="kit-art" label={artHeading}>
                 <p className="max-w-[62ch] text-[17px] leading-[1.65] text-body">{artIntro}</p>
                 <dl className="mt-5">
-                  {ART.map((row) => (
-                    <ContactRow key={row.label} label={row.label} files={row.files} />
+                  {ART.map((row, i) => (
+                    <ContactRow key={i} label={artLabels[i]?.label ?? row.label} files={row.files} />
                   ))}
                   {/* People: names and roles, no portraits. The sitters have
                       not been asked whether their photographs may be offered
                       for reuse. PRESS_PORTRAITS is the switch, by hand, after
                       written consent. */}
                   {!PRESS_PORTRAITS && (
-                    <Row label="People">
+                    <Row label={peopleLabel}>
                       <NameList people={people} />
                       <p className="mt-3 text-[17px] leading-[1.6] text-body">{peopleNote}</p>
                     </Row>
@@ -448,7 +475,7 @@ export default function Media() {
               {/* APPEARANCES: the index with its load state kept exactly as
                   built, because a failed load must never read as "nothing
                   has run". */}
-              <Group id="kit-appearances" label="Appearances">
+              <Group id="kit-appearances" label={appearancesHeading}>
                 <p className={MONO_NOTE} role="status">
                   {status}
                 </p>
@@ -477,7 +504,7 @@ export default function Media() {
                     {items.filter((m) => m.link).map((m) => (
                       <li key={m.id}>
                         <TextLink href={m.link as string}>
-                          Open {m.title}
+                          {openWord} {m.title}
                           <IconExternal size={14} />
                         </TextLink>
                       </li>
@@ -487,39 +514,36 @@ export default function Media() {
 
                 {load === "failed" && (
                   <p className="mt-5 max-w-[56ch] text-[17px] leading-[1.65] text-body">
-                    The index could not be loaded just now, so the standing entries above are what is
-                    known. Please try again shortly, or ask through the press route.
+                    {failedNote}
                   </p>
                 )}
                 {load === "empty" && (
                   <p className="mt-5 max-w-[56ch] text-[17px] leading-[1.65] text-body">
-                    No coverage has run yet, so there is none on this page. The first piece to run
-                    takes the next place on the shelf, with its outlet, its date and a link to the
-                    original.
+                    {emptyNote}
                   </p>
                 )}
               </Group>
 
               {/* PRESS ROUTE: a person. */}
-              <Group id="kit-route" label="Press route">
+              <Group id="kit-route" label={routeHeading}>
                 <dl>
-                  <Row label="Enquiries">
+                  <Row label={labelEnquiries}>
                     <span className="block max-w-[58ch]">{pressLead}</span>
                     <span className="mt-3 block">
                       <TextLink to="/contact?route=press">
-                        Press enquiries
+                        {linkPress}
                         <IconArrow size={15} />
                       </TextLink>
                     </span>
                   </Row>
-                  <Row label="Who reads it">
+                  <Row label={labelReaders}>
                     <NameList people={readers} />
                   </Row>
                 </dl>
               </Group>
 
               {/* The sheet ends as a sheet does. */}
-              <p className="hairline mt-2 pt-6 font-mono text-[14.5px] uppercase tracking-[0.2em] text-muted">Ends</p>
+              <p className="hairline mt-2 pt-6 font-mono text-[14.5px] uppercase tracking-[0.2em] text-muted">{endsLine}</p>
             </Settle>
           </div>
         </Container>

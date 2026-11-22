@@ -58,6 +58,10 @@ export function HeroFilm() {
      holds the wording). The headline is the brand line and is not. */
   const ctaPrimary = useBlock("home", "hero.cta_primary", COPY["hero.cta_primary"]);
   const ctaSecondary = useBlock("home", "hero.cta_secondary", COPY["hero.cta_secondary"]);
+  const ctaCase = useBlock("home", "hero.cta_case", COPY["hero.cta_case"]);
+  const eyebrow = useBlock("home", "hero.eyebrow", COPY["hero.eyebrow"]);
+  const ages = useBlock("home", "hero.ages", COPY["hero.ages"]);
+  const note = useBlock("home", "hero.note", COPY["hero.note"]);
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [sound, setSound] = useState(false);
@@ -368,12 +372,12 @@ export function HeroFilm() {
             schema, and the age band is the first thing anyone commissioning
             children's media asks. */}
         <p className="film-eyebrow">
-          Children&rsquo;s edutainment
-          <span>Ages 2 to 6</span>
+          {eyebrow}
+          <span>{ages}</span>
         </p>
 
         <div className="film-aside">
-          <p className="film-note">Built on research. Made by people.</p>
+          <p className="film-note">{note}</p>
           <div className="film-controls">
             <button type="button" onClick={toggleSound} className="film-btn">
               {sound ? "Mute" : "Sound on"}
@@ -432,7 +436,7 @@ export function HeroFilm() {
               <IconExternal size={15} />
             </Button>
             <Button to="/case-study" variant="quiet">
-              Case Study
+              {ctaCase}
               <IconArrow size={16} />
             </Button>
           </div>

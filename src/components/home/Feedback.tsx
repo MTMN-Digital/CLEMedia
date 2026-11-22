@@ -1,5 +1,7 @@
 import { Settle } from "@/components/Settle";
-import { useSetting } from "@/lib/content";
+import { useBlock, useSetting, useList } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
+import { FEEDBACK_PANELS } from "@/components/home/lists";
 
 /* ============================================================================
    Feedback from parents and educators.
@@ -45,6 +47,9 @@ export const QUOTES: Quote[] = [];
 
 export function Feedback({ headingId }: { headingId: string }) {
   /* Entered in the admin (Quotes), stored as the `quotes` setting. */
+  const heading = useBlock("home", "feedback.heading", COPY["feedback.heading"]);
+  const panels = useList("home", "feedback.panels", FEEDBACK_PANELS);
+  const note = useBlock("home", "feedback.note", COPY["feedback.note"]);
   const quotes = useSetting("quotes", { items: QUOTES }).items.filter((q) => q.words?.trim());
   return (
     <>
@@ -56,7 +61,7 @@ export function Feedback({ headingId }: { headingId: string }) {
           panels, where it reads as the note it is. */}
       <Settle>
         <h2 id={headingId} className="t-h2 max-w-[22ch]">
-          In their own words, with their permission.
+          {heading}
         </h2>
       </Settle>
 
@@ -77,29 +82,16 @@ export function Feedback({ headingId }: { headingId: string }) {
         /* The honest empty state, in the same voice the shop's empty shelf
            uses. A dashed edge says held open; a tinted panel says finished. */
         <Settle key="empty" className="mt-12 grid gap-6 border-t-[1.5px] border-rule pt-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
-          <div className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
-            <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
-              Parents and educators
-            </p>
-            <p className="t-body mt-4 max-w-[46ch] text-body">
-              Quotations from families and from educators who have used the episodes are being
-              gathered, and each one goes up only with the wording and the attribution that
-              person has agreed to.
-            </p>
-          </div>
-          <div className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
-            <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
-              Banteer workshop
-            </p>
-            <p className="t-body mt-4 max-w-[46ch] text-body">
-              A school workshop has already run in Banteer, and the school's own account of it
-              will be printed here under its own name. It is separate from the cross-border study
-              we are preparing.
-            </p>
-          </div>
+          {panels.map((p, i) => (
+            <div key={i} className="rounded-[var(--radius-lg)] border-[1.5px] border-dashed border-[color:var(--color-edge)] p-6 sm:p-7">
+              <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
+                {p.label}
+              </p>
+              <p className="t-body mt-4 max-w-[46ch] text-body">{p.body}</p>
+            </div>
+          ))}
           <p className="t-body lg:col-span-2">
-            We do not turn what one family said into a percentage, and we do not print anything
-            nobody has agreed to.
+            {note}
           </p>
         </Settle>
       )}

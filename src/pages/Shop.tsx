@@ -5,7 +5,8 @@ import { IconExternal, IconArrow } from "@/components/icons";
 import { Shelf, ShelfComing } from "@/components/shop/Shelf";
 import { fileFormat, formatLabel, formatPrice, useProducts } from "@/components/shop/catalogue";
 import { COPY } from "@/components/shop/copy";
-import { useSetting, useBlock } from "@/lib/content";
+import { REFUSAL_ITEMS } from "@/components/shop/lists";
+import { useBlock, useSetting, useList } from "@/lib/content";
 import { BOOKS_STATEMENT, BOOKS_CREDIT } from "@/lib/books";
 import type { Product, AppSetting } from "@/lib/types";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
@@ -44,37 +45,6 @@ import "@/components/shop/catalogue.css";
    content_blocks table renders this page exactly as written.
    ========================================================================== */
 
-/* Each line is checkable against the code, which is the only reason it is on
-   the page. `where` names the file that makes it true. Unchanged since
-   2026-10-06; now behind the footnote's disclosure rather than a band. */
-const REFUSALS: { body: string; where: string; title: string }[] = [
-  {
-    title: "No account",
-    body: "There is nothing to sign up to and no password to forget. Nothing on this site has a login except the admin panel the team writes from.",
-    where: "no auth on the public site",
-  },
-  {
-    title: "No email gate",
-    body: "Stripe asks for an address so it can send you its own receipt. We never ask for one, and your file does not wait behind it. We do keep the address Stripe collected, because your link lasts a day and it is the only way to find your order if you lose it.",
-    where: "api/stripe-webhook.ts stores it on the order",
-  },
-  {
-    title: "No mailing list",
-    body: "Buying something here never adds you to one. There is no list to be added to, so there is nothing to unsubscribe from later.",
-    where: "nothing in api/ reads that address",
-  },
-  {
-    title: "One payment",
-    body: "Each file is bought once and kept. Nothing renews, nothing is a trial, and there is no subscription to remember to cancel.",
-    where: "Stripe mode: payment",
-  },
-  {
-    title: "One thing to watch",
-    body: "Your download link works for 24 hours and up to five downloads. That is the only thing we ask you to pay attention to: save the file when it arrives.",
-    where: "api/download.ts",
-  },
-];
-
 const APP_DEFAULT: AppSetting = { launched: APP_LAUNCHED, target_window: null, app_store_url: null, play_store_url: null };
 
 /** The show's title in running text is set as a citation, never as an
@@ -111,6 +81,7 @@ export default function Shop() {
   const { launched } = useSetting("app", APP_DEFAULT);
   const products = useProducts();
   const [open, setOpen] = useState(false);
+  const refusals = useList("shop", "terms.items", REFUSAL_ITEMS);
   const c = {
     label: useBlock("shop", "shelf.label", COPY["shelf.label"]),
     title: useBlock("shop", "shelf.title", COPY["shelf.title"]),
@@ -121,6 +92,8 @@ export default function Shop() {
     failedLead: useBlock("shop", "failed.lead", COPY["failed.lead"]),
     failedLine: useBlock("shop", "failed.line", COPY["failed.line"]),
     closeLine: useBlock("shop", "close.line", COPY["close.line"]),
+    statusLoading: useBlock("shop", "status.loading", COPY["status.loading"]),
+    statusFailed: useBlock("shop", "status.failed", COPY["status.failed"]),
     closeShow: useBlock("shop", "close.show", COPY["close.show"]),
   };
 
@@ -131,9 +104,9 @@ export default function Shop() {
     products.state === "ready"
       ? statusLine(products.data)
       : products.state === "loading"
-        ? "Loading the shelf"
+        ? c.statusLoading
         : products.state === "failed"
-          ? "Could not load the shelf"
+          ? c.statusFailed
           : null;
 
   const shelved = true;
@@ -218,9 +191,9 @@ export default function Shop() {
                 </button>
                 <DisclosurePanel id="shop-refusals" open={open}>
                   <dl className="mt-5 max-w-[52rem] border-t-[1.5px] border-rule">
-                    {REFUSALS.map((r) => (
+                    {refusals.map((r, i) => (
                       <div
-                        key={r.title}
+                        key={i}
                         className="grid grid-cols-1 gap-x-10 gap-y-2 border-b-[1.5px] border-rule py-6 sm:grid-cols-[11rem_minmax(0,1fr)]"
                       >
                         <dt className="text-[17px] font-semibold leading-snug text-ink">{r.title}</dt>

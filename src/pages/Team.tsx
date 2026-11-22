@@ -55,6 +55,9 @@ export default function Team() {
   const heroTitle = useBlock("team", "hero.title", COPY["hero.title"]);
   const registerHeading = useBlock("team", "register.heading", COPY["register.heading"]);
   const registerKey = useBlock("team", "register.key", COPY["register.key"]);
+  const phasesLabel = useBlock("team", "register.phases", COPY["register.phases"]);
+  const accountLead = useBlock("team", "register.account", COPY["register.account"]);
+  const accountLink = useBlock("team", "register.account_link", COPY["register.account_link"]);
   const adviserHeading = useBlock("team", "adviser.heading", COPY["adviser.heading"]);
   const adviserLead = useBlock("team", "adviser.lead", COPY["adviser.lead"]);
   const expertsHeading = useBlock("team", "experts.heading", COPY["experts.heading"]);
@@ -113,7 +116,7 @@ export default function Team() {
                 sentence in the company's words, then where the full account
                 is. Middle dots between the names, never a dash. */}
             <p className="t-body mt-5 max-w-[78ch]">
-              <strong className="font-bold">Phases</strong>{" "}
+              <strong className="font-bold">{phasesLabel}</strong>{" "}
               {PHASES.map((s, i) => (
                 <span key={s.n}>
                   <span className="whitespace-nowrap font-mono text-[14px] uppercase tracking-[0.14em]">
@@ -122,9 +125,9 @@ export default function Team() {
                   {i < PHASES.length - 1 ? " · " : ". "}
                 </span>
               ))}
-              {registerKey} The full account is on the{" "}
+              {registerKey} {accountLead}{" "}
               <TextLink to="/ethical-ai" className="text-[17px]!">
-                Responsible AI page
+                {accountLink}
               </TextLink>
               .
             </p>

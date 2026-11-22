@@ -347,7 +347,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       </div>
 
       <aside className="pg-editor__side" aria-label="Editing">
-        <SiteMenu current={page} changed={changedBy} />
+        {!(sel || src) && <SiteMenu current={page} changed={changedBy} />}
 
         <section className="pg-editor__panel" aria-live="polite">
           {loaded.loading && !loaded.data && <p className="adm-muted" role="status">Loading...</p>}
@@ -378,6 +378,8 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
             </div>
           )}
         </section>
+
+        {(sel || src) && <SiteMenu current={page} changed={changedBy} />}
 
         {loaded.data && (
           <details className="pg-all">

@@ -2,6 +2,9 @@ import { Settle } from "@/components/Settle";
 import { TextLink } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
 import { DrawnRule, DrawnBox } from "@/components/draw/kit";
+import { useList, useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
+import { BEYOND_CARDS, BEYOND_LINKS } from "@/components/home/lists";
 
 /* ============================================================================
    Beyond the screen: the half of "Watch, Play, Learn" the home page never
@@ -32,7 +35,24 @@ import { DrawnRule, DrawnBox } from "@/components/draw/kit";
    the Irish Sea a school is on.
    ========================================================================== */
 
+/* A bracketed word in a card is the client's own open question (which
+   early-learning framework), shown dotted so nobody mistakes it for fact. */
+function withBrackets(text: string) {
+  return text.split(/(\[[^\]]+\])/).map((part, i) =>
+    i % 2 === 1 ? (
+      <span key={i} className="underline decoration-dotted underline-offset-4" aria-label="framework not yet confirmed">
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function BeyondScreen({ headingId }: { headingId: string }) {
+  const heading = useBlock("home", "beyond.heading", COPY["beyond.heading"]);
+  const lead = useBlock("home", "beyond.lead", COPY["beyond.lead"]);
+  const cards = useList("home", "beyond.cards", BEYOND_CARDS);
   return (
     <>
       {/* THE SENTENCE RUNS THE FULL MEASURE, 2026-10-27. It was a grey 21px
@@ -44,12 +64,11 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
           separation is a mark rather than a margin. */}
       <Settle>
         <h2 id={headingId} className="t-display max-w-[11ch]">
-          An online and offline balance.
+          {heading}
         </h2>
         <DrawnRule v={2} className="mt-8 max-w-[18rem]" />
         <p className="mt-7 font-display text-[clamp(1.25rem,0.95rem+1.1vw,1.875rem)] leading-[1.26] tracking-[-0.005em]">
-          The real value is not in watching. It is in the play, talk and learning that happen
-          afterwards, and every episode comes with materials to support it.
+          {lead}
         </p>
       </Settle>
 
@@ -57,41 +76,19 @@ export function BeyondScreen({ headingId }: { headingId: string }) {
         {/* DRAWN, NOT CARD STOCK, since 2026-10-27. The edge is a path in the
             same hand as every other mark on the site rather than a radius and
             a shadow. See components/draw/kit.tsx. */}
-        <Settle className="relative p-8 pt-9 sm:p-10 sm:pt-11">
-          <DrawnBox v={0} />
-          <span className="card-tab" aria-hidden="true">AT HOME</span>
-          <h3 className="t-h3">For parents and children</h3>
-          <p className="t-body mt-4 max-w-[42ch]">
-            Digital learning games and downloadable play packs that turn each episode into an
-            activity to do together.
-          </p>
-          <p className="mt-7">
-            <TextLink to="/app">
-              Inside the app<IconArrow size={15} />
-            </TextLink>
-          </p>
-        </Settle>
-
-        <Settle className="relative p-8 pt-9 sm:p-10 sm:pt-11">
-          <DrawnBox v={1} />
-          <span className="card-tab" aria-hidden="true">IN THE CLASSROOM</span>
-          <h3 className="t-h3">For educators and children</h3>
-          <p className="t-body mt-4 max-w-[42ch]">
-            Lesson-ready games and printable activities designed by educators, linked to{" "}
-            <span
-              className="underline decoration-dotted underline-offset-4"
-              aria-label="framework not yet confirmed"
-            >
-              [Aistear / EYFS]
-            </span>{" "}
-            early-learning goals.
-          </p>
-          <p className="mt-7">
-            <TextLink to="/shop">
-              Printable material<IconArrow size={15} />
-            </TextLink>
-          </p>
-        </Settle>
+        {cards.map((c, i) => (
+          <Settle key={i} className="relative p-8 pt-9 sm:p-10 sm:pt-11">
+            <DrawnBox v={i % 2} />
+            <span className="card-tab" aria-hidden="true">{c.tab}</span>
+            <h3 className="t-h3">{c.title}</h3>
+            <p className="t-body mt-4 max-w-[42ch]">{withBrackets(c.body)}</p>
+            <p className="mt-7">
+              <TextLink to={BEYOND_LINKS[i % BEYOND_LINKS.length]}>
+                {c.link}<IconArrow size={15} />
+              </TextLink>
+            </p>
+          </Settle>
+        ))}
       </div>
     </>
   );

@@ -5,9 +5,10 @@ import { ProductionFlat } from "@/components/ethical-ai/ProductionFlat";
 import { TheLineTable } from "@/components/ethical-ai/TheLineTable";
 import { ToolsTable } from "@/components/ethical-ai/ToolsTable";
 import { ForTheChild } from "@/components/ethical-ai/ForTheChild";
-import { STATIONS, DO_NOT } from "@/components/ethical-ai/stations";
+import { STATIONS } from "@/components/ethical-ai/stations";
 import { APPROVED_BY, ADOPTED, REVISED } from "@/components/ethical-ai/document";
 import { COPY } from "@/components/ethical-ai/copy";
+import { QUESTION_ITEMS, PHASE_ITEMS, COMMITMENT_ITEMS, REFUSAL_ITEMS } from "@/components/ethical-ai/lists";
 import {
   useActiveSection,
   DocSheet,
@@ -24,7 +25,7 @@ import {
 } from "@/components/doc";
 import { TextLink, Container, DisclosurePanel, Section } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
-import { useBlock } from "@/lib/content";
+import { useList, useBlock } from "@/lib/content";
 import "@/components/ethical-ai/pos.css";
 
 /* ============================================================================
@@ -73,63 +74,18 @@ import "@/components/ethical-ai/pos.css";
    not been supplied and is not invented here either (CONTENT-NEEDED.md).
    ========================================================================== */
 
-const LINES = [
-  {
-    title: "Human creativity comes first",
-    body: "Characters, stories, educational objectives, scripts and creative direction all begin with people. Tools can help bring those ideas to screen. They do not decide what a story should teach, how a character should behave, or what is appropriate for the children watching.",
-  },
-  {
-    title: "Human oversight at every stage",
-    body: "Using AI does not remove responsibility. Our team reviews, directs and refines the work throughout production. Outputs are not automatically generated and published.",
-  },
-  {
-    title: "Protecting original IP",
-    body: "The Pawsitive Pugs & Pals®, its characters and its world are original intellectual property. We do not intentionally use AI to reproduce the identifiable style, characters or IP of other creators or children's brands. The aim is to build our own world rather than imitate somebody else's.",
-  },
-  {
-    title: "Children's interests come before technology",
-    body: "The fact that technology can do something does not mean we should. Decisions are guided by the child's experience first: calm, age-appropriate content that moves a child beyond passive viewing into play, conversation and offline learning.",
-  },
-  {
-    title: "Education requires human judgement",
-    body: "Educators and early years experts set the learning goal and educational intention behind every episode, every storyline and every activity, and are involved every step of the way.",
-  },
-  {
-    title: "Transparency matters",
-    body: "We will not pretend AI is absent from our process. Equally, calling our programmes simply AI-generated misrepresents the human development, direction and review involved. We prefer the clearer description at the top of this page.",
-  },
-];
-
-const QUESTIONS = [
-  {
-    q: "Which tools are used?",
-    a: "Runway, for elements of visual production and animation, and ElevenLabs, for elements of audio and voice production. Both sit inside a human-led workflow rather than operating as autonomous content creators. As the technology changes we will keep reviewing the platforms we use, their commercial terms, and how they align with our standards on intellectual property, consent and responsible production.",
-  },
-  {
-    q: "Who writes and approves the stories?",
-    a: "Conor and Alan set the concept and the story. Alan writes the script and directs production. The finished episode is reviewed by the team before release, and any of them can ask for changes.",
-  },
-  {
-    q: "How are educational decisions made?",
-    a: "Scripts and episodes are developed under Alan's creative direction with educational input from Dr Paula Walshe. Conor, Paula, David Toth, Lydia Harding and Kirstie Harding contribute to the human review process. Those judgements are made by people, and we do not automate them.",
-  },
-  {
-    q: "What happens when a review identifies a problem?",
-    a: "The work is revised and re-reviewed, and the team watches and revises again until everyone is happy with the episode and signs it off for release. Getting an episode right matters more to us than getting it out on the original date.",
-  },
-];
-
 /* The five phases and the tool station, in the order Figure 1 draws them.
    The numerals are the document's; the phase numbers after the titles are
    the company's own (stations.ts `index`). See the note at the top. */
-const SUB_CLAUSES = (() => {
+function subClauses(items: { body: string; title: string; who: string }[]) {
   let n = 0;
-  return STATIONS.map((s) => {
-    if (s.kind === "tool") return { ...s, n: "Tools", suffix: "" };
+  return items.map((it, i) => {
+    const st = STATIONS[i];
+    if (st?.kind === "tool") return { ...it, kind: st.kind, n: "Tools", suffix: "" };
     n += 1;
-    return { ...s, n: `2.${n}`, suffix: s.index ? ` (phase ${s.index})` : "" };
+    return { ...it, kind: st?.kind ?? "person", n: `2.${n}`, suffix: st?.index ? ` (phase ${st.index})` : "" };
   });
-})();
+}
 
 const CONTENTS_IDS = ["position", "made", "tools", "never", "commitments", "review"] as const;
 
@@ -167,11 +123,13 @@ function Question({ id, q, a, open, onToggle }: { open: boolean; onToggle: () =>
  *  at `lg` and inside clause 2 below it; only one is displayed, so a screen
  *  reader meets the figure once. */
 function FigureOne({
+  labels,
   first,
   caption,
   captionFirst = false,
   className = "",
 }: {
+  labels: { signoff: string; figure: string; person: string; tool: string };
   first: string;
   caption: string;
   /** On a phone the drawing is 358px wide and reads as a scratch, so the
@@ -184,7 +142,7 @@ function FigureOne({
       <ProductionFlat className={captionFirst ? "order-2 mt-5" : ""} />
       <div className={`flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-10 ${captionFirst ? "order-1" : "mt-5"}`}>
         <figcaption className="max-w-[72ch] text-[15px] leading-[1.6] text-body">
-          <span className="mr-2 font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep">Figure 1</span>
+          <span className="mr-2 font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep">{labels.figure}</span>
           {first} {caption}
         </figcaption>
         <ul
@@ -193,18 +151,18 @@ function FigureOne({
         >
           <li className="flex items-center gap-2.5">
             <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full border-[1.5px] border-rule bg-raised" />
-            Person decides
+            {labels.person}
           </li>
           <li className="flex items-center gap-2.5">
             <span
               aria-hidden="true"
               className="h-3.5 w-3.5 rounded-[3px] border-[1.5px] border-rule bg-[color-mix(in_srgb,var(--color-sage)_46%,var(--color-raised))]"
             />
-            Tool assists
+            {labels.tool}
           </li>
           <li className="flex items-center gap-2.5">
             <span aria-hidden="true" className="h-3.5 w-3.5 rounded-full bg-raised ring-2 ring-red/70" />
-            Everyone signs off
+            {labels.signoff}
           </li>
         </ul>
       </div>
@@ -247,6 +205,25 @@ export default function EthicalAi() {
   const reviewBody = useBlock("ethical-ai", "review.body", COPY["review.body"]);
   const reviewLink = useBlock("ethical-ai", "review.link", COPY["review.link"]);
 
+  const tabLabel = useBlock("ethical-ai", "tab.label", COPY["tab.label"]);
+  const lApplies = useBlock("ethical-ai", "status.applies", COPY["status.applies"]);
+  const lTools = useBlock("ethical-ai", "status.tools", COPY["status.tools"]);
+  const lAdopted = useBlock("ethical-ai", "status.adopted", COPY["status.adopted"]);
+  const lApproved = useBlock("ethical-ai", "status.approved", COPY["status.approved"]);
+  const figureLabels = {
+    figure: useBlock("ethical-ai", "figure.label", COPY["figure.label"]),
+    person: useBlock("ethical-ai", "key.person", COPY["key.person"]),
+    tool: useBlock("ethical-ai", "key.tool", COPY["key.tool"]),
+    signoff: useBlock("ethical-ai", "key.signoff", COPY["key.signoff"]),
+  };
+  const returnTitle = useBlock("ethical-ai", "return.title", COPY["return.title"]);
+  const reviewsTitle = useBlock("ethical-ai", "reviews.title", COPY["reviews.title"]);
+  const teamLink = useBlock("ethical-ai", "team.link", COPY["team.link"]);
+  const phases = subClauses(useList("ethical-ai", "phases.items", PHASE_ITEMS));
+  const refusals = useList("ethical-ai", "refusals.items", REFUSAL_ITEMS);
+  const commitments = useList("ethical-ai", "commitments.items", COMMITMENT_ITEMS);
+  const questions = useList("ethical-ai", "questions.items", QUESTION_ITEMS);
+
   const headings = [h1, h2, h3, h4, h5, h6];
   const contents = [
     ...CONTENTS_IDS.map((id, i) => ({ id, n: String(i + 1), label: headings[i] })),
@@ -270,7 +247,7 @@ export default function EthicalAi() {
       <Section pad={["close", "normal"]}>
         <Container width="wide">
           <div className="pt-4 sm:pt-6">
-            <DocSheet tabs={[{ label: "Position statement", current: true }]} width="wide">
+            <DocSheet tabs={[{ label: tabLabel, current: true }]} width="wide">
               {/* The page's one entrance: the sheet's contents settle in
                   order, title block, then Figure 1, then the body. The
                   clauses below do not settle one by one. */}
@@ -291,10 +268,10 @@ export default function EthicalAi() {
                   <DocStatus
                     rows={[
                       { label: REVISED_LABEL, value: revised },
-                      { label: "Applies to", value: applies },
-                      { label: "Tools named", value: toolsNamed },
-                      { label: "Adopted", value: adopted || null },
-                      { label: "Approved by", value: approvedBy || null },
+                      { label: lApplies, value: applies },
+                      { label: lTools, value: toolsNamed },
+                      { label: lAdopted, value: adopted || null },
+                      { label: lApproved, value: approvedBy || null },
                     ]}
                   />
                 </div>
@@ -305,6 +282,7 @@ export default function EthicalAi() {
                     Under `lg` it mounts inside clause 2 instead, where the
                     text introduces it and the caption leads. ── */}
                 <FigureOne
+                  labels={figureLabels}
                   first={figureFirst}
                   caption={figureCaption}
                   className="mt-10 hidden border-t-[1.5px] border-rule pt-8 lg:block"
@@ -333,11 +311,11 @@ export default function EthicalAi() {
                         reader gets instead of a 75px scratch. */}
                     <DocClause id="made" n="2" title={h2}>
                       <p>{madeLead}</p>
-                      <FigureOne first={figureFirst} caption={figureCaption} captionFirst className="!mt-6 lg:hidden" />
+                      <FigureOne labels={figureLabels} first={figureFirst} caption={figureCaption} captionFirst className="!mt-6 lg:hidden" />
                       <div className="!mt-8 space-y-7">
-                        {SUB_CLAUSES.map((s) => (
+                        {phases.map((s, i) => (
                           <DocSubClause
-                            key={s.title}
+                            key={i}
                             n={s.n}
                             title={`${s.title}${s.suffix}`}
                             className={s.kind === "gate" ? "pos-hold" : ""}
@@ -347,19 +325,19 @@ export default function EthicalAi() {
                           </DocSubClause>
                         ))}
 
-                        <DocSubClause n="2.6" title="The return">
+                        <DocSubClause n="2.6" title={returnTitle}>
                           <div className="flex gap-4">
                             <span aria-hidden="true" className="mt-3 h-0 w-8 shrink-0 border-t-2 border-dashed border-red" />
                             <p>{returnBody}</p>
                           </div>
                         </DocSubClause>
 
-                        <DocSubClause n="2.7" title="What the reviews are for">
+                        <DocSubClause n="2.7" title={reviewsTitle}>
                           <ForTheChild />
                           <p className="!mt-5">
                             {reviewsLine}{" "}
                             <TextLink to="/team">
-                              The team<IconArrow size={15} />
+                              {teamLink}<IconArrow size={15} />
                             </TextLink>
                           </p>
                         </DocSubClause>
@@ -384,12 +362,12 @@ export default function EthicalAi() {
                         <TheLineTable />
                       </div>
                       <ol className="pos-refusals !mt-8">
-                        {DO_NOT.map((d, i) => (
-                          <li key={d}>
+                        {refusals.map((d, i) => (
+                          <li key={i}>
                             <span className="pos-n" aria-hidden="true">
                               4.{i + 1}
                             </span>
-                            <p className="t-body text-body">{d}</p>
+                            <p className="t-body text-body">{d.text}</p>
                           </li>
                         ))}
                       </ol>
@@ -398,8 +376,8 @@ export default function EthicalAi() {
                     {/* 5 Six commitments. One column; a document reads down. */}
                     <DocClause id="commitments" n="5" title={h5}>
                       <div className="!mt-7 space-y-7">
-                        {LINES.map((l, i) => (
-                          <DocSubClause key={l.title} n={`5.${i + 1}`} title={l.title}>
+                        {commitments.map((l, i) => (
+                          <DocSubClause key={i} n={`5.${i + 1}`} title={l.title}>
                             <p>{l.body}</p>
                           </DocSubClause>
                         ))}
@@ -427,9 +405,9 @@ export default function EthicalAi() {
                         list, first open, one at a time. */}
                     <DocClause id="appendix-a" n="A" title={hA} className="mt-12 border-t-[1.5px] border-rule">
                       <ul className="!mt-2 border-b-[1.5px] border-rule">
-                        {QUESTIONS.map((f, i) => (
+                        {questions.map((f, i) => (
                           <Question
-                            key={f.q}
+                            key={i}
                             id={`pos-q-${i}`}
                             q={f.q}
                             a={f.a}

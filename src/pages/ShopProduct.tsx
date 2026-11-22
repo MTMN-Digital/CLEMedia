@@ -4,12 +4,13 @@ import { Seo } from "@/components/Seo";
 import { Lead, Section, TextLink, Container, Kicker, Button } from "@/components/ui";
 import { IconDownload, IconArrow } from "@/components/icons";
 import { Settle } from "@/components/Settle";
-import { Docket } from "@/components/shop/Docket";
+import { type DocketRow, Docket } from "@/components/shop/Docket";
 import { Cover, coverPicture } from "@/components/shop/Cover";
 import { samplesFor, packFor } from "@/components/shop/samples";
 import { fileFormat, formatPrice, useProduct, formatLabel, paragraphs } from "@/components/shop/catalogue";
 import { COPY } from "@/components/shop/copy";
-import { useBlock } from "@/lib/content";
+import { TERM_STRONG, TERM_ITEMS } from "@/components/shop/lists";
+import { useList, useBlock } from "@/lib/content";
 import { BOOKS_CREDIT, fileLine } from "@/lib/books";
 import "@/components/shop/buy.css";
 import "@/components/shop/catalogue.css";
@@ -52,21 +53,12 @@ import "@/components/shop/catalogue.css";
 /* True of every file in this shop. Stated as a docket so the promise and the
    receipt on /download are the same document. The format row is the one
    term that comes from the product. */
-function terms(format: null | "zip" | "pdf") {
+function terms(format: null | "zip" | "pdf", items: { k: string; v: string }[]) {
   return [
-    { k: "Format", v: formatLabel(format) },
-    { k: "Pay by card", v: "Stripe" },
-    { k: "Delivery", v: "straight away" },
-    { k: "Link valid for", v: "24 hours", strong: true },
-    { k: "Downloads allowed", v: "5", strong: true },
-    { k: "Account created", v: "none" },
-    /* The consequence of "straight away", stated where the other terms are
-       rather than left to the policy page, and again above the button as the
-       acknowledgement. */
-    { k: "Right to cancel", v: "ends on download", strong: true },
+    { k: "Format", v: formatLabel(format) } as DocketRow,
+    ...items.map((t, i) => ({ k: t.k, v: t.v, strong: TERM_STRONG.includes(i) })),
   ];
 }
-
 const COVER_SIZES = "(min-width: 1024px) 52vw, 100vw";
 const PAGE_SIZES = "(min-width: 640px) 30vw, 78vw";
 
@@ -89,11 +81,33 @@ export default function ShopProduct() {
     freeLine: useBlock("shop", "product.free.line", COPY["product.free.line"]),
     docketFoot: useBlock("shop", "product.docket.foot", COPY["product.docket.foot"]),
     wrongLine: useBlock("shop", "product.wrong.line", COPY["product.wrong.line"]),
+    crumb: useBlock("shop", "product.crumb", COPY["product.crumb"]),
+    coverCaption: useBlock("shop", "product.cover.caption", COPY["product.cover.caption"]),
+    cancelled: useBlock("shop", "product.cancelled", COPY["product.cancelled"]),
+    folderLabel: useBlock("shop", "product.folder.label", COPY["product.folder.label"]),
+    ack: useBlock("shop", "product.ack", COPY["product.ack"]),
+    buyNote: useBlock("shop", "product.buy.note", COPY["product.buy.note"]),
+    swipe: useBlock("shop", "product.samples.swipe", COPY["product.samples.swipe"]),
+    docketLabel: useBlock("shop", "product.docket.label", COPY["product.docket.label"]),
+    contactLink: useBlock("shop", "product.contact.link", COPY["product.contact.link"]),
+    loading: useBlock("shop", "product.loading", COPY["product.loading"]),
+    failedKicker: useBlock("shop", "product.failed.kicker", COPY["product.failed.kicker"]),
+    failedTitle: useBlock("shop", "product.failed.title", COPY["product.failed.title"]),
+    failedLead: useBlock("shop", "product.failed.lead", COPY["product.failed.lead"]),
+    retry: useBlock("shop", "product.retry", COPY["product.retry"]),
+    back: useBlock("shop", "product.back", COPY["product.back"]),
+    emptyKicker: useBlock("shop", "product.empty.kicker", COPY["product.empty.kicker"]),
+    emptyTitle: useBlock("shop", "product.empty.title", COPY["product.empty.title"]),
+    emptyLead: useBlock("shop", "product.empty.lead", COPY["product.empty.lead"]),
+    emptyShop: useBlock("shop", "product.empty.shop", COPY["product.empty.shop"]),
+    emptyContact: useBlock("shop", "product.empty.contact", COPY["product.empty.contact"]),
+    noCover: useBlock("shop", "product.nocover", COPY["product.nocover"]),
   };
 
   // Stripe's cancel_url sends a buyer back here with this flag. Saying so
   // plainly is the difference between a cancelled checkout and a site that
   // looks like it lost the payment.
+  const termItems = useList("shop", "product.terms", TERM_ITEMS);
   const cancelled = params.get("checkout") === "cancelled";
 
   async function buy() {
@@ -128,7 +142,7 @@ export default function ShopProduct() {
         <Section>
           <Container width="wide">
             <p className="font-mono text-[14px] uppercase tracking-[0.14em] text-muted">
-              Fetching this file
+              {c.loading}
             </p>
           </Container>
         </Section>
@@ -150,16 +164,15 @@ export default function ShopProduct() {
             nothing about whether this file exists. */}
         <Section labelledBy="product-h" pad={["normal", "open"]}>
           <Container width="wide">
-            <Kicker className="eyebrow-sm">Could not load</Kicker>
-            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">We could not load this one</h1>
+            <Kicker className="eyebrow-sm">{c.failedKicker}</Kicker>
+            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">{c.failedTitle}</h1>
             <Lead className="mt-7 max-w-[46ch]">
-              Something went wrong at our end, not yours. Reload the page, and if it keeps
-              happening tell us and we will look at it.
+              {c.failedLead}
             </Lead>
             <div className="mt-9 flex flex-wrap gap-4">
-              <Button onClick={() => window.location.reload()}>Try again</Button>
+              <Button onClick={() => window.location.reload()}>{c.retry}</Button>
               <Button to="/shop" variant="quiet">
-                Back to the shop
+                {c.back}
               </Button>
             </div>
           </Container>
@@ -175,19 +188,18 @@ export default function ShopProduct() {
         <Seo title="Not found" description="This pack could not be found." path={`/shop/${slug ?? ""}`} noIndex />
         <Section labelledBy="product-h" pad={["normal", "open"]}>
           <Container width="wide">
-            <Kicker className="eyebrow-sm">Not on sale</Kicker>
-            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">That one is not on the shelf</h1>
+            <Kicker className="eyebrow-sm">{c.emptyKicker}</Kicker>
+            <h1 id="product-h" className="t-h1 mt-6 max-w-[16ch]">{c.emptyTitle}</h1>
             <Lead className="mt-7 max-w-[46ch]">
-              Either the link is wrong, or the file has been taken off sale. Nothing was charged,
-              and if you already bought it your download link still works for its full 24 hours.
+              {c.emptyLead}
             </Lead>
             <div className="mt-9 flex flex-wrap gap-4">
               <Button to="/shop">
-                See what is on sale
+                {c.emptyShop}
                 <IconArrow size={16} />
               </Button>
               <Button to="/contact" variant="quiet">
-                Get in touch
+                {c.emptyContact}
               </Button>
             </div>
           </Container>
@@ -232,7 +244,7 @@ export default function ShopProduct() {
       <Section labelledBy="product-h" pad={["normal", "tight"]}>
         <Container width="wide">
           <p className="flex flex-wrap items-center gap-x-2 font-mono text-[14.5px] uppercase tracking-[0.14em] text-muted">
-            <TextLink to="/shop">Shop</TextLink>
+            <TextLink to="/shop">{c.crumb}</TextLink>
             <span aria-hidden="true">/</span>
             <span className="text-ink">{p.title}</span>
           </p>
@@ -248,7 +260,7 @@ export default function ShopProduct() {
                     <Cover product={p} sizes={COVER_SIZES} priority />
                   </div>
                   <figcaption className="mt-3 font-mono text-[13px] leading-[1.6] text-body sm:text-right">
-                    {cover ? `Cover of the activity book. ${BOOKS_CREDIT}` : "No artwork has been uploaded for this file yet."}
+                    {cover ? `${c.coverCaption} ${BOOKS_CREDIT}` : c.noCover}
                   </figcaption>
                 </figure>
               </Settle>
@@ -258,8 +270,7 @@ export default function ShopProduct() {
             <div>
               {cancelled && (
                 <p className="mb-8 border-[1.5px] border-rule bg-raised px-5 py-4 text-[15.5px] leading-[1.6] text-ink">
-                  Checkout was cancelled and nothing was charged. The file is still here whenever
-                  you want it.
+                  {c.cancelled}
                 </p>
               )}
 
@@ -271,7 +282,7 @@ export default function ShopProduct() {
 
               {folder && (
                 <div className="mt-8 max-w-[54ch]">
-                  <p className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">In the folder</p>
+                  <p className="font-mono text-[14px] uppercase tracking-[0.12em] text-body">{c.folderLabel}</p>
                   <ul className="mt-3 border-t-[1.5px] border-rule">
                     {folder.map((line) => (
                       <li key={line} className="border-b-[1.5px] border-rule py-3 text-[17px] leading-[1.5] text-ink">
@@ -303,8 +314,7 @@ export default function ShopProduct() {
                     }}
                   />
                   <span className="text-[15px] leading-[1.55] text-body">
-                    I understand the download starts straight away, and that once it does I lose
-                    the right to cancel.
+                    {c.ack}
                   </span>
                 </label>
 
@@ -319,8 +329,7 @@ export default function ShopProduct() {
                 </Button>
                 <p className="mt-4 max-w-[44ch] text-[14.5px] leading-[1.6] text-body">
                   {!ack && "Tick the box above to continue. "}
-                  Card payment is handled by Stripe. You are not asked to make an account, and
-                  buying never puts you on a mailing list.
+                  {c.buyNote}
                 </p>
                 {error && (
                   <p role="alert" className="mt-4 max-w-[44ch] text-[15px] font-semibold text-red-deep">
@@ -342,7 +351,7 @@ export default function ShopProduct() {
           <Container width="wide">
             <h2 id="samples-h" className="t-h2 max-w-[24ch]">{c.samplesHeading}</h2>
             <p className="mt-4 font-mono text-[13px] uppercase tracking-[0.12em] text-body sm:hidden">
-              3 pages, swipe
+              {c.swipe}
             </p>
             <Settle as="ul" className="cat-samples mt-8 sm:mt-10">
               {samples.map((s, i) => (
@@ -390,13 +399,13 @@ export default function ShopProduct() {
               </p>
             </div>
             <Docket
-              label="What a purchase is"
-              rows={terms(format)}
+              label={c.docketLabel}
+              rows={terms(format, termItems)}
               foot={
                 <>
                   {c.docketFoot} {c.wrongLine}{" "}
                   <TextLink to="/contact" className="text-[15px]">
-                    Get in touch
+                    {c.contactLink}
                     <IconArrow size={14} />
                   </TextLink>
                 </>

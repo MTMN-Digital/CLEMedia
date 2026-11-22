@@ -4,16 +4,17 @@ import { Seo } from "@/components/Seo";
 import { FactRows } from "@/components/FactRows";
 import { PupsMark } from "@/components/app/PupsMark";
 import { EpisodeSlates } from "@/components/app/EpisodeSlates";
-import { LearnMaterial } from "@/components/app/LearnMaterial";
+import { LearnMaterial, PAGE_CAPTIONS, COVERS_CAPTION } from "@/components/app/LearnMaterial";
 import { citeShow } from "@/components/app/cite";
-import { type Stage, STAGES, PupsPlayerWalkthrough } from "@/components/app/PupsPlayerWalkthrough";
+import { PupsPlayerWalkthrough, STAGES } from "@/components/app/PupsPlayerWalkthrough";
 import { useEpisodes } from "@/lib/useEpisodes";
 import { AWAY_LABEL } from "@/lib/books";
 import { Button, Section, TextLink, Container } from "@/components/ui";
 import { IconExternal, IconBell, IconArrow } from "@/components/icons";
 import type { AppSetting } from "@/lib/types";
 import { SITE, APP_LAUNCHED } from "@/lib/site";
-import { useBlock, useSetting, useImageBlock } from "@/lib/content";
+import { useList, useSetting, useImageBlock, useBlock } from "@/lib/content";
+import { type AppFeature, WATCH_ITEMS, PLAY_ITEMS, WALLS, GAMES, LEARN_ITEMS } from "@/components/app/items";
 import "@/components/app/sheet.css";
 
 /* ============================================================================
@@ -61,6 +62,26 @@ export const COPY: Record<string, string> = {
   "next.note":
     "In development and not yet available. Everything on this page is the first release as it is planned, not as it has been tested, and we will say which is which once testing is done.",
   "close.line": "The printable books are sold on their own in the shop, and the episodes are on the show site.",
+  "device.credit": "Drawn from the plan, not a screenshot.",
+  "status.label_status": "Status",
+  "status.label_holds": "Holds",
+  "status.label_for": "For",
+  "status.label_stores": "Stores",
+  "status.stores_empty": "Not yet listed. Links will appear here once they are confirmed.",
+  "status.label_until": "Until then",
+  "until.lead": "The four released episodes are on YouTube,",
+  "until.link": "listed below",
+  "until.notify": "Hear when it lands",
+  "check.link": "The full review sequence",
+  "close.shop": "The shop",
+  "close.show": "The show's own site",
+  "watch.title": STAGES[0].title,
+  "watch.line": STAGES[0].line,
+  "play.title": STAGES[1].title,
+  "play.line": STAGES[1].line,
+  "learn.title": STAGES[2].title,
+  "learn.line": STAGES[2].line,
+  "learn.covers_caption": COVERS_CAPTION,
 };
 
 /** The launch flag and the store links. APP_LAUNCHED in src/lib/site.ts is
@@ -81,71 +102,6 @@ function storeLinks(app: AppSetting): { href: string | null; label: string }[] {
   ];
 }
 
-/* The eight commitments, the client's own wording, unchanged since the
-   2026-10-24 review document. Grouped by the stage of Watch, Play, Learn each
-   one belongs to; the stage lines come from the walkthrough, so the page and
-   the device always say the same thing. */
-const ITEMS: Record<string, { title: string; body: string }> = {
-  adFree: {
-    title: "Every episode, ad free",
-    body: "The full run of The Pawsitive Pugs & Pals in one place, with nothing competing for a child's attention around it. No autoplay into something nobody chose.",
-  },
-  hands: {
-    title: "Built for small hands",
-    body: "Large targets, simple navigation and no dark patterns.",
-  },
-  follows: {
-    title: "Play that follows the story",
-    body: "Each episode has activities built from what just happened in it, so the play reinforces the idea rather than sitting beside it as a separate game.",
-  },
-  games: {
-    title: "Games, songs and a drawing canvas",
-    body: "Songs, puzzles, tasks, matching, recall and jigsaw games, colouring sheets and a blank canvas to draw on. The interactive games are being built for families at home and for classroom boards.",
-  },
-  printables: {
-    title: "Printables for the table",
-    body: "Colouring, puzzles and activity sheets to print and take away from the screen, because not all of this should happen on one.",
-  },
-  mindful: {
-    title: "A mindfulness guide, and the offline activities",
-    body: "Paula's offline activities and a mindfulness guide, so the time after an episode has somewhere to go that is not another screen.",
-  },
-  grounded: {
-    title: "Grounded in the learning",
-    body: "Every activity maps back to the early years objective behind its episode, reviewed by the same people who review the episodes.",
-  },
-};
-const STAGE_ITEMS: Record<Stage, string[]> = {
-  watch: ["adFree", "hands"],
-  play: ["follows", "games"],
-  learn: ["printables", "mindful", "grounded"],
-};
-
-/* The games list from the client's 22 October document, as a spec rather
-   than a promise. */
-const GAMES = [
-  "Songs",
-  "Puzzles",
-  "Tasks",
-  "Matching",
-  "Recall",
-  "Jigsaws",
-  "Colouring sheets",
-  "A blank canvas",
-  "A movement or breathing prompt",
-];
-
-/* The four refusals, as the specification they are. Each row is the page's
-   own claim in its own words, from the commitments and the Watch line, and
-   nothing is added to them. "Large targets, simple navigation and no dark
-   patterns" stays in the Watch row: it is a design choice, not a refusal. */
-const WALLS: { label: string; line: string }[] = [
-  { label: "Autoplay", line: "You are in control. When an episode ends, the next episode does not autoplay. The choice to continue belongs to the child and their grown-up." },
-  { label: "Purchases", line: "No purchases inside a game." },
-  { label: "Advertising", line: "No advertising to children anywhere in it, and nothing recommending the next thing to watch." },
-  { label: "Grown-ups", line: "Clear settings for parents, behind the Grown-ups button in the player." },
-];
-
 /* An on-page anchor in the TextLink's clothes. TextLink's `href` opens a new
    tab and its `to` goes through the router, and neither is right for a link
    that only goes down this page. */
@@ -158,15 +114,18 @@ function AnchorLink({ href, children }: { children: string; href: string }) {
 }
 
 /* The label column of a contents row: the stage, its line, and its items. */
-function StageLabel({ stage }: { stage: (typeof STAGES)[number] }) {
+function StageLabel({ stage, items }: { items: AppFeature[]; stage: (typeof STAGES)[number] }) {
   return (
     <div>
       <h3 className="t-h3 font-bold text-ink">{stage.title}</h3>
       <p className="t-body mt-3 max-w-[40ch] text-ink">{stage.line}</p>
       <ul className="mt-6 max-w-[44ch]">
-        {STAGE_ITEMS[stage.id].map((k) => (
-          <li key={k} className="t-body mt-4 text-body first:mt-0">
-            <span className="font-semibold text-ink">{ITEMS[k].title}.</span> {ITEMS[k].body}
+        {items.map((it, i) => (
+          <li key={i} className="t-body mt-4 text-body first:mt-0">
+            <span className="font-semibold text-ink">
+              <span>{it.title}</span>.
+            </span>{" "}
+            <span>{it.body}</span>
           </li>
         ))}
       </ul>
@@ -204,7 +163,39 @@ export default function AppPage() {
   const nextNote = useBlock("app", "next.note", COPY["next.note"]);
   const closeLine = useBlock("app", "close.line", COPY["close.line"]);
 
-  const [watch, play, learn] = STAGES;
+  const labelStatus = useBlock("app", "status.label_status", COPY["status.label_status"]);
+  const labelHolds = useBlock("app", "status.label_holds", COPY["status.label_holds"]);
+  const labelFor = useBlock("app", "status.label_for", COPY["status.label_for"]);
+  const labelStores = useBlock("app", "status.label_stores", COPY["status.label_stores"]);
+  const storesEmpty = useBlock("app", "status.stores_empty", COPY["status.stores_empty"]);
+  const labelUntil = useBlock("app", "status.label_until", COPY["status.label_until"]);
+  const untilLead = useBlock("app", "until.lead", COPY["until.lead"]);
+  const untilLink = useBlock("app", "until.link", COPY["until.link"]);
+  const untilNotify = useBlock("app", "until.notify", COPY["until.notify"]);
+  const credit = useBlock("app", "device.credit", COPY["device.credit"]);
+  const checkLink = useBlock("app", "check.link", COPY["check.link"]);
+  const closeShop = useBlock("app", "close.shop", COPY["close.shop"]);
+  const closeShow = useBlock("app", "close.show", COPY["close.show"]);
+  const watchItems = useList("app", "watch.items", WATCH_ITEMS);
+  const playItems = useList("app", "play.items", PLAY_ITEMS);
+  const learnItems = useList("app", "learn.items", LEARN_ITEMS);
+  const games = useList("app", "play.games", GAMES);
+  const walls = useList("app", "walls.items", WALLS);
+
+  const watchTitle = useBlock("app", "watch.title", COPY["watch.title"]);
+  const watchLine = useBlock("app", "watch.line", COPY["watch.line"]);
+  const playTitle = useBlock("app", "play.title", COPY["play.title"]);
+  const playLine = useBlock("app", "play.line", COPY["play.line"]);
+  const learnTitle = useBlock("app", "learn.title", COPY["learn.title"]);
+  const learnLine = useBlock("app", "learn.line", COPY["learn.line"]);
+  const coversCaption = useBlock("app", "learn.covers_caption", COPY["learn.covers_caption"]);
+  const captions = useList("app", "learn.captions", PAGE_CAPTIONS);
+  const stages: typeof STAGES = [
+    { ...STAGES[0], title: watchTitle, line: watchLine },
+    { ...STAGES[1], title: playTitle, line: playLine },
+    { ...STAGES[2], title: learnTitle, line: learnLine },
+  ];
+  const [watch, play, learn] = stages;
 
   return (
     <>
@@ -226,6 +217,7 @@ export default function AppPage() {
           <PupsPlayerWalkthrough
             episodes={episodes}
             capture={capture}
+            stages={stages}
             lead={
               <div>
                 <PupsMark className="h-11 w-11 text-navy lg:h-14 lg:w-14" />
@@ -239,18 +231,18 @@ export default function AppPage() {
             credit={
               capture ? null : (
                 <p className="mt-6 text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-body">
-                  Drawn from the plan, not a screenshot.
+                  {credit}
                 </p>
               )
             }
             after={
               <FactRows
                 rows={[
-                  { label: "Status", value: launched ? "Available now" : "In development" },
-                  { label: "Holds", value: citeShow(holds) },
-                  { label: "For", value: forWhom },
+                  { label: labelStatus, value: launched ? "Available now" : "In development" },
+                  { label: labelHolds, value: citeShow(holds) },
+                  { label: labelFor, value: forWhom },
                   {
-                    label: "Stores",
+                    label: labelStores,
                     value:
                       liveLinks.length > 0 ? (
                         <span className="flex flex-wrap gap-3">
@@ -262,18 +254,18 @@ export default function AppPage() {
                           ))}
                         </span>
                       ) : (
-                        "Not yet listed. Links will appear here once they are confirmed."
+                        storesEmpty
                       ),
                   },
                   {
-                    label: "Until then",
+                    label: labelUntil,
                     value: (
                       <>
-                        The four released episodes are on YouTube,{" "}
-                        <AnchorLink href="#released">listed below</AnchorLink>
+                        <span>{untilLead}</span>{" "}
+                        <AnchorLink href="#released">{untilLink}</AnchorLink>
                         {!launched && (
                           <>
-                            {" "}&middot; <AnchorLink href="#notify">Hear when it lands</AnchorLink>
+                            {" "}&middot; <AnchorLink href="#notify">{untilNotify}</AnchorLink>
                           </>
                         )}
                       </>
@@ -299,7 +291,7 @@ export default function AppPage() {
 
           <div className="mt-10 border-b-[1.5px] border-rule sm:mt-12">
             <div className={ROW}>
-              <StageLabel stage={watch} />
+              <StageLabel stage={watch} items={watchItems} />
               <div>
                 <EpisodeSlates episodes={episodes} id="released" />
                 <p className="t-sm mt-7 text-body">{watchFootnote}</p>
@@ -307,13 +299,13 @@ export default function AppPage() {
             </div>
 
             <div className={ROW}>
-              <StageLabel stage={play} />
+              <StageLabel stage={play} items={playItems} />
               <div>
                 <p className="t-sm text-body">{playSubhead}</p>
                 <ul className="mt-3 grid border-b-[1.5px] border-rule sm:grid-cols-2 sm:gap-x-16">
-                  {GAMES.map((g) => (
-                    <li key={g} className="border-t-[1.5px] border-rule py-3 font-mono text-[14px] uppercase leading-[1.7] tracking-[0.14em] text-ink">
-                      {g}
+                  {games.map((g, i) => (
+                    <li key={i} className="border-t-[1.5px] border-rule py-3 font-mono text-[14px] uppercase leading-[1.7] tracking-[0.14em] text-ink">
+                      {g.name}
                     </li>
                   ))}
                 </ul>
@@ -321,8 +313,8 @@ export default function AppPage() {
             </div>
 
             <div className={ROW}>
-              <StageLabel stage={learn} />
-              <LearnMaterial awayCaption={awayCaption} note={learnNote} />
+              <StageLabel stage={learn} items={learnItems} />
+              <LearnMaterial awayCaption={awayCaption} note={learnNote} coversCaption={coversCaption} captions={captions} />
             </div>
           </div>
         </Container>
@@ -338,8 +330,8 @@ export default function AppPage() {
           <h2 id="walls-h" className="t-h2 max-w-[16ch]">{wallsHeading}</h2>
           <p className="t-lead mt-6 max-w-[40ch] text-ink">{wallsLead}</p>
           <dl className="mt-10 grid border-b-[1.5px] border-rule lg:grid-cols-2 lg:gap-x-16">
-            {WALLS.map((w) => (
-              <div key={w.label} className="grid gap-x-6 gap-y-1 border-t-[1.5px] border-rule py-4 sm:grid-cols-[9rem_minmax(0,1fr)]">
+            {walls.map((w, i) => (
+              <div key={i} className="grid gap-x-6 gap-y-1 border-t-[1.5px] border-rule py-4 sm:grid-cols-[9rem_minmax(0,1fr)]">
                 <dt className={LABEL}>{w.label}</dt>
                 <dd className="t-body text-ink">{w.line}</dd>
               </div>
@@ -352,7 +344,7 @@ export default function AppPage() {
           <p className="t-body mt-12 max-w-[60ch] text-body">{checkLine}</p>
           <p className="mt-4">
             <TextLink to="/ethical-ai">
-              The full review sequence
+              {checkLink}
               <IconArrow size={15} />
             </TextLink>
           </p>
@@ -382,11 +374,11 @@ export default function AppPage() {
             <p className="t-lead max-w-[56ch] text-ink">{closeLine}</p>
             <p className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
               <Link to="/shop" className="link-draw inline-flex items-center gap-1.5 text-[15px] font-semibold text-red-deep">
-                The shop
+                {closeShop}
                 <IconArrow size={15} />
               </Link>
               <TextLink href={SITE.showUrl}>
-                The show's own site
+                {closeShow}
                 <IconExternal size={14} />
               </TextLink>
             </p>

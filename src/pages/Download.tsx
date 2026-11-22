@@ -7,7 +7,8 @@ import { ClosingLine } from "@/components/ClosingLine";
 import { Docket } from "@/components/shop/Docket";
 import { fileFormat, formatLabel } from "@/components/shop/catalogue";
 import { COPY } from "@/components/shop/copy";
-import { useBlock } from "@/lib/content";
+import { PENDING_ROWS, ERROR_ROWS } from "@/components/shop/lists";
+import { useList, useBlock } from "@/lib/content";
 import { SITE } from "@/lib/site";
 
 /* ============================================================================
@@ -54,24 +55,7 @@ type State =
   | { url: string; used: number; expiresAt?: string; k: "ready"; allowed: number; title: string }
   | { k: "error"; code: ErrorCode };
 
-const MESSAGES = {
-  not_found: {
-    h: "We couldn't find that download",
-    p: "The link may be wrong or incomplete. Check the link in your Stripe receipt, or get in touch and we will sort it out.",
-  },
-  expired: {
-    h: "This link has expired",
-    p: "Download links are valid for 24 hours. Get in touch with your receipt and we will issue a new one.",
-  },
-  exhausted: {
-    h: "This link has been used up",
-    p: "Each link allows five downloads. Get in touch with your receipt and we will issue a new one.",
-  },
-  server_error: {
-    h: "Something went wrong",
-    p: "That is on us, not you. Try again in a moment, and if it keeps happening let us know.",
-  },
-} as const;
+const ERROR_CODES: ErrorCode[] = ["not_found", "expired", "exhausted", "server_error"];
 
 function code_of(v: unknown): ErrorCode {
   return v === "not_found" || v === "expired" || v === "exhausted" ? v : "server_error";
@@ -117,6 +101,35 @@ export default function Download() {
   const tries = useRef(0);
   const closeLine = useBlock("shop", "download.close.line", COPY["download.close.line"]);
   const closeLink = useBlock("shop", "download.close.link", COPY["download.close.link"]);
+  const t = (k: string) => useBlock("shop", k, COPY[k]);
+  const paid = t("download.paid.kicker");
+  const errKicker = t("download.kicker");
+  const loadingTitle = t("download.loading.title");
+  const loadingLead = t("download.loading.lead");
+  const readyLead = t("download.ready.lead");
+  const readyPdf = t("download.ready.pdf");
+  const readyZip = t("download.ready.zip");
+  const back = t("download.back");
+  const wrong = t("download.wrong");
+  const readyLabel = t("download.ready.docket.label");
+  const accountK = t("download.ready.account.k");
+  const accountV = t("download.ready.account.v");
+  const readyFoot = t("download.ready.docket.foot");
+  const pendingTitle = t("download.pending.title");
+  const pendingReceipt = t("download.pending.receipt");
+  const pendingLead = t("download.pending.lead");
+  const pendingNote = t("download.pending.note");
+  const pendingLabel = t("download.pending.docket.label");
+  const pendingFoot = t("download.pending.docket.foot");
+  const retry = t("download.retry");
+  const contact = t("download.contact");
+  const errLabel = t("download.error.docket.label");
+  const errFoot = t("download.error.docket.foot");
+  const pendingRows = useList("shop", "download.pending.rows", PENDING_ROWS);
+  const errorRows = useList("shop", "download.error.rows", ERROR_ROWS);
+  const messages = Object.fromEntries(
+    ERROR_CODES.map((c) => [c, { h: t(`download.error.${c}.title`), p: t(`download.error.${c}.body`) }]),
+  ) as Record<ErrorCode, { h: string; p: string }>;
 
   const fetchLink = useCallback(async () => {
     if (!token) {
@@ -184,10 +197,10 @@ export default function Download() {
           reader without anything being clicked. ─── */}
       {state.k === "loading" && (
         <div role="status" aria-live="polite">
-          <Head kicker="Payment received" title="Getting your file ready" />
+          <Head kicker={paid} title={loadingTitle} />
           <Section pad={["close", "normal"]}>
             <Container width="wide">
-              <Lead className="max-w-[44ch]">One moment. Do not close this page.</Lead>
+              <Lead className="max-w-[44ch]">{loadingLead}</Lead>
             </Container>
           </Section>
         </div>
@@ -200,7 +213,7 @@ export default function Download() {
       {state.k === "ready" && (
         <>
           <Head
-            kicker="Payment received"
+            kicker={paid}
             title={`${state.title} is ready.`}
             actions={
               <Button href={state.url} size="large" className="w-full justify-center sm:w-auto">
@@ -214,23 +227,20 @@ export default function Download() {
               <div className={BODY_GRID}>
                 <div>
                   <Lead className="max-w-[44ch]">
-                    Save it to your device now. There is no account here, so this page is the only
-                    place the file lives for you.
+                    {readyLead}
                   </Lead>
 
                   <p className="t-body mt-6 max-w-[46ch] text-body">
-                    {fileFormat(state.url) === "pdf"
-                      ? "The file opens in a new tab. If your browser asks where to put it, anywhere you will find it again is the right answer."
-                      : "The file is a zip folder with the PDFs inside. If your browser asks where to put it, anywhere you will find it again is the right answer, and opening the folder unpacks the books and sheets."}
+                    {fileFormat(state.url) === "pdf" ? readyPdf : readyZip}
                   </p>
 
                   <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t-[1.5px] border-rule pt-7">
                     <TextLink to="/shop">
-                      Back to the shop
+                      {back}
                       <IconArrow size={15} />
                     </TextLink>
                     <TextLink to="/contact">
-                      Something wrong with it
+                      {wrong}
                       <IconArrow size={15} />
                     </TextLink>
                   </div>
@@ -238,7 +248,7 @@ export default function Download() {
 
                 <div className="lg:pt-2">
                   <Docket
-                    label="Your download"
+                    label={readyLabel}
                     rows={[
                       { k: "File", v: state.title },
                       { k: "Format", v: formatLabel(fileFormat(state.url)) },
@@ -246,14 +256,9 @@ export default function Download() {
                         ? [{ k: "Link works until", v: expiryLabel(state.expiresAt) as string, strong: true }]
                         : [{ k: "Link works for", v: "24 hours", strong: true }]),
                       { k: "Downloads used", v: `${state.used} of ${state.allowed}`, strong: true },
-                      { k: "Account created", v: "none" },
+                      { k: accountK, v: accountV },
                     ]}
-                    foot={
-                      <>
-                        Stripe has emailed you its own receipt for the payment. We did not create an
-                        account and we have not added you to anything.
-                      </>
-                    }
+                    foot={<>{readyFoot}</>}
                   />
                 </div>
               </div>
@@ -266,16 +271,16 @@ export default function Download() {
       {state.k === "pending" && (
         <>
           <Head
-            kicker="Payment received"
-            title="Thank you. Your payment went through."
+            kicker={paid}
+            title={pendingTitle}
             actions={
               <>
                 <Button to="/contact">
-                  Send us your receipt
+                  {pendingReceipt}
                   <IconArrow size={16} />
                 </Button>
                 <Button to="/shop" variant="quiet">
-                  Back to the shop
+                  {back}
                 </Button>
               </>
             }
@@ -285,29 +290,18 @@ export default function Download() {
               <div className={BODY_GRID}>
                 <div>
                   <Lead className="max-w-[46ch]">
-                    Your download link is not on this page. Send us the receipt Stripe has just
-                    emailed you and we will put the file straight into your hands.
+                    {pendingLead}
                   </Lead>
                   <p className="t-body mt-6 max-w-[46ch] text-body">
-                    This is the one step in the shop that is not automatic yet, and we would rather
-                    say so than leave you looking at a page that says nothing.
+                    {pendingNote}
                   </p>
                 </div>
 
                 <div className="lg:pt-2">
                   <Docket
-                    label="What you bought"
-                    rows={[
-                      { k: "Payment", v: "taken by Stripe" },
-                      { k: "Receipt", v: "emailed by Stripe" },
-                      { k: "Account created", v: "none" },
-                    ]}
-                    foot={
-                      <>
-                        Nothing about this purchase puts you on a mailing list. Your address sits with
-                        Stripe, for its receipt.
-                      </>
-                    }
+                    label={pendingLabel}
+                    rows={pendingRows}
+                    foot={<>{pendingFoot}</>}
                   />
                 </div>
               </div>
@@ -323,25 +317,25 @@ export default function Download() {
       {state.k === "error" && (
         <>
           <Head
-            kicker="Download"
-            title={MESSAGES[state.code].h}
+            kicker={errKicker}
+            title={messages[state.code].h}
             actions={
               state.code === "server_error" ? (
                 <>
-                  <Button onClick={() => void fetchLink()}>Try again</Button>
+                  <Button onClick={() => void fetchLink()}>{retry}</Button>
                   <Button to="/contact" variant="quiet">
-                    Get in touch
+                    {contact}
                     <IconArrow size={16} />
                   </Button>
                 </>
               ) : (
                 <>
                   <Button to="/contact">
-                    Get in touch
+                    {contact}
                     <IconArrow size={16} />
                   </Button>
                   <Button to="/shop" variant="quiet">
-                    Back to the shop
+                    {back}
                   </Button>
                 </>
               )
@@ -351,11 +345,11 @@ export default function Download() {
             <Container width="wide">
               <div className={BODY_GRID}>
                 <div role="alert">
-                  <Lead className="max-w-[46ch]">{MESSAGES[state.code].p}</Lead>
+                  <Lead className="max-w-[46ch]">{messages[state.code].p}</Lead>
                   {state.code === "server_error" && (
                     <p className="mt-7">
                       <TextLink to="/shop">
-                        Back to the shop
+                        {back}
                         <IconArrow size={15} />
                       </TextLink>
                     </p>
@@ -367,18 +361,9 @@ export default function Download() {
                     orders table is searched by, so the list is the real one. */}
                 <div className="lg:pt-2">
                   <Docket
-                    label="If you get in touch"
-                    rows={[
-                      { k: "Send the receipt", v: "from Stripe" },
-                      { k: "Or the address", v: "you paid with" },
-                      { k: "And the day", v: "you bought it" },
-                    ]}
-                    foot={
-                      <>
-                        That is enough to find the purchase and issue a new link. We hold no account
-                        for you, so the receipt is the record, and it is worth keeping.
-                      </>
-                    }
+                    label={errLabel}
+                    rows={errorRows}
+                    foot={<>{errFoot}</>}
                   />
                 </div>
               </div>

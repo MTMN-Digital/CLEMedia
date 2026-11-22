@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Settle } from "@/components/Settle";
 import { DisclosurePanel } from "@/components/ui";
 import { IconArrow } from "@/components/icons";
+import { useBlock } from "@/lib/content";
+import { COPY } from "./copy";
 import type { Phase, Member } from "@/components/team/people";
 
 /* ============================================================================
@@ -37,13 +39,13 @@ import type { Phase, Member } from "@/components/team/people";
    the eight people are in the identical four phases, so each line names the
    exception rather than listing the rule; the numerals beside it show exactly
    which phases. */
-function comesInto(m: Member, phases: Phase[]): string {
+function comesInto(m: Member, phases: Phase[], every: string, everyBut: string): string {
   const at = phases.filter((s) => m.phases.includes(Number(s.n)));
   if (!at.length) return "";
-  if (at.length === phases.length) return "Every phase";
+  if (at.length === phases.length) return every;
   const out = phases.filter((s) => !m.phases.includes(Number(s.n)));
   /* One gap, named. Two or more and the list is shorter than the exception. */
-  if (out.length === 1) return `Every phase but the ${out[0].phase.toLowerCase()}`;
+  if (out.length === 1) return `${everyBut} ${out[0].phase.toLowerCase()}`;
   return at.map((s) => s.phase.toLowerCase()).join(", ");
 }
 
@@ -76,7 +78,13 @@ function RollCall({ member, phases }: { phases: Phase[]; member: Member }) {
 }
 
 function Entry({ member, phases }: { phases: Phase[]; member: Member }) {
-  const at = comesInto(member, phases);
+  const every = useBlock("team", "register.every", COPY["register.every"]);
+  const everyBut = useBlock("team", "register.every_but", COPY["register.every_but"]);
+  const takesPart = useBlock("team", "register.takes_part", COPY["register.takes_part"]);
+  const notIn = useBlock("team", "register.not_in", COPY["register.not_in"]);
+  const more = useBlock("team", "register.more", COPY["register.more"]);
+  const less = useBlock("team", "register.less", COPY["register.less"]);
+  const at = comesInto(member, phases, every, everyBut);
   const [open, setOpen] = useState(false);
   /* Named off the person rather than `useId`, so the id in the DOM says who
      the panel belongs to when something is being debugged in the inspector. */
@@ -119,7 +127,7 @@ function Entry({ member, phases }: { phases: Phase[]; member: Member }) {
                 className="mt-2 inline-flex min-h-11 items-center gap-2 font-mono text-[14px] uppercase tracking-[0.14em] text-red-deep"
               >
                 <span className="link-draw">
-                  {open ? "Less" : `More about ${member.name.split(" ")[0]}`}
+                  {open ? less : `${more} ${member.name.split(" ")[0]}`}
                 </span>
                 <span
                   aria-hidden="true"
@@ -136,7 +144,7 @@ function Entry({ member, phases }: { phases: Phase[]; member: Member }) {
             paper-2 where muted sits nearer the floor. */}
         <div className="order-2 min-w-0 lg:order-none lg:pt-1">
           <p className="font-mono text-[14.5px] uppercase tracking-[0.14em] text-body">
-            {at ? "Takes part in" : "Not in the script and episode reviews"}
+            {at ? takesPart : notIn}
           </p>
           {at && <RollCall member={member} phases={phases} />}
           {at && <p className="t-body mt-2 max-w-[26ch]">{at}</p>}

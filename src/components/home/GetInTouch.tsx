@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { Settle } from "@/components/Settle";
 import { IconArrow } from "@/components/icons";
+import { useList, useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
+import { ROUTES as ROUTE_DEFAULTS } from "@/components/home/lists";
 
 /* ============================================================================
    Get in touch, split by who is asking.
@@ -44,22 +47,9 @@ import { IconArrow } from "@/components/icons";
    three times under three arrows. Same pattern as the routes on the 404 page,
    which this site already had and should have been reusing. ========== */
 
-const ROUTES = [
-  {
-    who: "Broadcasters and platforms",
-    line: "If you are interested in licensing, broadcasting or streaming the series.",
-  },
-  {
-    who: "Schools and early-years settings",
-    line: "If you would like to use our episodes and learning resources with your children.",
-  },
-  {
-    who: "Press",
-    line: "If you are writing about children's media, screen time or AI in production.",
-  },
-];
-
 export function GetInTouch({ headingId }: { headingId: string }) {
+  const heading = useBlock("home", "touch.heading", COPY["touch.heading"]);
+  const ROUTES = useList("home", "touch.routes", ROUTE_DEFAULTS);
   return (
     <>
       {/* ONE LINE, 2026-10-27. The lead listed the audiences ("studios,
@@ -70,7 +60,7 @@ export function GetInTouch({ headingId }: { headingId: string }) {
           already the first word of the footer directly below. */}
       <Settle>
         <h2 id={headingId} className="t-h2 max-w-[32ch]">
-          If you are assessing the company, we would rather answer your questions directly.
+          {heading}
         </h2>
       </Settle>
 
@@ -91,8 +81,8 @@ export function GetInTouch({ headingId }: { headingId: string }) {
         </Link>
 
         <ul className="grid content-start gap-7">
-          {ROUTES.slice(1).map((r) => (
-            <li key={r.who} className="hairline pt-7 first:border-t-0 first:pt-0 lg:first:border-t lg:first:pt-7">
+          {ROUTES.slice(1).map((r, i) => (
+            <li key={`${i}-${r.who}`} className="hairline pt-7 first:border-t-0 first:pt-0 lg:first:border-t lg:first:pt-7">
               <Link to="/contact" className="group block">
                 <span className="flex items-start justify-between gap-5">
                   <span className="t-h3 max-w-[18ch]">{r.who}</span>

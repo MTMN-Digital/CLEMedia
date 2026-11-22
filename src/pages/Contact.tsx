@@ -9,8 +9,9 @@ import { IconExternal, IconArrow, IconMail } from "@/components/icons";
 import { type Draft, type RouteId, Receipt, subjectFor } from "@/components/contact/Receipt";
 import { COMPANY_DEFAULT, SITE, LINKS_DEFAULT } from "@/lib/site";
 import { useTeam } from "@/components/team/useTeam";
-import { useSetting, useBlock } from "@/lib/content";
+import { useBlock, useSetting, useList } from "@/lib/content";
 import { COPY } from "@/components/contact/copy";
+import { ELSEWHERE_ITEMS } from "@/components/contact/lists";
 import "@/components/contact/sheet.css";
 
 /* ============================================================================
@@ -85,31 +86,11 @@ import "@/components/contact/sheet.css";
 
 /* `short` is what the pill carries and `label` is what the confirmation says.
    A pill wide enough for "Partnerships and distribution" stops being a pill. */
-const ROUTES: { label: string; blurb: string; short: string; id: RouteId }[] = [
-  {
-    id: "partnership",
-    short: "Partnerships",
-    label: "Partnerships and distribution",
-    blurb: "Studios, broadcasters, distributors, licensing and investment.",
-  },
-  {
-    id: "educator",
-    short: "Educators",
-    label: "Educators and case studies",
-    blurb: "Early years settings, schools and anyone using the activities with children.",
-  },
-  {
-    id: "press",
-    short: "Press",
-    label: "Press",
-    blurb: "Interviews, podcast bookings and media requests.",
-  },
-  {
-    id: "general",
-    short: "General",
-    label: "General enquiry",
-    blurb: "Anything else about the company, the series or the work.",
-  },
+const ROUTES: { id: RouteId; label: string }[] = [
+  { id: "partnership", label: "Partnerships and distribution" },
+  { id: "educator", label: "Educators and case studies" },
+  { id: "press", label: "Press" },
+  { id: "general", label: "General enquiry" },
 ];
 
 function parseRoute(v: string | null): RouteId | null {
@@ -120,31 +101,11 @@ function parseRoute(v: string | null): RouteId | null {
    already answers them. Every destination is a real page of this site or the
    show's own; nothing here is a form, and nothing claims what the reader will
    find beyond what that page actually carries. */
-const ELSEWHERE: { line: string; title: string; who: string; href?: string; to?: string }[] = [
-  {
-    who: "Investors and partners",
-    title: "Our story",
-    line: "Conor Sexton on what he saw, what he could not find, and what it took to build the alternative.",
-    to: "/story",
-  },
-  {
-    who: "Broadcasters and distributors",
-    title: "The team and the advisers",
-    line: "Who makes each episode, and what each of them does.",
-    to: "/team",
-  },
-  {
-    who: "Educators and schools",
-    title: "Responsible AI",
-    line: "The five phases an episode goes through, and where AI is and is not used in making one.",
-    to: "/ethical-ai",
-  },
-  {
-    who: "Parents",
-    title: "The show's own site",
-    line: "Episodes, characters and the family activities all live there rather than here.",
-    href: SITE.showUrl,
-  },
+const TARGETS: { href?: string; to?: string }[] = [
+  { to: "/story" },
+  { to: "/team" },
+  { to: "/ethical-ai" },
+  { href: SITE.showUrl },
 ];
 
 const EMPTY: Draft = { name: "", email: "", organisation: "", message: "" };
@@ -186,6 +147,30 @@ export default function Contact() {
   const readersNote = useBlock("contact", "readers.note", COPY["readers.note"]);
   const elseHeading = useBlock("contact", "else.heading", COPY["else.heading"]);
   const elseLine = useBlock("contact", "else.line", COPY["else.line"]);
+
+  const routeText = Object.fromEntries(
+    ROUTES.map((r) => [
+      r.id,
+      {
+        short: useBlock("contact", `route.${r.id}.short`, COPY[`route.${r.id}.short`]),
+        blurb: useBlock("contact", `route.${r.id}.blurb`, COPY[`route.${r.id}.blurb`]),
+      },
+    ]),
+  ) as Record<RouteId, { blurb: string; short: string }>;
+  const toLine = useBlock("contact", "form.to", COPY["form.to"]);
+  const subjectLabel = useBlock("contact", "form.subject.label", COPY["form.subject.label"]);
+  const privacy = useBlock("contact", "form.privacy", COPY["form.privacy"]);
+  const readersLink = useBlock("contact", "readers.link", COPY["readers.link"]);
+  const sentEyebrow = useBlock("contact", "sent.eyebrow", COPY["sent.eyebrow"]);
+  const sentHeading = useBlock("contact", "sent.heading", COPY["sent.heading"]);
+  const sentLead = useBlock("contact", "sent.lead", COPY["sent.lead"]);
+  const sentHome = useBlock("contact", "sent.home", COPY["sent.home"]);
+  const sentTeam = useBlock("contact", "sent.team", COPY["sent.team"]);
+  const toLabel = useBlock("contact", "form.to.label", COPY["form.to.label"]);
+  const registeredLabel = useBlock("contact", "form.registered.label", COPY["form.registered.label"]);
+  const emailLabel = useBlock("contact", "form.email.label", COPY["form.email.label"]);
+  const privacyLink = useBlock("contact", "form.privacy.link", COPY["form.privacy.link"]);
+  const elsewhere = useList("contact", "else.items", ELSEWHERE_ITEMS);
 
   const subject = subjectFor(route, draft);
 
@@ -246,15 +231,15 @@ export default function Contact() {
 
                 {sent ? (
                   <div className="contact-sheet" role="status">
-                    <p className="eyebrow">Sent</p>
-                    <p className="t-h2 mt-4 font-display">Thank you. It has reached us.</p>
+                    <p className="eyebrow">{sentEyebrow}</p>
+                    <p className="t-h2 mt-4 font-display">{sentHeading}</p>
                     <p className="t-lead mt-5 text-body">
-                      This is the message as the team has it, with the subject line they see.
+                      {sentLead}
                     </p>
                     <Receipt className="contact-receipt mt-8" route={route} draft={draft} sent />
                     <div className="mt-8 flex flex-wrap gap-4">
-                      <Button to="/">Back to the home page<IconArrow size={16} /></Button>
-                      <Button to="/team" variant="quiet">Meet the team</Button>
+                      <Button to="/">{sentHome}<IconArrow size={16} /></Button>
+                      <Button to="/team" variant="quiet">{sentTeam}</Button>
                     </div>
                   </div>
                 ) : (
@@ -262,8 +247,8 @@ export default function Contact() {
                     {/* The addressee, where a letter puts it: at the head of
                         the sheet. A plain ruled row, no leader. */}
                     <dl className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-[1.5px] border-rule pb-5">
-                      <dt className="field-label !mb-0 text-[15px]">To</dt>
-                      <dd className="t-body text-ink">CLÉ Family Media, an Irish company</dd>
+                      <dt className="field-label !mb-0 text-[15px]">{toLabel}</dt>
+                      <dd className="t-body text-ink">{toLine}</dd>
                     </dl>
 
                     <fieldset className="mt-7">
@@ -279,12 +264,12 @@ export default function Contact() {
                               onChange={() => setRoute(r.id)}
                               className="sr-only"
                             />
-                            {r.short}
+                            {routeText[r.id].short}
                           </label>
                         ))}
                       </div>
                       <p className="t-sm mt-3 text-body">
-                        {ROUTES.find((r) => r.id === route)?.blurb}
+                        {routeText[route].blurb}
                       </p>
                     </fieldset>
 
@@ -293,7 +278,7 @@ export default function Contact() {
                         route word is lower case because the API sends it
                         lower case. Not a box, not a card, not a heading. */}
                     <p className="form-subject mt-4" aria-live="polite">
-                      <span className="form-subject__label">Arrives as</span>
+                      <span className="form-subject__label">{subjectLabel}</span>
                       <span className="form-subject__line">
                         {subject.lead}{" "}
                         <span className="form-subject__from" data-empty={subject.from ? undefined : ""}>
@@ -362,8 +347,7 @@ export default function Contact() {
                         page where an investor writes to the company is not the
                         place to explain the honeypot. */}
                     <p className="t-sm mt-7 border-t-[1.5px] border-rule pt-5 text-body">
-                      Your address is set as the reply-to, so a reply comes straight back to you.
-                      We store what you send so we can answer it, and use it for nothing else.
+                      {privacy}
                     </p>
 
                     {/* The registered details. The registered office is NOT
@@ -372,16 +356,16 @@ export default function Contact() {
                         and naming them is what a reader of this page wants. */}
                     <dl className="mt-7 border-t-[1.5px] border-rule pt-5 text-[15px] leading-relaxed text-body">
                       <div className="flex flex-wrap gap-x-2">
-                        <dt className="font-semibold text-ink">Registered details:</dt>
+                        <dt className="font-semibold text-ink">{registeredLabel}</dt>
                         <dd>
                           {company.legal}, registered in Ireland, company number{" "}
                           {company.cro}. The registered office is at the head of the{" "}
-                          <TextLink to="/privacy">privacy policy</TextLink>.
+                          <TextLink to="/privacy">{privacyLink}</TextLink>.
                         </dd>
                       </div>
                       {email && (
                         <div className="mt-2 flex flex-wrap gap-x-2">
-                          <dt className="font-semibold text-ink">Email:</dt>
+                          <dt className="font-semibold text-ink">{emailLabel}</dt>
                           <dd><a href={`mailto:${email}`} className="underline underline-offset-2 hover:text-ink">{email}</a></dd>
                         </div>
                       )}
@@ -422,7 +406,7 @@ export default function Contact() {
                 </ul>
                 <p className="max-w-[44ch] border-t-[1.5px] border-rule pt-5 text-[15px] leading-[1.6] text-ink">
                   {readersNote}{" "}
-                  <TextLink to="/team">Read who each of them is<IconArrow size={15} /></TextLink>
+                  <TextLink to="/team">{readersLink}<IconArrow size={15} /></TextLink>
                 </p>
               </div>
             </div>
@@ -445,7 +429,8 @@ export default function Contact() {
             </Settle>
 
             <Settle as="ul" className="mt-8">
-              {ELSEWHERE.map((e) => {
+              {elsewhere.map((item, i) => {
+                const e = { ...item, ...TARGETS[i % TARGETS.length] };
                 const icon = e.href ? <IconExternal size={16} /> : <IconArrow size={16} />;
                 const inner = (
                   <>
@@ -472,7 +457,7 @@ export default function Contact() {
                   /* No closing rule under the last row: the footer opens with
                      its own, and two hairlines 130px apart read as a mistake
                      rather than as a frame. */
-                  <li key={e.who} className="hairline">
+                  <li key={i} className="hairline">
                     {e.to ? (
                       <Link to={e.to} className={cls}>{inner}</Link>
                     ) : (

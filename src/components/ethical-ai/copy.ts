@@ -69,4 +69,24 @@ export const COPY: Record<string, string> = {
   "review.body":
     "If something here does not satisfy you, whether you are a parent, an educator or a distribution partner, we would genuinely rather have the conversation than have you assume.",
   "review.link": "Write to us",
+
+  /* Small labels, added in Run 3 */
+  "tab.label": "Position statement",
+  "status.applies": "Applies to",
+  "status.tools": "Tools named",
+  "status.adopted": "Adopted",
+  "status.approved": "Approved by",
+  "figure.label": "Figure 1",
+  "key.person": "Person decides",
+  "key.tool": "Tool assists",
+  "key.signoff": "Everyone signs off",
+  "figure.return": "The episode goes back until everyone is happy",
+  "return.title": "The return",
+  "reviews.title": "What the reviews are for",
+  "team.link": "The team",
+  "line.people": "People decide",
+  "line.tools": "Tools assist",
+  "table.tool": "Tool",
+  "table.used": "Used for",
+  "table.before": "Before release",
 };

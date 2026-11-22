@@ -1,5 +1,7 @@
 import { Settle } from "@/components/Settle";
 import { STATIONS } from "./stations";
+import { useBlock } from "@/lib/content";
+import { COPY } from "./copy";
 import "@/components/draw/draw.css";
 import "./pline.css";
 
@@ -100,6 +102,7 @@ function arrowHeadFromEndTangent(
 }
 
 export function ProductionFlat({ className = "" }: { className?: string }) {
+  const returnLabel = useBlock("ethical-ai", "figure.return", COPY["figure.return"]);
   const people = STATIONS.filter((s) => s.kind !== "tool");
   const n = people.length;
   const toolX = (gateX(1, n) + gateX(2, n)) / 2;
@@ -230,7 +233,7 @@ export function ProductionFlat({ className = "" }: { className?: string }) {
       {/* Said in words inside the loop. Hidden under 900px, where the loop is
           about 20px tall and the caption under the drawing says the same
           thing. */}
-      <p className="ink-label pline__return">The episode goes back until everyone is happy</p>
+      <p className="ink-label pline__return">{returnLabel}</p>
     </Settle>
   );
 }

@@ -1,7 +1,8 @@
 import { Settle } from "@/components/Settle";
 import { DrawnRule } from "@/components/draw/kit";
-import { useBlock } from "@/lib/content";
+import { useList, useBlock } from "@/lib/content";
 import { COPY } from "@/components/home/copy";
+import { FINDINGS } from "@/components/home/lists";
 
 /* ============================================================================
    The evidence, as three figures with the paper each comes from.
@@ -42,51 +43,11 @@ import { COPY } from "@/components/home/copy";
    Green is a room here, not a highlight.
    ========================================================================== */
 
-interface Finding {
-  figure: string;
-  /** What the figure counts. Never a claim, just the unit. */
-  unit?: string;
-  body: string;
-  source: string;
-  href: string;
-}
-
-const FINDINGS: Finding[] = [
-  {
-    figure: "9",
-    unit: "minutes",
-    body:
-      "Four-year-olds who watched nine minutes of a fast, fantastical cartoon did worse on " +
-      "self-control and problem-solving tasks straight afterwards than children who watched a " +
-      "slower programme or drew.",
-    source: "Pediatrics, 2011",
-    href: "https://doi.org/10.1542/peds.2010-1919",
-  },
-  {
-    figure: "1",
-    unit: "hour",
-    body:
-      "The World Health Organization's daily ceiling on sedentary screen time for children aged " +
-      "two to four, with less advised as better. Every minute a child watches should count.",
-    source: "WHO guidelines, 2019",
-    href: "https://www.who.int/publications/i/item/9789241550536",
-  },
-  {
-    figure: "16",
-    unit: "studies",
-    body:
-      "Pooled in a 2025 meta-analysis. What showed a short-term effect on children's attention " +
-      "and self-control was fantastical content, impossible events one after another, rather " +
-      "than how fast a programme was cut.",
-    source: "Developmental Science, 2025",
-    href: "https://doi.org/10.1111/desc.70069",
-  },
-];
-
 export function Evidence({ headingId }: { headingId: string }) {
-  /* The heading is editable from the admin; the three findings are cited
-     papers and are not. */
+  /* The heading and the findings (evidence.findings) are editable from the admin. */
   const heading = useBlock("home", "evidence.heading", COPY["evidence.heading"]);
+  const findings = useList("home", "evidence.findings", FINDINGS);
+  const note = useBlock("home", "evidence.note", COPY["evidence.note"]);
   return (
     <>
       {/* THE OPENER IS ONE LINE, 2026-10-27. It was a heading that filed the
@@ -107,8 +68,8 @@ export function Evidence({ headingId }: { headingId: string }) {
           already three of a kind, which is the tell this site spent a fortnight
           getting out of its other sections. */}
       <Settle className="mt-14 grid gap-x-12 gap-y-12 md:grid-cols-3 lg:mt-20 lg:gap-x-16">
-        {FINDINGS.map((f, i) => (
-          <div key={f.source} className="pt-1">
+        {findings.map((f, i) => (
+          <div key={`${i}-${f.source}`} className="pt-1">
             <DrawnRule v={i} className="mb-7" />
             <p className="font-display text-[clamp(3rem,2rem+3.4vw,4.75rem)] leading-[0.92] tracking-[-0.03em]">
               {f.figure}
@@ -154,8 +115,7 @@ export function Evidence({ headingId }: { headingId: string }) {
           another block. */}
       <Settle>
         <p className="t-body mt-10 lg:mt-12">
-          Three published results, with the paper each one comes from, because a company that says
-          it builds on research should let you read the research.
+          {note}
         </p>
       </Settle>
     </>

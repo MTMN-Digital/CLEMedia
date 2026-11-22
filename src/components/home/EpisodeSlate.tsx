@@ -1,6 +1,8 @@
 import { Figure } from "@/components/Figure";
 import { type Episode, COMING_SOON } from "@/lib/episodes";
 import { DrawnCorner } from "@/components/draw/kit";
+import { useBlock } from "@/lib/content";
+import { COPY } from "@/components/home/copy";
 
 /* ============================================================================
    Domain-specific chrome: the production slate.
@@ -36,6 +38,9 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
      itself as a link to a screen reader, which is a worse answer than not
      being one. Everything inside is identical, so the two tiles sit in the
      strip at the same size and weight as the four that are out. */
+  const watchLabel = useBlock("home", "slates.watch", COPY["slates.watch"]);
+  const guidanceLabel = useBlock("home", "slates.guidance", COPY["slates.guidance"]);
+  const passedByLabel = useBlock("home", "slates.passed_by", COPY["slates.passed_by"]);
   const Shell = ep.released ? "a" : "div";
   const linkProps = ep.released
     ? { href: ep.href, target: "_blank", rel: "noopener noreferrer" }
@@ -98,13 +103,13 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
             <dl className="hairline mt-5 flex flex-wrap gap-x-7 gap-y-2 pt-4">
               {ep.guidance && (
                 <div>
-                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">Guidance</dt>
+                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">{guidanceLabel}</dt>
                   <dd className="t-sm mt-1 text-ink">{ep.guidance}</dd>
                 </div>
               )}
               {ep.reviewer && (
                 <div>
-                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">Passed by</dt>
+                  <dt className="font-mono text-[13px] uppercase tracking-[0.16em] text-deep">{passedByLabel}</dt>
                   <dd className="t-sm mt-1 text-ink">{ep.reviewer}</dd>
                 </div>
               )}
@@ -112,7 +117,7 @@ export function EpisodeSlate({ ep }: { ep: Episode }) {
           )}
 
           <p className="mt-5 font-mono text-[14px] uppercase tracking-[0.16em] text-red-deep">
-            {ep.released ? "Watch on YouTube" : COMING_SOON}
+            {ep.released ? watchLabel : COMING_SOON}
           </p>
         </div>
       </div>

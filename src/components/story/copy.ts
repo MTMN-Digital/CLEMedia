@@ -17,6 +17,9 @@
    who narrates the film, which nobody has confirmed. The page renders no
    heading over the film and labels the player "The mission film" until the
    client answers; the key is kept so a saved row is not lost. */
+/* Names under the two rows of real photographs, in row order. */
+export const DOG_ROWS = [{ name: "Finn, the fawn pug" }, { name: "Fia, the black pug" }];
+
 export const COPY: Record<string, string> = {
   "hero.eyebrow_sub": "Conor Sexton\nFounder & CEO\nCo. Cork",
   "hero.title": "The idea for CLÉ Family Media began while I was minding a friend's four-year-old son.",
@@ -57,6 +60,9 @@ export const COPY: Record<string, string> = {
   "film.heading": "The mission, in his own words",
   "film.note":
     "The film starts muted. Turn the sound on when you are ready to, and the captions are there whether you do or not. Nothing on this site starts talking at you.",
+  "dogs.heading": "The real Finn and Fia",
+  "dogs.note":
+    "Finn and Fia in the series are drawn. These are the fawn pug and the black pug they are named after.",
   "close.line": "The people he brought in have a page of their own.",
   "close.link": "Our team",
 };

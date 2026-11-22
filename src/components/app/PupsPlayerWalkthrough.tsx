@@ -1,4 +1,4 @@
-import { type ReactNode, type CSSProperties, useId, type KeyboardEvent, useState, useRef } from "react";
+import { useRef, useContext, type CSSProperties, useState, createContext, useId, type KeyboardEvent, type ReactNode } from "react";
 import { Settle } from "@/components/Settle";
 import { Figure } from "@/components/Figure";
 import { IconLock, IconCheck } from "@/components/icons";
@@ -68,6 +68,10 @@ export const STAGES: { title: string; id: Stage; line: string }[] = [
   },
 ];
 
+/* The stage names, read by the device's own footer bar. The page replaces them
+   with the words saved in the admin panel. */
+const StagesContext = createContext(STAGES);
+
 /* Readable sizes. One place, so the floor is one number. */
 const T = {
   body: "text-[length:max(13px,0.85em)] leading-[1.45]",
@@ -104,9 +108,10 @@ function TopBar() {
 /* The app's own footer: where the child is in the model. It mirrors the
    tablist outside the device, so the product and the page agree. */
 function StageNav({ active }: { active: Stage }) {
+  const stages = useContext(StagesContext);
   return (
     <div className="mt-auto flex items-center justify-center gap-[1.8em] border-t-[1.5px] border-rule pt-[1em]">
-      {STAGES.map((s) => {
+      {stages.map((s) => {
         const on = s.id === active;
         return (
           <span
@@ -327,6 +332,7 @@ export function PupsPlayerWalkthrough({
   credit,
   after,
   capture = null,
+  stages: stagesProp,
 }: {
   episodes: AppEpisode[];
   lead?: ReactNode;
@@ -334,7 +340,10 @@ export function PupsPlayerWalkthrough({
   /** Rows under the whole opening, full width: the sheet's status rows. */
   after?: ReactNode;
   capture?: ImageOverride | null;
+  /** The three stages' words, in order. Defaults to STAGES. */
+  stages?: typeof STAGES;
 }) {
+  const STAGES_ = stagesProp ?? STAGES;
   const [stage, setStage] = useState<Stage>("watch");
   const base = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -342,19 +351,19 @@ export function PupsPlayerWalkthrough({
   const interactive = !capture;
 
   const move = (e: KeyboardEvent<HTMLDivElement>) => {
-    const i = STAGES.findIndex((s) => s.id === stage);
+    const i = STAGES_.findIndex((s) => s.id === stage);
     let next = i;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (i + 1) % STAGES.length;
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (i - 1 + STAGES.length) % STAGES.length;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (i + 1) % STAGES_.length;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (i - 1 + STAGES_.length) % STAGES_.length;
     else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = STAGES.length - 1;
+    else if (e.key === "End") next = STAGES_.length - 1;
     else return;
     e.preventDefault();
-    setStage(STAGES[next].id);
+    setStage(STAGES_[next].id);
     tabs.current[next]?.focus();
   };
 
-  const current = STAGES.find((s) => s.id === stage) ?? STAGES[0];
+  const current = STAGES_.find((s) => s.id === stage) ?? STAGES_[0];
 
   /* The three stages: one row each, a red dot, the title, and at lg the stage
      line under the active one. Inactive stages run at --color-body on paper. */
@@ -406,6 +415,7 @@ export function PupsPlayerWalkthrough({
   const order = (i: number) => ({ "--i": String(i) } as CSSProperties);
 
   return (
+    <StagesContext.Provider value={STAGES_}>
     <Settle className="grid gap-x-14 gap-y-8 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto]">
       {lead && <div style={order(2)} className="order-1 lg:col-start-1 lg:row-start-1 lg:self-end">{lead}</div>}
 
@@ -417,7 +427,7 @@ export function PupsPlayerWalkthrough({
         style={order(2)}
         className="order-3 grid grid-cols-3 gap-x-3 lg:col-start-1 lg:row-start-2 lg:grid-cols-1 lg:gap-0 lg:self-start"
       >
-        {STAGES.map(stageRow)}
+        {STAGES_.map(stageRow)}
       </div>
 
       <div style={order(0)} className="order-2 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:self-center">
@@ -447,7 +457,7 @@ export function PupsPlayerWalkthrough({
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
-                  STAGES.map((s) => {
+                  STAGES_.map((s) => {
                     const on = s.id === stage;
                     return (
                       <div
@@ -506,5 +516,6 @@ export function PupsPlayerWalkthrough({
         </div>
       )}
     </Settle>
+    </StagesContext.Provider>
   );
 }

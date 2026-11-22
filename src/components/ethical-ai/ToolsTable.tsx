@@ -1,4 +1,7 @@
-import { TOOL_PLACEMENT, PLATFORMS } from "./stations";
+import { TOOL_PLACEMENT } from "./stations";
+import { useList, useBlock } from "@/lib/content";
+import { COPY } from "./copy";
+import { TOOL_ITEMS } from "./lists";
 
 /* ============================================================================
    The tools, as a table: clause 3 of the Responsible AI position.
@@ -19,46 +22,33 @@ import { TOOL_PLACEMENT, PLATFORMS } from "./stations";
    the heads, over the 17px value.
    ========================================================================== */
 
-/* The two cells per tool, in the words PLATFORMS and the first appendix
-   answer already use. Runway's "before release" cell is the position's own
-   sentence about every output (the second refusal in DO_NOT). */
-const CELLS: Record<string, { before: string; used: string }> = {
-  Runway: {
-    used: "Elements of visual production and animation, to the script and direction set by the team.",
-    before: "Directed, reviewed and approved by the team.",
-  },
-  ElevenLabs: {
-    used: "Elements of audio and voice production.",
-    before: "Reviewed for quality and suitability before release.",
-  },
-};
-
 export function ToolsTable() {
+  const rows = useList("ethical-ai", "tools.items", TOOL_ITEMS);
+  const hTool = useBlock("ethical-ai", "table.tool", COPY["table.tool"]);
+  const hUsed = useBlock("ethical-ai", "table.used", COPY["table.used"]);
+  const hBefore = useBlock("ethical-ai", "table.before", COPY["table.before"]);
   const placed = TOOL_PLACEMENT !== null && TOOL_PLACEMENT.trim() !== "";
   return (
     <table className="pos-table w-full border-t-[1.5px] border-rule text-left">
       <thead>
         <tr>
-          <th scope="col">Tool</th>
-          <th scope="col">Used for</th>
-          <th scope="col">Before release</th>
+          <th scope="col">{hTool}</th>
+          <th scope="col">{hUsed}</th>
+          <th scope="col">{hBefore}</th>
           {placed && <th scope="col">Where on the line</th>}
         </tr>
       </thead>
       <tbody>
-        {PLATFORMS.map((p) => {
-          const c = CELLS[p.name] ?? { used: p.body, before: "" };
-          return (
-            <tr key={p.name}>
-              <th scope="row" data-label="Tool">
-                {p.name}
-              </th>
-              <td data-label="Used for">{c.used}</td>
-              <td data-label="Before release">{c.before}</td>
-              {placed && <td data-label="Where on the line">{TOOL_PLACEMENT}</td>}
-            </tr>
-          );
-        })}
+        {rows.map((c, i) => (
+          <tr key={i}>
+            <th scope="row" data-label={hTool}>
+              {c.name}
+            </th>
+            <td data-label={hUsed}>{c.used}</td>
+            <td data-label={hBefore}>{c.before}</td>
+            {placed && <td data-label="Where on the line">{TOOL_PLACEMENT}</td>}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

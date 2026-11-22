@@ -1,6 +1,106 @@
-import type { BlockDef } from "@/lib/blockdefs";
+import { para, list, line, type BlockDef } from "@/lib/blockdefs";
+import { ERROR_ROWS, PENDING_ROWS, REFUSAL_ITEMS, TERM_ITEMS } from "@/components/shop/lists";
 
-/* Extra editable blocks for the "shop" page, owned by this page's folder.
-   blocks.ts appends them to the registry. Build them with line, para, image
-   and list from @/lib/blockdefs; see .parallel/portal/CONTRACT.md, Run 3. */
-export const CMS: BlockDef[] = [];
+/* Extra editable blocks for the "shop" page (Run 3). */
+const SHOP = "src/pages/Shop.tsx";
+const PRODUCT = "src/pages/ShopProduct.tsx";
+const DOWNLOAD = "src/pages/Download.tsx";
+
+export const CMS: BlockDef[] = [
+  line("shop", "The shelf", "status.loading", "Status line while the shelf loads", `${SHOP}: status row`),
+  line("shop", "The shelf", "status.failed", "Status line when the shelf cannot load", `${SHOP}: status row`),
+  list(
+    "shop", "How buying works", "terms.items", "The five promises behind the buying strip", `${SHOP}: REFUSAL_ITEMS`,
+    "promise",
+    [
+      { name: "title", label: "Promise", kind: "line" },
+      { name: "body", label: "What it means", kind: "paragraph" },
+      { name: "where", label: "Small line on the right", kind: "line" },
+    ],
+    REFUSAL_ITEMS,
+    { min: 1, max: 8 },
+  ),
+  line("shop", "Product page", "product.crumb", "Link at the top of a product page back to the shop", `${PRODUCT}: breadcrumb`),
+  line("shop", "Product page", "product.cover.caption", "Caption under the cover (the illustrator credit follows it)", `${PRODUCT}: cover figcaption`),
+  para("shop", "Product page", "product.cancelled", "Note shown when someone cancels at checkout", `${PRODUCT}: cancelled note`),
+  line("shop", "Product page", "product.folder.label", "Small heading over the list of what is in the folder", `${PRODUCT}: folder label`),
+  para("shop", "Product page", "product.ack", "The tick box wording before buying", `${PRODUCT}: acknowledgement`),
+  para("shop", "Product page", "product.buy.note", "Note under the Buy button", `${PRODUCT}: buy note`),
+  line("shop", "Product page", "product.samples.swipe", "Small phone-only line over the sample pages", `${PRODUCT}: samples swipe line`),
+  line("shop", "Product page", "product.docket.label", "Title of the receipt-style terms box", `${PRODUCT}: Docket label`),
+  list(
+    "shop", "Product page", "product.terms", "Rows of the receipt-style terms box (the file format row comes first by itself)", `${PRODUCT}: TERM_ITEMS`,
+    "row",
+    [
+      { name: "k", label: "Left side", kind: "line" },
+      { name: "v", label: "Right side", kind: "line" },
+    ],
+    TERM_ITEMS,
+    { min: 1, max: 10, itemLabel: "row" },
+  ),
+  line("shop", "Product page", "product.contact.link", "Contact link at the foot of the terms box", `${PRODUCT}: docket foot link`),
+  line("shop", "Product page", "product.loading", "Quiet line while a product page loads", `${PRODUCT}: loading state`),
+  line("shop", "Product page", "product.failed.kicker", "Small label on the page shown when a product cannot load", `${PRODUCT}: failed state`),
+  line("shop", "Product page", "product.failed.title", "Heading on the page shown when a product cannot load", `${PRODUCT}: failed state`),
+  para("shop", "Product page", "product.failed.lead", "Sentence under the heading when a product cannot load", `${PRODUCT}: failed state`),
+  line("shop", "Product page", "product.retry", "Reload button when a product cannot load", `${PRODUCT}: failed state`),
+  line("shop", "Product page", "product.back", "Link back to the shop when a product cannot load", `${PRODUCT}: failed state`),
+  line("shop", "Product page", "product.empty.kicker", "Small label on the page for a product that is not on sale", `${PRODUCT}: not-found state`),
+  line("shop", "Product page", "product.empty.title", "Heading on the page for a product that is not on sale", `${PRODUCT}: not-found state`),
+  para("shop", "Product page", "product.empty.lead", "Sentence under the heading for a product that is not on sale", `${PRODUCT}: not-found state`),
+  line("shop", "Product page", "product.empty.shop", "First button on the page for a product that is not on sale", `${PRODUCT}: not-found state`),
+  line("shop", "Product page", "product.empty.contact", "Second button on the page for a product that is not on sale", `${PRODUCT}: not-found state`),
+  line("shop", "Product page", "product.nocover", "Caption shown when a product has no artwork uploaded", `${PRODUCT}: cover figcaption`),
+
+  line("shop", "Download page", "download.paid.kicker", "Small label above the heading once payment has gone through", `${DOWNLOAD}: kicker`),
+  line("shop", "Download page", "download.kicker", "Small label above the heading when a link fails", `${DOWNLOAD}: error kicker`),
+  line("shop", "Download page", "download.loading.title", "Heading while the file is being found", `${DOWNLOAD}: loading state`),
+  line("shop", "Download page", "download.loading.lead", "Sentence while the file is being found", `${DOWNLOAD}: loading state`),
+  para("shop", "Download page", "download.ready.lead", "Sentence beside the receipt when the file is ready", `${DOWNLOAD}: ready state`),
+  para("shop", "Download page", "download.ready.pdf", "Note about opening the file when it is a PDF", `${DOWNLOAD}: ready state`),
+  para("shop", "Download page", "download.ready.zip", "Note about opening the file when it is a zip folder", `${DOWNLOAD}: ready state`),
+  line("shop", "Download page", "download.back", "Link back to the shop when the file is ready or a link fails", `${DOWNLOAD}: links`),
+  line("shop", "Download page", "download.wrong", "Link to contact when the file is ready", `${DOWNLOAD}: ready state links`),
+  line("shop", "Download page", "download.ready.docket.label", "Title of the receipt box when the file is ready", `${DOWNLOAD}: ready docket`),
+  line("shop", "Download page", "download.ready.account.k", "Left side of the account row in the receipt box when the file is ready", `${DOWNLOAD}: ready docket`),
+  line("shop", "Download page", "download.ready.account.v", "Right side of the account row in the receipt box when the file is ready", `${DOWNLOAD}: ready docket`),
+  para("shop", "Download page", "download.ready.docket.foot", "Note under the receipt box when the file is ready", `${DOWNLOAD}: ready docket`),
+  line("shop", "Download page", "download.pending.title", "Heading when paid but the link has not arrived", `${DOWNLOAD}: pending state`),
+  line("shop", "Download page", "download.pending.receipt", "Button to send the receipt when the link has not arrived", `${DOWNLOAD}: pending state`),
+  para("shop", "Download page", "download.pending.lead", "Sentence when paid but the link has not arrived", `${DOWNLOAD}: pending state`),
+  para("shop", "Download page", "download.pending.note", "Second sentence when paid but the link has not arrived", `${DOWNLOAD}: pending state`),
+  line("shop", "Download page", "download.pending.docket.label", "Title of the receipt box when the link has not arrived", `${DOWNLOAD}: pending docket`),
+  list(
+    "shop", "Download page", "download.pending.rows", "Rows of the receipt box when the link has not arrived", `${DOWNLOAD}: PENDING_ROWS`,
+    "row",
+    [
+      { name: "k", label: "Left side", kind: "line" },
+      { name: "v", label: "Right side", kind: "line" },
+    ],
+    PENDING_ROWS,
+    { min: 1, max: 6, itemLabel: "row" },
+  ),
+  para("shop", "Download page", "download.pending.docket.foot", "Note under the receipt box when the link has not arrived", `${DOWNLOAD}: pending docket`),
+  line("shop", "Download page", "download.error.not_found.title", "Heading when the link cannot be found", `${DOWNLOAD}: error state`),
+  para("shop", "Download page", "download.error.not_found.body", "Sentence when the link cannot be found", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.error.expired.title", "Heading when the link has expired", `${DOWNLOAD}: error state`),
+  para("shop", "Download page", "download.error.expired.body", "Sentence when the link has expired", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.error.exhausted.title", "Heading when the link has been used up", `${DOWNLOAD}: error state`),
+  para("shop", "Download page", "download.error.exhausted.body", "Sentence when the link has been used up", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.error.server_error.title", "Heading when something went wrong on our side", `${DOWNLOAD}: error state`),
+  para("shop", "Download page", "download.error.server_error.body", "Sentence when something went wrong on our side", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.retry", "Try again button on the something-went-wrong screen", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.contact", "Get in touch button when a link fails", `${DOWNLOAD}: error state`),
+  line("shop", "Download page", "download.error.docket.label", "Title of the receipt box when a link fails", `${DOWNLOAD}: error docket`),
+  list(
+    "shop", "Download page", "download.error.rows", "Rows of the receipt box when a link fails (what to send us)", `${DOWNLOAD}: ERROR_ROWS`,
+    "row",
+    [
+      { name: "k", label: "Left side", kind: "line" },
+      { name: "v", label: "Right side", kind: "line" },
+    ],
+    ERROR_ROWS,
+    { min: 1, max: 6, itemLabel: "row" },
+  ),
+  para("shop", "Download page", "download.error.docket.foot", "Note under the receipt box when a link fails", `${DOWNLOAD}: error docket`),
+];

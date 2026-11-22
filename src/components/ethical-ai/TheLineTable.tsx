@@ -19,31 +19,24 @@
    entrance is the sheet's; the clauses below it do not settle one by one.
    ========================================================================== */
 
-/* Above the line: lifted from "The lines we hold" and the stage account. */
-const PEOPLE = [
-  "What a story should teach",
-  "How a character behaves",
-  "What is appropriate for the children watching",
-  "Every learning objective and activity",
-];
-
-/* Below it: the two platforms the client named, and only what they are named
-   for. The page says both sit inside a human-led workflow. */
-const TOOLS = [
-  { name: "Runway", does: "Elements of visual production and animation" },
-  { name: "ElevenLabs", does: "Elements of audio and voice production" },
-];
+import { useList, useBlock } from "@/lib/content";
+import { COPY } from "./copy";
+import { LINE_TOOL_ITEMS, PEOPLE_ITEMS } from "./lists";
 
 export function TheLineTable() {
+  const people = useList("ethical-ai", "people.items", PEOPLE_ITEMS);
+  const tools = useList("ethical-ai", "line.tools.items", LINE_TOOL_ITEMS);
+  const peopleLabel = useBlock("ethical-ai", "line.people", COPY["line.people"]);
+  const toolsLabel = useBlock("ethical-ai", "line.tools", COPY["line.tools"]);
   return (
     <dl className="border-t-[1.5px] border-rule">
       <div className="grid gap-y-3 py-6 md:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] md:gap-x-8">
-        <dt className="font-mono text-[14px] uppercase tracking-[0.14em] text-body">People decide</dt>
+        <dt className="font-mono text-[14px] uppercase tracking-[0.14em] text-body">{peopleLabel}</dt>
         <dd>
           <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-            {PEOPLE.map((p) => (
-              <li key={p} className="text-[17px] font-semibold leading-[1.3] text-ink">
-                {p}
+            {people.map((p, i) => (
+              <li key={i} className="text-[17px] font-semibold leading-[1.3] text-ink">
+                {p.text}
               </li>
             ))}
           </ul>
@@ -52,11 +45,11 @@ export function TheLineTable() {
       {/* The boundary. Red, 3px: the only accent rule on the page outside the
           drawing, and the line the clause heading states in words. */}
       <div className="grid gap-y-3 border-t-[3px] border-red-deep py-6 md:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] md:gap-x-8">
-        <dt className="font-mono text-[14px] uppercase tracking-[0.14em] text-body">Tools assist</dt>
+        <dt className="font-mono text-[14px] uppercase tracking-[0.14em] text-body">{toolsLabel}</dt>
         <dd>
           <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-            {TOOLS.map((t) => (
-              <li key={t.name} className="text-[17px] leading-[1.3] text-body">
+            {tools.map((t, i) => (
+              <li key={i} className="text-[17px] leading-[1.3] text-body">
                 <strong className="font-semibold text-ink">{t.name}</strong>
                 <span className="block text-[15px] leading-[1.5]">{t.does}</span>
               </li>

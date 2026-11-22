@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Seo, organizationJsonLd } from "@/components/Seo";
 import { ShowFrame } from "@/components/ShowFrame";
 import { NotifyForm } from "@/components/NotifyForm";
@@ -20,8 +21,9 @@ import {
   Lead, Section, Container, Button,
 } from "@/components/ui";
 import { IconMail, IconArrow } from "@/components/icons";
-import { emphasis, useImageBlock, useBlock } from "@/lib/content";
+import { useBlock, useImageBlock, emphasis, useList } from "@/lib/content";
 import { COPY } from "@/components/home/copy";
+import { AI_RECORD } from "@/components/home/lists";
 
 /* ============================================================================
    THE RULE THIS PAGE WAS REBUILT ON.
@@ -105,6 +107,10 @@ export default function Home() {
   const aiCta = useBlock("home", "ai.cta", COPY["ai.cta"]);
   const updatesHeading = useBlock("home", "updates.heading", COPY["updates.heading"]);
   const updatesBody = useBlock("home", "updates.body", COPY["updates.body"]);
+  const evidenceCaption = useBlock("home", "evidence.caption", COPY["evidence.caption"]);
+  const aiTab = useBlock("home", "ai.tab", COPY["ai.tab"]);
+  const aiRecord = useList("home", "ai.record", AI_RECORD);
+  const captionParts = evidenceCaption.split("®");
 
   return (
     <>
@@ -275,9 +281,12 @@ export default function Home() {
               dark and a 0.78 cream measures 4.35, under AA. This is the
               darkest step of the cream that still clears it, at 4.62. */}
           <p className="ml-auto mt-16 max-w-[44ch] text-right font-mono text-[13px] leading-[1.6] tracking-[0.02em] text-[#eee9df] lg:mt-24">
-            Behind this, a frame from The Pawsitive Pugs &amp; Pals
-            <sup className="text-[0.7em]">&reg;</sup>. The garden the show&rsquo;s world is built
-            from, animated, not photographed.
+            {captionParts.map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && <sup className="text-[0.7em]">&reg;</sup>}
+                {part}
+              </Fragment>
+            ))}
           </p>
         </Container>
       </Section>
@@ -450,26 +459,14 @@ export default function Home() {
             </div>
 
             <div className="card-stock p-8 pt-9 sm:p-10 sm:pt-11">
-              <span className="card-tab" aria-hidden="true">POSITION</span>
+              <span className="card-tab" aria-hidden="true">{aiTab}</span>
               <dl className="divide-y divide-rule">
-                <div className="pb-6">
-                  <dt className="eyebrow eyebrow-sm">Decisions</dt>
-                  <dd className="t-lead mt-2 text-ink">
-                    Our creative and educational decisions are made by people.
-                  </dd>
-                </div>
-                <div className="py-6">
-                  <dt className="eyebrow eyebrow-sm">In final production</dt>
-                  <dd className="t-body mt-2 text-body">
-                    Runway for visual production. ElevenLabs for voice production.
-                  </dd>
-                </div>
-                <div className="pt-6">
-                  <dt className="eyebrow eyebrow-sm">Before publication</dt>
-                  <dd className="t-body mt-2 text-body">
-                    Our team writes, directs, reviews and approves the work.
-                  </dd>
-                </div>
+                {aiRecord.map((r, i) => (
+                  <div key={i} className={i === 0 ? "pb-6" : i === aiRecord.length - 1 ? "pt-6" : "py-6"}>
+                    <dt className="eyebrow eyebrow-sm">{r.label}</dt>
+                    <dd className={i === 0 ? "t-lead mt-2 text-ink" : "t-body mt-2 text-body"}>{r.text}</dd>
+                  </div>
+                ))}
               </dl>
             </div>
           </Settle>
