@@ -1,4 +1,4 @@
-export type BlockValue = { alt?: string; html?: string; url?: string; text?: string };
+export type BlockValue = { url?: string; items?: Record<string, string>[]; alt?: string; html?: string; text?: string };
 
 export interface ContentBlock {
   type: "image" | "text" | "link" | "richtext";

@@ -158,6 +158,27 @@ export function useBlock(page: string, key: string, fallback: string): string {
   return text && text.trim() ? text : fallback;
 }
 
+/**
+ * One editable list (FAQs, figures, steps...). `fallback` is the page's own
+ * items, written as plain text fields, so an empty table renders the page as
+ * it was. A saved list replaces it whole once it has at least one item; each
+ * item is filled out with the fallback's field names so a missing field is
+ * an empty string, never undefined. Anything else an item needs (an icon, a
+ * colour) stays in the page code, matched by index or cycled.
+ *
+ *   const faqs = useList("home", "faq", FAQS);
+ */
+export function useList<T extends Record<string, string>>(page: string, key: string, fallback: T[]): T[] {
+  const items = usePageValues(page)[key]?.items;
+  if (!Array.isArray(items) || items.length === 0) return fallback;
+  const names = Object.keys(fallback[0] ?? {});
+  return items.map((it) => {
+    const out: Record<string, string> = {};
+    for (const n of names.length ? names : Object.keys(it ?? {})) out[n] = typeof it?.[n] === "string" ? it[n] : "";
+    return out as T;
+  });
+}
+
 export interface ImageOverride {
   url: string;
   alt: string;

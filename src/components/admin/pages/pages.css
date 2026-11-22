@@ -171,3 +171,10 @@
   .pg-editor { grid-template-columns: minmax(0, 1fr) 360px; }
   .pg-editor__side { position: sticky; top: 16px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; scrollbar-width: thin; padding-bottom: 90px; }
 }
+
+/* List blocks: add, remove, reorder. */
+.adm .pg-list{border:0;margin:0;padding:0;display:grid;gap:12px;min-width:0}
+.adm .pg-list legend{font-weight:600;margin-bottom:8px;padding:0}
+.adm .pg-list__items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.adm .pg-list__item{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.adm .pg-list__head{display:flex;align-items:center;justify-content:space-between;gap:8px}

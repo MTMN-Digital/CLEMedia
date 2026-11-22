@@ -2,23 +2,25 @@ import { useMemo, useState, useEffect } from "react";
 import { useParams, Routes, Route, Link } from "react-router-dom";
 import {
   TextArea,
-  useSaveState,
-  AdminButton,
-  SaveBar,
-  Notice,
-  PageHeader,
   useConfirm,
+  AdminButton,
+  type ImageValue,
+  TextInput,
+  PageHeader,
+  Notice,
   StatusPill,
   ImageUpload,
-  type ImageValue,
+  MoveButtons,
+  SaveBar,
   EmptyState,
+  useSaveState,
 } from "@/components/admin/kit";
 import { type PreviewTarget, PagePreview, type PreviewSource } from "./PagePreview";
 import { getSetting, useLoad, type ContentBlock, listBlocks, type Result, listRows, resetBlock, IMAGE_RULES, saveBlock } from "@/lib/admin";
 import { TEAM, ADVISORS } from "@/components/team/people";
 import { EPISODES } from "@/lib/episodes";
 import { LINKS_DEFAULT, COMPANY_DEFAULT } from "@/lib/site";
-import { loadDefaults, type PageId, type PageDef, type BlockDef, PAGES, blocksFor, sectionsFor, blockValueError } from "@/lib/blocks";
+import { blocksFor, loadDefaults, sectionsFor, type ListItem, type BlockDef, type PageDef, PAGES, type PageId, blockValueError } from "@/lib/blocks";
 import { ASSETS } from "@/lib/brand";
 import "./pages.css";
 
@@ -111,17 +113,19 @@ function useSources() {
 
 /* ─── One page ───────────────────────────────────────────────────────────── */
 
-type Draft = string | ImageValue | null;
+type Draft = string | ImageValue | ListItem[] | null;
 type Loaded = { rows: Record<string, ContentBlock>; defaults: Record<string, string> };
 
 function liveValue(def: BlockDef, row: ContentBlock | undefined, defaults: Record<string, string>): Draft {
   if (def.kind === "image") return row ? { url: row.value.url ?? "", alt: row.value.alt ?? "" } : null;
+  if (def.kind === "list") return row?.value.items?.length ? row.value.items : (def.items ?? []);
   if (row && row.value.text && row.value.text.trim()) return row.value.text;
   return defaults[def.key] ?? "";
 }
 
 function same(a: Draft, b: Draft): boolean {
   if (typeof a === "string" || typeof b === "string") return a === b;
+  if (Array.isArray(a) || Array.isArray(b)) return JSON.stringify(a) === JSON.stringify(b);
   if (a === null || b === null) return a === b;
   return a.url === b.url && a.alt === b.alt;
 }
@@ -186,6 +190,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
   const fieldError = (def: BlockDef): string | null => {
     if (!isDirty(def) || isRemoval(def)) return null;
     const d = draftOf(def);
+    if (def.kind === "list") return blockValueError(def, (d as ListItem[] | null) ?? []);
     return blockValueError(def, def.kind === "image" ? (d as ImageValue | null) ?? { url: "", alt: "" } : String(d ?? ""));
   };
 
@@ -201,6 +206,10 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
         if (def.kind === "image") {
           const a = def.asset ? ASSETS[def.asset] : null;
           return { key: def.key, kind: "image", texts: [], srcs: [a?.base ?? "", (v as ImageValue | null)?.url ?? ""].filter(Boolean) };
+        }
+        if (def.kind === "list") {
+          const texts = ((v as ListItem[] | null) ?? []).flatMap((it) => Object.values(it).flatMap((t) => [t, ...t.split(/\n\s*\n/)])).map((x) => x.trim()).filter(Boolean);
+          return { key: def.key, kind: "text", texts, srcs: [] };
         }
         const text = String(v ?? "");
         const paras = text.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
@@ -231,7 +240,9 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
     const r =
       def.kind === "image"
         ? await saveBlock(page, def.key, "image", { url: (d as ImageValue).url, alt: (d as ImageValue).alt.trim() })
-        : await saveBlock(page, def.key, "text", { text: String(d ?? "").trim() });
+        : def.kind === "list"
+          ? await saveBlock(page, def.key, "text", { items: cleanItems(def, (d as ListItem[] | null) ?? []) })
+          : await saveBlock(page, def.key, "text", { text: String(d ?? "").trim() });
     if (r.error !== null) return { error: r.error };
     setRows((s) => ({ ...s, [def.key]: r.data }));
     setDraft(def.key, liveValue(def, r.data, defaults));
@@ -247,7 +258,7 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       return next;
     });
     setDraft(def.key, liveValue(def, undefined, defaults));
-    return def.kind === "image" ? "Original picture put back" : "Reset to the original wording";
+    return def.kind === "image" ? "Original picture put back" : def.kind === "list" ? "Original list put back" : "Reset to the original wording";
   }
 
   async function resetOne(def: BlockDef) {
@@ -256,6 +267,8 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       body:
         def.kind === "image"
           ? "The picture you uploaded will stop showing on the site and the original picture shows instead."
+          : def.kind === "list"
+          ? "Your saved list will be removed and the page shows its original items again."
           : "The wording you saved will be removed and the page shows the original wording again.",
       confirmLabel: "Reset to the original",
     });
@@ -390,6 +403,11 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
   );
 }
 
+/** Trimmed fields, in the registry's field order, nothing else stored. */
+function cleanItems(def: BlockDef, items: ListItem[]): ListItem[] {
+  return items.map((it) => Object.fromEntries((def.fields ?? []).map((f) => [f.name, (it[f.name] ?? "").trim()])));
+}
+
 function sectionOf(sections: { blocks: BlockDef[]; section: string }[], key: string) {
   return sections.find((s) => s.blocks.some((b) => b.key === key))?.section ?? "";
 }
@@ -428,7 +446,7 @@ function BlockCard({
   onUndo: () => void;
 }) {
   const hint =
-    def.kind === "image"
+    def.kind === "image" || def.kind === "list"
       ? undefined
       : [
           def.multi ? "Leave a blank line between paragraphs." : null,
@@ -440,7 +458,7 @@ function BlockCard({
 
   const text = typeof draft === "string" ? draft : "";
   const rows = Math.min(14, Math.max(3, Math.ceil(text.length / 70) + (text.match(/\n/g)?.length ?? 0) + 1));
-  const showOriginal = def.kind !== "image" && (changed || dirty) && original !== undefined && original !== text;
+  const showOriginal = def.kind !== "image" && def.kind !== "list" && (changed || dirty) && original !== undefined && original !== text;
   const asset = def.kind === "image" ? originalImage(def) : null;
 
   let field;
@@ -456,6 +474,8 @@ function BlockCard({
         error={error}
       />
     );
+  } else if (def.kind === "list") {
+    field = <ListEditor def={def} items={(draft as ListItem[] | null) ?? []} onChange={onChange} error={error} />;
   } else if (def.kind === "paragraph") {
     field = <TextArea label={def.label} value={text} onChange={onChange} rows={rows} hint={hint} error={error} />;
   } else {
@@ -476,7 +496,7 @@ function BlockCard({
   let state;
   if (dirty) state = <StatusPill tone="alert">{removal ? "Picture removed, not saved yet" : "Not saved yet"}</StatusPill>;
   else if (changed) state = <StatusPill tone="warn">Changed from the original</StatusPill>;
-  else state = <span className="adm-muted">{def.kind === "image" ? "The original picture" : "As originally written"}</span>;
+  else state = <span className="adm-muted">{def.kind === "image" ? "The original picture" : def.kind === "list" ? "The original list" : "As originally written"}</span>;
 
   return (
     <div className="adm-card pg-block">
@@ -504,11 +524,60 @@ function BlockCard({
           )}
           {changed && !removal && (
             <AdminButton variant="danger" size="sm" onClick={onReset} busy={busy} busyLabel="Resetting" disabled={saving}>
-              {def.kind === "image" ? "Put the original picture back" : "Reset to the original wording"}
+              {def.kind === "image" ? "Put the original picture back" : def.kind === "list" ? "Put the original list back" : "Reset to the original wording"}
             </AdminButton>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─── A list: add, remove, reorder ──────────────────────────────────────── */
+
+function ListEditor({ def, items, onChange, error }: { def: BlockDef; items: ListItem[]; onChange: (v: ListItem[]) => void; error: string | null }) {
+  const fields = def.fields ?? [];
+  const what = def.itemLabel ?? "item";
+  const Name = `${what[0].toUpperCase()}${what.slice(1)}`;
+  const max = def.max ?? 30;
+  const min = def.min ?? 1;
+  const set = (i: number, name: string, v: string) => onChange(items.map((it, j) => (j === i ? { ...it, [name]: v } : it)));
+  const move = (i: number, dir: -1 | 1) => {
+    const next = [...items];
+    [next[i], next[i + dir]] = [next[i + dir], next[i]];
+    onChange(next);
+  };
+  return (
+    <fieldset className="pg-list">
+      <legend>{def.label}</legend>
+      <ol className="pg-list__items">
+        {items.map((it, i) => (
+          <li key={i} className="pg-list__item">
+            <div className="pg-list__head">
+              <b>
+                {Name} {i + 1}
+              </b>
+              <MoveButtons label={`${Name} ${i + 1}`} first={i === 0} last={i === items.length - 1} onUp={() => move(i, -1)} onDown={() => move(i, 1)} />
+            </div>
+            {fields.map((f) =>
+              f.kind === "paragraph" ? (
+                <TextArea key={f.name} label={f.label} value={it[f.name] ?? ""} onChange={(v) => set(i, f.name, v)} rows={Math.min(8, Math.max(2, Math.ceil((it[f.name] ?? "").length / 60)))} />
+              ) : (
+                <TextInput key={f.name} label={f.label} value={it[f.name] ?? ""} onChange={(v) => set(i, f.name, v)} />
+              ),
+            )}
+            <div>
+              <AdminButton variant="danger" size="sm" onClick={() => onChange(items.filter((_, j) => j !== i))} disabled={items.length <= min}>
+                Remove {what} {i + 1}
+              </AdminButton>
+            </div>
+          </li>
+        ))}
+      </ol>
+      {error && <Notice tone="error">{error}</Notice>}
+      <AdminButton variant="quiet" size="sm" onClick={() => onChange([...items, Object.fromEntries(fields.map((f) => [f.name, ""]))])} disabled={items.length >= max}>
+        Add a {what}
+      </AdminButton>
+    </fieldset>
   );
 }

@@ -291,3 +291,102 @@ then `p.goto("http://127.0.0.1:5504/admin/<section>")`. Your page IS routed this
 1440 and 390 before finishing. Screenshots to `/tmp/cle-qa/run2/`. Local data: 6 products with orders,
 6 episodes, 1 journal post, empty people and media tables, no quotes. Do not change local data except
 through the UI you are testing, and undo any test change you make.
+
+---
+
+# Run 3: everything on the main pages editable, lists included (2026-11-22)
+
+Goal: Conor can change every visible word on the main public pages from Website > Pages, by clicking
+it in the live preview. Two kinds of addition per page:
+1. **Single lines and paragraphs** still fixed in code: headings, eyebrow labels, captions, button and
+   link labels, small notes, empty-state lines. Become `line` / `para` blocks.
+2. **Repeated items** still fixed in code: FAQs, research figures and their captions, app features,
+   Responsible AI commitments, steps, red lines and tools, contact routes, press facts, the 404 page's
+   route list, case-study questions, and similar. Become `list` blocks (add, remove, reorder).
+
+## Foundation (frozen, built before fan-out; do not edit)
+- `src/lib/blockdefs.ts`: types (`PageId`, `BlockDef`, `ListField`, `ListItem`) and builders
+  `line(page, section, key, label, source, extra?)`, `para(...)`, `image(page, section, key, label, assetKey, source)`,
+  `list(page, section, key, label, source, itemLabel, fields, items, extra?)`.
+  `fields` = `{ name, label, kind: "line" | "paragraph", optional? }[]`; `items` = the page's own items as
+  `Record<string, string>[]`; `extra` may set `min` (default 1) and `max` (default 30), `emphasis`, `multi`,
+  `required: false`.
+- `src/lib/content.ts`: `useBlock(page, key, fallback)`, `useImageBlock`, `emphasis`, `splitParagraphs`,
+  and NEW `useList(page, key, fallbackItems)`: returns the saved list (each item filled out with the
+  fallback's field names) or the fallback. Same no-loading, prerender-safe rules as `useBlock`.
+- `src/lib/blocks.ts` (convergence, do not edit) appends every page's `CMS` array from its own `cms.ts`.
+  A key already in the base table is ignored, so never reuse an existing key.
+- The admin page editor (`src/components/admin/pages/**`, do not edit) already renders `list` blocks
+  with add, remove, up/down, validation, save and "Put the original list back". Lists are stored as
+  `content_blocks` type `text`, value `{ items: [...] }`. No migration.
+
+## The pattern, per page
+- New single blocks: add the key and its current text, character for character, to the page's
+  existing COPY object (see `COPY_MODULES` in `src/lib/blocks.ts` for where it lives), read it with
+  `useBlock(page, key, COPY[key])`, and register it in that page's `cms.ts` with `line` or `para`.
+  Headings whose accent clause is in `<em>`/Underline: `{ emphasis: true }`, stars in the default.
+- New lists: export the items as a plain-string array (e.g. `export const FAQ_ITEMS = [{ q: "...", a: "..." }]`)
+  from a module in your folder, pass that SAME array as `items` to `list(...)` in `cms.ts`, and read
+  it in the page with `useList(page, key, FAQ_ITEMS)`. Anything that is not text (an icon, a colour, an
+  image, a link target) stays in code, matched by index and cycled when the list is longer
+  (`ICONS[i % ICONS.length]`). Render every field in its own element so the preview can find it.
+  Numbered lists number from the index, never from a stored number.
+- The default render must be byte-identical to today: same words, same markup, same classes.
+  Visible change at the defaults = failure.
+- Keys: dotted, lower case, by place on the page (`faq.items`, `figures.heading`). Labels: plain words
+  for Conor saying where it is and what it is ("Questions and answers near the foot of the page").
+  `section`: the place on the page, matching the existing section names where it sits in one.
+- `source`: `"<file>: <what>"` as in the base table.
+
+## Not in scope (leave in code)
+- Anything another admin section already edits: people, episodes, products, journal posts, media
+  entries, quotes, settings (email, social links, company details, app store links and launch). The
+  preview already points Conor there.
+- Header, footer, cookie banner, `Layout`, `Seo` titles and descriptions, shared components outside
+  your folder (`src/components/*.tsx`: pass text through a prop if one exists; if a shared component
+  hardcodes text you need, list it as a contract gap, do not edit it).
+- Form control labels, placeholders, validation and error messages, aria-only text, alt text of
+  bundled images (image blocks cover pictures), legal pages (already whole sections).
+- Text that is computed (dates, prices, counts) or that is a proper noun in a logo or graphic.
+- A whole drawn diagram whose labels are positioned by hand (an SVG with fixed coordinates): make its
+  labels editable only if longer text cannot break the layout; otherwise leave it and say so.
+
+## Shards (Owns: create/edit only these; Must not touch: everything else)
+| Shard | Owns | Page ids |
+|---|---|---|
+| home | `src/pages/Home.tsx`, `src/components/home/**` | home |
+| story-team | `src/pages/Story.tsx`, `src/pages/Team.tsx`, `src/components/story/**`, `src/components/teampage/**` | story, team |
+| ethical-ai | `src/pages/EthicalAi.tsx`, `src/components/ethical-ai/**` | ethical-ai |
+| case-study | `src/pages/CaseStudy.tsx`, `src/components/casestudy/**` | case-study |
+| app-media | `src/pages/AppPage.tsx`, `src/pages/Media.tsx`, `src/components/app/**`, `src/components/media/**` | app, media |
+| rest | `src/pages/Shop.tsx`, `src/pages/ShopProduct.tsx`, `src/pages/Download.tsx`, `src/pages/Contact.tsx`, `src/pages/Journal.tsx`, `src/pages/NotFound.tsx`, `src/components/{shop,contact,journal,notfound}/**` | shop, contact, journal, 404 |
+
+Export each shard must keep: `CMS` (array of `BlockDef`) from each owned `cms.ts`, and every existing
+export of every owned file, with the same signature (new props optional only).
+
+## DONE-WHEN checklist, Run 3 (the gate may fail a shard ONLY on these or a lint FAIL)
+1. Only owned files created or changed (no edits to `src/lib/**`, `src/components/admin/**`, shared
+   components, styles, other shards' folders).
+2. Every existing export, prop signature and existing block key still works; no base key reused.
+3. `npx tsc --noEmit -p tsconfig.app.json` passes.
+4. `bash -O globstar .parallel/portal/shard-lint.sh CMS <folder>/cms.ts '<owned glob>'...` exits 0 for each `cms.ts` owned.
+5. Defaults render the page exactly as before (same visible words and layout at 1440 and 390;
+   compare against `git stash`-free evidence: the screenshots in step 8 vs the live site
+   https://cle-media.vercel.app<path>).
+6. Coverage: every visible hard-coded heading, line, label, caption, button or link label and every
+   repeated item set on the owned pages is either a block now or named in the final report with the
+   reason it stays in code (an exclusion above). No silent omissions.
+7. Lists: real fields, defaults equal to today's items, index-matched non-text extras, sensible `min`/`max`
+   (a 3-up grid gets max that keeps the layout sound), longer or shorter lists still lay out (no overflow
+   at 390px with one extra item and with one fewer).
+8. Seen working: screenshot the public page at 1440 and 390, and the admin editor at
+   `/admin/pages/<page>` showing your new blocks outlined in the preview (click one, screenshot the
+   side panel). Files to `/tmp/cle-qa/run3/<shard>-*.png`. Do not save anything in the admin.
+9. Labels and sections in plain words, no em or en dashes anywhere, no invented copy (defaults are
+   the current text only).
+10. `prefers-reduced-motion`, a11y and markup of the page unchanged or improved, never regressed.
+
+## Local test environment
+Same as Run 2: dev server `http://127.0.0.1:5504` (running, do not start another), pw.mjs helper
+(`launch`, `adminPage`). Local `content_blocks` may hold a few saved rows from earlier tests; your
+defaults show wherever a key has no row.

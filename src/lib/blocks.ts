@@ -1,4 +1,3 @@
-import type { AssetKey } from "@/lib/brand";
 
 /* ============================================================================
    The CMS block registry. FROZEN for the 2026-10-27-admin shards.
@@ -24,56 +23,20 @@ import type { AssetKey } from "@/lib/brand";
    page wraps in <em> or <Underline>.
    ========================================================================== */
 
-export type PageId =
-  | "media"
-  | "app"
-  | "story"
-  | "privacy"
-  | "terms"
-  | "journal"
-  | "shop"
-  | "404"
-  | "contact"
-  | "case-study"
-  | "ethical-ai"
-  | "home"
-  | "team"
-  | "cookies";
+export type { PageDef, BlockDef, BlockKind, ListField, ListItem, WiredBy, PageId } from "@/lib/blockdefs";
+import { type PageId, type PageDef, type ListItem, line, type BlockDef, image, para } from "@/lib/blockdefs";
+import { CMS as HOME_CMS } from "@/components/home/cms";
+import { CMS as STORY_CMS } from "@/components/story/cms";
+import { CMS as TEAM_CMS } from "@/components/teampage/cms";
+import { CMS as EAI_CMS } from "@/components/ethical-ai/cms";
+import { CMS as CS_CMS } from "@/components/casestudy/cms";
+import { CMS as APP_CMS } from "@/components/app/cms";
+import { CMS as MEDIA_CMS } from "@/components/media/cms";
+import { CMS as SHOP_CMS } from "@/components/shop/cms";
+import { CMS as CONTACT_CMS } from "@/components/contact/cms";
+import { CMS as JOURNAL_CMS } from "@/components/journal/cms";
+import { CMS as NF_CMS } from "@/components/notfound/cms";
 
-/** line: one line of plain text. paragraph: several lines; for `multi`
- *  blocks, paragraphs are separated by a blank line. image: { url, alt }. */
-export type BlockKind = "image" | "paragraph" | "line";
-
-/** Which shard wires a page's blocks into the page component. */
-export type WiredBy = "media-app-links" | "cms-wiring" | "shop";
-
-export interface BlockDef {
-  page: PageId;
-  key: string;
-  /** What the editor sees. Plain words: where it is on the page and what it is. */
-  label: string;
-  kind: BlockKind;
-  /** Can never be saved empty. Every text block is required; images are not. */
-  required: boolean;
-  /** Group heading in the editor, in page order. */
-  section: string;
-  /** The accent clause is written between *stars*. */
-  emphasis?: boolean;
-  /** Several paragraphs, separated by a blank line (splitParagraphs()). */
-  multi?: boolean;
-  /** Image blocks: the bundled asset that shows until an upload replaces it. */
-  asset?: AssetKey;
-  /** Where the default lives, for the wiring shard. Not shown to editors. */
-  source: string;
-}
-
-export interface PageDef {
-  id: PageId;
-  label: string;
-  /** The public route, for "View the page". */
-  path: string;
-  wiredBy: WiredBy;
-}
 
 export const PAGES: PageDef[] = [
   { id: "home", label: "Home", path: "/", wiredBy: "cms-wiring" },
@@ -94,15 +57,6 @@ export const PAGES: PageDef[] = [
 
 /* ─── Builders, to keep the table below readable ─────────────────────────── */
 
-const line = (page: PageId, section: string, key: string, label: string, source: string, extra: Partial<BlockDef> = {}): BlockDef => ({
-  page, key, label, kind: "line", required: true, section, source, ...extra,
-});
-const para = (page: PageId, section: string, key: string, label: string, source: string, extra: Partial<BlockDef> = {}): BlockDef => ({
-  page, key, label, kind: "paragraph", required: true, section, source, ...extra,
-});
-const image = (page: PageId, section: string, key: string, label: string, asset: AssetKey, source: string): BlockDef => ({
-  page, key, label, kind: "image", required: false, section, asset, source,
-});
 
 /* ─── The registry ───────────────────────────────────────────────────────── */
 
@@ -128,7 +82,7 @@ const legal = (page: "cookies" | "privacy" | "terms", sections: string[]): Block
   ]),
 ];
 
-export const BLOCKS: BlockDef[] = [
+const BASE: BlockDef[] = [
   /* Home. The "Watch. Play. Learn." headline animates word by word and is
      the brand line, so it is not editable. */
   line("home", "Top of the page", "hero.cta_primary", "First button", "src/components/home/HeroFilm.tsx: first <Button> label"),
@@ -337,6 +291,24 @@ export const BLOCKS: BlockDef[] = [
   line("404", "Top of the page", "hero.aside", "Second sentence of the paragraph under the headline", `${NF}: lead paragraph`),
 ];
 
+/** Every block: the base table above, then each page's own cms.ts. A key
+ *  defined twice on one page keeps the first, so a page module can never
+ *  shadow a base block. */
+export const BLOCKS: BlockDef[] = [
+  ...BASE,
+  ...HOME_CMS,
+  ...STORY_CMS,
+  ...TEAM_CMS,
+  ...EAI_CMS,
+  ...CS_CMS,
+  ...APP_CMS,
+  ...MEDIA_CMS,
+  ...SHOP_CMS,
+  ...CONTACT_CMS,
+  ...JOURNAL_CMS,
+  ...NF_CMS,
+].filter((b, i, all) => all.findIndex((o) => o.page === b.page && o.key === b.key) === i);
+
 /* ─── Where each page's COPY lives ───────────────────────────────────────
    The owning shard creates or fills the module and keeps every key of that
    page's blocks in it. Image blocks have no entry (their default is `asset`).
@@ -404,15 +376,28 @@ export function findBlock(page: PageId, key: string): BlockDef | undefined {
 export function sectionsFor(page: PageId): { blocks: BlockDef[]; section: string }[] {
   const out: { blocks: BlockDef[]; section: string }[] = [];
   for (const b of blocksFor(page)) {
-    const last = out[out.length - 1];
-    if (last && last.section === b.section) last.blocks.push(b);
+    const hit = out.find((s) => s.section === b.section);
+    if (hit) hit.blocks.push(b);
     else out.push({ section: b.section, blocks: [b] });
   }
   return out;
 }
 
 /** The text that makes a block invalid to save, or null. */
-export function blockValueError(def: BlockDef, value: string | { url: string; alt: string }): string | null {
+export function blockValueError(def: BlockDef, value: string | { url: string; alt: string } | ListItem[]): string | null {
+  if (def.kind === "list") {
+    const items = value as ListItem[];
+    const min = def.min ?? 1;
+    const max = def.max ?? 30;
+    const what = def.itemLabel ?? "item";
+    if (items.length < min) return min === 1 ? `Keep at least one ${what}.` : `Keep at least ${min} of these.`;
+    if (items.length > max) return `There is room for ${max} at most.`;
+    for (let i = 0; i < items.length; i++) {
+      const gap = (def.fields ?? []).find((f) => !f.optional && !(items[i][f.name] ?? "").trim());
+      if (gap) return `${what[0].toUpperCase()}${what.slice(1)} ${i + 1}: fill in "${gap.label}", or remove it.`;
+    }
+    return null;
+  }
   if (def.kind === "image") {
     const v = value as { url: string; alt: string };
     if (!v.url) return "Choose an image first.";

@@ -220,7 +220,7 @@ export async function saveBlock(
   page: string,
   key: string,
   type: "text" | "image",
-  value: { text: string } | { url: string; alt: string },
+  value: { text: string } | { url: string; alt: string } | { items: Record<string, string>[] },
 ): Promise<Result<ContentBlock>> {
   const r = await run<ContentBlock>(() =>
     sb()
