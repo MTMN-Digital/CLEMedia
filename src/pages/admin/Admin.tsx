@@ -2,7 +2,7 @@ import { useState, Suspense, useEffect, type FormEvent } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation, Routes, NavLink, Route, Link } from "react-router-dom";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { PANELS, type PanelCount } from "@/components/admin/registry";
+import { type PanelCount, preloadPanels, PANELS } from "@/components/admin/registry";
 import { AdminButton, ToastProvider, Notice, ConfirmProvider } from "@/components/admin/kit";
 import "@/components/admin/kit/admin.css";
 import { Dashboard } from "@/components/admin/dashboard/Dashboard";
@@ -173,8 +173,11 @@ function useCounts() {
     for (const p of PANELS) {
       p.count?.().then((c) => live && setCounts((s) => ({ ...s, [p.key]: c })));
     }
+    /* Signed in: fetch every section's code in the background. */
+    const t = window.setTimeout(preloadPanels, 1200);
     return () => {
       live = false;
+      window.clearTimeout(t);
     };
   }, []);
   return counts;

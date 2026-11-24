@@ -1,4 +1,15 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from "react";
+
+/* Every panel's chunk loader, so the shell can fetch them all once the
+   console is open and switching sections never waits on the network. */
+const loaders: (() => Promise<unknown>)[] = [];
+function load<T extends ComponentType<object>>(f: () => Promise<{ default: T }>): LazyExoticComponent<T> {
+  loaders.push(f);
+  return lazy(f);
+}
+export function preloadPanels() {
+  for (const f of loaders) f().catch(() => {});
+}
 import { countRows } from "@/lib/admin";
 import type { PillTone } from "@/components/admin/kit";
 
@@ -42,7 +53,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/inbox",
     file: "src/components/admin/inbox/InboxPanel.tsx",
     exportName: "InboxPanel",
-    Component: lazy(() => import("@/components/admin/inbox/InboxPanel").then((m) => ({ default: m.InboxPanel }))),
+    Component: load(() => import("@/components/admin/inbox/InboxPanel").then((m) => ({ default: m.InboxPanel }))),
     count: async () => {
       const c = await countRows("enquiries", { handled: false });
       return c == null ? null : c ? { text: `${c} new`, tone: "alert" } : { text: "Nothing new", tone: "off" };
@@ -55,7 +66,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/contacts",
     file: "src/components/admin/contacts/ContactsPanel.tsx",
     exportName: "ContactsPanel",
-    Component: lazy(() => import("@/components/admin/contacts/ContactsPanel").then((m) => ({ default: m.ContactsPanel }))),
+    Component: load(() => import("@/components/admin/contacts/ContactsPanel").then((m) => ({ default: m.ContactsPanel }))),
   },
   {
     key: "pages",
@@ -64,7 +75,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/pages",
     file: "src/components/admin/pages/PagesPanel.tsx",
     exportName: "PagesPanel",
-    Component: lazy(() => import("@/components/admin/pages/PagesPanel").then((m) => ({ default: m.PagesPanel }))),
+    Component: load(() => import("@/components/admin/pages/PagesPanel").then((m) => ({ default: m.PagesPanel }))),
     count: async () => {
       const c = await countRows("content_blocks");
       return c ? { text: `${n(c, "change", "changes")} from the original`, tone: "off" } : null;
@@ -77,7 +88,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/journal",
     file: "src/components/admin/journal/JournalPanel.tsx",
     exportName: "JournalPanel",
-    Component: lazy(() => import("@/components/admin/journal/JournalPanel").then((m) => ({ default: m.JournalPanel }))),
+    Component: load(() => import("@/components/admin/journal/JournalPanel").then((m) => ({ default: m.JournalPanel }))),
     count: async () => {
       const [pub, draft] = await Promise.all([countRows("posts", { status: "published" }), countRows("posts", { status: "draft" })]);
       if (pub == null) return null;
@@ -91,7 +102,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/people",
     file: "src/components/admin/people/PeoplePanel.tsx",
     exportName: "PeoplePanel",
-    Component: lazy(() => import("@/components/admin/people/PeoplePanel").then((m) => ({ default: m.PeoplePanel }))),
+    Component: load(() => import("@/components/admin/people/PeoplePanel").then((m) => ({ default: m.PeoplePanel }))),
   },
   {
     key: "episodes",
@@ -100,7 +111,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/episodes",
     file: "src/components/admin/episodes/EpisodesPanel.tsx",
     exportName: "EpisodesPanel",
-    Component: lazy(() => import("@/components/admin/episodes/EpisodesPanel").then((m) => ({ default: m.EpisodesPanel }))),
+    Component: load(() => import("@/components/admin/episodes/EpisodesPanel").then((m) => ({ default: m.EpisodesPanel }))),
     count: async () => {
       const c = await countRows("episodes", { visible: true });
       return c == null ? null : { text: `${n(c, "episode", "episodes")} shown`, tone: "off" };
@@ -113,7 +124,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/quotes",
     file: "src/components/admin/quotes/QuotesPanel.tsx",
     exportName: "QuotesPanel",
-    Component: lazy(() => import("@/components/admin/quotes/QuotesPanel").then((m) => ({ default: m.QuotesPanel }))),
+    Component: load(() => import("@/components/admin/quotes/QuotesPanel").then((m) => ({ default: m.QuotesPanel }))),
   },
   {
     key: "media",
@@ -122,7 +133,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/media",
     file: "src/components/admin/media/MediaPanel.tsx",
     exportName: "MediaPanel",
-    Component: lazy(() => import("@/components/admin/media/MediaPanel").then((m) => ({ default: m.MediaPanel }))),
+    Component: load(() => import("@/components/admin/media/MediaPanel").then((m) => ({ default: m.MediaPanel }))),
   },
   {
     key: "shop",
@@ -131,7 +142,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/shop",
     file: "src/components/admin/shop/ShopPanel.tsx",
     exportName: "ShopPanel",
-    Component: lazy(() => import("@/components/admin/shop/ShopPanel").then((m) => ({ default: m.ShopPanel }))),
+    Component: load(() => import("@/components/admin/shop/ShopPanel").then((m) => ({ default: m.ShopPanel }))),
     count: async () => {
       const on = await countRows("products", { active: true });
       return on == null ? null : { text: `${n(on, "product", "products")} on sale`, tone: on ? "ok" : "off" };
@@ -144,7 +155,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/app",
     file: "src/components/admin/app/AppPanel.tsx",
     exportName: "AppPanel",
-    Component: lazy(() => import("@/components/admin/app/AppPanel").then((m) => ({ default: m.AppPanel }))),
+    Component: load(() => import("@/components/admin/app/AppPanel").then((m) => ({ default: m.AppPanel }))),
   },
   {
     key: "links",
@@ -153,7 +164,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/links",
     file: "src/components/admin/links/LinksPanel.tsx",
     exportName: "LinksPanel",
-    Component: lazy(() => import("@/components/admin/links/LinksPanel").then((m) => ({ default: m.LinksPanel }))),
+    Component: load(() => import("@/components/admin/links/LinksPanel").then((m) => ({ default: m.LinksPanel }))),
   },
   {
     key: "enquiries",
@@ -162,7 +173,7 @@ export const PANELS: PanelDef[] = [
     path: "/admin/enquiries",
     file: "src/components/admin/enquiries/EnquiriesPanel.tsx",
     exportName: "EnquiriesPanel",
-    Component: lazy(() => import("@/components/admin/enquiries/EnquiriesPanel").then((m) => ({ default: m.EnquiriesPanel }))),
+    Component: load(() => import("@/components/admin/enquiries/EnquiriesPanel").then((m) => ({ default: m.EnquiriesPanel }))),
     count: async () => {
       const c = await countRows("enquiries", { handled: false });
       return c == null ? null : c ? { text: `${c} new`, tone: "alert" } : { text: "Nothing new", tone: "off" };

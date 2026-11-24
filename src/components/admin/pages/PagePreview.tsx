@@ -110,7 +110,12 @@ export function PagePreview({
     });
     const byText = new Map<string, Element[]>();
     d.body.querySelectorAll("h1,h2,h3,h4,h5,h6,p,li,a,button,span,em,strong,blockquote,figcaption,dt,dd,label,small,div").forEach((el) => {
-      const t = norm(el.textContent ?? "");
+      /* Wrappers around whole sections never match one block; skip them
+         before normalising their (large) text. */
+      if (el.tagName === "DIV" && el.childElementCount > 4) return;
+      const raw = el.textContent ?? "";
+      if (raw.length < 2 || raw.length > 2400) return;
+      const t = norm(raw);
       if (t.length < 2 || t.length > 2000) return;
       const list = byText.get(t);
       if (list) list.push(el);
@@ -187,7 +192,7 @@ export function PagePreview({
       win?.clearTimeout(t);
       t = win?.setTimeout(map, 400) ?? 0;
     });
-    mo.observe(d.body, { childList: true, subtree: true, characterData: true });
+    mo.observe(d.body, { childList: true, subtree: true });
   }, [map]);
 
   useEffect(() => {
@@ -230,6 +235,7 @@ export function PagePreview({
           <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
           Show what I can edit
         </label>
+        <span className="pg-prev__cue">Click anything outlined, then edit it on the right <span aria-hidden="true">&rarr;</span></span>
         <span className="pg-prev__key">
           <i data-k="edit" /> Edit here <i data-k="src" /> Edited elsewhere
         </span>

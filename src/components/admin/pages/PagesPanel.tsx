@@ -35,6 +35,12 @@ import "./pages.css";
    ========================================================================== */
 
 export function PagesPanel() {
+  useEffect(
+    () => () => {
+      sourcesCache = null;
+    },
+    [],
+  );
   return (
     <Routes>
       <Route index element={<PageEditor />} />
@@ -86,8 +92,16 @@ const SOURCES: Record<string, { label: string; path: string; what: string }> = {
   links: { label: "Links and settings", path: "/admin/links", what: "The public email address, social accounts and company details." },
 };
 
+/* Looked up once per visit to Pages, not on every page switch. PagesPanel
+   clears it on the way out, so a name changed in Team shows next time. */
+let sourcesCache: Promise<Result<PreviewSource[]>> | null = null;
+
 function useSources() {
-  return useLoad(async (): Promise<Result<PreviewSource[]>> => {
+  return useLoad(() => (sourcesCache ??= loadSources()), []);
+}
+
+function loadSources() {
+  return (async (): Promise<Result<PreviewSource[]>> => {
     const [people, eps, prods, posts, media, quotes, links] = await Promise.all([
       listRows("people", { columns: "name, role" }),
       listRows("episodes", { columns: "title" }),
@@ -108,7 +122,7 @@ function useSources() {
       { id: "links", texts: [links.data?.email ?? LINKS_DEFAULT.email ?? "", COMPANY_DEFAULT.legal] },
     ];
     return { data: out.map((x) => ({ ...x, texts: x.texts.filter((t): t is string => Boolean(t && t.trim())) })), error: null };
-  }, []);
+  })();
 }
 
 /* ─── One page ───────────────────────────────────────────────────────────── */
@@ -347,14 +361,12 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
       </div>
 
       <aside className="pg-editor__side" aria-label="Editing">
-        {!(sel || src) && <SiteMenu current={page} changed={changedBy} />}
-
         <section className="pg-editor__panel" aria-live="polite">
           {loaded.loading && !loaded.data && <p className="adm-muted" role="status">Loading...</p>}
           {loaded.data && sel && (
             <>
               <div className="pg-editor__panelhead">
-                <span>{sectionOf(sections, sel.key)}</span>
+                <span>Editing: {sectionOf(sections, sel.key)}</span>
                 <button type="button" className="pg-x" onClick={() => setSelected(null)} aria-label="Close">
                   <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 </button>
@@ -373,13 +385,20 @@ function PageForm({ pageDef }: { pageDef: PageDef }) {
           )}
           {loaded.data && !sel && !src && (
             <div className="pg-hint">
-              <b>Click anything outlined on the page</b>
-              <span>Solid outline: change it here. Dotted: it comes from another section, and clicking it shows where.</span>
+              <b>
+                <span aria-hidden="true">&larr;</span> Click the page to edit it
+              </b>
+              <ol>
+                <li>Click any outlined words or photo on the page.</li>
+                <li>Change it here.</li>
+                <li>Press Save changes.</li>
+              </ol>
+              <span className="pg-hint__note">Dotted outline: it's edited in another section. Click it to see where.</span>
             </div>
           )}
         </section>
 
-        {(sel || src) && <SiteMenu current={page} changed={changedBy} />}
+        <SiteMenu current={page} changed={changedBy} />
 
         {loaded.data && (
           <details className="pg-all">
