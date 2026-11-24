@@ -8,6 +8,10 @@ import "./styles/index.css";
 // A standalone review build (VITE_ROUTER=hash) is served from an arbitrary
 // sub-path with no server rewrites, so it routes on the hash instead.
 // Production on Vercel always uses BrowserRouter.
+// An admin invite or password link that lands anywhere but /admin (the
+// Supabase Site URL decides) goes on to /admin, which reads the hash.
+if (/type=(invite|recovery)/.test(location.hash) && !location.pathname.startsWith("/admin")) location.replace(`/admin${location.hash}`);
+
 const Router = import.meta.env.VITE_ROUTER === "hash" ? HashRouter : BrowserRouter;
 
 const app = (
