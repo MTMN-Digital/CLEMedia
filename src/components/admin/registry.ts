@@ -30,7 +30,7 @@ export interface PanelCount {
 }
 
 export interface PanelDef {
-  key: "app" | "journal" | "inbox" | "media" | "quotes" | "enquiries" | "shop" | "pages" | "contacts" | "people" | "episodes" | "links";
+  key: "media" | "pages" | "journal" | "shop" | "contacts" | "app" | "access" | "people" | "links" | "enquiries" | "quotes" | "episodes" | "inbox";
   label: string;
   blurb: string;
   /** Route, always /admin/<key>. */
@@ -165,6 +165,15 @@ export const PANELS: PanelDef[] = [
     file: "src/components/admin/links/LinksPanel.tsx",
     exportName: "LinksPanel",
     Component: load(() => import("@/components/admin/links/LinksPanel").then((m) => ({ default: m.LinksPanel }))),
+  },
+  {
+    key: "access",
+    label: "Access",
+    blurb: "Who can sign in to this admin",
+    path: "/admin/access",
+    file: "src/components/admin/access/AccessPanel.tsx",
+    exportName: "AccessPanel",
+    Component: load(() => import("@/components/admin/access/AccessPanel").then((m) => ({ default: m.AccessPanel }))),
   },
   {
     key: "enquiries",
