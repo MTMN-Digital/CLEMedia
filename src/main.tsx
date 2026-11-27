@@ -10,7 +10,14 @@ import "./styles/index.css";
 // Production on Vercel always uses BrowserRouter.
 // An admin invite or password link that lands anywhere but /admin (the
 // Supabase Site URL decides) goes on to /admin, which reads the hash.
-if (/type=(invite|recovery)/.test(location.hash) && !location.pathname.startsWith("/admin")) location.replace(`/admin${location.hash}`);
+if (/type=(invite|recovery)|error_code=/.test(location.hash) && !location.pathname.startsWith("/admin")) location.replace(`/admin${location.hash}`);
+// Read the link here, before the admin's Supabase client exists: it parses
+// and then clears the hash, and the admin needs to know an invite or reset
+// link brought the person here (to ask for a password) or failed (to say so).
+(window as { __authLink?: { type: string | null; error: string | null } }).__authLink = {
+  type: location.hash.match(/type=(invite|recovery)/)?.[1] ?? null,
+  error: location.hash.match(/error_code=([a-z_]+)/)?.[1] ?? null,
+};
 
 const Router = import.meta.env.VITE_ROUTER === "hash" ? HashRouter : BrowserRouter;
 

@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       email: u?.email ?? r.email,
       addedAt: r.added_at,
       lastSignIn: u?.last_sign_in_at ?? null,
-      active: Boolean(u?.last_sign_in_at),
+      active: Boolean(u?.email_confirmed_at),
       you: r.user_id === c.me,
     };
   });
@@ -61,23 +61,23 @@ export async function POST(request: Request) {
   const redirectTo = `${new URL(request.url).origin}/admin`;
   const existing = (await allUsers(c.sb)).find((u) => u.email?.toLowerCase() === email);
 
-  /* Signed in before: they set a password, so send a link to choose a new one. */
-  if (existing?.last_sign_in_at) {
+  /* Accepted an invite before: send a link to choose a new password. */
+  if (existing?.email_confirmed_at) {
     await c.sb.from("admins").upsert({ user_id: existing.id, email, note: "Added from the admin" });
     const { error } = await c.sb.auth.resetPasswordForEmail(email, { redirectTo });
     if (error) return json({ error: error.message }, 502);
     return json({ sent: "password" });
   }
 
-  /* Never signed in: an invite can't be re-sent to the same account, so
-     replace the unused one with a fresh invite. */
-  if (existing) {
-    const { error } = await c.sb.auth.admin.deleteUser(existing.id);
-    if (error) return json({ error: error.message }, 502);
-  }
+  /* New, or invited but never accepted: Supabase re-sends the invite to the
+     same account with a fresh link (the old link stops working). Nothing is
+     deleted, so a failed send never loses the account. */
   const { data, error } = await c.sb.auth.admin.inviteUserByEmail(email, { redirectTo });
-  if (error || !data.user) return json({ error: error?.message ?? "The invite could not be sent." }, 502);
-  const { error: rowError } = await c.sb.from("admins").insert({ user_id: data.user.id, email, note: "Invited from the admin" });
+  if (error || !data.user) {
+    const busy = /rate|limit|security purposes/i.test(error?.message ?? "");
+    return json({ error: busy ? "Too many emails sent in the last hour. Try again later." : (error?.message ?? "The invite could not be sent.") }, 502);
+  }
+  const { error: rowError } = await c.sb.from("admins").upsert({ user_id: data.user.id, email, note: "Invited from the admin" });
   if (rowError) return json({ error: rowError.message }, 500);
   return json({ sent: "invite" });
 }
