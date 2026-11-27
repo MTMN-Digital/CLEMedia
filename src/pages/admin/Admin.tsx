@@ -27,9 +27,11 @@ type AuthState =
 
 /* What the link in the email said, captured by main.tsx before Supabase
    cleared it from the address bar. */
-const authLink = (typeof window !== "undefined" && (window as { __authLink?: { type: string | null; error: string | null } }).__authLink) || { type: null, error: null };
+const authLink = () =>
+  (typeof window !== "undefined" && (window as { __authLink?: { type: string | null; error: string | null } }).__authLink) || { type: null, error: null };
 
 function Login() {
+  const [linkError] = useState(() => authLink().error);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +82,7 @@ function Login() {
         </div>
       )}
 
-      {authLink.error && (
+      {linkError && (
         <div className="mt-6">
           <Notice tone="error">
             That link has expired or has already been used. Ask the person who invited you to send a new one, or if you've
@@ -343,7 +345,7 @@ export default function Admin() {
   const [auth, setAuth] = useState<AuthState>(isSupabaseConfigured ? { kind: "loading" } : { kind: "signed-out" });
   /* Read before supabase-js consumes the link's hash. */
   const [linkType, setLinkType] = useState<null | "recovery" | "invite">(() => {
-    const m = authLink.type ?? window.location.hash.match(/type=(invite|recovery)/)?.[1];
+    const m = authLink().type ?? window.location.hash.match(/type=(invite|recovery)/)?.[1];
     return m === "invite" || m === "recovery" ? m : null;
   });
 
