@@ -27,7 +27,7 @@ type AuthState =
 
 /* What the link in the email said, captured by main.tsx before Supabase
    cleared it from the address bar. */
-const authLink = (window as { __authLink?: { type: string | null; error: string | null } }).__authLink ?? { type: null, error: null };
+const authLink = (typeof window !== "undefined" && (window as { __authLink?: { type: string | null; error: string | null } }).__authLink) || { type: null, error: null };
 
 function Login() {
   const [email, setEmail] = useState("");
